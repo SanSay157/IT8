@@ -1,0 +1,2548 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Croc.IncidentTracker.Commands</name>
+    </assembly>
+    <members>
+        <member name="T:Croc.IncidentTracker.Messaging.MessageSender">
+            <summary>
+            Класс, выполняющий доставку сообщений.
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Messaging.MessageSender.Send(Croc.IncidentTracker.Messaging.EventNotificationMessage[])">
+            <summary>
+            Отправка набора сообщений
+            </summary>
+            <param name="messages">Набор сообщений, подлежащий отправке</param>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetObjectCommand">
+            <summary>
+            Переопределенная команда GetObject.
+            Помимо логики, реализованной во фреймворковской команде данная реализация проверяет права на объекты и их свойства
+            и расставляется на объектах и свойства атрибуты ограничения доступа
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectCommand.Execute(Croc.XmlFramework.Public.XRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Метод выполнения операции, реализация IXCommand.Execute
+            </summary>
+            <param name="request">Объект-запрос на выполнение операции</param>
+            <param name="context">Представление контекста выполнения операции</param>
+            <returns>
+            Экземпляр объекта-результата выполнения операции
+            </returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectCommand.Execute(Croc.XmlFramework.Commands.XGetObjectRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Выполнение команды - типизированный вариант
+            </summary>
+            <param name="request">Запрос команды, должен иметь тип XGetPropertyRequest</param>
+            <param name="context">Контекст выполнения команды</param>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetCurrentUserNavInfoCommand.DEF_DATASOURCE_NAME">
+            <summary>
+            Константное наименование источника данных
+            </summary>
+        </member>
+        <!-- Некорректный XML-комментарий для члена "M:Croc.IncidentTracker.Commands.GetCurrentUserNavInfoCommand.Execute(Croc.XmlFramework.Public.XRequest,Croc.XmlFramework.Core.IXExecutionContext)" проигнорирован -->
+        <member name="M:Croc.IncidentTracker.Commands.GetCurrentUserNavInfoCommand.getUserProfile(System.Guid,Croc.XmlFramework.Data.XStorageConnection)">
+            <summary>
+            Внутренний метод получения данных объекта UserProfile для пользователя
+            системы, заданного идентификатором (SystemUser.ObjectID).
+            </summary>
+            <param name="uidSystemUserID">Идентификатор пользователя</param>
+            <returns>
+            -- Инифиализированный объект DomainObjectData, описывающий данные UserProfile
+            -- null, если профиля пользователя нет (что, в принципе возможно)
+            </returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.EmployeeLocatorInCompanyTreeCommand">
+            <summary>
+            Команда поиска сотрудника и получения для него пути в дереве "Структура компаний"
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.EmployeeLocatorInCompanyTreeCommand.Execute(Croc.IncidentTracker.Commands.EmployeeLocatorInCompanyTreeRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Метод вызова команды ядром
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.SaveObjectWithSignatureCommand">
+            <summary>
+            Команда сохранения объекта с добавлением подписи к текстовым свойствам,
+            помеченным элементом auto-signature в метаданных
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.SaveObjectWithSignatureCommand.Execute(Croc.IncidentTracker.Commands.SaveObjectInternalRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Метод запуска операции на выполнение, «входная» точка операции
+            ПЕРЕГРУЖЕННЫЙ, СТРОГО ТИПИЗИРОВАННЫЙ МЕТОД 
+            ВЫЗЫВАЕТСЯ ЯДРОМ АВТОМАТИЧЕСКИ
+            </summary>
+            <param name="request">Запрос на выполнение операции</param>
+            <param name="context">Контекст выполнения операции</param>
+            <returns>Результат выполнения</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.SaveObjectWithSignatureCommand.modifyObjectProps(Croc.IncidentTracker.Storage.DomainObjectData,System.String)">
+            <summary>
+            Изменяет помеченные свойства объекта, добавляя к ним подпись
+            </summary>
+            <param name="xobj">текущий объект</param>
+            <param name="signature">подпись</param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.SaveObjectWithSignatureCommand.hasPropSignature(Croc.XmlFramework.Data.XPropInfoBase)">
+            <summary>
+            Проверяет, должно ли свойство иметь подпись
+            </summary>
+            <param name="propInfo">метаданные свойства</param>
+            <returns>true - свойство должно иметь подпись</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.SaveObjectWithSignatureCommand.addSignature(System.String,System.String)">
+            <summary>
+            Добавляет подпись к тексту
+            </summary>
+            <param name="text">исходный текст</param>
+            <param name="signature"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.SaveObjectWithSignatureCommand.getSignatureText(Croc.IncidentTracker.Core.ITUser)">
+            <summary>
+            Возвращает текст подписи
+            </summary>
+            <param name="user">Текущий пользователь</param>
+            <returns>текст подписи (не null)</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeStructExecutorStd.GetTreeLevel(Croc.IncidentTracker.Hierarchy.XTreeStructInfo,Croc.XmlFramework.Commands.XParamsCollection,Croc.XmlFramework.Commands.XTreePath)">
+            <summary>
+            Возвращает метаописание уровня (i:tree-level) иерархии, соответствующего "пути"
+            </summary>
+            <returns>Объект-описатель уровня иерархии</returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XTreeStructInfo">
+            <summary>
+            Описатель иерархии объектов (i:objects-tree)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreeStructInfo.m_sName">
+            <summary>
+            Метанаименование иерархии.
+            Соответствует значению атрибута n элемента описания иреархии
+            объектов, objects-tree
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreeStructInfo.m_rootLevels">
+            <summary>
+            Массив описателей корневых уровней иерархии
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreeStructInfo.m_mdManager">
+            <summary>
+            Ссылка на инциализированный объект XMetadataManager, описатель метаданных. 
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeStructInfo.RootTreeLevels">
+            <summary>
+            Возвращает массив типизированных описаний корневых узлов иерархии
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeStructInfo.Name">
+            <summary>
+            Метанаименование иерархии.
+            Соответствует значению атрибута n элемента описания иреархии
+            объектов, objects-tree
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.IXTreeLevelExecutor.GetDataSource(Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT,Croc.XmlFramework.Data.XStorageConnection)">
+            <summary>
+            Возвращает типизированное описание источника данных (уже с конструированной БД-командой для него) текущего уровня иерархии
+            </summary>
+            <param name="con">реализация XStorageConnection</param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeLevelExecutorStd.GetDataSource(Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT,Croc.XmlFramework.Data.XStorageConnection)">
+            <summary>
+            Возвращает типизированное описание источника данных (уже с конструированной БД-командой для него) текущего уровня иерархии
+            </summary>
+            <param name="con">реализация XStorageConnection</param>
+            <returns></returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT">
+            <summary>
+            Описатель уровня иерархии объектов (i:tree-level)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.m_sLevelName">
+            <summary>
+            Наименование уровня
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.m_ChildTreeLevels">
+            <summary>
+            Дечернии уровни иерархии
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.m_sDataSourceName">
+            <summary>
+            Наименование источника данных. 
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.GetDataSourceInfo(Croc.XmlFramework.Data.DBMSType)">
+            <summary>
+            Возвращает XML-узел с описанием источника данных текущего уровня 
+            иерархии, соответстующий заданному типу СУБД
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.GetDataSource(Croc.XmlFramework.Data.XStorageConnection)">
+            <summary>
+            Возвращает типизированное описание источника данных (уже с конструированной БД-командой для него) текущего уровня иерархии
+            </summary>
+            <param name="con">реализация XStorageConnection</param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.GetChildTreeLevelsRuntime(Croc.XmlFramework.Commands.XParamsCollection)">
+            <summary>
+            Возвращает массив актуальных типизированных описаний дочерних уровней иерархии.
+            Т.е. сформированных executor'ом в runtime'е на основании параметров и (возможно) метаданных (ChildTreeLevelsInfoMetadata)
+            </summary>
+            <param name="treeParams"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.GetChildTreeLevelsAffected(Croc.XmlFramework.Commands.XParamsCollection)">
+            <summary>
+            Возвращает массив типизированных описаний дочерних уровней иерархии
+            Если текущий уровень рекурсивный, то в в возвращаемой коллекции 
+            присутствует он сам
+            </summary>
+            <returns>Массив типизированных описаний уровней иерархии</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.GetMenu(Croc.XmlFramework.Commands.XGetTreeMenuRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Возвращает типизированное описание меню уровня.
+            Может быть null, если меню для уровня не определено.
+            Как воспринимать null решает провайдер загрузки меню иерархии (XTreeMenuLoadProvider)
+            </summary>
+            <returns>Объектное описание меню уровня иерархии</returns>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.Name">
+            <summary>
+            Возвращает наименование уровня. Может быть не задано (String.Empty)
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.IsRecursive">
+            <summary>
+            Возвращает признак рекурсивности текущего уровня
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.IsVirtual">
+            <summary>
+            Возрашает признак виртуальности текущего уровня
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.ObjectType">
+            <summary>
+            Возвращает наименование типа объектов, данные котороых отображаются
+            на данном уровне иерархии (в соотв. с описанием; технически узлы 
+            уровня могут отображать произвольные данные)
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.Alias">
+            <summary>
+            Возвращает алиас уровня
+            Может использоваться, если наименование типа является зарезервированным 
+            словом; если не используется - возвращает пустую строку
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.ChildTreeLevelsInfoMetadata">
+            <summary>
+            Возвращает массив типизированных описаний дочерних уровней иерархии из метаданных (design-time)
+            Для получения подчиненных уровней в runtime используется getRuntimeChildTreeLevels
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT.MenuHandler">
+            <summary>
+            Описание меню из метаданных
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetCurrentUserClientProfileCommand">
+            <summary>
+            Команда получения профиля текущего пользователя для Web-клиента
+            </summary>
+        </member>
+        <!-- Некорректный XML-комментарий для члена "M:Croc.IncidentTracker.Commands.GetCurrentUserClientProfileCommand.Execute(Croc.XmlFramework.Public.XRequest,Croc.XmlFramework.Core.IXExecutionContext)" проигнорирован -->
+        <member name="T:Croc.IncidentTracker.Commands.GetKassBallanceCommand">
+            Получение балланса ДС в кассе.
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.MoveFolderCommand">
+            <summary>
+            Команда переноса объетов в нового родителя
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Messaging.MessageMailer">
+            <summary>
+            Отправляет сообщения по EMail
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Messaging.MessageMailer.#ctor(System.String,System.Int32,System.Int32,System.String,System.String)">
+            <summary>
+            Конструктор
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Messaging.MessageMailer.#ctor(System.Net.Mail.SmtpClient,System.String,System.String)">
+            <summary>
+            Конструктор
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.DeleteUnusedObjectsCommand">
+            <summary>
+            Удаляет неиспользуемые объекты из БД
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.DeleteObjectByExKeyCommand">
+            <summary>
+            Операция удаления данных ds-объекта, заданного значениями своих реквизитов
+            <seealso cref="T:Croc.IncidentTracker.Commands.DeleteObjectByExKeyRequest"/>
+            </summary>
+            <remarks>
+            Использует стандартную операцию DeleteObject (должна быть определена в 
+            конфигурации приложения), является функциональным аналогом этой стандартной 
+            операции. В качестве результата возвращает стандартный же результат:
+            <seealso cref="T:Croc.XmlFramework.Commands.XDeleteObjectResponse"/>
+            ВНИМАНИЕ!
+            	(1) При вызове будет так же вызываться guard-объект, назначенный
+            		для операции DeleteObject!
+            	(2) Операция требует начала новой транзакции (см. параметры атрибута
+            		XTransaction); при этом стандартная операция DeleteObject будет 
+            		вызвана в той же транзакции
+            </remarks>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetObjectIdByExKeyCommand">
+            <summary>
+            Операция получения идентификатора ds-объекта (ObjectID), заданного 
+            значениями своих реквизитов
+            <seealso cref="T:Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest"/>
+            <seealso cref="T:Croc.IncidentTracker.Commands.GetObjectIdByExKeyResponse"/>
+            </summary>
+        </member>
+        <!-- Некорректный XML-комментарий для члена "M:Croc.IncidentTracker.Commands.GetObjectIdByExKeyCommand.Execute(Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest,Croc.XmlFramework.Core.IXExecutionContext)" проигнорирован -->
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectIdByExKeyCommand.processDataSource(System.String,System.Collections.Hashtable,Croc.XmlFramework.Data.XStorageConnection)">
+            <summary>
+            Выполняет указанный источник данных; ожидается, что в результате 
+            выполнения этого источника данных получим идентификатор некого 
+            объекта (тип тут не задан)
+            </summary>
+            <param name="sDataSourceName">Наименование источника данных</param>
+            <param name="dictionaryParams">
+            Хеш параметров; здесь в паре ключ пары - наименование параметра, 
+            значение пары - собственно значение параметра. Последний может быть
+            типизированным значением, значением в стрковом представленнии.
+            Технически допустимо значение в виде массива типизированных значений 
+            или их строковых представлений - в этом случае такие данные 
+            приводят к формированию условий виде Param IN (value1, ..., valueN)
+            </param>
+            <param name="connection">Соединение с СУБД; на момент вызова д.б. открыто</param>
+            <returns>Значение ObjectID экземпляра объекта</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectIdByExKeyCommand.processExplicitObjectIdRequest(System.String,System.Collections.Hashtable,Croc.XmlFramework.Data.XStorageConnection)">
+            <summary>
+            Формирует и выполняет явный SQL-запрос на получение значения свойства
+            (столбца) ObjectID для указанного ds-типа, для экземпляра, заданного 
+            значениями своих параметров
+            </summary>
+            <param name="sRequiredTypeName">
+            Наименование ds-типа, для которого формируется запрос
+            </param>
+            <param name="dictionaryParams">
+            Хеш параметров; здесь в паре ключ пары - наименование параметра, 
+            значение пары - собственно значение параметра. Последний может быть
+            типизированным значением, значением в стрковом представленнии.
+            Технически допустимо значение в виде массива типизированных значений 
+            или их строковых представлений, но такие значения в данном случае 
+            неприменимы и приводят к генерации исключения ArgumentException.
+            </param>
+            <param name="connection">Соединение с СУБД; на момент вызова д.б. открыто</param>
+            <returns>Значение ObjectID экземпляра объекта</returns>
+        </member>
+        <!-- Некорректный XML-комментарий для члена "M:Croc.IncidentTracker.Commands.DeleteObjectByExKeyCommand.Execute(Croc.IncidentTracker.Commands.DeleteObjectByExKeyRequest,Croc.XmlFramework.Core.IXExecutionContext)" проигнорирован -->
+        <member name="T:Croc.IncidentTracker.Trees.DKPTreeStructExecutor">
+            <summary>
+            Executor для структуры иерархии "Дерево ДКП".
+            Выбирает корневые узлы в зависимости от параметра Mode
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Trees.CompanyTreeMenuDataProvider">
+            <summary>
+            Загрузчик меню для иерархии "Структура компаний"
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XTreeMenuDataProviderStd">
+            <summary>
+            "Стандартная" реализация. Запрашивает меню у текущего уровня, если у него отсутсвует меню, то использует дефолтное меню иерархии
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.IXTreeMenuDataProvider">
+            <summary>
+            Интерфейс загрузчика меню для всей иерархии
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.IncidentLocatorInTreeCommand">
+            <summary>
+            Команда получения полного пути в дереве "Клиенты и Проекты" для заданного инцидента
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.FolderLocatorInTreeCommand">
+            <summary>
+            Команда получения полного пути в дереве "Клиенты и Проекты" для заданной папки
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.DeleteObjectCommand">
+            <summary>
+            Операция удаления данных ds-объекта с заданным типом и идентификатром из СУБД
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.DeleteObjectCommand.Execute(Croc.XmlFramework.Commands.XDeleteObjectRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Метод выполнения операции, типизированная реализация
+            </summary>
+            <param name="oRequest">Объект-запрос на выполнение операции</param>
+            <param name="oContext">Представление контекста выполнения операции</param>
+            <returns>
+            Экземпляр объекта-результата выполнения операции
+            </returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.DataSources.DKPParamsProcessor_Folder">
+            <summary>
+            Процессор параметров для добавления значения параметра "ViewAllOrganizations" (признак наличия прав на просмотр организаций)
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.UserSubscriptionForEventClassCommand">
+            <summary>
+            Операция управления подпиской для текущего пользователя
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.UserSubscriptionForEventClassCommand.Execute(Croc.IncidentTracker.Commands.UserSubscriptionForEventClassRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Метод запуска операции на выполнение, «входная» точка операции
+            ПЕРЕГРУЖЕННЫЙ, СТРОГО ТИПИЗИРОВАННЫЙ МЕТОД 
+            ВЫЗЫВАЕТСЯ ЯДРОМ АВТОМАТИЧЕСКИ
+            </summary>
+            <param name="request">Запрос на выполнение операции</param>
+            <param name="context">Контекст выполнения операции</param>
+            <returns>Результат выполнения</returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Messaging.EventNotificationMessage">
+            <summary>
+            Summary description for EventNotificationMessage.
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.TreeConfigurationHelper.getProvider(System.Collections.IDictionary,System.Object,System.String,System.String,System.String,System.Type,System.Type[],System.Object[])">
+            <summary>
+            Создает или возвращает экземпляр некоторого провайдера с заданным наименованием CLR-класса.
+            </summary>
+            <param name="providersCache">Кэш, к котором ищутся экземпляры провайдеров</param>
+            <param name="defaultProvider">Провайдер по умолчанию</param>
+            <param name="sProviderClassName">Полное наименование класса провайдера, может быть null/String.Empty</param>
+            <param name="sTreePageName">Наименование иерархии</param>
+            <param name="sProviderName">Описательное наименование провайдера</param>
+            <param name="requiredInterface">Интерфейс, который должен реализовывать провайдер</param>
+            <param name="ctorArgTypes">Массив типов параметров конструктора</param>
+            <param name="ctorArgValues">Массив значение параметров конструктора</param>
+            <returns></returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XTreePageInfoStd">
+            <summary>
+            Стандартная реализация XTreePageInfo, использующая описание структуры иерархии и меню в метаданных.
+            Использует провайдеры: 
+             IXTreeDataLoadProvider - загрузка данных
+             IXTreeMenuLoadProvider - загрузка меню (формирование в runtime)
+            Провайдеры устанавливаеются XTreePageInfoStdProvider'ом. Также он инициализирует и устанавливает описание структуры XTreeStructInfo
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XTreePageInfo">
+            <summary>
+            Базовый класс описания страницы иерархии
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreePageInfo.Name">
+            <summary>
+            Метанаименование иерархии
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreePageInfo.Title">
+            <summary>
+            Заголовок страницы
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreePageInfo.ClientScripts">
+            <summary>
+            Список подключаемых клиентских скриптов
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreePageInfo.MenuStylesheetFilename">
+            <summary>
+            Наименование stylesheet'a для рендеринга меню
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreePageInfo.FilterDescription">
+            <summary>
+            Описание фильтра
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreePageInfo.IconTemplateURI">
+            <summary>
+            Шаблон загрузчика иконок
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreePageInfo.OffShowIcons">
+            <summary>
+            Признак "не отображать иконки"
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreePageInfoStd.DataLoadProvider">
+            <summary>
+            Провайдер загрузки данных иерархии
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreePageInfoStd.MenuDataProvider">
+            <summary>
+            Провайдер загрузки меню
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreePageInfoStd.TreeStruct">
+            <summary>
+            Описание структуры иерархии
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreePageInfoStd.EmptyTreeMenu">
+            <summary>
+            Описание меню пустой иерархии
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreePageInfoStd.DefaultLevelMenu">
+            <summary>
+            Описание меню по умолчанию используемое как меню уровня (если он не содержит свое меню)
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreePageInfoStd.DesignParams">
+            <summary>
+            Коллекция параметров, определенная в desing-time (в метаданных).
+            Данные параметры подставляются автоматически в коллекцию параметров, пришедших с клиента
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XTreeLoadData">
+            <summary>
+            Данные множества узлов дерева (результат команды загрузки данных дерева)
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeLoadData.Append(Croc.IncidentTracker.Hierarchy.XTreeLoadData)">
+            <summary>
+            Переносит описания узлов из переданного множества в текущее
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeLoadData.NodesCount">
+            <summary>
+            Возвращает количество узлов
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.IXTreeDataLoadProvider">
+            <summary>
+            Интерфейс провайдера загрузки данных иерархии. Используется XTreePageInfoStd и XTreeStructInfoProvider
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeDataLoadProviderStd.createTreeLevelDataSource(Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT,Croc.XmlFramework.Data.XStorageConnection,Croc.XmlFramework.Commands.XGetTreeDataRequest)">
+            <summary>
+            Создает описание источника данных для уровня иерархии.
+            Для команд загрузчика GETROOT и GETCHILDREN вызывает стандартную 
+            обработку параметров data-source'a XDataSource.SubstituteNamedParams
+            Обработка команды GETNODE немного отличается от команд GETROOT/GETCHILDREN
+            </summary>
+            <param name="treelevel">источник данных</param>
+            <param name="con">соединение с БД</param>
+            <param name="treeRequest">Исходный запрос</param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeDataLoadProviderStd.evaluateIsLeafMacro(Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT,Croc.XmlFramework.Data.XDataSource,Croc.XmlFramework.Commands.XGetTreeDataRequest)">
+            <summary>
+            Подставляет в команду (запрос) условие на вычисление признака листового узла (макрос @@ISLEAF).
+            Если макрос отсутствует, то текст команды не модифицируется.
+            </summary>
+            <param name="treelevel"></param>
+            <param name="datasource"></param>
+            <param name="treeRequest">запрос</param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeDataLoadProviderStd.evaluateParentIdFunc(Croc.XmlFramework.Data.XDbCommand,Croc.XmlFramework.Commands.XGetTreeDataRequest)">
+            <summary>
+            Вычислим функцию @@PARENTID - возвращает идентификатор объекта на 
+            заданом уровне от текущего (1-папа,2-дед,и т.д.)
+            Подставляет результат в текст команды (запроса)
+            </summary>
+            <param name="cmd">DB-команда загрузки данных</param>
+            <param name="treeRequest">запрос</param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeDataLoadProviderStd.evaluateRecursiveExp(Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT,Croc.XmlFramework.Data.XDbCommand,System.Int32)">
+            <summary>
+            Вычисляет и подставляет функцию-макрос @@RecursiveExp.
+            Функция должна вычисляться ПЕРЕД вычислением @@ParentID
+            </summary>
+            <param name="treelevel">описание уровня</param>
+            <param name="cmd">DB-команда загрузки данных</param>
+            <param name="nRecurLevel">Уровень рекурсии (начиная с 0)</param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeDataLoadProviderStd.evaluateRecurLevelMacro(Croc.XmlFramework.Data.XDbCommand,System.Int32)">
+            <summary>
+            Подставляет макрос @@RC (уровень рекурсии) в тексте запроса
+            </summary>
+            <param name="cmd">DB-команда загрузки данных</param>
+            <param name="nRecurLevel">Уровень рекурсии (начиная с 0)</param>
+            <returns>Модифицированный текст команды(запроса)</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeDataLoadProviderStd.getRecurrenceLevel(Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT,Croc.XmlFramework.Commands.XGetTreeDataRequest)">
+            <summary>
+            Возвращает уровень рекурсии текущего запроса; 0 - если рекурсии нет.
+            </summary>
+            <param name="treelevel">Текущий уровень</param>
+            <param name="treeRequest">запрос команды</param>
+            <returns>
+            Количество элементов с совпадающим значением от начала, минус один;
+            Ноль - если рекурсии нет
+            </returns>
+        </member>
+        <!-- Некорректный XML-комментарий для члена "M:Croc.IncidentTracker.Hierarchy.XTreeDataLoadProviderStd.evaluateParentIDByTypeFunc(Croc.XmlFramework.Data.XDbCommand,Croc.XmlFramework.Commands.XGetTreeDataRequest)" проигнорирован -->
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeDataLoadProviderStd.getTreeLevels(Croc.IncidentTracker.Hierarchy.XTreeStructInfo,Croc.XmlFramework.Commands.XTreeAction,Croc.XmlFramework.Commands.XParamsCollection,Croc.XmlFramework.Commands.XTreePath)">
+            <summary>
+            Возвращает массив типизированных метаописаний уровней иерархии, соответствующих команде и пути
+            </summary>
+            <param name="action">команда дерева (получить узел, получить детей, получить корни)</param>
+            <param name="treeParams">runtime параметры дерева</param>
+            <param name="treePath">путь от текущего узла до корня</param>
+            <returns></returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetAvailableStatesOfUserRoleCommand">
+            <summary>
+            Команда возвращает список состояний инцидента заданного типа, в которые его может перевести текущий пользователь
+            В запросе обязательно должны быть заданы параметры:
+            	идентификатор папки, в которой располагается инцидент (Folder)
+            	идентификатор типа инцидента (IncidentType)
+            	идентификатор текущего состояния (IncidentState)
+            	идентификатор роли пользователя в инциденте (UserRoleInIncident)
+            Если текущий сотрудник обладает в папке инцидента привилегией "Управление участниками инцидента", 
+            то возвращается список всех состояний для типа инцидента, иначе возвращается список состояний,
+            в которые есть переходы из текущего состояния для заданной роли сотрудника в инциденте.
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetExpensesDataCommand">
+            <summary>
+            Выполняет расчет затрат текущего пользователя за три периода - предыдущий 
+            месяц, текущий месяц и текущий день. Для каждого периода в результате 
+            расчитывается (А) ожидаемыве затрарты, (Б) реальные затраты, (В) разница
+            между ожидаемыми и реальными затратами. 
+            <seealso cref="T:Croc.IncidentTracker.Commands.GetExpensesDataResponse"/>
+            </summary>
+        </member>
+        <!-- Некорректный XML-комментарий для члена "M:Croc.IncidentTracker.Commands.GetExpensesDataCommand.Execute(Croc.XmlFramework.Public.XRequest,Croc.XmlFramework.Core.IXExecutionContext)" проигнорирован -->
+        <member name="M:Croc.IncidentTracker.Commands.GetExpensesDataCommand.getMonthName(System.DateTime)">
+            <summary>
+            Внутренняя функция, для заданной даты возвращает строку с наименованием 
+            месяца на русском языке
+            </summary>
+            <param name="dtDate">Исходная дата</param>
+            <returns>Строка с наименованием месяца</returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.SaveObjectCommand">
+            <summary>
+            Команда сохранения (SaveObject)
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.SaveObjectCommand.Execute(Croc.IncidentTracker.Commands.SaveObjectInternalRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Метод запуска операции на выполнение, «входная» точка операции
+            ПЕРЕГРУЖЕННЫЙ, СТРОГО ТИПИЗИРОВАННЫЙ МЕТОД 
+            ВЫЗЫВАЕТСЯ ЯДРОМ АВТОМАТИЧЕСКИ
+            </summary>
+            <param name="request">Запрос на выполнение операции</param>
+            <param name="context">Контекст выполнения операции</param>
+            <returns>Результат выполнения</returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Jobs.JobDescription">
+            <summary>
+            Описание задания
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Jobs.JobDescription.#ctor(System.Xml.XmlElement)">
+            <summary>
+            Конструктор
+            </summary>
+            <param name="xmlDescription"></param>
+        </member>
+        <member name="P:Croc.IncidentTracker.Jobs.JobDescription.StartTime">
+            <summary>
+            Время начала выполнения задания
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Jobs.JobDescription.Period">
+            <summary>
+            Период выполнения задания
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Jobs.JobDescription.CommandName">
+            <summary>
+            Наименование серверной команды для выполнения
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Jobs.JobDescription.Description">
+            <summary>
+            Описание
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Jobs.JobsConfig">
+            <summary>
+            Конфигурация заданий
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Jobs.JobsConfig.#ctor">
+            <summary>
+            Конструктор
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Jobs.JobsConfig.JobDescriptions">
+            <summary>
+            Описания заданий
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Jobs.JobInfo">
+            <summary>
+            Класс информации о выполнении задания
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Jobs.JobInfo.#ctor(Croc.IncidentTracker.Jobs.JobDescription)">
+            <summary>
+            Конструктор
+            </summary>
+            <param name="description"></param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Jobs.JobInfo.RunJob">
+            <summary>
+            Выполняет задание
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Jobs.JobInfo.Description">
+            <summary>
+            Описание задания
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Jobs.JobInfo.NextStartTime">
+            <summary>
+            Время следующего запуска задания
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Jobs.JobsLoop">
+            <summary>
+            Цикл обработки заданий
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Jobs.JobsLoop.m_RunMutex">
+            <summary>
+            Мьютекс, управляющий возможностью запуска цикла
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Jobs.JobsLoop.#ctor">
+            <summary>
+            Конструктор
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Jobs.JobsLoop.Run">
+            <summary>
+            Запускает цикл выполнения заданий
+            </summary>
+            <remarks>ВНИМАНИЕ!!! Данный метод является "бесконечным". Вызывать данный метод необходимо только из отдельного потока</remarks>
+            <returns>true, если цикл запускался; false, если в момент запуска был запущен другой экземпляр цикла или не определено ни одно задание</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Jobs.JobsLoop.Stop">
+            <summary>
+            Останавливает цикл выполнения заданий
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Jobs.JobsLoop.getJobsToRun">
+            <summary>
+            Возвращает массив заданий, которые нужно выполнить в текущий момент
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Jobs.JobsLoop.getNextJobTime">
+            <summary>
+            Возвращает время выполнения следующего (ближайшего) задания
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Croc.IncidentTracker.Jobs.JobsLoop.IsStopped">
+            <summary>
+            Проверяет, остановлен ли цикл или нет
+            </summary>
+        </member>
+        <member name="T:Croc.XmlFramework.Extension.Commands.XXTreeNodeDrag">
+            <summary>
+            Описатель операции переноса узла уровня иерархии (или всей иерархии). 
+            </summary>                                          
+        </member>
+        <member name="F:Croc.XmlFramework.Extension.Commands.XXTreeNodeDrag.m_sExtensionNamespace">
+            <summary>
+            URL схемы расширения
+            </summary>
+        </member>
+        <member name="F:Croc.XmlFramework.Extension.Commands.XXTreeNodeDrag.m_xmlNodeDrag">
+            <summary>
+            Ссылка на i:node-drag
+            </summary>
+        </member>
+        <member name="F:Croc.XmlFramework.Extension.Commands.XXTreeNodeDrag.m_xmlNSManager">
+            <summary>
+            XmlNamespace-менеджер для корректного выполнения XPath-запросов
+            </summary>
+        </member>
+        <member name="F:Croc.XmlFramework.Extension.Commands.XXTreeNodeDrag.m_cacheMode">
+            <summary>
+            Метод кеширования
+            </summary>
+        </member>
+        <member name="F:Croc.XmlFramework.Extension.Commands.XXTreeNodeDrag.m_bIsEmpty">
+            <summary>
+            Признак пустого описания
+            </summary>
+        </member>
+        <member name="M:Croc.XmlFramework.Extension.Commands.XXTreeNodeDrag.#ctor(Croc.XmlFramework.Commands.XTreeLevelInfo,Croc.XmlFramework.Data.XMetadataManager)">
+            <summary>
+            Иниализация операции переноса на основании метаописания уровня иерархии
+            </summary>
+            <param name="treeLevel">Описатель уровня иерархии</param>
+        </member>
+        <member name="P:Croc.XmlFramework.Extension.Commands.XXTreeNodeDrag.XmlNodeDrag">
+            <summary>
+            XML-узел операции переноса (<b>ie:node-drag</b>). Может быть null.
+            </summary>                                     
+        </member>
+        <member name="P:Croc.XmlFramework.Extension.Commands.XXTreeNodeDrag.IsEmpty">
+            <summary>
+            Признак пустого описания. Если true, значит для уровня иерахии
+            отсутствует операция переноса. 
+            </summary>                                                       
+        </member>
+        <member name="P:Croc.XmlFramework.Extension.Commands.XXTreeNodeDrag.CacheMode">
+            <summary>
+            Режим кэшируемости меню.
+            </summary>              
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XMenuItemBase">
+            <summary>
+            Базовый класс для классов, описывающих пункты меню.
+            </summary>                                         
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuItemBase.m_uniqueID">
+            <summary>
+            Уникальный идентификатор элемента меню
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuItemBase.#ctor">
+            <summary>
+            Конструктор по умолчанию. 
+            </summary>                
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuItemBase.ToXml(System.Xml.XmlDocument,System.Xml.XmlNamespaceManager)">
+            <summary>
+            Метод формирует XML-представление пункта меню. Должен реализовываться
+            всем наследниками.
+            </summary>
+            <param name="doc">Экземпляр XmlDocument, в контексте которого
+                              будет создаваться XML\-представление пункта
+                              меню.</param>
+            <param name="nsManager">Экземпляр XmlNamespaceManager, используемый
+                                    для получения URI\-пространства имен для
+                                    префикса &quot;i&quot;. </param>
+            <returns>
+            XML-узел пункта меню (зависит от реализации). 
+            </returns>                                                           
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuItemBase.Clone">
+            <summary>
+            Метод возвращает полную копию элемента (полная копия - это копия данных
+            самого элемента, а также всех вложенных в него элементов). 
+            </summary>                                                             
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuItemBase.UniqueID">
+            <summary>
+            Уникальный идентификатор элемента меню, полученный при создании. 
+            </summary>                                                       
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XMenuSectionBase">
+            <summary>
+            Базовый класс для описания сущности меню, содержащего подчиненные узлы
+            (само меню и секция).
+            </summary>
+            <seealso cref="!:Croc.XmlFramework.Commands.XMenuItemBase"/>            
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuSectionBase.m_sCaption">
+            <summary>
+            Заголовок меню
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuSectionBase.m_items">
+            <summary>
+            Элементы меню
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuSectionBase.#ctor(System.String)">
+            <summary>
+            Параметризированный конструктор.
+            </summary>
+            <param name="sCaption">Заголовок меню.</param>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuSectionBase.Caption">
+            <summary>
+            Заголовок меню. 
+            </summary>      
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuSectionBase.Items">
+            <summary>
+            Элементы меню. 
+            </summary>     
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XMenu">
+            <summary>
+            «Корневой» класс, описывающий меню. 
+            <seealso cref="!:Croc.XmlFramework.Commands.XMenuItemBase"/>
+            <seealso cref="!:Croc.XmlFramework.Commands.XMenuSectionBase"/>
+            </summary>                          
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenu.NAMESPACE_URI">
+            <summary>
+            Используемое по умолчанию пространство имен для префикса "i"
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenu.m_bTrustworthy">
+            <summary>
+            Признак, что состав меню "заслуживает доверия", и проверка прав с клиента для него не нужна
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenu.m_sStylesheet">
+            <summary>
+            Имя страницы с XSLT шаблоном, используемым для рендеринга меню в HTML
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenu.#ctor(System.String)">
+            <summary>
+            Параметризированный конструктор.
+            </summary>
+            <param name="sCaption">Заголовок меню. Значение NULL и пустая строка
+                                   допустимы.</param>                           
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenu.#ctor(System.String,System.Boolean)">
+            <summary>
+            Параметризированный конструктор.
+            </summary>
+            <param name="sCaption">Заголовок меню. Значение NULL и пустая
+                                   строка допустимы.</param>
+            <param name="bTrustworthy">Признак того, что формируемое меню
+                                       «заслуживает доверия», т.е. выполнять
+                                       проверку прав с клиента нет необходимости.</param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenu.ToXml(System.Xml.XmlDocument,System.Xml.XmlNamespaceManager)">
+            <summary>
+            Метод производит «сериализацию» меню со всеми вложенными объектами в
+            формате, описываемом схемой x-net-interface-schema.xsd.
+            </summary>
+            <param name="doc">Экземпляр XmlDocument, в контексте которого
+                              будет создаваться XML\-представление меню.</param>
+            <param name="nsManager">Экземпляр XmlNamespaceManager, используемый
+                                    для получения URI\-пространства имен для
+                                    префикса &quot;i&quot;, используемого для
+                                    формируемых узлов XML\-представления меню.
+                                    Если менеджер не задан, то используется
+                                    «http\://www.croc.ru/Schemas/XmlFramework/Interface/1.0».</param>
+            <returns>
+            XML-узел <b>i:menu</b>. 
+            </returns>                                                                               
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenu.Clone">
+            <summary>
+            Метод возвращает копию элемента.
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenu.ToXml">
+            <summary>
+            Метод производит «сериализацию» меню со всеми вложенными объектами в
+            формате, описываемом схемой x-net-interface-schema.xsd.
+            </summary>
+            <returns>
+            XML-узел <b>i:menu</b>.
+            </returns>
+            <remarks>
+            Метод вызывает виртуальный метод <see cref="!:Croc.XmlFramework.Commands.XMenu.ToXml@XmlDocument@XmlNamespaceManager" text="ToXml"/>
+            для каждого экземпляра описателя пункта меню (производного от <see cref="!:Croc.XmlFramework.Commands.XMenuItemBase" text="XMenuItemBase"/>)
+            из своей коллекции элементов (<see cref="!:Croc.XmlFramework.Commands.XMenuSectionBase.Items" text="Items"/>,
+            свойство базового класса). 
+            </remarks>                                                                                                                                 
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenu.Trustworthy">
+            <summary>
+            Признак «меню заслуживает доверия» - дополнительная проверка прав с
+            клиента не требуется. 
+            </summary>                                                         
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenu.Stylesheet">
+            <summary>
+            Наименование страницы с XSLT-шаблоном, используемым для рендеринга меню
+            в HTML. 
+            </summary>                                                             
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XMenuItemCollection">
+            <summary>
+            Класс описывает коллекцию элементов пунктов меню. Экземпляры этого
+            класса содержат классы <see cref="!:Croc.XmlFramework.Commands.XMenu" text="XMenu"/>
+            и <see cref="!:Croc.XmlFramework.Commands.XMenuSection" text="XMenuSection"/>.
+            <seealso cref="!:Croc.XmlFramework.Commands.XMenu"/>
+            <seealso cref="!:Croc.XmlFramework.Commands.XMenuSection"/>
+            </summary>                                                                         
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuItemCollection.m_items">
+            <summary>
+            Коллекция пунктов меню
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuItemCollection.AddActionItem(System.String,System.String)">
+            <summary>
+            Метод осуществляет добавление исполняемого пункта меню в конец списка
+            элементов.
+            </summary>
+            <param name="sTitle">Заголовок пункта меню.</param>
+            <param name="sAction">Наименование действия.</param>
+            <returns>
+            Созданный пункт.
+            </returns>                                                           
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuItemCollection.AddInfoItem(System.String,System.String)">
+            <summary>
+            Метод осуществляет добавление информационного пункта меню в конец
+            списка элементов.
+            </summary>
+            <param name="sCaption">Заголовок пункта меню.</param>
+            <param name="sValue">Значение пункта меню.</param>
+            <returns>
+            Созданный пункт.
+            </returns>                                                       
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuItemCollection.AddSection(System.String)">
+            <summary>
+            Метод осуществляет добавление секции (подменю) в конец списка
+            элементов.
+            </summary>
+            <param name="sTitle">Заголовок секции (подменю).</param>
+            <returns>
+            Созданная секция.
+            </returns>                                                   
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuItemCollection.AddSeparatorItem">
+            <summary>
+            Метод осуществляет добавление разделителя в конец списка элементов.
+            </summary>
+            <returns>
+            Созданный разделитель. 
+            </returns>                                                         
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuItemCollection.Add(Croc.IncidentTracker.Hierarchy.XMenuItemBase)">
+            <summary>
+            Метод осуществляет добавление инициализированного пункта меню в конец
+            списка элементов.
+            </summary>
+            <param name="item">Пункт меню, который необходимо добавить.</param>  
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuItemCollection.InsertBefore(Croc.IncidentTracker.Hierarchy.XMenuItemBase,Croc.IncidentTracker.Hierarchy.XMenuItemBase)">
+            <summary>
+            Метод осуществляет вставку инициализированного пункта меню перед
+            указанным элементом.
+            </summary>
+            <param name="item_new">Добавляемый пункт меню.</param>
+            <param name="item_before">Пункт меню, перед которым происходит вставка.</param>
+            <exception cref="T:System.ArgumentException">Если элемент, переданный в
+                                                параметре <b><i>item_before</i></b>,
+                                                не найден в коллекции элементов.</exception>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuItemCollection.InsertAfter(Croc.IncidentTracker.Hierarchy.XMenuItemBase,Croc.IncidentTracker.Hierarchy.XMenuItemBase)">
+            <summary>
+            Метод осуществляет вставку инициализированного пункта меню после
+            указанного элемента.
+            </summary>
+            <param name="item_new">Добавляемый пункт меню.</param>
+            <param name="item_after">Пункт меню, после которого происходит
+                                     вставка.</param>
+            <exception cref="T:System.ArgumentException">Если элемент, переданный в
+                                                параметре <b><i>item_after</i></b>,
+                                                не найден в коллекции элементов.</exception>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuItemCollection.Insert(System.Int32,Croc.IncidentTracker.Hierarchy.XMenuItemBase)">
+            <summary>
+            Метод вставляет инициализированный пункт меню под заданным индексом.
+            </summary>
+            <param name="nIndex">Индекс добавляемого пункта меню.</param>
+            <param name="item">Добавляемый пункт меню.</param>                  
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuItemCollection.GetItemIndex(Croc.IncidentTracker.Hierarchy.XMenuItemBase)">
+            <summary>
+            Метод осуществляет получение индекса в списке элементов меню.
+            </summary>
+            <param name="item">Пунк меню из коллекции.</param>
+            <returns>
+            Индекс в массиве.
+            </returns>                                                   
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuItemCollection.GetEnumerator">
+            <summary>
+            Метод интерфейса IEnumerable. Возвращает итератор коллекции.
+            </summary>
+            <returns>
+            Возвращает ArrayList::GetEnumerator. 
+            </returns>                                                  
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuItemCollection.Item(System.Int32)">
+            <summary>
+            Свойство-индексатор, представляет элемент коллекции по его индексу. 
+            </summary>                                                          
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuItemCollection.Count">
+            <summary>
+            Количество элементов меню.
+            </summary>                
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XMenuActionItem">
+            <summary>
+            Класс описывает исполняемый пункт меню.
+            <seealso cref="!:Croc.XmlFramework.Commands.XMenuParam"/>
+            <seealso cref="!:Croc.XmlFramework.Commands.XMenuItemBase"/>
+            </summary>
+            <remarks>
+            Исполняемый пункт меню соответствует некоторому дейтсвию, запускаемому
+            пользователем из интерфейса приложения. Само действие идентифицируется
+            некоторой строкой – action. Меню может содержать несколько элементов с
+            одинаковым action, но отличающиеся параметрами. Например, два действия
+            "DoCreate", запускающие создание объекта, с разными
+            значениями параметра <b>ObjectType</b> (тип объекта). Наименование
+            (name) <b>может</b> задаваться для пункта меню для того, чтобы
+            различать пункты с одинаковым дейтсвием (action). Т.о. наименование
+            (если оно задано) должно быть уникальным. 
+            </remarks>                                                            
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuActionItem.#ctor(System.String,System.String)">
+            <summary>
+            Параметризированный конструктор.
+            </summary>
+            <param name="sTitle">Заголовок пункта (отображаемый).</param>
+            <param name="sAction">Наименование действия.</param>         
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuActionItem.ToXml(System.Xml.XmlDocument,System.Xml.XmlNamespaceManager)">
+            <summary>
+            Метод производит «сериализацию» исполняемого пункта меню в формате,
+            описываемом схемой x-net-interface-schema.xsd.
+            </summary>
+            <param name="doc">Экземпляр XmlDocument, в контексте которого
+                              будет создаваться XML\-представление
+                              исполняемого пункта меню.</param>
+            <param name="nsManager">Экземпляр XmlNamespaceManager, используемый
+                                    для получения URI\-пространства имен для
+                                    префикса &quot;i&quot;. </param>
+            <returns>
+            XML-узел <b>i:menu-item</b>. 
+            </returns>                                                         
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuActionItem.Clone">
+            <summary>
+            Метод возвращает копию элемента.
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuActionItem.Title">
+            <summary>
+            Заголовок (отображаемый) пункта (атрибут <b>t</b>). 
+            </summary>                                          
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuActionItem.Action">
+            <summary>
+            Наименование действия (атрибут <b>action</b>).
+            </summary>                                    
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuActionItem.Name">
+            <summary>
+            Логическое наименование (атрибут <b>n</b>). Идентифицирует пункт меню
+            на всех уровнях (клиент/сервер).
+            </summary>                                                           
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuActionItem.Hint">
+            <summary>
+            Всплывающая подсказка (атрибут <b>hint</b>).
+            </summary>                                  
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuActionItem.Hotkey">
+            <summary>
+            Комбинация горячих клавиш для вызова пукнта меню (атрибут <b>hotkey</b>).
+            </summary>                                                               
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuActionItem.Hidden">
+            <summary>
+            Признак сокрытия пункта меню из интерфейса (атрибут <b>hidden=&quot;1&quot;</b>).
+            </summary>                                                                       
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuActionItem.Disabled">
+            <summary>
+            Признак заблокированности пункта меню (атрибут <b>disabled=&quot;1&quot;</b>).
+            </summary>                                                                    
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuActionItem.SeparatorBefore">
+            <summary>
+            Признак добавления разделителя перед пунктом меню. 
+            </summary>                                         
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuActionItem.SeparatorAfter">
+            <summary>
+            Признак добавления разделителя после пункта меню.
+            </summary>                                       
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuActionItem.MayBeDefault">
+            <summary>
+            Признак того, что пункт меню может быть действием по умолчанию, если он
+            является единственным среди доступных.
+            </summary>                                                             
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuActionItem.Default">
+            <summary>
+            Признак того, что пункт меню является действием по умолчанию над
+            объектом. В меню иерархии пункт меню с данным признаком запускается
+            двойным кликом по листовому узлу дерева. 
+            </summary>                                                         
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuActionItem.Parameters">
+            <summary>
+            Коллекция параметров, описываемых классом <see cref="!:Croc.XmlFramework.Commands.XMenuParam" text="XMenuParam"/>,
+            пункта меню.
+            </summary>                                                                                                       
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XMenuInfoItem">
+            <summary>
+            Класс описывает информационный пункт меню. 
+            <seealso cref="!:Croc.XmlFramework.Commands.XMenuItemBase"/>
+            </summary>                                 
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuInfoItem.m_sCaption">
+            <summary>
+            Заголовок
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuInfoItem.m_sValue">
+            <summary>
+            Значение
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuInfoItem.#ctor(System.String,System.String)">
+            <summary>
+            Параметризированный конструктор.
+            </summary>
+            <param name="sCaption">Заголовок пункта меню.</param>
+            <param name="sValue">Значение пункта меню.</param>   
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuInfoItem.ToXml(System.Xml.XmlDocument,System.Xml.XmlNamespaceManager)">
+            <summary>
+            Метод производит «сериализацию» информационного пункта меню в формате,
+            описываемом схемой x-net-interface-schema.xsd.
+            </summary>
+            <param name="doc">Экземпляр XmlDocument, в контексте которого
+                              будет создаваться XML\-представление
+                              информационного пункта меню.</param>
+            <param name="nsManager">Экземпляр XmlNamespaceManager, используемый
+                                    для получения URI\-пространства имен для
+                                    префикса &quot;i&quot;. </param>
+            <returns>
+            XML-узел <b>i:menu-item-info</b>. 
+            </returns>                                                            
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuInfoItem.Clone">
+            <summary>
+            Метод возвращает копию элемента. 
+            </summary>                       
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuInfoItem.Caption">
+            <summary>
+            Заголовок пункта меню.
+            </summary>            
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuInfoItem.Value">
+            <summary>
+            Значение пункта меню.
+            </summary>           
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XMenuSeparatorItem">
+            <summary>
+            Класс описывает пункт меню – разделитель.
+            </summary>
+            <seealso cref="!:Croc.XmlFramework.Commands.XMenuItemBase"/>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuSeparatorItem.m_bHorizontalLine">
+            <summary>
+            Признак: разделитель содержит горизонтальную линию
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuSeparatorItem.ToXml(System.Xml.XmlDocument,System.Xml.XmlNamespaceManager)">
+            <summary>
+            Метод производит «сериализацию» разделителя в формате, описываемом
+            схемой x-net-interface-schema.xsd.
+            </summary>
+            <param name="doc">Экземпляр XmlDocument, в контексте которого
+                              будет создаваться XML\-представление
+                              разделителя.</param>
+            <param name="nsManager">Экземпляр XmlNamespaceManager, используемый
+                                    для получения URI\-пространства имен для
+                                    префикса &quot;i&quot;. </param>
+            <returns>
+            XML-узел <b>i:menu-item-separ</b>. 
+            </returns>                                                         
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuSeparatorItem.Clone">
+            <summary>
+            Метод возвращает копию элемента.
+            </summary>                      
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuSeparatorItem.HorizontalLine">
+            <summary>
+            Признак того, что разделитель является горизонтальной линией. Возможные
+            значения:
+              * True - разделитель отображается в виде горизонтальной линии;
+              * False - разделитель отображается как отступ.
+            </summary>                                                             
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XMenuSection">
+            <summary>
+            Класс описывает секцию или, по-другому, подменю. Секция меню имеет
+            заголовок и коллекцию пунктов меню по аналогии с «главным» меню (см. <see cref="!:Croc.XmlFramework.Commands.XMenu" text="XMenu"/>).
+            <seealso cref="!:Croc.XmlFramework.Commands.XMenuSectionBase"/>   
+            <seealso cref="!:Croc.XmlFramework.Commands.XMenu"/>
+            </summary>                                                                   
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuSection.m_sName">
+            <summary>
+            Наименование
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuSection.#ctor(System.String,System.String)">
+            <summary>
+            Параметризированный конструктор.
+            </summary>
+            <param name="sName">Логическое наименование секции.</param>
+            <param name="sTitle">Заголовок (отображаемый) секции.</param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuSection.ToXml(System.Xml.XmlDocument,System.Xml.XmlNamespaceManager)">
+            <summary>
+            Метод производит «сериализацию» секции в формате, описываемом схемой
+            x-net-interface-schema.xsd.
+            </summary>
+            <param name="doc">Экземпляр XmlDocument, в контексте которого
+                              будет создаваться XML\-представление секции.</param>
+            <param name="nsManager">Экземпляр XmlNamespaceManager, используемый
+                                    для получения URI\-пространства имен для
+                                    префикса &quot;i&quot;. </param>
+            <returns>
+            XML-узел <b>i:menu-section</b>. 
+            </returns>                                                            
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuSection.Clone">
+            <summary>
+            Метод возвращает копию элемента. 
+            </summary>                       
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuSection.Title">
+            <summary>
+            Заголовок (отображаемый) секции.
+            </summary>                      
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuSection.Name">
+            <summary>
+            Логическое наименование секции. Аналогично наименованию исполняемого
+            пункта. 
+            </summary>                                                          
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XMenuParamCollection">
+            <summary>
+            Коллекция параметров исполняемого пункта меню.
+            <seealso cref="!:Croc.XmlFramework.Commands.XMenuParam"/>
+            </summary>                                    
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuParamCollection.Add(System.String,System.String)">
+            <summary>
+            Метод осуществляет добавление в коллекцию параметра, заданного
+            наименованием и значением.
+            </summary>
+            <param name="sName">Наименование параметра.</param>
+            <param name="sValue">Значение параметра.</param>
+            <returns>
+            Сконструированный параметр, добавленный в коллекцию.
+            </returns>                                                    
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuParamCollection.Remove(System.String)">
+            <summary>
+            Метод осуществляет удаление параметра по наименованию.
+            </summary>
+            <param name="sName">Наименование параметра.</param>   
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuParamCollection.RemoveAll">
+            <summary>
+            Метод осуществляет удаление всех параметров.
+            </summary>                                  
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuParamCollection.Contains(System.String)">
+            <summary>
+            Метод возвращает признак того, содержится ли параметр с заданным
+            наименованием в коллекции.
+            </summary>
+            <param name="sName">Наименование параметра.</param>
+            <returns>
+            Признак того, содержится ли параметр с заданным наименованием в
+            коллекции.
+            </returns>                                                      
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuParamCollection.CopyTo(System.Array,System.Int32)">
+            <summary>
+            Метод копирует элементы коллекции в массив, начиная с заданного индекса
+            массива.
+            </summary>
+            <param name="array">Одномерный массив, куда будут скопированы элементы
+                                коллекции. Массив должен индексироваться с нуля.</param>
+            <param name="index">Индекс в массиве, начиная с которого будут
+                                добавлены элементы коллекции.</param>                   
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuParamCollection.GetEnumerator">
+            <summary>
+            Метод интерфейса IEnumerable. Возвращает итератор коллекции параметров.
+            </summary>
+            <returns>
+            IEnumerator.Current возвращает экземпляр <see cref="!:Croc.XmlFramework.Commands.XMenuParam" text="XMenuParam"/>.
+            
+            </returns>                                                                                                      
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuParamCollection.Item(System.String)">
+            <summary>
+            Свойство-индексатор, представляет параметр из коллекции по его
+            наименованию. 
+            </summary>                                                    
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuParamCollection.ParamValues">
+            <summary>
+            Коллекция значений параметров (элемент - это строка, экземпляр класса
+            String). 
+            </summary>                                                           
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuParamCollection.ParamNames">
+            <summary>
+            Коллекция наименований параметров (элемент - это строка, экземпляр
+            класса String). 
+            </summary>                                                        
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuParamCollection.IsSynchronized">
+            <summary>
+            Логический признак, показывающий, является ли доступ к элементам
+            коллекции синхронизированным (потоково-безопасным). 
+            </summary>                                                      
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuParamCollection.Count">
+            <summary>
+            Количество элементов в коллекции. 
+            </summary>                        
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuParamCollection.SyncRoot">
+            <summary>
+            Объект, используемый для синхронизированного доступа к элементам
+            коллекции. 
+            </summary>                                                      
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XMenuParam">
+            <summary>
+            Класс описывает параметр исполняемого пункта. 
+            </summary>                                    
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuParam.m_sName">
+            <summary>
+            наименование
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuParam.m_sValue">
+            <summary>
+            Значение
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuParam.#ctor(System.String,System.String)">
+            <summary>
+            Параметризированный конструктор.
+            </summary>
+            <param name="sName">Наименование параметра.</param>
+            <param name="sValue">Значение параметра.</param>   
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuParam.ToXml(System.Xml.XmlDocument,System.Xml.XmlNamespaceManager)">
+            <summary>
+            Метод производит «сериализацию» параметра исполняемого пункта меню в
+            формате, описываемом схемой x-net-interface-schema.xsd.
+            </summary>
+            <param name="doc">Экземпляр XmlDocument, в контексте которого
+                              будет создаваться XML\-представление параметра
+                              исполняемого пункта меню.</param>
+            <param name="nsManager">Экземпляр XmlNamespaceManager, используемый
+                                    для получения URI\-пространства имен для
+                                    префикса &quot;i&quot;. </param>
+            <returns>
+            XML-узел<b> i:param</b>. 
+            </returns>                                                          
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuParam.Name">
+            <summary>
+            Наименование параметра.
+            </summary>             
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuParam.Value">
+            <summary>
+            Значение параметра.
+            </summary>         
+        </member>
+        <member name="T:Croc.IncidentTracker.EventHandlers.Handler_OnApplicationStart">
+            <summary>
+            Обработчик старта приложения
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Trees.TreePageWithAccessCheckInfoProvider">
+            <summary>
+            Провайдер конструирования описания страницы иерархии (objects-tree, objects-tree-selector)
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.Guards.ListAccessCheckGuard">
+            <summary>
+            Гвард, ограничивающий доступ к спискам на основании декларативного задания списка требуемых привилегий пользователя
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Trees.TreeDefaultMenuProvider">
+            <summary>
+            Команда построения дефолтового меню иерахии
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.IXTreeLevelMenuDataProvider">
+            <summary>
+            Интерфейс провайдера данных меню для уровня. 
+            Наименование класса-реализации интерфейса может задаваться в атрибуте data-provider элементов level-menu, empty-tree-menu, default-level-menu.
+            "Стандартная" реализация отсутствует.
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.IXTreeLevelMenuDataProvider.GetMenu(Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT,Croc.XmlFramework.Commands.XGetTreeMenuRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Получение меню в runtime для уровня (treeLevelInfo задан) или пустой иерархии (treeLevelInfo равен null)
+            </summary>
+            <param name="treeLevelInfo">описание уровня, для которого запрашивается меню, или null</param>
+            <param name="request">параметры с клиента</param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Trees.TreeDefaultMenuProvider.GetMenu(Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT,Croc.XmlFramework.Commands.XGetTreeMenuRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Получение меню в runtime для уровня (treeLevelInfo задан) или пустой иерархии (treeLevelInfo равен null)
+            </summary>
+            <param name="treeLevelInfo">описание уровня, для которого запрашивается меню, или null</param>
+            <param name="request">параметры с клиента</param>
+            <returns></returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetObjectsRightsCommand">
+            <summary>
+            Команда проверки наличия прав на объекты.
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectsRightsCommand.Execute(Croc.XmlFramework.Commands.XGetObjectsRightsRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Метод запуска операции на выполнение, «входная» точка операции
+            </summary>
+            <param name="request">Запрос на выполнение операции</param>
+            <param name="context">Контекст выполнения операции</param>
+            <returns>Результат выполнения</returns>
+            <remarks>
+            -- ПЕРЕГРУЖЕННЫЙ, СТРОГО ТИПИЗИРОВАННЫЙ МЕТОД, ВЫЗЫВАЕТСЯ ЯДРОМ
+            -- Проверка параметров запроса реализована в методе Validate запроса, 
+            который автоматически вызывается Ядром при получении запроса
+            </remarks>
+        </member>
+        <member name="T:Croc.IncidentTracker.Messaging.MessageGenerator">
+            <summary>
+            Summary description for MessageGenerator.
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Messaging.MessageGenerator.Run">
+            <summary>
+            Отсылает сообщения
+            </summary>
+            <returns>Количество отосланных писем</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Messaging.MessageGenerator.generateDigestMessages">
+            <summary>
+            Рассылает дайджест-сообщения
+            </summary>
+            <returns>Количество отосланных писем</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Messaging.MessageGenerator.generateInstantMessages">
+            <summary>
+            Рассылает мнгновенные сообщения
+            </summary>
+            <returns>Количество отосланных писем</returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Jobs.JobsSheduler">
+            <summary>
+            Планировщик заданий
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Jobs.JobsSheduler.#ctor">
+            <summary>
+            Конструктор класса
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Jobs.JobsSheduler.Run">
+            <summary>
+            Запускает планировщик
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Jobs.JobsSchedulerCommand">
+            <summary>
+            Команда запуска планировщика для выполнения заданий
+            </summary>
+            <remarks>ВНИМАНИЕ! Команда должна выполняться только в асинхронном режиме</remarks>
+        </member>
+        <member name="M:Croc.IncidentTracker.Jobs.JobsSchedulerCommand.Execute(Croc.XmlFramework.Public.XRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Метод запуска операции на выполнение, «входная» точка операции
+            </summary>
+            <param name="request">Запрос на выполнение операции</param>
+            <param name="context">Контекст выполнения операции</param>
+            <returns>Результат выполнения</returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetObjectsRightsExCommand">
+            <summary>
+            Команда проверки наличия прав на объекты.
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetFilterTendersInfoCommand">
+            <summary>
+            Команда получения данных для фильтра списка тендеров
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetFilterTendersInfoCommand.Execute(Croc.IncidentTracker.Commands.GetFilterTendersInfoRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Команда получения данных для фильтра списка тендеров
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Messaging.ApplicationInstallation">
+            <summary>
+            Summary description for ApplicationInstallation.
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Messaging.ApplicationInstallation.#ctor(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="sTitle"></param>
+            <param name="sUrl"></param>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.Guards.TreeAccessCheckGuard">
+            <summary>
+            Гвард, ограничивающий доступ к деревьям на основании декларативного задания списка требуемых привилегий пользователя
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetCurrentEmployeeXmlCommand">
+            <summary>
+            Команда получения текущего пользователя
+            </summary>
+        </member>
+        <!-- Некорректный XML-комментарий для члена "M:Croc.IncidentTracker.Commands.GetCurrentEmployeeXmlCommand.Execute(Croc.XmlFramework.Public.XRequest,Croc.XmlFramework.Core.IXExecutionContext)" проигнорирован -->
+        <member name="T:Croc.IncidentTracker.DataSources.IncidentSearchingListParamsProcessor">
+            <summary>
+            Процессов параметров для источника данных списка IncidentSearchingList
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.XmlObjectRightsProcessor">
+            <summary>
+            Класс рекурсивно устанавливает на xml-объекте атрибуты разделеybz доступа
+            Права на чтение, изменение и удаление. Свойства, недоступные для чтения, удаляются из xml-объекта.
+            Свойства, недоступные для изменения, помечаются атрибутом read-only. 
+            Объекты недоступные для удаления помечаются атрибутом deny-delete. 
+            Объекты, недостпуные для изменения, помечаются атрибутом deny-change.
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider">
+            <summary>
+            Реализация "загрузчика" меню для иерархии "Клиенты и Проекты" (ДКП)
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider.GetMenu(Croc.XmlFramework.Commands.XGetTreeMenuRequest,Croc.XmlFramework.Core.IXExecutionContext,Croc.IncidentTracker.Hierarchy.XTreePageInfoStd)">
+            <summary>
+            Основной метод получения данных меню, "входная" точка. Вызывается 
+            из инфраструкторы XFW / IT HierarchySubsystem
+            </summary>
+            <param name="request">Запрос операции получения меню GetTreeMenu</param>
+            <param name="context">Контекст выполнения операции</param>
+            <param name="treePage">Объектное описание данных страницы иерархии</param>
+            <returns>Объектное описание меню</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider.buildMenuForOrganization(System.Guid,Croc.XmlFramework.Commands.XTreePath,Croc.IncidentTracker.Storage.DomainObjectDataSet,Croc.XmlFramework.Data.XStorageConnection)">
+            <summary>
+            Построение меню для узлов типа "Организация" (в т.ч. временных организаций 
+            и организации, владеющей системой).
+            </summary>
+            <param name="uidOrg">Идентификатор организации, для которой строится меню</param>
+            <param name="path">Путь в иерархии до организации, для которой строится меню</param>
+            <param name="dataSet"></param>
+            <param name="connection"></param>
+            <returns>Объектное описание меню</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider.addMenuItem_CreateFolderByActivityTypeAndOrganization(Croc.XmlFramework.Data.XStorageConnection,Croc.IncidentTracker.Hierarchy.XTreeMenuInfo,Croc.IncidentTracker.Storage.DomainObjectDataSet,System.Guid,System.Guid)">
+            <summary>
+            Создает пункт меню "Создать ХХХ", где ХХХ - наименование типа папки, поддерживаемого заданным типом проектных затрат
+            </summary>
+            <param name="con"></param>
+            <param name="menu"></param>
+            <param name="dataSet"></param>
+            <param name="activityTypeID"></param>
+            <param name="organizationID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider.getMenuForContractsVirtualNode(Croc.XmlFramework.Commands.XTreePath,Croc.IncidentTracker.Storage.DomainObjectDataSet)">
+            <summary>
+            Для виртуальных узлов "Договор", "Лимиты", "Приходы" и "Расходы"
+            </summary>
+            <param name="path"></param>
+            <param name="dataSet"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider.getMenuForTeamAndRoleNode(Croc.XmlFramework.Commands.XTreePath,Croc.IncidentTracker.Storage.DomainObjectDataSet)">
+            <summary>
+            Возвращает меню для виртуальных узлов "Договор", "Проектная команда", "Все участники" и объектов "Роль пользователя в папке" (ProjectParticipant)
+            </summary>
+            <param name="path"></param>
+            <param name="dataSet"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider.addTaskList(Croc.XmlFramework.Data.XStorageConnection,System.Guid,Croc.IncidentTracker.Hierarchy.XMenu,Croc.XmlFramework.Core.IXExecutionContext,Croc.IncidentTracker.Storage.DomainObjectDataSet)">
+            <summary>
+            Добавляет секцию Задания в меню со списком исполнителей инцидента (роль, ФИО, количество затраченного и оставшегося времени),
+            а также, если срези заданий есть задание текущего пользователя, то в меню добавляется пункт "Списать время"
+            </summary>
+            <param name="con">соединение с БД</param>
+            <param name="ObjectID">Идентификатор инцидента</param>
+            <param name="menu">Текущее меню узла инцидента</param>
+            <param name="context">контекст команды</param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider.addMenuItem_CreateIncidentWithSelectFolder(Croc.IncidentTracker.Hierarchy.XMenu)">
+            <summary>
+            Добавляет пункт "Создать инцидент с выбором папки"
+            Права на доступность операции не проверяются
+            </summary>
+            <param name="menu">меню</param>
+            <returns>созданный пункт</returns>
+        </member>
+        <!-- Некорректный XML-комментарий для члена "M:Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider.createEmployeeHTMLLinkWithContextMenu(System.Guid,System.String,System.String,System.String,System.Guid,Croc.XmlFramework.Core.Configuration.XConfig)" проигнорирован -->
+        <member name="M:Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider.addLinkedIncidents(Croc.XmlFramework.Data.XStorageConnection,System.Guid,Croc.IncidentTracker.Hierarchy.XTreeMenuInfo)">
+            <summary>
+            Добавляет секцию "Связанные инциденты" в меню инцидента
+            </summary>
+            <param name="con">Соединение с БД</param>
+            <param name="incidentID">Идентификатор инцидента</param>
+            <param name="menu">Меню</param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider.GetFolderFullName(Croc.XmlFramework.Data.XStorageConnection,System.Guid)">
+            <summary>
+            Функция возвращает полный путь до папки
+            </summary>
+            <param name="con">текущее соединение </param>
+            <param name="folderID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider.OrgInfo.GetOrgInfo(System.Guid,Croc.XmlFramework.Data.XStorageConnection)">
+            <summary>
+            Получение данных заданной организации
+            </summary>
+            <param name="uidOrg">Идентификатор организации, данные которой загружаются</param>
+            <param name="connection">Соединение с БД</param>
+            <returns>Данные организации</returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider.OrgInfo.OrgDirectorInfo">
+            <summary>
+            Данные Диретора Клиента (организации)
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.Security.MenuObjectRightsFormatter">
+            <summary>
+            Содержит статические методы записи прав  на новые/существующие объектов
+            в параметры объекта - исполняемого пункта меню
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.Security.MenuObjectRightsFormatter.Write(Croc.IncidentTracker.Hierarchy.XMenuActionItem,Croc.XmlFramework.Data.Security.XNewObjectRights)">
+            <summary>
+            Метод записи прав на новый объект в параметр "ObjectRights" объекта-пункта меню
+            </summary>
+            <param name="menuitem">объект - пункт меню</param>
+            <param name="create_rights">объект прав на новый объект</param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.Security.MenuObjectRightsFormatter.Write(Croc.IncidentTracker.Hierarchy.XMenuActionItem,Croc.XmlFramework.Data.Security.XObjectRights)">
+            <summary>
+            Метод записи прав на существующий объект в параметр "ObjectRights" объекта-пункта меню
+            </summary>
+            <param name="menuitem">объект - пункт меню</param>
+            <param name="rights">права на существующий объект</param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.Security.MenuObjectRightsFormatter.writeReadOnlyProps(System.Text.StringBuilder,System.Collections.ICollection)">
+            <summary>
+            Метод записи свойств доступных только для чтения
+            </summary>
+            <param name="bld">строка для записи</param>
+            <param name="props">коллекция наименований свойств,доступных только для чтения</param>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.FakeSendNotificationMailAsyncCommand">
+            <summary>
+            Команда рассылки сообщений (на самом деле ничего не делает)
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.FakeSendNotificationMailAsyncCommand.Execute(Croc.XmlFramework.Public.XRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Выполнение команды
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.SendNotificationMailAsyncCommand">
+            <summary>
+            Команда рассылки сообщений
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.SendNotificationMailAsyncCommand.Execute(Croc.XmlFramework.Public.XRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Выполнение команды
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetMailMsgInfoCommand">
+            <summary>
+            Команда формирует информацию, достаточную для создания email письма со ссылкой на проект/инцидент
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetMailMsgInfoCommand.readEMails(Croc.XmlFramework.Data.XDbCommand)">
+            <summary>
+            Возвращает строку из емейлов, считанных из первой колонки результата выполнения переданной команды
+            ВНИМАНИЕ: В список емейлов не включается емейл текущего пользователя
+            </summary>
+            <param name="cmd"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.EventHandlers.Handler_OnSessionStart">
+            <summary>
+            Обработчик старта сессии
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization">
+            <summary>
+            Процессор параметров для упаковывания значений массивного параметра в DB-параметр типа image
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Trees.IncidentWorkflowManagerMenuDataProvider">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.SaveTimeLossObjectCommand">
+            <summary>
+            Команда сохранения объектов "Списание времение" (TimeLoss)
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.SaveTimeLossObjectCommand.createTimeLossObject(Croc.IncidentTracker.Storage.DomainObjectDataSet,Croc.IncidentTracker.Storage.DomainObjectData,Croc.IncidentTracker.Core.ITUser)">
+            <summary>
+            Создает объект "Списание времение" на основании шаблона
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.SaveTimeLossObjectCommand.GetDayRates(Croc.XmlFramework.Data.XStorageConnection,System.DateTime,System.DateTime,System.Guid)">
+            <summary>
+            Возвращает коллекцию ключей и значений вида : "дата","норма сотрудника на дату"
+            </summary>
+            <param name="con"></param>
+            <param name="dtStart">Дата начала периода</param>
+            <param name="dtEnd">Дата окончания периода</param>
+            <param name="dtEnd">Идентификатор сотрудника</param>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.SaveObjectInternalRequest">
+            <summary>
+            "Внутренний" запрос команды сохранения.
+            Приводит xml-датаграмму, полученную от клиента, в экземпляр XDatagram
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.SaveObjectInternalRequest.DEF_COMMAND_NAME">
+            <summary>
+            Наименование операции по умолчанию, используемое в файле конфигурации
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.SaveObjectInternalRequest.m_dataSet">
+            <summary>
+            Множество описаний объектов для сохранения
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.SaveObjectInternalRequest.m_TransactionID">
+            <summary>
+            Идентификатор транзакции
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.SaveObjectInternalRequest.m_originalRequest">
+            <summary>
+            Исходный запрос на выполнение операции SaveObject
+            <seealso cref="T:Croc.XmlFramework.Commands.XSaveObjectRequest"/>
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.SaveObjectInternalRequest.DataSet">
+            <summary>
+            Возвращает множество описаний данных ds-объектов, предназначенных
+            для сохранения, сформированное на основании XML-датаграммы, заданой
+            исходным запросом 
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.SaveObjectInternalRequest.OriginalRequest">
+            <summary>
+            Возвращает исходный запрос на выполнение операции SaveObject
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.SaveObjectInternalRequest.TransactionID">
+            <summary>
+            Идентификатор логической транзакции
+            Важен при использовании механизма кусочного сохранения
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XUserCodeWeb">
+            <summary>
+            Описание прикладного клиентского обработчика
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XUserCodeWeb.m_sCode">
+            <summary>
+            клиентский код
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XUserCodeWeb.m_bReplace">
+            <summary>
+            значение mode="replace"
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XMenuWeb">
+            <summary>
+            Описание меню для Web-клиента
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuWeb.m_visibilityHandlers">
+            <summary>
+            Коллекция visibility-handler'ов
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuWeb.m_macroResolvers">
+            <summary>
+            Коллекция macro-resolver'ов
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuWeb.m_executionHandlers">
+            <summary>
+            Коллекция execution-handler'ов
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XMenuWeb.m_sStylesheet">
+            <summary>
+            Имя страницы с XSLT шаблоном, используемым для рендеринга меню в HTML
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XMenuWeb.writeUserCodeRef(System.String,Croc.IncidentTracker.Hierarchy.XUserCodeWeb,System.Xml.XmlElement)">
+            <summary>
+            Создает xml-элемет с определением прикладного обработчика
+            </summary>
+            <param name="sElementName">наименование элемента (fully qualified)</param>
+            <param name="code">описание кода</param>
+            <param name="xmlParent">родительский элемент для создаваемого</param>
+        </member>
+        <!-- Некорректный XML-комментарий для члена "P:Croc.IncidentTracker.Hierarchy.XMenuWeb.VisibilityHandlers" проигнорирован -->
+        <!-- Некорректный XML-комментарий для члена "P:Croc.IncidentTracker.Hierarchy.XMenuWeb.MacroResolvers" проигнорирован -->
+        <!-- Некорректный XML-комментарий для члена "P:Croc.IncidentTracker.Hierarchy.XMenuWeb.ExecutionHandlers" проигнорирован -->
+        <member name="P:Croc.IncidentTracker.Hierarchy.XMenuWeb.Stylesheet">
+            <summary>
+            Имя страницы с XLST шаблоном, используемым для рендеринга меню в HTML
+            TODO: убрать new когда одноименное свойство исчезнет из XMenu
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XTreeMenuInfo">
+            <summary>
+            Описание меню иерархии
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreeMenuInfo.m_cacheMode">
+            <summary>
+            Метод кеширования
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeMenuInfo.CacheMode">
+            <summary>
+            Возвращает режим кешируемости меню
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XTreeMenuHandler">
+            <summary>
+            Обработчик меню иерархии. 
+            Содержит описание меню из метаданных (если оно было) и ссылку на провайдена получения данных меню (если он задан)
+            Если не задано ни метаописание, ни провайдер, меню считается пустым - 
+            для получения обработчика такого меню следует использовать статическое свойство Empty.
+            В runtime вызывается метод GetMenu. Объект создается и заполняется провайдером конструирования меню (IXTreeMenuProvider)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreeMenuHandler.m_menuMD">
+            <summary>
+            Метаописание меню (или null)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreeMenuHandler.m_dataProvider">
+            <summary>
+            Провайдер-загрузчик меню (или null)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreeMenuHandler.m_bImmutable">
+            <summary>
+            Признак неизменности экземпляра (для гарантирования неизменяемости "пустого" меню
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeMenuHandler.GetMenu(Croc.IncidentTracker.Hierarchy.XTreeLevelInfoIT,Croc.XmlFramework.Commands.XGetTreeMenuRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Возвращает меню в runtime'e. Если определен провайдер запрашивает меню у него, иначе возвращает метаописание
+            </summary>
+            <param name="treeLevelInfo">Уровень для которого требуется меню или null, если меню строиться для пустой иерархии</param>
+            <param name="request">параметры с клиента</param>
+            <param name="context"></param>
+            <returns>Данные меню или null</returns>
+        </member>
+        <member name="F:Croc.IncidentTracker.Hierarchy.XTreeMenuHandler.m_emptyMenuHandler">
+            <summary>
+            единственный экземпляр описателя пустого меню (отложенная инциализация)
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeMenuHandler.MenuMetadata">
+            <summary>
+            Метаописание меню (или null)
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeMenuHandler.DataProvider">
+            <summary>
+            Провайдер-загрузчик меню (или null)
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Hierarchy.XTreeMenuHandler.Empty">
+            <summary>
+            Возвращает единственный экземпляр описателя пустого меню
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.IXTreeMenuHandlerFactory">
+            <summary>
+            Интерфейс построителя меню из метаданных
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.IXTreeMenuHandlerFactory.CreateMenuHandler(System.Xml.XmlElement)">
+            <summary>
+            Конструирует обработчик меню на основании xml-узла метаописнаия
+            </summary>
+            <param name="xmlLevelMenu">xml-узел level-menu или empty-tree-menu или default-level-menu</param>
+            <returns>Обработчик меню. Никогда не null</returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Hierarchy.XTreeMenuHandlerFactoryStd">
+            <summary>
+            Стандартный построитель меню из метаописания
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Hierarchy.XTreeMenuHandlerFactoryStd.createMenuInfo(System.Xml.XmlElement)">
+            <summary>
+            Возвращает описатель меню по метаданным
+            </summary>
+            <param name="xmlMenu">xml-узел i:level-menu,i:empty-tree-menu,i:default-level-menu</param>
+            <returns>Объект меню или null, если метаописание меню не содержит структуры (i:menu)</returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Trees.DKPTreeContractLevelExecutor">
+            <summary>
+            Executor уровня tree-level с приходными договорами иерархии "ДКП"
+            </summary>
+        </member>
+        <member name="T:Croc.XmlFramework.Extension.Commands.XXGetTreeNodeDragCommand">
+            <summary>
+            Операция получения XML-описания операции переноса, соответствующего выбранному узлу
+            иерархии объектов, отображаемой при помощи интерфейса
+            полнофункционального Web-клиента.
+            </summary>
+            <remarks>
+            Стандартная реализация полнофункционального Web-клиента в XFW .NET
+            включает интерфейс иерархического представления данных объектов. Само
+            иерархическое представление обеспечивается ActiveX-компонентой CROC.XTreeView
+            библиотеки CROC.XControls; но кроме
+            этого интерфейс включает механизмы выполнения операций переноса узлов в
+            соответствии с выбранным узлом в иерархии.
+            </remarks>                                                                                  
+        </member>
+        <member name="M:Croc.XmlFramework.Extension.Commands.XXGetTreeNodeDragCommand.Execute(Croc.XmlFramework.Extension.Commands.XXGetTreeNodeDragRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Метод запуска операции на выполнение, «входная» точка операции. 
+            Перегруженный, строго типизированный метод. Вызывается Ядром.
+            </summary>
+            <param name="oRequest">Запрос на выполнение операции.</param>
+            <param name="oContext">Контекст выполнения операции.</param>
+            <returns>Результат выполнения.</returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.Trees.DKPTreeObjectLocator">
+            <summary>
+            Объект, вычисляющий путь в дереве "Клиенты и проекты" до различных объектов
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.Trees.DKPTreeObjectLocator.TYPE_Organization">
+            <summary>
+            Наименования типов узлов в дереве.
+            Примечание: узлы для объектов одних и тех же типов, но находящиеся в разных местах дерева, могут иметь назные типы,
+            	т.е. тип объекта не всегда соответствует типу узла дерева/
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.Trees.DKPTreeObjectLocator.GetIncidentFullPath(Croc.XmlFramework.Data.XStorageConnection,System.Guid)">
+            <summary>
+            Возвращает полный путь до инцидента, заданного идентификатором
+            </summary>
+            <param name="con"></param>
+            <param name="IncidentOID">идентификатор инцидента или Guid.Empty</param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.Trees.DKPTreeObjectLocator.GetIncidentFullPath(Croc.XmlFramework.Data.XStorageConnection,System.Int32)">
+            <summary>
+            Возвращает полный путь до инцидента, заданного номером
+            </summary>
+            <param name="con"></param>
+            <param name="IncidentNumber">номер инцидента</param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.Trees.DKPTreeObjectLocator.GetIncidentFullPath(Croc.XmlFramework.Data.XStorageConnection,System.Int32,System.Guid)">
+            <summary>
+            Возвращает полный путь до инцидента, заданного идентификатором, либо номером
+            </summary>
+            <param name="con"></param>
+            <param name="IncidentNumber">номер инцидента</param>
+            <param name="IncidentOID">идентификатор инцидента или Guid.Empty</param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.Trees.DKPTreeObjectLocator.GetFolderFullPath(Croc.XmlFramework.Data.XStorageConnection,System.Guid)">
+            <summary>
+            Возвращает полный путь до папки: Folder|oid|..|Folder|{oid}|ActivitType|{oid}|Organization|{oid}
+            </summary>
+            <param name="con"></param>
+            <param name="FolderOID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.Trees.DKPTreeObjectLocator.GetPathToFolder(Croc.XmlFramework.Data.XStorageConnection,System.Guid,System.Guid)">
+            <summary>
+            Возвращает путь из типов проектных затрат и организаций
+            </summary>
+            <param name="con"></param>
+            <param name="organizationID"></param>
+            <param name="activityTypeID"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.CheckDeadlinedIncidentsCommand">
+            <summary>
+            Удаляет неиспользуемые объекты из БД
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.XListWithAccessCheckController">
+            <summary>
+            Класс - контейнер описаний интерфейсных элементов метаданных - списков 
+            Реализует шаблон Singleton.
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.XListWithAccessCheckController.m_ListInfoCache">
+            <summary>
+            Кеш описаний списка (XListInfo). Ключ: наименование_типа:наименование_списка
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.XListWithAccessCheckController.m_dlgCreateListInfo">
+            <summary>
+            Ссылка на метод, вызываемый при первом обращении за описанием списка
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.XListWithAccessCheckController.m_Instance">
+            <summary>
+            Глобальный единственный экземпляр класса XListWithAccessCheckController
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.XListWithAccessCheckController.#ctor">
+            <summary>
+            Конструктор по умолчанию.
+            Предназначен для предотвращения инстанцирования класса
+            XListWithAccessCheckController.
+            </summary>                                            
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.XListWithAccessCheckController.GetListInfo(System.String,System.String,Croc.XmlFramework.Data.XStorageConnection)">
+            <summary>
+            Метод возвращает описание списка по метанаименованию. Использует кэш <b>m_ListInfoCache</b>.
+            </summary>
+            <param name="sName">Наименование списка.</param>
+            <param name="sTypeName">Наименование типа.</param>
+            <param name="connection">Экземпляр реализации <see cref="T:Croc.XmlFramework.Data.XStorageConnection" text="XStorageConnection"/>.</param>
+            <returns>
+            Описание списка. 
+            </returns>                                                                                                                               
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.XListWithAccessCheckController.createListInfo(System.String,System.Object)">
+            <summary>
+            Создает описание списка при первом обращении. 
+            Параметр делегата CreateCacheValue.
+            </summary>
+            <param name="sKey">Ключ в формате {Наименование типа}:{Наименование списка}</param>
+            <param name="value">XStorageConnection</param>
+            <returns>экземпляр ListInfoWithAccessCheck</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.XListWithAccessCheckController.Reset">
+            <summary>
+            Метод ощищает кэш.
+            </summary>        
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.XListWithAccessCheckController.Instance">
+            <summary>
+            Возвращает единственный глобальный экземпляр XInterfaceObjectsHolder. 
+            </summary>                                                            
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.InterfaceSecurityAceessContainer">
+            <summary>
+            Контейнер требуемых привилегий для доступа к интерфейсному элементу (списку/дереву) 
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.InterfaceSecurityAceessContainer.m_requiredPrivileges">
+            <summary>
+            Набор привилегий
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.InterfaceSecurityAceessContainer.SetRequiredPrivileges(Croc.XmlFramework.Data.Security.XPrivilegeSet)">
+            <summary>
+            Метод,записывающий в контейнер набор привилегий.
+            </summary>
+            <param name="privilege_set">набор привилегий</param>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.InterfaceSecurityAceessContainer.RequiredPrivileges">
+            <summary>
+            Метод,возвращающий из контейнера хранящийся в нем набор привилегий.
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.ListInfoWithAccessCheck">
+            <summary>
+            Расширение описания списка (XListInfo) - добавлена информация о привилегиях, 
+            которыми должен обладать пользователь для доступа к списку
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.ListInfoWithAccessCheck.m_security">
+            <summary>
+            Контейнер привилегий для доступа к списку
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.ListInfoWithAccessCheck.#ctor(System.Xml.XmlElement,System.Xml.XmlNamespaceManager,Croc.XmlFramework.Data.XModel)">
+            <summary>
+            Конструктор класса
+            </summary>
+            <param name="xmlList">xml-описание списка</param>
+            <param name="nsManager">XmlNamespaceManager</param>
+            <param name="model">описание метаданных</param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.ListInfoWithAccessCheck.createListInfo(System.String,System.Object)">
+            <summary>
+            Создает описание списка при первом обращении. 
+            Параметр делегата CreateCacheValue.
+            </summary>
+            <param name="sKey">Ключ в формате {Наименование типа}:{Наименование списка}</param>
+            <param name="value">XStorageConnection</param>
+            <returns>экземпляр ListInfoWithAccessCheck</returns>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.ListInfoWithAccessCheck.AccessSecurity">
+            <summary>
+            Контейнер привилегий для доступа к списку
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.Guards.CheckAppUserGuard">
+            <summary>
+            Гвард, 
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetTreeMenuEntryCommand">
+            <summary>
+            Команда получения меню иерархии и меню узлов иерархии
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetTreeDataEntryCommand">
+            <summary>
+            Команда получения данных иерархии
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetObjectsCommand">
+            <summary>
+            Операция получения XML-документа с данными набора заданных ds-объектов
+            Помимо логики, реализованной во фреймворковской команде данная реализация проверяет права на объекты и их свойства
+            и расставляется на объектах и свойства атрибуты ограничения доступа
+            <seealso cref="T:Croc.XmlFramework.Commands.XGetObjectsRequest"/>
+            <seealso cref="T:Croc.XmlFramework.Commands.XGetObjectsResponse"/>
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectsCommand.Execute(Croc.XmlFramework.Commands.XGetObjectsRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Операция получения XML-документа с данными набора заданных ds-объектов
+            ТИПИЗИРОВАННАЯ ВЕРСИЯ МЕТОДА
+            АВТОМАТИЧЕСКИ ВЫЗЫВАЕТСЯ ЯДРОМ
+            </summary>
+            <param name="request">Запрос на вполнение операции</param>
+            <param name="context">Контекст выоленения операции</param>
+            <returns>Результат выполенения операции</returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetEmployeesExpensesCommand">
+            <summary>
+            Реализация операции GetEmployeesExpenses - получение данных о суммарных 
+            списаниях перечня сотрудников в Системе за заданный период времени.
+            <see cref="T:Croc.IncidentTracker.Commands.GetEmployeesExpensesRequest"/>
+            <see cref="T:Croc.IncidentTracker.Commands.GetEmployeesExpensesResponse"/>
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetEmployeesExpensesCommand.DEF_EmployeesIDsList_MaxLength">
+            <summary>
+            Максимальная длина параметра "список идентифкаторов сотрудников" 
+            в хранимой процедуре в SQL
+            </summary>
+        </member>
+        <!-- Некорректный XML-комментарий для члена "M:Croc.IncidentTracker.Commands.GetEmployeesExpensesCommand.Execute(Croc.IncidentTracker.Commands.GetEmployeesExpensesRequest,Croc.XmlFramework.Core.IXExecutionContext)" проигнорирован -->
+        <member name="T:Croc.IncidentTracker.Trees.TreePageWithAccessCheckInfo">
+            <summary>
+            Описание страницы иерархии с ограничением доступа
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.MoveObjectsCommand">
+            <summary>
+            Команда переноса объетов в нового родителя
+            </summary>
+        </member>
+        <member name="T:Croc.Exchange.WebDAV.MailMessage">
+            <summary>
+            Письмо
+            </summary>
+        </member>
+        <member name="M:Croc.Exchange.WebDAV.MailMessage.normalizeString(System.String)">
+            <summary>
+            Вспомогательный метод,убирающий пробелы в начале и конце строки
+            </summary>
+            <param name="stringValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Croc.Exchange.WebDAV.MailMessage.#ctor">
+            <summary>
+            Конструктор класса
+            </summary>
+        </member>
+        <member name="M:Croc.Exchange.WebDAV.MailMessage.Send(System.Collections.ICollection,System.String,System.Int32,System.Net.ICredentials)">
+            <summary>
+            Метод отправки коллекции писем 
+            </summary>
+            <param name="messages">коллекция писем для отправки  - объектов типа MailMessage</param>
+            <param name="sMailBoxUrl">url почтого ящика с которого отправляется письмо, например http://dm.croc.ru/exchange/DAlexandrov</param>
+        </member>
+        <member name="M:Croc.Exchange.WebDAV.MailMessage.writeMailToXml(System.Xml.XmlWriter,Croc.Exchange.WebDAV.MailMessage)">
+            <summary>
+            Метод формирования xml-представления письма
+            </summary>
+            <param name="xw"></param>
+            <param name="m">исходное письмо - объект типа MailMessage</param>
+        </member>
+        <member name="M:Croc.Exchange.WebDAV.MailMessage.writeRecipientsToXml(System.Xml.XmlWriter,System.Collections.IList,System.String)">
+            <summary>
+            Метод записи получателей в xml-представление письма
+            </summary>
+            <param name="xw"></param>
+            <param name="recipientsList">список получателей</param>
+            <param name="elementName">xml-узел,куда нужно производить запись</param>
+        </member>
+        <member name="M:Croc.Exchange.WebDAV.MailMessage.ToXmlByteArray">
+            <summary>
+            Метод преобразования xml-документа в массив байтов
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Croc.Exchange.WebDAV.MailMessage.RcptFrom">
+            <summary>
+            email отправителя письма
+            </summary>
+        </member>
+        <member name="P:Croc.Exchange.WebDAV.MailMessage.RcptTo">
+            <summary>
+            Список email-адресов получателей письма
+            </summary>
+        </member>
+        <member name="P:Croc.Exchange.WebDAV.MailMessage.RcptCc">
+            <summary>
+            Список email-адресов получателей письма,стоящих в копии
+            </summary>
+        </member>
+        <member name="P:Croc.Exchange.WebDAV.MailMessage.ReplyTo">
+            <summary>
+            Список email-адресов для ответа на письмо
+            </summary>
+        </member>
+        <member name="P:Croc.Exchange.WebDAV.MailMessage.Subject">
+            <summary>
+            Тема письма
+            </summary>
+        </member>
+        <member name="P:Croc.Exchange.WebDAV.MailMessage.HtmlBody">
+            <summary>
+            Html-содержимое письма
+            </summary>
+        </member>
+        <member name="T:Croc.Exchange.WebDAV.MailMessage.WebDAVRequest">
+            <summary>
+            Класс, реализующий формирование и отправку http-запросов для отсылки письма
+            </summary>
+        </member>
+        <member name="M:Croc.Exchange.WebDAV.MailMessage.WebDAVRequest.Send">
+            <summary>
+            Метод оправки http-запроса
+            </summary>
+        </member>
+        <member name="M:Croc.Exchange.WebDAV.MailMessage.WebDAVRequest.Create(System.String,System.String,System.Byte[],System.Net.ICredentials)">
+            <summary>
+            Методы формирования http-запроса
+            </summary>
+        </member>
+        <member name="M:Croc.Exchange.WebDAV.MailMessage.WebDAVRequest.AddHeader(System.String,System.String)">
+            <summary>
+            Метод добавления заголовка запроса
+            </summary>
+        </member>
+        <member name="M:Croc.Exchange.WebDAV.MailMessage.WebDAVRequest.WriteContent(System.Byte[])">
+            <summary>
+            Метод записи содержимого запроса
+            </summary>
+        </member>
+        <member name="M:Croc.Exchange.WebDAV.MailMessage.WebDAVRequest.SetTimeout(System.Int32)">
+            <summary>
+            Метод установки таймаута запроса в миллисекундах
+            </summary>
+            <param name="nTimeout"></param>
+        </member>
+        <member name="T:Croc.IncidentTracker.Trees.DKPTreeFolderLevelExecutor">
+            <summary>
+            Executor уровня tree-level с папками иерархии "Дерево ДКП"
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetPropertyCommand">
+            <summary>
+            Команда загрузки значения свойства
+            Помимо логики, реализованной во фреймворковской команде данная реализация проверяет права на объекты и их свойства
+            и расставляется на объектах и свойства атрибуты ограничения доступа
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetPropertyCommand.Execute(Croc.XmlFramework.Public.XRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Выполнение команды
+            </summary>
+            <param name="request">Запрос команды, должен иметь тип XGetPropertyRequest</param>
+            <param name="context">Контекст выполнения команды</param>
+            <returns>XGetPropertyResponse</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetPropertyCommand.Execute(Croc.XmlFramework.Commands.XGetPropertyRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Выполнение команды - типизированный вариант
+            </summary>
+            <param name="request">Запрос команды, должен иметь тип XGetPropertyRequest</param>
+            <param name="context">Контекст выполнения команды</param>
+            <returns>XGetPropertyResponse</returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetObjectByExKeyCommand">
+            <summary>
+            Операция получения данных ds-объекта, заданного значениями своих реквизитов
+            <seealso cref="T:Croc.IncidentTracker.Commands.GetObjectByExKeyRequest"/>
+            </summary>
+            <remarks>
+            Использует стандартную операцию GetObject (должна быть определена в 
+            конфигурации приложения), является функциональным аналогом этой стандартной 
+            операции. В качестве результата возвращает стандартный же результат:
+            <seealso cref="T:Croc.XmlFramework.Commands.XGetObjectResponse"/>
+            ВНИМАНИЕ - при вызове будет так же вызываться guard-объект, назначенный
+            для операции GetObject!
+            </remarks>
+        </member>
+        <!-- Некорректный XML-комментарий для члена "M:Croc.IncidentTracker.Commands.GetObjectByExKeyCommand.Execute(Croc.IncidentTracker.Commands.GetObjectByExKeyRequest,Croc.XmlFramework.Core.IXExecutionContext)" проигнорирован -->
+        <member name="T:Croc.IncidentTracker.Commands.GetDataCommonCommand">
+            <summary>
+            Общая команда для подстановки параметра - идентификатора текущего сотрудника
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetCurrentUserProfileCommand">
+            <summary>
+            Операция получения XML-данных обхекта "Настройки пользователя", 
+            соответствующих ТЕКУЩЕМУ пользователю. Если объекта не существует, 
+            операция возвращет шаблон, в котором сразу проставлена ссылка на 
+            пользователя (SystemUser). Так же в результате представлены данные 
+            Сотрудника (Employee, по скалярному линку - от SystemUser к Employee)
+            
+            Тип результата - такой же, как и для операции GetObject,
+            <seealso cref="T:Croc.XmlFramework.Commands.XGetObjectResponse"/>
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetCurrentUserProfileCommand.DEF_DATASOURCE_NAME">
+            <summary>
+            Константное наименование источника данных
+            </summary>
+        </member>
+        <!-- Некорректный XML-комментарий для члена "M:Croc.IncidentTracker.Commands.GetCurrentUserProfileCommand.Execute(Croc.XmlFramework.Public.XRequest,Croc.XmlFramework.Core.IXExecutionContext)" проигнорирован -->
+        <member name="T:Croc.IncidentTracker.DataSources.TimeLossSearchingListParamsProcessor">
+            <summary>
+            Процессов параметров для источника данных списка TimeLossSearchingList.
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.DataSources.SQLListCreator">
+            <summary>
+            Базовый класс генераторов значений массивных параметров источников данных в виде image-значения
+            Для раскодирования списка значений в SQL используются соответствующие функции:
+            GetTableNvarchar, GetTableMoney, GetTableInt, GetTableDateTime, GetTableBit, GetTableBigInt
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.DataSources.SQLListCreator.GetList">
+            <summary>
+            Creates and returns a byte array list to be passed to a stored procedure as an image. 
+            The internal state of the SQLListCreator maintained. 
+            If you have no intention of adding more items to the list, after this method call, use GetListAndReset instead.
+            </summary>
+            <returns>Byte array to be passed to a stored procedure as an image sql parameter.</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.DataSources.SQLListCreator.GetListAndReset">
+            <summary>
+            Creates and returns a byte array list to be passed to a stored procedure as an image. 
+            The internal state of the SQLListCreator is reset, this allows for the internal byte array to be removed from memory next time GC runs.
+            </summary>
+            <returns>Byte array to be passed to a stored procedure as an image sql parameter.</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.DataSources.SQLBitListCreator.GetList">
+            <summary>
+            Creates and returns a byte array list to be passed to a stored procedure as an image. The internal state of the SQLListCreator maintained. If you have no intention of adding more items to the list, after this method call, use GetListAndReset instead.
+            </summary>
+            <returns>Byte array to be passed to a stored procedure as an image sql parameter.</returns>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.UpdateActivityStateCommand">
+            <summary>
+            Команда изменения состояния активности
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.UpdateActivityStateCommand.Execute(Croc.XmlFramework.Public.XRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Метод запуска операции на выполнение, «входная» точка операции
+            ПЕРЕГРУЖЕННЫЙ, СТРОГО ТИПИЗИРОВАННЫЙ МЕТОД 
+            ВЫЗЫВАЕТСЯ ЯДРОМ АВТОМАТИЧЕСКИ
+            </summary>
+            <param name="request">Запрос на выполнение операции</param>
+            <param name="context">Контекст выполнения операции</param>
+            <returns>Результат выполнения</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.UpdateActivityStateCommand.Execute(Croc.IncidentTracker.Commands.UpdateActivityStateRequest,Croc.XmlFramework.Core.IXExecutionContext)">
+            <summary>
+            Типизированная реализация
+            </summary>
+            <param name="request">Запрос на выполнение операции</param>
+            <param name="context">Контекст выполнения операции</param>
+            <returns>Результат выполнения</returns>
+        </member>
+    </members>
+</doc>

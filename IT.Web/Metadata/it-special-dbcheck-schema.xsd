@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Koloto (Ru-Board) -->
+<xsd:schema xmlns="http://www.croc.ru/Schemas/IncidentTracker/DbCheck/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.croc.ru/Schemas/IncidentTracker/DbCheck/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="it-special-dbchecker-schema">
+	<xsd:element name="dbcheck">
+		<xsd:annotation>
+			<xsd:documentation>Конфигурация SQL-кода в БД</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:all>
+				<xsd:element name="dbobjects">
+					<xsd:annotation>
+						<xsd:documentation>Перечень объектов в БД</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="table" minOccurs="0" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation>Таблицы</xsd:documentation>
+								</xsd:annotation>
+								<xsd:complexType>
+									<xsd:complexContent>
+										<xsd:extension base="tableType">
+											<xsd:sequence>
+												<xsd:element name="index" type="indexType" minOccurs="0" maxOccurs="unbounded"/>
+												<xsd:element name="check-constraint" type="check-constraintType" minOccurs="0" maxOccurs="unbounded"/>
+											</xsd:sequence>
+										</xsd:extension>
+									</xsd:complexContent>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="view" type="viewType" minOccurs="0" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation>Представления</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="procedure" type="procedureType" minOccurs="0" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation>Хранимые процедуры</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="function" type="functionType" minOccurs="0" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation>Пользовательские функции</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element name="trigger" type="triggerType" minOccurs="0" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation>Триггеры</xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="dbcheckers">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="dbchecker" type="dbcheckerType" minOccurs="0" maxOccurs="unbounded"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:all>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="dbobjectType" abstract="true">
+		<xsd:annotation>
+			<xsd:documentation>Объект в БД</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="name" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>Название объекта в БД</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="description" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Описание объекта</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="owned-dbobjectType" abstract="true">
+		<xsd:annotation>
+			<xsd:documentation>Объект в БД с указанием владельца</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="dbobjectType">
+				<xsd:attribute name="owner" default="dbo">
+					<xsd:annotation>
+						<xsd:documentation>Владелец объекта</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="tableType">
+		<xsd:annotation>
+			<xsd:documentation>Таблица</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="owned-dbobjectType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="viewType">
+		<xsd:annotation>
+			<xsd:documentation>Представление</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="owned-dbobjectType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="procedureType">
+		<xsd:annotation>
+			<xsd:documentation>Хранимая процедура</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="owned-dbobjectType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="functionType">
+		<xsd:annotation>
+			<xsd:documentation>Функция</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="owned-dbobjectType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="triggerType">
+		<xsd:annotation>
+			<xsd:documentation>Триггер</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="owned-dbobjectType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="indexType">
+		<xsd:annotation>
+			<xsd:documentation>Индекс</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="dbobjectType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="constraintType">
+		<xsd:annotation>
+			<xsd:documentation>CONSTRAINT</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="dbobjectType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="check-constraintType">
+		<xsd:annotation>
+			<xsd:documentation>CHECK CONSTRAINT</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="constraintType"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="dbcheckerType">
+		<xsd:annotation>
+			<xsd:documentation>Проверка существования объекта в БД</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="assembly-name" type="xsd:string" use="required"/>
+		<xsd:attribute name="class-name" type="xsd:string" use="required"/>
+		<xsd:attribute name="dbobject-type" use="required">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="table"/>
+					<xsd:enumeration value="view"/>
+					<xsd:enumeration value="procedure"/>
+					<xsd:enumeration value="function"/>
+					<xsd:enumeration value="trigger"/>
+					<xsd:enumeration value="index"/>
+					<xsd:enumeration value="check-constraint"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema 
+	xmlns="http://www.croc.ru/Schemas/XmlFramework/TransferService/1.0" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:mstns="http://www.croc.ru/Schemas/XmlFramework/TransferService/1.0" 
+	targetNamespace="http://www.croc.ru/Schemas/XmlFramework/TransferService/1.0" 
+	elementFormDefault="qualified" 
+	id="x-net-transferservice-configuration-schema"
+	version="1.0"
+>
+	<xsd:attributeGroup name="CustomAssemblyClassRef">
+		<xsd:attribute name="assembly" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>Имя сборки, в которой реализован класс, расширяющий функциональность трансфера</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="class-name" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>Имя класса, расширяющего функциональность трансфера</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+	<xsd:element name="transfer-service" type="TransferServiceType"/>
+	<xsd:complexType name="TransferServiceType">
+		<xsd:sequence>
+			<xsd:element name="custom-enviroment-class" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Расширение фунциональности трансфера - замена класса XTransferServiceEnviroment</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:attributeGroup ref="CustomAssemblyClassRef"/>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="custom-export-class" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Расширение фунциональности трансфера - замена класса TransferServiceExport</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:attributeGroup ref="CustomAssemblyClassRef"/>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="custom-import-class" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Расширение фунциональности трансфера - замена класса TransferServiceImport</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:attributeGroup ref="CustomAssemblyClassRef"/>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="log-folder" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						Каталог, в который будут записаны файлы лога.
+						Абсолютный путь (на сервере или в сетевом каталоге) или 
+						относительный путь от каталога METADATA.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="export-folder" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Элемент позволяет ограничить каталог на сервере, в к-й будут записаны файлы обмена при выгрузке:
+						абсолютный путь (на сервере или в сетевом каталоге) или 
+						относительный путь от каталога METADATA.
+						Если параметр задан, операция позволит выгружать только в этот каталог или подкаталоги.
+						Если параметр не задан, и файл располагается на сервере, 
+						для файла при вызове должен указываться абсолютный путь.
+						Если параметр не задан, и файл располагается на сервере, можно указывать относительный путь к файлу.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="import-folder" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Элемент позволяет ограничить каталог на сервере, из которого будут взяты файлы обмена при загрузке:
+						абсолютный путь (на сервере или в сетевом каталоге) или 
+						относительный путь от каталога METADATA.
+						Если параметр задан, операция позволит выгружать только из этого каталога или подкаталогов.
+						Если параметр не задан, и файл располагается на сервере, 
+						для файла при вызове должен указываться абсолютный путь.
+						Если параметр не задан, и файл располагается на сервере, можно указывать относительный путь к файлу.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="scenario-file" type="ScenarioFileType" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>
+						Список файлов сценария
+						Для каждого изфайлов сценария задается идентификатор файла сценария и 
+						путь к файлу сценария (абсолютный или относительный от каталога METADATA).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="client-script" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>
+						Список клиентских скриптов, реализующих кастомизацию VBS клиента трансфера
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ScenarioFileType" mixed="true">
+		<xsd:attribute name="n" type="xsd:ID" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					идентификатор файла сценария
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	CROC XML Framework .NET
+	
+	XSD-схема определения конфигурационного файла определения прикладных 
+	элементов Ядра - guard-объектов, операций, операций-обработчиков.
+-->
+<xsd:schema 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified"
+	targetNamespace="http://www.croc.ru/Schemas/XmlFramework/Core/Config/ServerObjects/1.0" 
+	xmlns="http://www.croc.ru/Schemas/XmlFramework/Core/Config/ServerObjects/1.0" 
+	version="1.0"
+>
+	<!-- 
+		Перечень всех серверных объектов - корневой элемент
+	-->
+	<xsd:element name="server-objects">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="assemblies">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="assembly" type="xsd:string" maxOccurs="unbounded"/>
+							<!-- Имя сборки (указывать расширенее не нужно) -->
+						</xsd:sequence>
+					</xsd:complexType>
+					<xsd:unique name="uniqueAssemblyName">
+						<xsd:selector xpath="assembly"/>
+						<xsd:field xpath="."/>
+					</xsd:unique>
+					<!-- Накладываем дополнительное ограничение - на одно событие один обработчик можно подписать не более одного раза -->
+				</xsd:element>
+				<xsd:element name="guards">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="guard" type="guardType" maxOccurs="unbounded"/>
+							<!-- Описание Guard-а -->
+						</xsd:sequence>
+						<xsd:attribute name="default-connection" type="xsd:string" use="required"/>
+						<!-- Имя соединения, используемого по умолчанию-->
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="commands">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="command" type="commandType" maxOccurs="unbounded">
+								<xsd:unique name="uniqueHandlerEventPair">
+									<xsd:selector xpath="handle-event"/>
+									<xsd:field xpath="@event"/>
+									<xsd:field xpath="@handler-name"/>
+								</xsd:unique>
+								<xsd:unique name="uniqueHandlerSuppress">
+									<xsd:selector xpath="suppress-event"/>
+									<xsd:field xpath="@event"/>
+								</xsd:unique>
+								<!-- Накладываем дополнительное ограничение - на одно событие один обработчик можно подписать не более одного раза -->
+								<!-- Накладываем дополнительное ограничение - от одного события можно отписаться только 1 раз -->
+								<!-- Ссылка на имя обработчика события в описании операции-->
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute name="default-guard" type="xsd:string" use="required"/>
+						<xsd:attribute name="default-connection" type="xsd:string" use="required"/>
+						<!-- Имя Guard-а, используемого по умолчанию-->
+						<!-- Имя соединения, используемого по умолчанию-->
+					</xsd:complexType>
+					<xsd:unique name="CommandsKey">
+						<xsd:selector xpath="command"/>
+						<xsd:field xpath="@n"/>
+					</xsd:unique>
+					<xsd:keyref name="CommandsGuardsKeyRef" refer="GuardsKey">
+						<xsd:selector xpath="commands"/>
+						<xsd:field xpath="@default-guard"/>
+					</xsd:keyref>
+					<!-- Ключ, определяющий уникальные имена операций-->
+					<!-- Ссылка на имя guard-а в описании операций-->
+				</xsd:element>
+				<xsd:element name="event-handlers" minOccurs="0">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="event-handler" type="event-handlerType" minOccurs="0" maxOccurs="unbounded">
+								<xsd:unique name="uniqueHandlerEventName">
+									<xsd:selector xpath="use-for"/>
+									<xsd:field xpath="@event"/>
+								</xsd:unique>
+								<!-- Накладываем дополнительное ограничение - на одно событие один обработчик можно подписать не более одного раза -->
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute name="default-connection" type="xsd:string" use="required"/>
+					</xsd:complexType>
+				</xsd:element>
+				<!-- 
+					Перечень сборок, в которых описаны классы серверных объектов 
+				-->
+				<!-- 
+					Перечень Guard-ов
+				-->
+				<!-- 
+					Перечень операций 
+				-->
+				<!-- 
+					Перечень обработчиков событий 
+				-->
+			</xsd:sequence>
+		</xsd:complexType>
+		<xsd:unique name="GuardsKey">
+			<xsd:selector xpath="guards/guard"/>
+			<xsd:field xpath="@n"/>
+		</xsd:unique>
+		<xsd:unique name="EventHandlersKey">
+			<xsd:selector xpath="event-handlers/event-handler"/>
+			<xsd:field xpath="@n"/>
+		</xsd:unique>
+		<!-- 
+			Ключ, определяющий уникальные имена Guard-ов
+		-->
+		<!-- 
+			Ключ, определяющий уникальные имена обработчиков событий 
+		-->
+	</xsd:element>
+	<!-- 
+		Перечень событий, генерируемых ядром 
+	-->
+	<xsd:simpleType name="Events">
+		<xsd:restriction base="xsd:NMTOKEN">
+			<xsd:enumeration value="OnGuardQuery"/>
+			<xsd:enumeration value="OnGetGuardRejection"/>
+			<xsd:enumeration value="OnGetGuardPermission"/>
+			<xsd:enumeration value="OnGuardFailed"/>
+			<xsd:enumeration value="OnOperationStart"/>
+			<xsd:enumeration value="OnOperationCompleted"/>
+			<xsd:enumeration value="OnOperationFailed"/>
+			<xsd:enumeration value="OnOperationSuspended"/>
+			<xsd:enumeration value="OnOperationResume"/>
+			<xsd:enumeration value="OnOperationTerminated"/>
+			<xsd:enumeration value="OnSessionStart"/>
+			<xsd:enumeration value="OnSessionStop"/>
+			<xsd:enumeration value="OnApplicationStart"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!-- 
+		Базовый тип для описания серверных объектов 
+	-->
+	<xsd:complexType name="serverObject" abstract="true">
+		<xsd:attribute name="n" type="xsd:NMTOKEN" use="required"/>
+		<xsd:attribute name="class-name" type="xsd:string" use="required"/>
+		<xsd:attribute name="connection" type="xsd:string"/>
+		<!--		
+			"Наименование"; используется для задания внутреннего наименования, 
+			по которому далее осуществляется логическа ссылка на элемент; 
+			корректность таких ссылок отслеживается при инициализации Ядра. 
+			Задание атрибута обязательно.
+		-->
+		<!--
+			Задает наименование .NET-типа - класса реализации сущности Ядра, 
+			описываемого элементом. Задание атрибута обязательно.
+		-->
+		<!-- 
+			Задает "ссылку" на описание элемента с данными, используемыми для 
+			инициализации соединения с СУБД (см. x-net-config-schema.xml)
+			Задание значения обязательно.
+		-->
+	</xsd:complexType>
+	<!-- 
+		Элемент, определяющий guard-объект приложения.
+		(Не имеет дополнительных свойств по сравнению с serverObject)
+	-->
+	<xsd:complexType name="guardType">
+		<xsd:complexContent>
+			<xsd:extension base="serverObject"/>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- 
+		Тип описания операции 
+	-->
+	<xsd:complexType name="commandType">
+		<xsd:complexContent>
+			<xsd:extension base="serverObject">
+				<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+					<xsd:choice>
+						<xsd:element name="handle-event" minOccurs="0" maxOccurs="unbounded">
+							<xsd:complexType>
+								<xsd:attribute name="event" type="Events" use="required"/>
+								<xsd:attribute name="handler-name" type="xsd:string" use="required"/>
+								<!-- Название события  -->
+								<!-- Внутреннее наименование обработчика - ссылка на описание -->
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="suppress-event" minOccurs="0" maxOccurs="unbounded">
+							<xsd:complexType>
+								<xsd:attribute name="event" type="Events" use="required"/>
+								<!-- Название события  -->
+							</xsd:complexType>
+						</xsd:element>
+						<!-- Может переопределять обработчики некоторых событий -->
+						<!-- Может отменять обработчики событий -->
+					</xsd:choice>
+				</xsd:sequence>
+				<xsd:attribute name="d" type="xsd:string"/>
+				<xsd:attribute name="is-public" type="xsd:boolean"/>
+				<xsd:attribute name="guard-name" type="xsd:string"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- 
+	
+    		Элемент, описывающий операцию-обработчик событий Ядра
+	 -->
+	<xsd:complexType name="event-handlerType">
+		<xsd:complexContent>
+			<xsd:extension base="serverObject">
+				<xsd:sequence>
+					<xsd:element name="use-for" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:attribute name="event" type="Events" use="required"/>
+							<!-- Название события -->
+						</xsd:complexType>
+					</xsd:element>
+					<!-- Может содержать последовательность имен событий, для которых должен вызываться обработчик -->
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<xs:schema 
+	targetNamespace="http://www.croc.ru/Schemas/XmlFramework/ReportService" 
+	xmlns="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:mstns="http://www.croc.ru/Schemas/XmlFramework/ReportService" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified" 
+	attributeFormDefault="qualified">
+	
+<!-- ************************************************************************************************************
+												Типы диаграмм 
+**************************************************************************************************************-->
+	<xs:simpleType name="chart-types">
+		<xs:annotation>
+			<xs:documentation>Типы диаграмм</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="bar">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						Бар-диаграмма
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="stacked">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						Стакед-диаграмма
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="lines">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						Простой график
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	
+<!-- **************************************************************************************************************
+									Стили отображения сетки на диаграммах 
+**************************************************************************************************************** -->
+	<xs:simpleType name="grid-style">
+		<xs:annotation>
+			<xs:documentation>Типы линий для сетки</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="solid">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						сплошная линия
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="dash">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						пунктирная линия
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="dash-dot">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						точка - пунктирная линия
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="dot">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						линия из точек
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	
+<!-- **************************************************************************************************************
+								Форматы, в которых можем выводит графики
+****************************************************************************************************************-->
+	<xs:simpleType name="formats">
+		<xs:annotation>
+			<xs:documentation>Формат диаграммы в отчете</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="jpeg"/>							
+			<xs:enumeration value="bmp"/>
+			<xs:enumeration value="png"/>
+			<xs:enumeration value="svg"/>
+			<xs:enumeration value="custom"/> <!-- какой-то свой? -->
+		</xs:restriction>
+	</xs:simpleType>
+	
+<!-- **************************************************************************************************************
+							Ориентация наименований серий относительно диаграммы
+****************************************************************************************************************-->
+	<xs:simpleType name="docked">
+		<xs:annotation>
+			<xs:documentation>Где относительно диаграммы располагать наименования серий</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="left"/>							
+			<xs:enumeration value="right"/>
+			<xs:enumeration value="top"/>
+			<xs:enumeration value="bottom"/>			
+		</xs:restriction>
+	</xs:simpleType>
+	
+<!-- ***************************************************************************************************************
+									Текст на диаграммах с описанием его(текста) стиля 
+***************************************************************************************************************** -->
+	<xs:complexType name="diagram-text">
+		<xs:annotation>
+			<xs:documentation><![CDATA[
+				Тип, представляющий текст на графиках. Инкапсулирует в себе его свойства
+			]]></xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="value" type="parsed-string" use="required" form="qualified">
+			<xs:annotation>
+				<xs:documentation>Сам текст</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="color" type="xs:string" use="optional" form="qualified">
+			<xs:annotation>
+				<xs:documentation>Цвет текста, в HTML-ном формате</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="font-name" type="xs:string" use="optional" form="qualified">
+			<xs:annotation>
+				<xs:documentation>Шрифт текста</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="font-size" type="xs:integer" use="optional" form="qualified">
+			<xs:annotation>
+				<xs:documentation>Шрифт текста</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="font-is-bold" type="xs:boolean" use="optional" form="qualified">
+			<xs:annotation>
+				<xs:documentation>Шрифт текста</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="font-is-italic" type="xs:boolean" use="optional" form="qualified">
+			<xs:annotation>
+				<xs:documentation>Шрифт текста</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+<!-- *************************************************************************************************************
+							Элемент, описывающий стиль сетки для оси на диаграмме 
+****************************************************************************************************************-->
+	<xs:complexType name="grid">
+		<xs:annotation>
+			<xs:documentation><![CDATA[
+				Элемент, представляющий свойства сетки на диаграммах
+			]]></xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="style" type="grid-style" use="required" form="qualified">
+			<xs:annotation>
+				<xs:documentation>Стиль сетки</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="color" type="parsed-string" use="optional" form="qualified">
+			<xs:annotation>
+				<xs:documentation>Цвет сетки, в xsl-ном формате</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	
+<!-- *************************************************************************************************************
+									Элемент, описывающий свойства оси диаграммы 
+****************************************************************************************************************-->
+	<xs:complexType name="axis">
+		<xs:annotation>
+			<xs:documentation><![CDATA[
+				Элемент, представляющий ось диаграммы
+			]]></xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<!-- название оси -->
+			<xs:element name="axis-title" type="diagram-text" form="qualified" minOccurs="0" maxOccurs="1" />
+			<!-- характеристики сетки для оси -->
+			<xs:element name="grid" type="grid" form="qualified" minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
+		<!-- мин. значение на оси -->
+		<xs:attribute name="min-value" type="xs:double" form="qualified" use="optional" />
+		<!-- макс. значение на оси -->
+		<xs:attribute name="max-value" type="xs:double" form="qualified" use="optional" />
+		<!-- шаг по оси -->
+		<xs:attribute name="step" type="xs:double" form="qualified" use="optional" />
+		<!-- необходимо ли для этой оси выводить сетку -->
+		<xs:attribute name="grid-displayed" type="xs:boolean" use="optional" />	
+		<!-- ориентация текста легенд(разметок) относительно самой оси -->
+		<xs:attribute name="labels-orientation" type="xs:integer" form="qualified" use="optional" />	
+	</xs:complexType>
+	
+<!-- **************************************************************************************************************
+					Абстрактная диаграмма, содержит общие для дочерних элементов свойства 
+****************************************************************************************************************-->
+	<xs:complexType name="abstract-chart-layout">
+		<xs:complexContent>
+			<xs:extension base="abstract-layout">
+				<xs:sequence>
+						<xs:element ref="var" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Переменные лэйаута</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="title" form="qualified" type="diagram-text" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+									<xs:documentation>Заглавие диаграммы</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="series" form="qualified" minOccurs="1" maxOccurs="1">						
+							<xs:annotation>
+									<xs:documentation>Перечисление серий диаграммы</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<!-- название оси -->
+									<xs:element name="axis-title" type="diagram-text" form="qualified" minOccurs="0" maxOccurs="1" />
+									<xs:element name="serie" form="qualified" minOccurs="1" maxOccurs="unbounded">
+										<xs:complexType>
+											<!-- выражение, описывающее откуда берутся данные соответствующие серии -->
+											<xs:attribute name="data" type="parsed-string" use="required" form="qualified">
+												<xs:annotation>
+													<xs:documentation>выражение, описывающее откуда берутся данные соответствующие серии</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+											<!-- наименование серии -->
+											<xs:attribute name="serie-name" type="parsed-string" use="optional" form="qualified"/>
+											<!-- цвет серии -->
+											<xs:attribute name="color" type="parsed-string" use="optional" form="qualified"/>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="legend" form="qualified" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+									<xs:documentation>Задает массив для подписи оси X</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="data" type="parsed-string" use="required" form="qualified">
+									<xs:annotation>
+										<xs:documentation>выражение, описывающее откуда берутся данные</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:complexType>
+						</xs:element>
+				</xs:sequence>
+					
+				<!-- источник данных -->
+				<xs:attribute name="data-source" type="parsed-string" use="required" form="qualified" />
+				<!-- высота рисунка в отчете -->
+				<xs:attribute name="height" type="parsed-string" use="required" form="qualified" />
+				<!-- ширина рисунка в отчете -->
+				<xs:attribute name="width" type="parsed-string" use="required" form="qualified" />
+				<!-- формат в котором выводится диаграмма -->
+				<xs:attribute name="format" type="formats" use="optional" form="qualified" default="svg" />				
+				<!-- цвет фона рисунка -->
+				<xs:attribute name="back-color" type="parsed-string" use="optional" form="qualified" />
+				<!-- цвет фона внутри графика -->
+				<xs:attribute name="inside-color" type="parsed-string" use="optional" form="qualified" />
+				<!-- горизонтальное выравнивание в отчете -->
+				<xs:attribute name="align" type="align" use="optional" form="qualified"/>
+				<!-- необходимость выводить наименование серий -->
+				<xs:attribute name="series-name-displayed" type="xs:boolean" use="optional" form="qualified"/>
+				<!-- где относительно графика располагать наименования серий -->
+				<xs:attribute name="series-name-docked" type="docked" use="optional" form="qualified"/>
+				<!-- отображать ли значения серий на самой диаграмме -->
+				<xs:attribute name="values-displayed" type="xs:boolean" use="optional" form="qualified"/>
+				<!-- сообщение в случае отсутствия данных -->
+				<xs:attribute name="no-data-message" type="parsed-string" use="optional" form="qualified"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+<!-- ***************************************************************************************************************
+													Круговая диаграмма 
+******************************************************************************************************************-->	
+	<xs:element name="pie-chart-layout" substitutionGroup="abstract-layout">
+		<xs:annotation>
+			<xs:documentation><![CDATA[
+			Элемент, представляющий круговые диаграммы. Все элементы унаследованы от базового элемента
+		]]></xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstract-chart-layout">
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	
+<!-- ***************************************************************************************************************
+								Диаграмма вида бар, стакед или простой график
+*****************************************************************************************************************-->
+	<xs:element name="chart-layout" substitutionGroup="abstract-layout">
+		<xs:annotation>
+			<xs:documentation><![CDATA[
+			Элемент, представляющий диаграммы и графики
+		]]></xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="abstract-chart-layout">
+					<xs:sequence>
+						<xs:element name="x-axis" type="axis" form="qualified" minOccurs="1" maxOccurs="1" />
+						<xs:element name="y-axis" type="axis" form="qualified" minOccurs="1" maxOccurs="1" />						
+					</xs:sequence>
+					<!-- определение типа диграммы -->
+					<xs:attribute name="chart-type" type="chart-types" use="required" form="qualified"/>
+					<!-- признак горизонтального(перевернутого) графика -->
+					<xs:attribute name="horizontal" type="xs:boolean" use="optional" form="qualified" default="true"/>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

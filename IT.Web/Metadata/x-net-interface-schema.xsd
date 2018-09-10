@@ -1,0 +1,1919 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0" xmlns:mstns="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" targetNamespace="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+  <xsd:import namespace="http://www.croc.ru/Schemas/XmlFramework/Data/1.0" schemaLocation="x-net-data-schema.xsd"/>
+  <xsd:element name="client-script">
+    <xsd:annotation>
+      <xsd:documentation>Имя клиентского VBS-скрипта</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:simpleContent>
+        <xsd:extension base="xsd:string">
+          <xsd:attribute name="language" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Язык скрипта</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+        </xsd:extension>
+      </xsd:simpleContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="stylesheet" type="xsd:string">
+    <xsd:annotation>
+      <xsd:documentation>Имя CSS-файла с классами стилей для страницы</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="userCode">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="mode" use="optional" default="add">
+          <xsd:annotation>
+            <xsd:documentation>
+              Режим добавления пользовательского кода (обработчиков):
+              add - добавить в цепочку обработчиков,
+              replace - удалить все существующие обработчики, добавить указанный
+            </xsd:documentation>
+          </xsd:annotation>
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="add"/>
+              <xsd:enumeration value="replace"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:attributeGroup name="nameAndRef">
+    <xsd:attribute name="n" type="xsd:NMTOKEN"/>
+    <xsd:attribute name="ref" type="xsd:NMTOKEN"/>
+    <xsd:attribute name="with-params" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>
+          Параметры для подстановки в формате: Param1=Value1;Param2=Value. В этом случае в тексте адресуемого элемента должны быть макросы %Param1% и %Param2%.
+          При наличии параметров (атрибута with-params) после подстановки адресуемого элемента, атрибут n будет модифицирован т.о., чтобы он был уникальным.
+          Для задания детерминированного наименование можно использовать атрибут new-n.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="new-n" type="xsd:NMTOKEN" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Наименование элемента, которое будет проставлено в атрибут n после разрешения ссылки для случая заданных параметров (with-params)</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <xsd:attributeGroup name="dimensions">
+    <xsd:attribute name="height">
+      <xsd:annotation>
+        <xsd:documentation>Высота</xsd:documentation>
+      </xsd:annotation>
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:int">
+          <xsd:minExclusive value="0"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+    <xsd:attribute name="width">
+      <xsd:annotation>
+        <xsd:documentation>Ширина</xsd:documentation>
+      </xsd:annotation>
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:int">
+          <xsd:minExclusive value="0"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <xsd:simpleType name="wizard-mode-attr">
+    <xsd:annotation>
+      <xsd:documentation>Режим работы мастера при возврате назад со страницы</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="undo-changes">
+        <xsd:annotation>
+          <xsd:documentation>Возвращает состояние пула к тому, которое было до захода на страницу</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="do-nothing">
+        <xsd:annotation>
+          <xsd:documentation>Не делает ничего.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="get-data">
+        <xsd:annotation>
+          <xsd:documentation>Производит "тихий" сбор данных. Т.е. игнорируются все ошибки при сборе. Собираем то, что задано/корректно, остальное игнорируем</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Описание меню -->
+  <xsd:element name="caption" type="xsd:string">
+    <xsd:annotation>
+      <xsd:documentation>Заголовок меню/пункта меню. Может содержать Html</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="menu">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="caption" minOccurs="0"/>
+        <xsd:element name="macros-resolver" type="userCode" minOccurs="0" maxOccurs="unbounded">
+          <xsd:annotation>
+            <xsd:documentation>
+              Резолвер макросов. Наименование vbs процедуры  с прототипом:
+              Sub MenuMacroResolver(oSender, oEventArgs), где:
+              oSender As Object - владелец меню (параметр передаваемый в методы ShowPopupMenu, ShowPopupMenuWithPos, ExecuteHotkey)
+              oEventArgs As MenuEventArgsClass - - агрументы внутренного события XMenu "ResolveMacros"
+              В задачу резолвера макросов входит наполнение коллекции параметров меню (oEventArgs.Menu.Macros).
+              XMenu умеет подставлять значения параметров в xml меню, имея в виду, что все что начинается с @@ - это макрос.
+              В каждом контексте (дерево, список, редактор) всегда есть стандартный резолвер и предопределенный набор макросов.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="visibility-handler" type="userCode" minOccurs="0" maxOccurs="unbounded">
+          <xsd:annotation>
+            <xsd:documentation>
+              Обработчик установки видимости/доступности элементов меню. Наименование vbs процедуры с прототипом:
+              Sub MenuVisibilityHandler(oSender, oEventArgs), где:
+              oSender As Object - владелец меню (параметр передаваемый в методы ShowPopupMenu, ShowPopupMenuWithPos, ExecuteHotkey)
+              oEventArgs As MenuEventArgsClass - - агрументы внутренного события XMenu "SetVisibility"
+              Для сокрытия пунктов надо установить атрибут hidden="1", а для установки недоступности
+              надо установить атрибут disabled="1" необходимого пункта меню.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="execution-handler" type="userCode" minOccurs="0" maxOccurs="unbounded">
+          <xsd:annotation>
+            <xsd:documentation>
+              Обработчик выбора пункта меню пользователем. Наименование vbs процедуры с прототипом:
+              Sub MenuExecutionHandler(oSender, oEventArgs), где:
+              oSender As Object - владелец меню (параметр передаваемый в методы ShowPopupMenu, ShowPopupMenuWithPos, ExecuteHotkey)
+              oEventArgs As MenuExecuteEventArgsClass - агрументы внутренного события XMenu "Execute"
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element ref="params" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>Общие параметры для всего меню</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="menu-item-info"/>
+          <xsd:element ref="menu-item-separ"/>
+          <xsd:element ref="menu-item"/>
+          <xsd:element ref="menu-section"/>
+        </xsd:choice>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="nameAndRef"/>
+      <xsd:attribute name="xslt-template" type="xsd:string" use="optional">
+        <xsd:annotation>
+          <xsd:documentation>Имя страницы с XLST шаблоном, используемым для рендеринга меню в HTML</xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="trustworthy" type="xsd:string" use="optional">
+        <xsd:annotation>
+          <xsd:documentation>Признак, что состав меню "заслуживает доверия", и проверка прав с клиента для него не нужна</xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="params">
+    <xsd:annotation>
+      <xsd:documentation>Параметры</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="param" maxOccurs="unbounded">
+          <xsd:annotation>
+            <xsd:documentation>
+              Параметр
+            </xsd:documentation>
+          </xsd:annotation>
+          <xsd:complexType>
+            <xsd:simpleContent>
+              <xsd:extension base="xsd:string">
+                <xsd:attribute name="n" type="xsd:string">
+                  <xsd:annotation>
+                    <xsd:documentation>
+                      Имя параметра
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+              </xsd:extension>
+            </xsd:simpleContent>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="nameAndRef"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- Базовый класс для элементов меню -->
+  <xsd:complexType name="MenuItemBase">
+    <xsd:annotation>
+      <xsd:documentation>Базовый класс для элементов меню</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attributeGroup ref="nameAndRef"/>
+    <xsd:attribute name="t" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Заголовок меню. Для popup меню должен быть задан всегда</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="hint" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Всплывающая подсказка</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="hidden" type="ds:bit">
+      <xsd:annotation>
+        <xsd:documentation>признак сокрытия пункта меню</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="disabled" type="ds:bit">
+      <xsd:annotation>
+        <xsd:documentation>признак недоступности пункта меню</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="separator-before" type="ds:bit">
+      <xsd:annotation>
+        <xsd:documentation>признак добавить разделить перед пунктом меню</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="separator-after" type="ds:bit">
+      <xsd:annotation>
+        <xsd:documentation>признак добавить разделить после пунктом меню</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+
+  <!-- Секция меню -->
+  <xsd:complexType name="MenuSection">
+    <xsd:complexContent>
+      <xsd:extension base="MenuItemBase">
+        <xsd:sequence>
+          <xsd:element ref="caption" minOccurs="0"/>
+          <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="menu-item-info"/>
+            <xsd:element ref="menu-item-separ"/>
+            <xsd:element ref="menu-item"/>
+            <xsd:element ref="menu-section"/>
+          </xsd:choice>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="menu-section" type="MenuSection" />
+
+  <!-- Информационный пункт меню -->
+  <xsd:complexType name="MenuItemInfo">
+    <xsd:annotation>
+      <xsd:documentation>Информационный пункт меню</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent >
+      <xsd:extension base="MenuItemBase">
+        <xsd:sequence>
+          <xsd:element ref="caption" minOccurs="0"/>
+          <xsd:element name="value" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>Значение информационного пункта меню</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="menu-item-info" type="MenuItemInfo" />
+
+  <!-- Пункт меню разделитель -->
+  <xsd:element name="menu-item-separ">
+    <xsd:annotation>
+      <xsd:documentation>Разделитель</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType mixed="false">
+      <xsd:attribute name="horizontal-line" use="optional">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:enumeration value="0"/>
+            <xsd:enumeration value="1"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- Исполняемый пункт меню -->
+  <xsd:complexType name="MenuItemAction">
+    <xsd:annotation>
+      <xsd:documentation>Исполняемый пункт меню</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent >
+      <xsd:extension base="MenuItemBase">
+        <xsd:sequence>
+          <xsd:element ref="caption" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>"Сложный" заголовок меню. Может использоваться, если использовать атрибут t нельзя/неудобно</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element ref="params" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attribute name="action" type="xsd:string" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Наименование пункта, которое идентифицирует его и передается в обработчик выбора пункта меню</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="hotkey" type="xsd:string" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>
+              Клавиша/комбинация клавиш акселераторов для пункта меню
+              Клавиша описывается одной из констант VK_*, либо явным заданием символа, кроме символа "+" (Он используется для задания комбинаций клавиш).
+              Комбинации клавиш могут быть заданы с помошью модификаторов спец-клавиш: ALT, CTRL, SHIFT.
+              Например: ALT+VK_F1, ALT+CTRL+C. Список констант VK_* см. в x-const.aspx
+              Поддерживается задание нескольких модификаторов (ALT,CTRL,SHIFT) в произвольной последовательности и
+              одного символа/функциональной клавиши. При этом регистр символа игнорируется. Т.е. CTRL+D и CTRL+d сработают одновременно.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="default" type="ds:bit">
+          <xsd:annotation>
+            <xsd:documentation>Используется в иерархии (html-меню). Признак пункта меню по умолчанию - т.е. вызываемого по двойному клику мыши на ноде</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="may-be-default" type="ds:bit">
+          <xsd:annotation>
+            <xsd:documentation>Если задан атрибут, то в случае наличия такого пункта одного в меню, он будет выполнен сразу</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="menu-item"  type="MenuItemAction"/>
+
+  <!-- Меню для редактора свойства -->
+  <xsd:element name="prop-menu">
+    <xsd:annotation>
+      <xsd:documentation>Меню для редактора свойства</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="menu" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="nameAndRef"/>
+      <xsd:attribute name="menu-style" default="op-button">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="horizontal-buttons">
+              <xsd:annotation>
+                <xsd:documentation>Первый уровень отображается в виде горизонтального ряда кнопок</xsd:documentation>
+              </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="vertical-buttons">
+              <xsd:annotation>
+                <xsd:documentation>Первый уровень отображается в виде вертикального ряда кнопок</xsd:documentation>
+              </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="op-button">
+              <xsd:annotation>
+                <xsd:documentation>Отображается кнопка Операции с выпадающим меню</xsd:documentation>
+              </xsd:annotation>
+            </xsd:enumeration>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+      <xsd:attribute name="button-width" type="xsd:int">
+        <xsd:annotation>
+          <xsd:documentation>Ширина кнопок менюв пикселях (см. x-menu-html-pe.htc)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="button-height" type="xsd:int">
+        <xsd:annotation>
+          <xsd:documentation>Высота кнопок меню в пикселях (см. x-menu-html-pe.htc)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+  <!-- Конец меню -->
+
+  <!-- Базовый тип для описаний страниц -->
+  <xsd:complexType name="tPageBase" mixed="false">
+    <xsd:annotation>
+      <xsd:documentation>Базовый тип для описаний страниц</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="master-page" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Наименование master-страницы</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="t" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Заголовок окна редактора</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="help-page" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Относительный (от каталога Help) URL HTML-файла с текстом контекстной справки</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+
+  <!-- Элементы, относящиеся в описанию типа (ds:type> -->
+  <xsd:attributeGroup name="editorHints">
+    <xsd:attribute name="use-for-editing" type="xsd:NMTOKEN" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Используемый редактор</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="use-for-creation" type="xsd:NMTOKEN" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Используемый мастер</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <xsd:element name="editor">
+    <xsd:annotation>
+      <xsd:documentation>Редактор</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tPageBase">
+          <xsd:sequence>
+            <xsd:element ref="stylesheet" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="client-script" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="preload" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+              <xsd:annotation>
+                <xsd:documentation>
+                  Элемент с именем свойства, которое необходимо прогрузить для обеспечения работы редатора.
+                  Если это объектное свойство, то допустимо указывать "путь" из объектных свойств в формате:
+                  [Имя свойства].[Имя свойства под-объекта].[...]
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="page" minOccurs="0" maxOccurs="unbounded">
+              <xsd:annotation>
+                <xsd:documentation>Страница (фильтра, редактора и т.п.). Значением элемента является имя страницы</xsd:documentation>
+              </xsd:annotation>
+              <xsd:complexType>
+                <xsd:simpleContent>
+                  <xsd:extension base="xsd:string">
+                    <xsd:attribute name="off-cache" type="ds:bit" use="optional">
+                      <xsd:annotation>
+                        <xsd:documentation>Отключение кэширования построенного HTML</xsd:documentation>
+                      </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="n" type="xsd:string" use="optional">
+                      <xsd:annotation>
+                        <xsd:documentation>Идентификатор закладки, используется для обеспечения доступа к закладкам из прикладного кода</xsd:documentation>
+                      </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="t" type="xsd:string" use="required">
+                      <xsd:annotation>
+                        <xsd:documentation>Заголовок страницы. Выводится в закладках</xsd:documentation>
+                      </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="builder" type="xsd:string" use="optional">
+                      <xsd:annotation>
+                        <xsd:documentation>
+                          Наименование VBS-класса, предназначенного для построения контента страницы. По умолчанию используется  EditorPageXsltBuilderClass.
+                        </xsd:documentation>
+                      </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="expand" type="xsd:string" use="optional">
+                      <xsd:annotation>
+                        <xsd:documentation>
+                          набор путей до отображаемых свойств через точку.
+                          пути разделяются запятой
+                          Пример: Worker.Department
+                          Prop1.SubProp2.SubSubProp3
+                          Worker.Department,Prop1.SubProp2.SubSubProp3,SomeProp
+                        </xsd:documentation>
+                      </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="wizard-mode" type="wizard-mode-attr" use="optional">
+                      <xsd:annotation>
+                        <xsd:documentation>Режим работы мастера для конкретной страницы. Переопределяет режим, заданный для editor'a. Если для editor'a атрибут не задан, то данный атрибут игнорируется</xsd:documentation>
+                      </xsd:annotation>
+                    </xsd:attribute>
+                  </xsd:extension>
+                </xsd:simpleContent>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element ref="menu" minOccurs="0"/>
+            <xsd:element name="sp-post-call" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+              <xsd:annotation>
+                <xsd:documentation>
+                  Процедуры, вызываемые по окончании сохранения объекта из редактора.
+                  Порядок вызова - совпадает с порядком следования в метаданных.
+                  Каждая процедура получает параметры:
+                  Guid ObjectID - идентификатор объекта, для которого был вызван редактор
+                  string sObjectType - наименование типа объекта, для которого был вызван редактор
+                  string sUserDomain - имя домена
+                  string sUserID - имя пользователя без домена
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+          <xsd:attributeGroup ref="nameAndRef"/>
+          <xsd:attribute name="use-multipart-save" type="ds:bit" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Признак использования сохранения по частям</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attributeGroup ref="dimensions"/>
+          <xsd:attribute name="wizard-mode" type="wizard-mode-attr" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Режим работы мастера. Если не указан то используется редактор с закладками</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="default-for-creation" type="ds:bit" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Признак использования по умолчанию для создания</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="default-for-editing" type="ds:bit" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Признак использования по умолчанию для редактирования</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="save-cmd" type="xsd:NMTOKEN" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Имя серверной команды сохранения данных</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:group name="iconsGroup">
+    <xsd:choice>
+      <xsd:element name="icons-in-db">
+        <xsd:annotation>
+          <xsd:documentation>
+            Описание иконки, хранящейся в свойстве объекта БД
+            При выборе иконки из БД в качестве ObjectID используется значение селектора иконки
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType mixed="false">
+          <xsd:attribute name="ot" type="xsd:NMTOKEN" use="required">
+            <xsd:annotation>
+              <xsd:documentation>
+                Тип объекта, в котором лежит иконка
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="pn" type="xsd:NMTOKEN" use="required">
+            <xsd:annotation>
+              <xsd:documentation>
+                Свойство объекта, в котором лежит иконка
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="icon" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>
+            Описание иконки (одной)
+            Содержимым тега является имя файла с иконкой (без пути)
+            Файл иконки должен находится в подкаталоге Icons каталога приложения
+            Поддерживаются только файлы ".ico"
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+              <xsd:attribute name="selector" type="xsd:string" use="required">
+                <xsd:annotation>
+                  <xsd:documentation>
+                    Значение селектора иконки, с которым ассоциируется данная иконка
+                  </xsd:documentation>
+                </xsd:annotation>
+              </xsd:attribute>
+            </xsd:extension>
+          </xsd:simpleContent>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:group>
+  <xsd:element name="icons">
+    <xsd:annotation>
+      <xsd:documentation>
+        Описание иконок объекта соответствующего типа (ds:type)
+        Содержимым тега является либо набор элементов icon, либо один элемент icons-in-db
+
+        В случае списка (перечисления) доступных иконок (набор элементов icon) используется следующий
+        механизм сопоставления селектора иконки с конкретным её значением:
+        1 - пытаемся найти icon с аттрибутом selector =  текущему значению.
+        2 - если не нашли, берем имя файла иконки из атрибута default
+
+        В случае использования элемента icons-in-db используется следующий алгоритм:
+        1 - если значение селектора иконки меньше или равно 0, берем имя файла иконки из атрибута default
+        2 - пытаемся загрузить иконку из БД запросом типа select [pn] from [имя соответствующей схемы].[ot] where ObjectID = [селектор иконки]
+        3 - если запрос ничего не вернул (нет записи или значение свойства равно NULL), берем имя файла иконки из атрибута default
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:group ref="iconsGroup" minOccurs="0"/>
+      <xsd:attribute name="default" type="xsd:string" use="optional">
+        <xsd:annotation>
+          <xsd:documentation>Иконка по умолчанию (имя файла иконки) </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- Описания редакторов свойств (PrepertyEditor'ов) -->
+  <xsd:attributeGroup name="selectorHints">
+    <xsd:attribute name="use-tree-selector" type="xsd:NMTOKEN" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Метанаименование objects-tree-selector'a, используемого для выбора объекта(ов)</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="use-list-selector" type="xsd:NMTOKEN" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Метанаименование objects-list'a, используемого для выбора объекта(ов)</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <xsd:attributeGroup name="selectorGroup">
+    <xsd:attribute name="no-empty-value" type="ds:bit" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Признак "не добавлять пустую строку в комбобокс" (по умолчанию добавляется)</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="empty-value-text" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Текст пустой строки</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <xsd:attributeGroup name="cacheGroup">
+    <xsd:attribute name="off-reload" type="ds:bit" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Сокрытия элемента управления позволяющего перезагрузить кэш (по умолчанию компонент отображается)</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="use-cache" type="ds:bit" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Признак использования кэша при загрузке данных с сервера (по умолчанию не используется)</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="cache-salt" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>
+          Выражение на VBS, если указан то используется как дополнительный ключ для наименования элемента кэша
+          Пример:
+          cache-salt="X_GetMD().GetAttribute(&quot;md5&quot;)" - данные кэша становятся недействительными при смене метаданных
+          cache-salt="clng(date())" - данные кэша становятся недействительными раз в сутки
+          cache-salt="X_GetMD().GetAttribute(&quot;md5&quot;) &amp; &quot;-&quot; &amp; clng(date())" - данные кэша становятся недействительными раз в сутки или при смене метаданных
+          cache-salt="MyVbsFunctionName()" - вызывается прикладная функция
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+  <xsd:complexType name="tBehavior" mixed="false">
+    <xsd:annotation>
+      <xsd:documentation>Особенность представления свойства в UI</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="AUTO-GENERATED" type="ds:bit" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Признак автоматически генерированного описания</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="hide-on-create" type="ds:bit" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Признак игнорирования свойства при создании объекта в дефолтном редакторе (x-editor.xsl)</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="hide-on-edit" type="ds:bit" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Признак игнорирования свойства при редактировании объекта в дефолтном редакторе (x-editor.xsl)</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+  <xsd:element name="behavior" type="tBehavior"/>
+  <xsd:complexType name="tNumberPresentation" mixed="false">
+    <xsd:annotation>
+      <xsd:documentation>Описание представления числового скалярного свойства</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent mixed="false">
+      <xsd:extension base="tBehavior">
+        <xsd:attributeGroup ref="nameAndRef"/>
+        <xsd:attribute name="format-function" type="xsd:NMTOKEN" use="optional"/>
+        <xsd:attribute name="parse-function" type="xsd:NMTOKEN" use="optional"/>
+        <xsd:attribute name="decimal-places" type="xsd:int" use="optional"/>
+        <xsd:attribute name="align" use="optional" default="left">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="left"/>
+              <xsd:enumeration value="right"/>
+              <xsd:enumeration value="center"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="number-presentation" type="tNumberPresentation">
+    <xsd:annotation>
+      <xsd:documentation>Описание представления числового скалярного свойства</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="tObjectPresentation">
+    <xsd:annotation>
+      <xsd:documentation>Описание представления объектного скалярного свойства и списка допустимых операций</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tBehavior">
+        <xsd:sequence>
+          <xsd:element name="value" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>
+                Значением элемента является выражение на VBS, возвращающее значение
+                Для ссылки на значения свойств объекта используется конструкция:
+                item.[имя свойства объекта].[имя свойства под-объекта].[...]
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element ref="prop-menu" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="nameAndRef"/>
+        <xsd:attribute name="off-create" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-select" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-edit" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-unlink" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-delete" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-operations" type="ds:bit" use="optional"/>
+        <xsd:attribute name="auto-tooltip" type="ds:bit" use="optional"/>
+        <xsd:attributeGroup ref="editorHints"/>
+        <xsd:attributeGroup ref="selectorHints"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="object-presentation" type="tObjectPresentation">
+    <xsd:annotation>
+      <xsd:documentation>Описание представления объектного скалярного свойства и списка допустимых операций</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="tObjectDropdown">
+    <xsd:annotation>
+      <xsd:documentation>
+        Описание представления объектного скалярного свойства в виде выпадающего списка.
+        Указывается имя списка объектов (objects-list), который должен быть определен в типе,
+        объекты которого могут являтся значением свойства.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tBehavior">
+        <xsd:sequence>
+          <xsd:element name="restriction" minOccurs="0" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>
+                Определение параметров ограничений, применяемых к источнику данных
+                списка объектов. Один элемент определяет значение, передаваемое как
+                значение параметра param-name источника данных; само значение есть
+                значение свойства prop-name (здесь может указываться наименование
+                любого необъектного скалярного свойства или цепочки, адресущей такое
+                свойство) или константа const-value. Если значение свойства есть null
+                или пустая строка, то используется значение if-null (если задано).
+                Одновременное определение prop-name и const-value является ошибкой.
+              </xsd:documentation>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:attribute name="param-name" type="xsd:NMTOKEN" use="required" />
+              <xsd:attribute name="prop-name" type="xsd:NMTOKEN" use="optional" />
+              <xsd:attribute name="const-value" type="xsd:string" use="optional" />
+              <xsd:attribute name="if-null" type="xsd:string" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="use-activex" type="ds:bit" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Признак использования ActiveX</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attributeGroup ref="nameAndRef"/>
+        <xsd:attributeGroup ref="selectorGroup"/>
+        <xsd:attributeGroup ref="cacheGroup"/>
+        <xsd:attribute name="use-list" type="xsd:NMTOKEN" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Наименование списка, используемого для заполнения комбобокса. Список берется из типа объекта значения свойства</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="object-dropdown" type="tObjectDropdown"/>
+  <xsd:complexType name="tColumn">
+    <xsd:annotation>
+      <xsd:documentation>
+        Значением элемента является выражение на VBS, возвращающее значение
+        Для ссылки на значения свойств объекта используется конструкция:
+        item.[имя свойства объекта].[имя свойства под-объекта].[...]
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="n" type="xsd:NMTOKEN" use="optional"/>
+        <xsd:attribute name="t" type="xsd:string" use="required"/>
+        <xsd:attribute name="vt" type="ds:tVarType"/>
+        <xsd:attribute name="order-by" type="xsd:NMTOKEN" use="optional"/>
+        <xsd:attribute name="align" use="optional" default="left">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="left"/>
+              <xsd:enumeration value="right"/>
+              <xsd:enumeration value="center"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="width" use="required">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:int">
+              <xsd:minInclusive value="0"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:complexType name="tElementsList">
+    <xsd:annotation>
+      <xsd:documentation>Описание представления объектного скалярного свойства и списка допустимых операций</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tBehavior">
+        <xsd:sequence>
+          <xsd:element name="order-by" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>
+                описание сортировки массивного НЕУПОРЯДОЧЕННОГО свойства. Содержимое элемента - VBS выражение (ObjectPath).
+                Если сортировка задана, то порядок объектов в свойстве определяется на основе вычисленного выражения для всех значений.
+                Если элемент задан для упорядоченного свойства (массива или упорядоченного линка), то значение игнорируется.
+              </xsd:documentation>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:simpleContent>
+                <xsd:extension base="xsd:string">
+                  <xsd:attribute name="desc" type="ds:bit">
+                    <xsd:annotation>
+                      <xsd:documentation>Признак обратной сортировки</xsd:documentation>
+                    </xsd:annotation>
+                  </xsd:attribute>
+                </xsd:extension>
+              </xsd:simpleContent>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="hide-if" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>
+                Сокрытие элемента коллекции/линка (НО НЕ МАССИВА!!!) при отображении списка элементов
+
+                Значением элемента является возвращающее булево значение выражение на VBS,
+                вычисляемое для каждой строки списка.
+                Если для очередной строки списка данное выражение=true - элемент не отображается
+                Если для очередной строки списка данное выражение != true - элемент отображается
+                Для ссылки на значения свойств объекта, являющегося элементом массива/связи,
+                используется конструкция:
+                item.[имя свойства объекта].[имя свойства под-объекта].[...]
+                Для ссылки на объект в формате XStorage (IXMLDOMElement) используется конструкция:
+                item()
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="icon-selector" type="xsd:string" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation>
+                селектор иконки
+                Для списка членов массива/связи значением элемента является возвращающее целочисленное значение выражение на VBS,
+                вычисляемое для каждой строки списка
+                Для ссылки на значения свойств объекта, являющегося элементом массива/связи,
+                используется конструкция:
+                item.[имя свойства объекта].[имя свойства под-объекта].[...]
+                Для ссылки на объект в формате XStorage (IXMLDOMElement) используется конструкция:
+                item()
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="column" type="tColumn" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element ref="prop-menu" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="nameAndRef"/>
+        <xsd:attribute name="off-create" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-select" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-edit" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-unlink" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-delete" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-position" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-rownumbers" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-gridlines" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-sortcolumn" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-movecolumn" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-icons" type="ds:bit" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Если задан атрибут, то иконки в списке не выводятся. По умолчанию они выводятся даже, если не задан icon-selector. В этом случае используется иконка по умолчанию для типа.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="lbl-position-up" type="xsd:string" use="optional"/>
+        <xsd:attribute name="lbl-position-down" type="xsd:string" use="optional"/>
+        <xsd:attributeGroup ref="editorHints"/>
+        <xsd:attributeGroup ref="selectorHints"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="elements-list" type="tElementsList"/>
+  <xsd:complexType name="tBinaryPresentation">
+    <xsd:annotation>
+      <xsd:documentation>Описание представления бинарного свойства</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tBehavior">
+        <xsd:attribute name="filters" type="xsd:string">
+          <xsd:annotation>
+            <xsd:documentation>
+              Cтрока фильтров в следующем формате:
+              description1|patternlist1|...descriptionN|patternlistN|,
+              где patternlistI 	есть перечисление через ; масок файлов
+              если не указан, то  используется значение по умолчанию в зависимости
+              от типа:
+              - для произвольный двоичных данных - все файлы(*.*)
+              - для изображений - изображения(*.gif;*.jpg;*.jpeg;*.bmp;*.png) и все файлы(*.*)
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="t" type="xsd:string">
+          <xsd:annotation>
+            <xsd:documentation>Заголовок диалога выбора картинки/открытия файла</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="max-file-size">
+          <xsd:annotation>
+            <xsd:documentation>Mаксимальный размер файла</xsd:documentation>
+          </xsd:annotation>
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:int">
+              <xsd:minExclusive value="0"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="file-name-in" type="xsd:NMTOKEN">
+          <xsd:annotation>
+            <xsd:documentation>
+              Имя свойства объекта - владельца данного двоичного св-ва, в котором необходимо разместить
+              имя файла (с расширением, без пути)
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="is-image" type="ds:bit">
+          <xsd:annotation>
+            <xsd:documentation>Признак изображения, а не просто двоичного файла</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="max-width">
+          <xsd:annotation>
+            <xsd:documentation>Mаксимальная ширина изображения</xsd:documentation>
+          </xsd:annotation>
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:int">
+              <xsd:minExclusive value="0"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="min-width">
+          <xsd:annotation>
+            <xsd:documentation>Mинимальная ширина изображения</xsd:documentation>
+          </xsd:annotation>
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:int">
+              <xsd:minExclusive value="0"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="max-height">
+          <xsd:annotation>
+            <xsd:documentation>Mаксимальная высота изображения</xsd:documentation>
+          </xsd:annotation>
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:int">
+              <xsd:minExclusive value="0"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="min-height">
+          <xsd:annotation>
+            <xsd:documentation>Mинимальная высота изображения</xsd:documentation>
+          </xsd:annotation>
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:int">
+              <xsd:minExclusive value="0"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="off-clear" type="ds:bit">
+          <xsd:annotation>
+            <xsd:documentation>Отключение очистки</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="binary-presentation" type="tBinaryPresentation"/>
+  <xsd:complexType name="tStringLookup">
+    <xsd:annotation>
+      <xsd:documentation>
+        Описание строкового поля ввода с возможностью выбора из существующих значений.
+        Внимание!
+        Список допустимых значений получается посредством выбора 1-го столбца соотв. списка
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tBehavior">
+        <xsd:attributeGroup ref="cacheGroup"/>
+        <xsd:attributeGroup ref="nameAndRef"/>
+        <xsd:attribute name="ot" type="xsd:NMTOKEN" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>
+              Тип объекта, список которого используется для задания списка значений
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="use-list" type="xsd:NMTOKEN" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Наименование списка, используемого для заполнения комбобокса. Список берется из типа объекта значения свойства</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="off-edit" type="ds:bit" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>
+              Отключение возможности редактирования значения (только выбор из возможных вариантов)
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="string-lookup" type="tStringLookup"/>
+  <xsd:complexType name="tDtPicker">
+    <xsd:annotation>
+      <xsd:documentation>Описание представления даты</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tBehavior">
+        <xsd:attribute name="format" type="xsd:string" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Формат представления даты (св-во CustomFormat у DTPicker)</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="up-down" type="ds:bit" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Признак необходимости вывода стрелок "вверх-вниз" для модификации значения</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="off-checkbox" type="ds:bit" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Признак отключения чекбокса у контрола даты</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="autoshift" use="optional" default="1">
+          <xsd:annotation>
+            <xsd:documentation>Признак включения автоматического перехода между компонентами даты при вводе с клавиатуры</xsd:documentation>
+          </xsd:annotation>
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:int">
+              <xsd:enumeration value="0"/>
+              <xsd:enumeration value="1"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="dtpicker" type="tDtPicker"/>
+  <xsd:complexType name="tListSelector">
+    <xsd:annotation>
+      <xsd:documentation>
+        Описание представления объектного массивного свойства.
+        Список элементов массива/связи для множественного выбора, строющийся на основании источника данных
+        (определения списка объектов БД, i:objects-list)
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tBehavior">
+        <xsd:sequence>
+          <xsd:any namespace="##any" processContents="strict" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="nameAndRef"/>
+        <xsd:attributeGroup ref="cacheGroup"/>
+        <xsd:attribute name="use-list" type="xsd:NMTOKEN" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Наименование списка (objects-list), используемого для заполнения ListView. Список берется из типа объекта значения свойства</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="off-rownumbers" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-gridlines" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-sortcolumn" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-movecolumn" type="ds:bit" use="optional"/>
+        <xsd:attribute name="off-icons" type="ds:bit" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Если задан атрибут, то иконки в списке не выводятся. По умолчанию они выводятся даже, если не задан icon-selector. В этом случае используется иконка по умолчанию для типа.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="off-operations" type="ds:bit" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Запрещение всех операций со списком (не показывать кнопки)</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="off-select-all" type="ds:bit" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Не показывать кнопку "Выделить все"</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="off-select-invert" type="ds:bit" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Не показывать кнопку "Изменить выделение"</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="off-select-none" type="ds:bit" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Не показывать кнопку "Снять выделение"</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attributeGroup ref="editorHints"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="list-selector" type="tListSelector"/>
+  <xsd:complexType name="tTreeSelector">
+    <xsd:annotation>
+      <xsd:documentation>
+        read-only иерархия элементов массива/связи для множественного выбора, без операций (XPEObjectsTreeSelectorClass)
+        используется также для выбора значения скалярного свойства в мастере (XPEObjectTreeSelectorClass)
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tBehavior">
+        <xsd:sequence>
+          <xsd:element ref="objects-tree-selector">
+            <xsd:annotation>
+              <xsd:documentation>Определение селектора</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="n" type="xsd:NMTOKEN" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Метаимя редактора свойства (tree-selector)</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="off-operations" type="ds:bit">
+          <xsd:annotation>
+            <xsd:documentation>Признак отключения показа кнопок "Распахнуть все" и "Свернуть все"</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="off-expand-all" type="ds:bit" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Признак индивидуального отключения кнопоки "Распахнуть все"</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="off-reload" type="ds:bit">
+          <xsd:annotation>
+            <xsd:documentation>Признак отключения показа кнопки "Обновить". Используется только в XPEObjectTreeSelectorClass/x-pe-object-tree-selector</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="allow-drag-drop" type="ds:bit" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>Признак разрешения переноса узлов дерева</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="tree-selector" type="tTreeSelector"/>
+  <xsd:complexType name="tBits">
+    <xsd:annotation>
+      <xsd:documentation>Коллекция битовых флагов</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tBehavior">
+        <xsd:sequence>
+          <xsd:element name="bit" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>
+                Битовый флаг
+                <!-- 
+										Битовый флаг.
+										Содержимым элемента может являеться вычисляемое VBS-выражение
+										Например:
+											<i:bit n="Флаг A">1</i:bit>			- явно указанная константа
+											<i:bit n="Флаг Б">FLAG_B</i:bit>	- символическая константа, объявленная в некотором подгружаемом клиентском скрипте
+									-->
+              </xsd:documentation>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:simpleContent>
+                <xsd:extension base="xsd:string">
+                  <xsd:attribute name="n" type="xsd:string" use="required">
+                    <xsd:annotation>
+                      <xsd:documentation>Наименование флага</xsd:documentation>
+                    </xsd:annotation>
+                  </xsd:attribute>
+                  <xsd:attribute name="hint" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                      <xsd:documentation>Всплывающая подсказка</xsd:documentation>
+                    </xsd:annotation>
+                  </xsd:attribute>
+                </xsd:extension>
+              </xsd:simpleContent>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="nameAndRef"/>
+        <xsd:attribute name="horizontal" type="ds:bit" use="optional">
+          <xsd:annotation>
+            <xsd:documentation>
+              Признак вывода флагов в строку. По умолчанию в столбец
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="bits" type="tBits"/>
+  <xsd:complexType name="tConstValueSelection">
+    <xsd:annotation>
+      <xsd:documentation>Селектор</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tBehavior">
+        <xsd:sequence>
+          <xsd:element name="const-value" maxOccurs="unbounded">
+            <xsd:annotation>
+              <xsd:documentation>
+                Составляющая селектора (Радио/Комбо).
+                <!-- 
+									Содержимым элемента может являеться вычисляемое VBS-выражение.
+									Например:
+										<i:const-value n="Константа A">1</i:const-value>		- явно указанная константа
+										<i:const-value n="Константа Б">FLAG_B</i:const-value>	- символическая константа, объявленная в некотором подгружаемом клиентском скрипте
+									-->
+              </xsd:documentation>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:simpleContent>
+                <xsd:extension base="xsd:string">
+                  <xsd:attribute name="n" type="xsd:string" use="required">
+                    <xsd:annotation>
+                      <xsd:documentation>
+                        Наименование
+                      </xsd:documentation>
+                    </xsd:annotation>
+                  </xsd:attribute>
+                </xsd:extension>
+              </xsd:simpleContent>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="nameAndRef"/>
+        <xsd:attributeGroup ref="selectorGroup"/>
+        <xsd:attribute name="selector" use="optional" default="radio">
+          <xsd:annotation>
+            <xsd:documentation>
+              Тип селектора (Радио/Комбо/Комбо на Croc.XComboBox). По умолчанию radio.
+            </xsd:documentation>
+          </xsd:annotation>
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:string">
+              <xsd:enumeration value="radio"/>
+              <xsd:enumeration value="horizontal-radio">
+                <xsd:annotation>
+                  <xsd:documentation>Радио кнопки в ряд (горизонтально, без переноса строки)</xsd:documentation>
+                </xsd:annotation>
+              </xsd:enumeration>
+              <xsd:enumeration value="combo"/>
+              <xsd:enumeration value="activex-combo"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:element name="const-value-selection" type="tConstValueSelection"/>
+
+  <!-- Элементы, описывающие интерфейсные страницы -->
+  <xsd:complexType name="tFilterBase">
+    <xsd:annotation>
+      <xsd:documentation>Базовый тип для описаний фильтра</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="height">
+      <xsd:annotation>
+        <xsd:documentation>Высота фильтра в пикселях</xsd:documentation>
+      </xsd:annotation>
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:int">
+          <xsd:minExclusive value="0"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+    <xsd:attribute name="off-viewstate" type="ds:bit" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Признак выключения сохранения состояния фильтра. Если не задан, состояние фильтра сохраняется при уходе со страницы и восстанавливается при повторном заходе</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+  <xsd:complexType name="tFilterDirectUrl">
+    <xsd:annotation>
+      <xsd:documentation>Определение фильтра с явной ссылкой на страницу скриптлета</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tFilterBase">
+        <xsd:sequence>
+          <xsd:any namespace="##other" processContents="strict" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attribute name="url" type="xsd:string">
+          <xsd:annotation>
+            <xsd:documentation>Адрес страницы скриплета</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attributeGroup ref="nameAndRef"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="tFilterAsEditor">
+    <xsd:annotation>
+      <xsd:documentation>Определение фильтра - редактора</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tFilterBase">
+        <xsd:sequence>
+          <xsd:any namespace="##other" processContents="strict" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attribute name="ot" type="xsd:NMTOKEN">
+          <xsd:annotation>
+            <xsd:documentation>Имя типа</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="metaname" type="xsd:NMTOKEN">
+          <xsd:annotation>
+            <xsd:documentation>Метаимя редактора/мастера</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attributeGroup ref="nameAndRef"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:group name="filterGroup">
+    <xsd:annotation>
+      <xsd:documentation>Фильтр</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:element name="filter-direct-url" type="tFilterDirectUrl"/>
+      <xsd:element name="filter-as-editor" type="tFilterAsEditor"/>
+    </xsd:choice>
+  </xsd:group>
+  <xsd:element name="objects-list">
+    <xsd:annotation>
+      <xsd:documentation>Описание списка объектов. Реализуется с помощью страницы x-list.aspx. Страница содержит список объектов ActiveX-контроле CROC.XListView и фильтр (опционально). Со списком связано меню.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tPageBase">
+          <xsd:sequence>
+            <xsd:element ref="stylesheet" minOccurs="0"/>
+            <xsd:element ref="client-script" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded"/>
+            <!--				
+						ВНИМАНИЕ: ссылка на data-source закоментирована только потому, что XSD не позволяет использовать any с namespace="##other" и ссылками на элементы других схем.
+						А элемент any добавлен для того, чтобы была возможность расширять описание списка.
+						<xsd:element ref="ds:data-source" minOccurs="0" maxOccurs="unbounded"/> 
+						-->
+            <xsd:group ref="filterGroup" minOccurs="0"/>
+            <xsd:element name="list-menu" minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation>Меню списка</xsd:documentation>
+              </xsd:annotation>
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element ref="menu"/>
+                </xsd:sequence>
+                <xsd:attribute name="load-cmd" type="xsd:NMTOKEN">
+                  <xsd:annotation>
+                    <xsd:documentation>Команда получения меню</xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="column" type="tColumn" minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+          <xsd:attribute name="AUTO-GENERATED" type="ds:bit" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Признак автоматически генерированного описания</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attributeGroup ref="nameAndRef"/>
+          <xsd:attribute name="load-cmd" type="xsd:NMTOKEN" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>
+                Имя серверной команды, выдающей на клиент список в виде XML
+                Если не указана, то используется стандартная команда XFW: GetListData
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="icon-template" type="xsd:string" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Шаблон для получения URL иконки</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="off-icons" type="ds:bit" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Если задан атрибут, то иконки в списке не выводятся. По умолчанию они выводятся всегда</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="identified-by" type="xsd:NMTOKEN">
+            <xsd:annotation>
+              <xsd:documentation>Алиас колонки, в которой находится идентификатор выбранного объекта</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="typed-by" type="xsd:NMTOKEN">
+            <xsd:annotation>
+              <xsd:documentation>Алиас колонки, в которой находится тип выбранного объекта</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="paging" type="ds:bit" use="optional"/>
+          <xsd:attribute name="off-rownumbers" type="ds:bit" use="optional"/>
+          <xsd:attribute name="off-gridlines" type="ds:bit" use="optional"/>
+          <xsd:attribute name="off-reload" type="ds:bit" use="optional"/>
+          <xsd:attribute name="off-load" type="ds:bit" use="optional"/>
+          <xsd:attribute name="off-clear" type="ds:bit" use="optional"/>
+          <xsd:attribute name="off-clearfilter" type="ds:bit" use="optional"/>
+          <xsd:attribute name="off-create" type="ds:bit" use="optional"/>
+          <xsd:attribute name="off-edit" type="ds:bit" use="optional"/>
+          <xsd:attribute name="off-operations" type="ds:bit" use="optional"/>
+          <xsd:attribute name="maxrows" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Максимальное количество строк, отображаемое списком</xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:int">
+                <xsd:minInclusive value="1">
+                  <xsd:annotation>
+                    <xsd:documentation>Меньше одной строки отображать всё равно не получится</xsd:documentation>
+                  </xsd:annotation>
+                </xsd:minInclusive>
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:attribute>
+          <xsd:attributeGroup ref="dimensions"/>
+          <xsd:attributeGroup ref="editorHints"/>
+          <xsd:attribute name="off-hidefilter" type="ds:bit" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Отключает кнопку, управляющую показом/скрыванием фильтра</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="selector-master-page" type="xsd:string" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Наименование master-страницы для списка, открываемого для выбора объекта</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="objects-list-xml">
+    <xsd:annotation>
+      <xsd:documentation>Описание списка xml-объектов для выбора. Реализуется с помощью страницы x-select-from-xml.aspx. Страница содержит список объектов ActiveX-контроле CROC.XListView.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tPageBase">
+          <xsd:sequence>
+            <xsd:element ref="stylesheet" minOccurs="0"/>
+            <xsd:element ref="client-script" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="column" type="tColumn" minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+          <xsd:attributeGroup ref="nameAndRef"/>
+          <xsd:attribute name="off-rownumbers" type="ds:bit" use="optional"/>
+          <xsd:attribute name="off-gridlines" type="ds:bit" use="optional"/>
+          <xsd:attributeGroup ref="dimensions"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="tree-struct">
+    <xsd:annotation>
+      <xsd:documentation>
+        Элемент с описанием структуры дерева для команды фреймворка загрузки дерева XGetTreeDataCommand
+        Для полностью кастомных деревье может отсутствовать. В этом случае у objects-tree должен быть задан атрибут load-cmd.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="empty-tree-menu" minOccurs="0" maxOccurs="unbounded">
+          <xsd:annotation>
+            <xsd:documentation>Меню для случая, когда на корневом уровне дерева нет элементов</xsd:documentation>
+          </xsd:annotation>
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element ref="menu" minOccurs="0"/>
+            </xsd:sequence>
+            <xsd:attribute name="load-cmd" type="xsd:NMTOKEN" use="optional">
+              <xsd:annotation>
+                <xsd:documentation>
+                  Cерверная команда формирования меню.
+                  По умолчанию XGetTreeMenuCommand.
+                  Response команды должен наследовать XGetMenuResponse!
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element ref="default-level-menu" minOccurs="0"/>
+        <xsd:element ref="tree-level" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="nameAndRef"/>
+      <xsd:anyAttribute namespace="##any" processContents="lax"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="tree-level">
+    <xsd:annotation>
+      <xsd:documentation>Описание одного уровня дерева</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="ds:data-source" minOccurs="0" maxOccurs="unbounded">
+          <xsd:annotation>
+            <xsd:documentation>
+              <![CDATA[
+							ds:cmd-text data-source'а может содержать следующие макросы/функции (регистр неважен):
+							@@ParentID - функция, возвращает идентификатор родителя на заданном уровне: 1 - папа, 2 - дед, и т.д.
+							@@ISLEAF - признак листового узла. Заменяется на подзапрос из подченных data-source'ов:
+								CASE WHEN EXISTS (запрос 1-го подченного tree-level'a) OR EXISTS (запрос 2-го подченного tree-level'a) THEN 0 ELSE 1 END
+								При этом, в подзапросах макросы @@ISLEAF заменяются на 0. 
+								Особым образом вычисляется функция @@ParentID. Если ее аргумент больше 1, то значения заменяется идентификатором,
+								иначе подставляется подзапрос, ссылающийся на текущий уровень по алиасу (атрибут alias) или имени типа (атрибут ot)
+								Существует особенность для рекурсии. При ссылки на уровень из того же типа к алиасу (в этом случае он должен быть обязательно)
+								добавляет число - номер уровня рекурсии. Запрос для tree-level'а с признаком рекурсии должен содержать макрос @@RC
+							@@RC - номер уровня рекурсии. Для корневого уровня рекурсии (к корню дерева это не имеет отношения) макрос
+								заменяется на пустую строку, равно как и для всех других tree-level'ов, где нет рекурсии. 
+								Для первого уровня рекурсии макрос заменяется на "1", для 2-го на "2" и т.д.
+								Типичное описание рекурсии должно быть таким:
+								<i:tree-level ot="Column" alias="c">
+									<ds:data-source>
+										<ds:cmd-text>
+											SELECT ObjectID, Name, 0, @@ISLEAF, NULL FROM [Column] c
+											WHERE Parent IS NULL OR ObjectID = OBJECT_ID
+										</ds:cmd-text>
+										<ds:order-by>[Index]</ds:order-by>
+									</ds:data-source>
+									<i:tree-level ot="Column" alias="c" recursive="1">
+										<ds:data-source>
+											<ds:cmd-text>
+												SELECT ObjectID, Name, 0, @@ISLEAF, NULL FROM [Column] c@@RC 
+												WHERE Parent = @@ParentID(1) OR ObjectID = OBJECT_ID
+											</ds:cmd-text>
+											<ds:order-by>[Index]</ds:order-by>
+										</ds:data-source>
+									</i:tree-level>
+								</i:tree-level>
+							@@OBJECT_ID - идентификатор выбранного объекта для команды GET_NODE
+							Для команды GET_NODE необходимо формировать запрос типа ...WHERE alias.ObjectID = 'идентификатор выбранного объекта'
+							
+							В результате выполнения команды из ds:data-source/ds:cmd-text ожидаются поля со следующими алиасами (регистр неважен):
+								ObjectID	- идентификатор объекта/узла. GUID.
+								TITLE		- наименование узла в дереве. Строка.
+								IS_LEAF			- признак листового узла. 1 - листовой, 0 - нелистовой. 
+									Внимание: При использовании макроса @@ISLEAF алиас подставляется автоматичеки!
+								ICON_SELECTOR	- селектор иконки. Строка.
+								
+							Элемент не задается при указании ref			
+							]]>
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="level-menu" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>Меню уровня дерева</xsd:documentation>
+          </xsd:annotation>
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element ref="menu" minOccurs="0"/>
+            </xsd:sequence>
+            <xsd:attribute name="load-cmd" type="xsd:NMTOKEN" use="optional">
+              <xsd:annotation>
+                <xsd:documentation>
+                  Cерверная команда формирования меню.
+                  По умолчанию XGetTreeMenuCommand.
+                  Response команды должен наследовать XGetMenuResponse!
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="cache-for" use="optional">
+              <xsd:annotation>
+                <xsd:documentation>Признак кэширования меню, если атрибут не указан, то меню кэшируется для уровня</xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="nocache"/>
+                  <xsd:enumeration value="type"/>
+                  <xsd:enumeration value="level"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:attribute>
+            <xsd:anyAttribute namespace="##any" processContents="lax"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element ref="tree-level" minOccurs="0" maxOccurs="unbounded">
+          <xsd:annotation>
+            <xsd:documentation>Вложенные уровни</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="nameAndRef"/>
+      <xsd:attribute name="ot" type="xsd:NMTOKEN" use="optional">
+        <xsd:annotation>
+          <xsd:documentation>Наименование типа объекта</xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="alias" type="xsd:string" use="optional">
+        <xsd:annotation>
+          <xsd:documentation>Алиас таблицы типа, по которому будут ссылаться запросы подченных уровней</xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="virtual" type="ds:bit" use="optional">
+        <xsd:annotation>
+          <xsd:documentation>Признак виртуального узла.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="recursive" type="ds:bit" use="optional">
+        <xsd:annotation>
+          <xsd:documentation>Признак рекурсии</xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="treelevel-ref" type="xsd:NMTOKEN" use="optional"/>
+      <xsd:anyAttribute namespace="##any" processContents="lax"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="default-level-menu">
+    <xsd:annotation>
+      <xsd:documentation>
+        Меню уровня дерева, используемое, если для уровня выбранного узла
+        не объявленно меню. Т.е. меню по умолчанию
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="menu" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="nameAndRef"/>
+      <xsd:attribute name="load-cmd" type="xsd:NMTOKEN" use="optional">
+        <xsd:annotation>
+          <xsd:documentation>
+            Cерверная команда формирования меню.
+            По умолчанию XGetTreeMenuCommand.
+            Response команды должен наследовать XGetMenuResponse!
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="objects-tree">
+    <xsd:annotation>
+      <xsd:documentation>Страница с иерархией объектов и меню</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tPageBase">
+          <xsd:sequence>
+            <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="stylesheet" minOccurs="0"/>
+            <xsd:element ref="client-script" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:group ref="filterGroup" minOccurs="0"/>
+            <xsd:element ref="tree-struct" minOccurs="0"/>
+          </xsd:sequence>
+          <xsd:attribute name="n" type="xsd:NMTOKEN">
+            <xsd:annotation>
+              <xsd:documentation>Имя страницы</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="menu-load-cmd" type="xsd:string" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>
+                Имя команды, используемой для формирования меню.
+                Если не задано, используется стандартная - GetTreeMenuCommand.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="load-cmd" type="xsd:string" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>
+                Имя серверной команда, выдающей на клиент фрагменты дерева в виде XML.
+                Если не задано, используется стандартная - GetTreeDataCommand
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="off-reload" type="ds:bit">
+            <xsd:annotation>
+              <xsd:documentation>Отключалка кнопки "Обновить"</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="off-load" type="ds:bit">
+            <xsd:annotation>
+              <xsd:documentation>Запрет загрузки дерева сразу после инициализации страницы</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="off-clearfilter" type="ds:bit">
+            <xsd:annotation>
+              <xsd:documentation>Запрет показа кнопки "Очистить" (фильтр) </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="off-icons" type="ds:bit" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Если задано, то иконки в дереве не отображаются</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="menu-stylesheet" type="xsd:string" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Наименование xslt-страницы с шаблоном для всех меню дерева. Если не задана, используется стандартная x-tree-menu.xsl</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="off-hidefilter" type="ds:bit" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Отключает кнопку, управляющую показом/скрыванием фильтра</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="width" type="xsd:int" use="optional"/>
+          <xsd:attribute name="allow-drag-drop" type="ds:bit" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Признак разрешения переноса узлов дерева</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:anyAttribute namespace="##any" processContents="lax"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="objects-tree-selector">
+    <xsd:annotation>
+      <xsd:documentation>Страница с иерархией объектов для выбора</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tPageBase">
+          <xsd:sequence>
+            <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="stylesheet" minOccurs="0"/>
+            <xsd:element ref="client-script" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:group ref="filterGroup" minOccurs="0"/>
+            <xsd:element ref="tree-struct" minOccurs="0"/>
+          </xsd:sequence>
+          <xsd:attribute name="selection-mode" use="optional" default="anynode">
+            <xsd:annotation>
+              <xsd:documentation>
+                Режим отбора
+                leafnode - лист дерева
+                leafnodes - один или несколько листов дерева
+                anynode - любой узел
+                anynodes - один или несколько узлов
+              </xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:string">
+                <xsd:enumeration value="leafnode"/>
+                <xsd:enumeration value="leafnodes"/>
+                <xsd:enumeration value="anynode"/>
+                <xsd:enumeration value="anynodes"/>
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:attribute>
+          <xsd:attribute name="selectable-node-types" type="xsd:NMTOKENS" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>
+                Список типов, которые можно отбирать
+                Является дополнительным ограничением на отбор узлов
+                Если не указано, можно выбирать все в соответствии с selection-mode
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="selection-can-be-empty" type="ds:bit">
+            <xsd:annotation>
+              <xsd:documentation>Возможность закрытия по кнопке OK без выбранных узлов в режиме выбора узлов</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="selection-empty-msg" type="xsd:string" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Сообщение, выдаваемое при нажатии OK в случае, если не выбран ни один элемент, и selection-can-be-empty != 1</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attributeGroup ref="dimensions"/>
+          <xsd:attribute name="n" type="xsd:NMTOKEN">
+            <xsd:annotation>
+              <xsd:documentation>Имя страницы</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="load-cmd" type="xsd:string" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Имя серверной команда, выдающей на клиент фрагменты дерева в виде XML. По умолчанию - XGetTreeDataCommand</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="off-reload" type="ds:bit">
+            <xsd:annotation>
+              <xsd:documentation>Запрет показа кнопки "Обновить"</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="off-load" type="ds:bit">
+            <xsd:annotation>
+              <xsd:documentation>Запрет загрузки дерева сразу после инициализации страницы</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="off-clearfilter" type="ds:bit">
+            <xsd:annotation>
+              <xsd:documentation>Запрет показа кнопки "Очистить" (фильтр) </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:anyAttribute namespace="##any" processContents="lax"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="command">
+    <xsd:annotation>
+      <xsd:documentation>
+        Описание диалога запуска команды
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tPageBase">
+          <xsd:sequence>
+            <xsd:element ref="stylesheet" minOccurs="0"/>
+            <xsd:element ref="client-script" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:group ref="filterGroup"/>
+          </xsd:sequence>
+          <xsd:attributeGroup ref="dimensions"/>
+          <xsd:attribute name="n" type="xsd:NMTOKEN" use="required">
+            <xsd:annotation>
+              <xsd:documentation>Наименование диалога запуска команды</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="vbs-request-typename" type="xsd:NMTOKEN" use="required">
+            <xsd:annotation>
+              <xsd:documentation>Наимненование VBS-класса обертки реквеста</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="command-name" type="xsd:NMTOKEN" use="required">
+            <xsd:annotation>
+              <xsd:documentation>Наимненование вызываемой команды</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="async" type="ds:bit" use="optional">
+            <xsd:annotation>
+              <xsd:documentation>Признак выполнения команды в асинхронном режиме</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="report">
+    <xsd:annotation>
+      <xsd:documentation>Описание диалога запуска отчета с фильтром</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tPageBase">
+          <xsd:sequence>
+            <xsd:element ref="stylesheet" minOccurs="0"/>
+            <xsd:element ref="client-script" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:group ref="filterGroup" minOccurs="0"/>
+          </xsd:sequence>
+          <xsd:attributeGroup ref="dimensions"/>
+          <xsd:attribute name="n" type="xsd:NMTOKEN" use="required">
+            <xsd:annotation>
+              <xsd:documentation>Наименование диалога запуска отчёта</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="url" type="xsd:string" use="optional" default="x-get-report.aspx">
+            <xsd:annotation>
+              <xsd:documentation>Адрес страницы отчёта</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="sendUsingPOST" type="xsd:boolean" default="false">
+            <xsd:annotation>
+              <xsd:documentation>
+                Признак, заставляющий передавать параметры отчета через POST всегда (при true),
+                или же только, если длина адресной строки получится > MAX_GET_SIZE (при false).
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="to-string" type="xsd:string">
+    <xsd:annotation>
+      <xsd:documentation>
+        Элемент задает представление объекта по-умолчанию в сообщениях об ошибках редактора.
+        Содержит VBS-код с использование макроса item и целочек свойств (object-path) - по аналогии с
+        i:object-presentation/i:column.
+        item - в данном случае отображаемый объект.
+        Элемент задается в элементе ds:type.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+</xsd:schema>

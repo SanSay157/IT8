@@ -1,0 +1,895 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<ds:enum n="GK_INSTR_LOCATION" d="Местоположение инструмента" vt="i4">
+		<ds:value n="WAITING" d="В ожидании">0</ds:value>
+		<ds:value n="IN_COLLECTION" d="В коллекции">1</ds:value>
+		<ds:value n="FOR_SALE" d="На продажу">2</ds:value>
+		<ds:value n="SALED" d="Продана">3</ds:value>
+	</ds:enum>
+	<ds:type n="gkMaterial" d="Материал" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Материал" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkMaterial] t
+				WHERE_CLAUSE
+        ORDER BY Name
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="400" />
+			<i:column t="Примечание" width="600" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkFrets" d="Тип ладов" tp="persistent">
+		<ds:prop n="Height" d="Высота" vt="i2" cp="scalar" maybenull="1">
+			<ds:min>1</ds:min>
+			<ds:max>99</ds:max>
+		</ds:prop>
+		<ds:prop n="IsSteel" d="Стальные" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="IsGold" d="Золотые" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Тип ладов" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+            <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+          t.[Name],
+					t.[Height],
+					dbo.GetBoolString(t.[IsSteel]),
+					dbo.GetBoolString(t.[IsGold]),
+					t.[Rem]
+				FROM [dbo].[gkFrets] t
+				WHERE_CLAUSE
+        ORDER BY Name
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="300" />
+			<i:column t="Высота" vt="i2" width="100" />
+			<i:column t="Стальные" width="150" />
+			<i:column t="Золотые" width="150" />
+			<i:column t="Примечание" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkString" d="Тип струн" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Тип струн" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkString] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="400" />
+			<i:column t="Примечание" width="600" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkBridge" d="Бридж" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Бридж" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkBridge] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="400" />
+			<i:column t="Примечание" width="600" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkPickup" d="Датчик" tp="persistent">
+		<ds:prop n="Brand" d="Производитель" vt="object" ot="gkPickupBrand" cp="scalar">
+			<i:object-dropdown empty-value-text="(Укажите производителя)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Code" d="Код" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Датчик" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+            <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+          pb.Name AS Brand,
+					t.[Name],
+          t.[Code],
+					t.[Rem]
+				FROM [dbo].[gkPickup] t INNER JOIN dbo.gkPickupBrand pb ON t.Brand = pb.ObjectID
+				WHERE_CLAUSE
+        ORDER BY pb.Name, t.Name
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Производитель" width="300" />
+			<i:column t="Наименование" width="400" />
+			<i:column t="Код" width="250" />
+			<i:column t="Примечание" width="200" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkStableSource" d="Постоянный источник" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Постоянный источник" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkStableSource] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="400" />
+			<i:column t="Примечание" width="600" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkNeckJoint" d="Крепление грифа" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Крепление грифа" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkNeckJoint] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="400" />
+			<i:column t="Примечание" width="600" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkTune" d="Строй" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Строй" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkTune] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="400" />
+			<i:column t="Примечание" width="600" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkGuitar" d="Инструмент" tp="persistent">
+		<ds:prop n="Instance" d="Экземпляр" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Name" d="Имя" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="Code" d="Код" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="Year" d="Год" vt="i4" cp="scalar" maybenull="1">
+			<ds:min>1900</ds:min>
+			<ds:max>2999</ds:max>
+		</ds:prop>
+		<ds:prop n="PriceUSD" d="Цена, $" vt="i4" cp="scalar" maybenull="1" />
+		<ds:prop n="PriceBuyUSD" d="Цена покупки, $" vt="i4" cp="scalar" maybenull="1" />
+		<ds:prop n="PriceBuyRR" d="Цена покупки, руб" vt="i4" cp="scalar" maybenull="1" />
+		<ds:prop n="PriceSaleUSD" d="Цена продажи, $" vt="i4" cp="scalar" maybenull="1" />
+		<ds:prop n="PriceSaleRR" d="Цена продажи, руб" vt="i4" cp="scalar" maybenull="1" />
+		<ds:prop n="SourceRand" d="Источник случайный" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="SN" d="SN" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="StringDate" d="Дата установки струн" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="PreservDate" d="Дата консервации" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="ElecRem" d="Примечание по электронике" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="NumFrets" d="Количество ладов" vt="i2" cp="scalar">
+			<ds:min>1</ds:min>
+			<ds:max>99</ds:max>
+		</ds:prop>
+		<ds:prop n="MonthBuy" d="Месяц приобретения" vt="i2" cp="scalar" maybenull="1">
+			<ds:min>1</ds:min>
+			<ds:max>12</ds:max>
+		</ds:prop>
+		<ds:prop n="YearBuy" d="Год приобретения" vt="i4" cp="scalar" maybenull="1">
+			<ds:min>1900</ds:min>
+			<ds:max>2999</ds:max>
+		</ds:prop>
+		<ds:prop n="Body" d="Корпус" vt="object" ot="gkMaterial" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите материал)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Model" d="Модель" vt="object" ot="gkModel" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите модель)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Neck" d="Гриф" vt="object" ot="gkMaterial" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите материал)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Top" d="Топ" vt="object" ot="gkMaterial" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите материал)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Tune" d="Строй" vt="object" ot="gkTune" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите строй)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="StableSource" d="Постоянный источник" vt="object" ot="gkStableSource" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите источник)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Frets" d="Лады" vt="object" ot="gkFrets" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите модель ладов)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Strings" d="Струны" vt="object" ot="gkString" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите модель струн)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="NeckJoint" d="Крепление грифа" vt="object" ot="gkNeckJoint" cp="scalar">
+			<i:object-dropdown empty-value-text="(Укажите тип крепления грифа)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Bridge" d="Бридж" vt="object" ot="gkBridge" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите датчик)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Nut" d="Порожек" vt="object" ot="gkNut" cp="scalar">
+			<i:object-dropdown empty-value-text="(Укажите тип порожка)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Tuners" d="Колки" vt="object" ot="gkTunersType" cp="scalar">
+			<i:object-dropdown empty-value-text="(Укажите тип колков)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="BridgeP" d="Задний" vt="object" ot="gkPickup" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите датчик)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Scale" d="Мензура" vt="object" ot="gkScale" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите тип мензуры)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Fingerboard" d="Накладка грифа" vt="object" ot="gkMaterial" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите материал)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="MiddleP" d="Средний" vt="object" ot="gkPickup" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите датчик)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="NeckP" d="Передний" vt="object" ot="gkPickup" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите датчик)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Cats" d="Категории" vt="object" ot="gkCategory" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Примечание" width="100">item.Rem</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Month" d="Месяц" vt="i2" cp="scalar" maybenull="1">
+			<ds:min>1</ds:min>
+			<ds:max>12</ds:max>
+		</ds:prop>
+		<ds:prop n="NeckMarkers" d="Маркеры грифа" vt="object" ot="gkNeckMarkers" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Pickguard" d="Пикгард" vt="object" ot="gkMaterial" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="FinishType" d="Тип финиша" vt="object" ot="gkFinishType" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.ObjectID</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="MasterActions" d="Участия мастеров" vt="object" ot="gkMasterAction" cp="link" built-on="Guitar">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Примечание" width="100">item.Rem</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="IsCS" d="Custom Shop" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="FinishName" d="Название уникального финиша" vt="string" cp="scalar" maybenull="1">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Location" d="Местоположение" vt="i4" cp="scalar" enum="GK_INSTR_LOCATION">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="В ожидании">0</i:const-value>
+				<i:const-value n="В коллекции">1</i:const-value>
+				<i:const-value n="На продажу">2</i:const-value>
+				<i:const-value n="Продана">3</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="UniqueModel" d="Не серийная модель" vt="string" cp="scalar" maybenull="1">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="IsMasterbuild" d="Masterbuild" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<i:editor wizard-mode="get-data" width="50" height="50" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-gkGuitar.vbs</i:client-script>
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Common" t="Общие">p-gkGuitar-Common.xsl</i:page>
+			<i:page n="Device" t="Устройство">p-gkGuitar-Device.xsl</i:page>
+			<i:page n="Electro" t="Электроника">p-gkGuitar-Electro.xsl</i:page>
+			<i:page n="Prices" t="Цены">p-gkGuitar-Pricesxsl</i:page>
+			<i:menu ref="std-wizard-menu" />
+		</i:editor>
+		<i:objects-list t="Инструмент" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Instance],
+					t.[Name],
+					t.[Code],
+					t.[Year],
+					t.[InColl],
+					t.[InWait],
+					t.[ForSale],
+					t.[PriceUSD],
+					t.[PriceBuyUSD],
+					t.[PriceBuyRR],
+					t.[PriceSaleUSD],
+					t.[PriceSaleRR],
+					t.[SourceRand],
+					t.[SN],
+					t.[CS],
+					t.[StringDate],
+					t.[PreservDate],
+					t.[Rem],
+					t.[ElecRem],
+					t.[Finish],
+					t.[NumFrets],
+					t.[MonthBuy],
+					t.[YearBuy]
+				FROM [dbo].[gkGuitar] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Экземпляр" width="100" />
+			<i:column t="Имя" width="100" />
+			<i:column t="Код" width="100" />
+			<i:column t="Год" vt="i4" width="100" />
+			<i:column t="В коллекции" vt="boolean" width="100" />
+			<i:column t="В ожидании" vt="boolean" width="100" />
+			<i:column t="На продажу" vt="boolean" width="100" />
+			<i:column t="Цена, $" vt="i4" width="100" />
+			<i:column t="Цена покупки, $" vt="i4" width="100" />
+			<i:column t="Цена покупки, руб" vt="i4" width="100" />
+			<i:column t="Цена продажи, $" vt="i4" width="100" />
+			<i:column t="Цена продажи, руб" vt="i4" width="100" />
+			<i:column t="Источник случайный" width="100" />
+			<i:column t="SN" width="100" />
+			<i:column t="Custom Shop" vt="boolean" width="100" />
+			<i:column t="Дата установки струн" vt="date" width="100" />
+			<i:column t="Дата консервации" vt="date" width="100" />
+			<i:column t="Примечание" width="100" />
+			<i:column t="Примечание по электронике" width="100" />
+			<i:column t="Финиш" width="100" />
+			<i:column t="Количество ладов" vt="i2" width="100" />
+			<i:column t="Месяц приобретения" vt="i2" width="100" />
+			<i:column t="Год приобретения" vt="i4" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkBrand" d="Производитель" tp="persistent">
+		<ds:prop n="Models" d="Модели" vt="object" ot="gkModel" cp="link" built-on="Brand">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="300">item.Name</i:column>
+				<i:column t="Примечание" width="100">item.Rem</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Производитель" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkBrand] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="400" />
+			<i:column t="Примечание" width="600" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkScale" d="Мензура" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:editor n="editor" width="500" height="350" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Мензура" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkScale] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="400" />
+			<i:column t="Примечание" width="600" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkTunersType" d="Тип колков" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="IsLocking" d="Локовые" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Тип колков" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+            <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+          dbo.GetBoolString(t.[IsLocking]),
+					t.[Rem]
+				FROM [dbo].[gkTunersType] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="400" />
+			<i:column t="Локовые" width="150" />
+			<i:column t="Примечание" width="500" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkCategory" d="Категория" tp="persistent">
+		<ds:prop n="Parent" d="Вышестоящая" vt="object" ot="gkCategory" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Subcats" d="Подкатегории" vt="object" ot="gkCategory" cp="link" built-on="Parent">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Примечание" width="100">item.Rem</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Guitars" d="Инструменты" vt="object" ot="gkGuitar" cp="collection-membership" built-on="Cats">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Экземпляр" width="100">item.Instance</i:column>
+				<i:column t="Имя" width="100">item.Name</i:column>
+				<i:column t="Код" width="100">item.Code</i:column>
+				<i:column t="Год" width="100" vt="i4">item.Year</i:column>
+				<i:column t="В коллекции" width="100" vt="boolean">item.InColl</i:column>
+				<i:column t="В ожидании" width="100" vt="boolean">item.InWait</i:column>
+				<i:column t="На продажу" width="100" vt="boolean">item.ForSale</i:column>
+				<i:column t="Цена, $" width="100" vt="i4">item.PriceUSD</i:column>
+				<i:column t="Цена покупки, $" width="100" vt="i4">item.PriceBuyUSD</i:column>
+				<i:column t="Цена покупки, руб" width="100" vt="i4">item.PriceBuyRR</i:column>
+				<i:column t="Цена продажи, $" width="100" vt="i4">item.PriceSaleUSD</i:column>
+				<i:column t="Цена продажи, руб" width="100" vt="i4">item.PriceSaleRR</i:column>
+				<i:column t="Источник случайный" width="100">item.SourceRand</i:column>
+				<i:column t="SN" width="100">item.SN</i:column>
+				<i:column t="Custom Shop" width="100" vt="boolean">item.CS</i:column>
+				<i:column t="Дата установки струн" width="100" vt="date">item.StringDate</i:column>
+				<i:column t="Дата консервации" width="100" vt="date">item.PreservDate</i:column>
+				<i:column t="Примечание" width="100">item.Rem</i:column>
+				<i:column t="Примечание по электронике" width="100">item.ElecRem</i:column>
+				<i:column t="Финиш" width="100">item.Finish</i:column>
+				<i:column t="Количество ладов" width="100" vt="i2">item.NumFrets</i:column>
+				<i:column t="Месяц приобретения" width="100" vt="i2">item.MonthBuy</i:column>
+				<i:column t="Год приобретения" width="100" vt="i4">item.YearBuy</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Категория" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkCategory] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="100" />
+			<i:column t="Примечание" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkNut" d="Тип порожка" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Тип порожка" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkNut] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="400" />
+			<i:column t="Примечание" width="600" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkModel" d="Модель" tp="persistent">
+		<ds:prop n="Brand" d="Производитель" vt="object" ot="gkBrand" cp="scalar" maybenull="1">
+			<i:object-dropdown empty-value-text="(Укажите производителя)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Модель" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+          b.Name AS Brand,
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkModel] t INNER JOIN dbo.gkBrand b ON t.Brand = b.ObjectID
+				WHERE_CLAUSE
+        ORDER BY b.Name, t.Name
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="100" />
+			<i:column t="Примечание" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkPickupBrand" d="Производитель датчиков" tp="persistent">
+		<ds:prop n="Pickups" d="Датчики" vt="object" ot="gkPickup" cp="link" built-on="Brand">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="300">item.Name</i:column>
+				<i:column t="Код" width="200">item.Code</i:column>
+				<i:column t="Примечание" width="200">item.Rem</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Производитель датчиков" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkPickupBrand] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="400" />
+			<i:column t="Примечание" width="600" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkFinishType" d="Тип финишной отделки корпуса" tp="persistent">
+		<ds:prop n="Guitars" d="Инструменты" vt="object" ot="gkGuitar" cp="link" built-on="FinishType">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Экземпляр" width="100">item.Instance</i:column>
+				<i:column t="Имя" width="100">item.Name</i:column>
+				<i:column t="Код" width="100">item.Code</i:column>
+				<i:column t="Год" width="100" vt="i4">item.Year</i:column>
+				<i:column t="Цена, $" width="100" vt="i4">item.PriceUSD</i:column>
+				<i:column t="Цена покупки, $" width="100" vt="i4">item.PriceBuyUSD</i:column>
+				<i:column t="Цена покупки, руб" width="100" vt="i4">item.PriceBuyRR</i:column>
+				<i:column t="Цена продажи, $" width="100" vt="i4">item.PriceSaleUSD</i:column>
+				<i:column t="Цена продажи, руб" width="100" vt="i4">item.PriceSaleRR</i:column>
+				<i:column t="Источник случайный" width="100">item.SourceRand</i:column>
+				<i:column t="SN" width="100">item.SN</i:column>
+				<i:column t="Custom Shop" width="100" vt="boolean">item.IsCS</i:column>
+				<i:column t="Дата установки струн" width="100" vt="date">item.StringDate</i:column>
+				<i:column t="Дата консервации" width="100" vt="date">item.PreservDate</i:column>
+				<i:column t="Примечание" width="100">item.Rem</i:column>
+				<i:column t="Примечание по электронике" width="100">item.ElecRem</i:column>
+				<i:column t="Название уникального финиша" width="100">item.FinishName</i:column>
+				<i:column t="Количество ладов" width="100" vt="i2">item.NumFrets</i:column>
+				<i:column t="Месяц приобретения" width="100" vt="i2">item.MonthBuy</i:column>
+				<i:column t="Год приобретения" width="100" vt="i4">item.YearBuy</i:column>
+				<i:column t="Месяц" width="100" vt="i2">item.Month</i:column>
+				<i:column t="Местоположение" width="100" vt="i4">item.Location</i:column>
+				<i:column t="Не серийная модель" width="100">item.UniqueModel</i:column>
+				<i:column t="Masterbuild" width="100" vt="boolean">item.IsMasterbuild</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+	</ds:type>
+	<ds:type n="gkNeckMarkers" d="Маркеры грифа" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Маркеры грифа" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkNeckMarkers] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="100" />
+			<i:column t="Примечание" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkMasterActionType" d="Тип работ мастера" tp="persistent">
+		<ds:prop n="MasterActions" d="Мастера" vt="object" ot="gkMasterAction" cp="link" built-on="ActionType">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Примечание" width="100">item.Rem</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Тип работ мастера" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkMasterActionType] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="100" />
+			<i:column t="Примечание" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkGuitarMaster" d="Мастер" tp="persistent">
+		<ds:prop n="Actions" d="Участия в инструментах" vt="object" ot="gkMasterAction" cp="link" built-on="Master">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Примечание" width="100">item.Rem</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Мастер" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Rem]
+				FROM [dbo].[gkGuitarMaster] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="100" />
+			<i:column t="Примечание" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="gkMasterAction" d="Участие мастера" tp="persistent">
+		<ds:prop n="Master" d="Мастер" vt="object" ot="gkGuitarMaster" cp="scalar">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="ActionType" d="Тип работ" vt="object" ot="gkMasterActionType" cp="scalar">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<ds:prop n="Guitar" d="Инструмент" vt="object" ot="gkGuitar" cp="scalar" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Instance</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<i:objects-list t="Участие мастера" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Rem]
+				FROM [dbo].[gkMasterAction] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Примечание" width="100" />
+		</i:objects-list>
+	</ds:type>
+</ds:metadata>

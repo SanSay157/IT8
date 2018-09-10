@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="windows-1251" ?> 
+<r:report 
+	r:t="Список инцидентов и затрат сотрудника"
+	r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll"
+	r:class="Croc.IncidentTracker.ReportService.Reports.r_EmployeeExpensesList" 
+	
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:it="http://www.croc.ru/Schemas/IncidentTracker/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/IncidentTracker/ReportService Croc.IncidentTracker.ReportService.xsd http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+	<r:common>
+		<r:style-class r:n="TOP-ACTIVITIES-DATA-HEADER-CLASS">text-align="center" font-size="14px" font-family="MS Sans-serif"</r:style-class>
+		<r:style-class r:n="DATA-HEADER-CLASS">text-align="center" font-size="22px" font-family="MS Sans-serif"</r:style-class>
+		<!-- стиль отображения для всей таблицы по-умолчанию -->
+		<r:style-class r:n="TABLE">border="solid" border-width="0pt 1pt 1pt 1pt" border-color="#50729C" text-align="center" border-collapse="collapse"</r:style-class>
+
+		<r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+	</r:common>
+	
+	<!-- Параметры отчета -->
+	<r:params>
+		<r:param r:n="IntervalBegin" r:vt="date" />
+		<r:param r:n="IntervalEnd" r:vt="date" />
+		<r:param r:n="Employee" r:vt="uuid"/>
+		
+		<!--Не учитывать не проектые списания:-->
+		<r:param r:n="NonProjectExpences" r:vt="boolean" r:default="false" />
+		
+		<!--колонки-->
+		<r:param r:n="IncidentAttributes" r:vt="boolean" r:default="true" />
+		<r:param r:n="Date" r:vt="boolean" r:default="true" />
+		<r:param r:n="NumberOfTasks" r:vt="boolean" r:default="true" />
+		<r:param r:n="Remaining" r:vt="boolean" r:default="true" />
+		<r:param r:n="NewState" r:vt="boolean" r:default="true" />
+		<r:param r:n="Comment" r:vt="boolean" r:default="true" />	
+		<r:param r:n="TimeLossReason" r:vt="i4" r:default="1" />	<!-- Колонка "Причина списания" -->
+		
+		<!--параметры-->
+		<r:param r:n="IncludeParams" r:vt="boolean" r:default="true" />
+		
+		<!--ограничения-->
+		<r:param r:n="AnalysDirection" r:vt="i4" r:default="0" />	<!-- Направление анализа: 0 - за прошедший период; 1 - открытые инциденты; -->
+		<r:param r:n="SectionByActivity" r:vt="i4" />				<!-- Секционирование по активностям: 0 - без секционирования; 1 - по активностям верхнего уровня; -->
+		<r:param r:n="ExepenseDetalization" r:vt="i4" />			<!-- Детализация затрат: 0 - по затратам, 1 - по инцидентам, 2 - по активностям нижнего уровня; -->
+		<r:param r:n="ActivityType" r:vt="i4"/>						<!-- Типы активности, перечисление (null - любой); -->
+		<r:param r:n="ExpenseType" r:vt="i4" />						<!-- Вид трудозатрат: 0 - затраты на инциденты; 1 - списания; 2 - затраты на инциденты и списания; -->
+		<r:param r:n="IncidentState" r:vt="i4" />					<!-- Состояние инцидентов -->
+		<r:param r:n="TimeMeasureUnits" r:vt="i4" />				<!-- Форма отображения времени: 0 - д.ч.м; 1 - ч.м; -->
+		
+		<!--сортировка-->
+		<r:param r:n="Sort" r:vt="i4" />
+		<r:param r:n="SortOrder" r:vt="i4" />
+		
+		<!-- -->
+		<r:param r:n="NegativeIncidentAttributes" r:vt="boolean" />
+		<r:param r:n="NegativeDate" r:vt="boolean" />
+		<r:param r:n="NegativeNumberOfTasks" r:vt="boolean" />
+		<r:param r:n="NegativeRemaining" r:vt="boolean" />
+		<r:param r:n="NegativeNewState" r:vt="boolean" />
+		<r:param r:n="NegativeComment" r:vt="boolean" />
+		<r:param r:n="NegativeIncludeParams" r:vt="boolean" />
+		
+		<!--fill params-->
+		<r:param r:n="Colspan" r:vt="i4" />
+		
+		<r:param r:n="TaskCount" r:vt="i4" />
+		<r:param r:n="TimeSpent" r:vt="i4" />
+		<r:param r:n="TimeLeft" r:vt="i4" />
+		<r:param r:n="TimeLoss" r:vt="i4" />
+		<r:param r:n="OverallTimeSpent" r:vt="i4" />
+		<r:param r:n="WorkDays" r:vt="i4" />
+		<r:param r:n="WorkDayNorm" r:vt="i4" />
+		
+	</r:params>
+	<r:data-sources>
+		<r:config-data-source r:n="dsMain" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.EmloyeeExpensesListDS" r:section=""/>
+	</r:data-sources>
+</r:report>

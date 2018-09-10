@@ -1,0 +1,770 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<!-- Контракт под проектом: для всех узлов, кроме Папка -->
+	<i:tree-level n="ContractUnderProject" ot="Contract" alias="c" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+						select
+            c.ObjectID,
+            'Договор № ' + isnull(c.Number, '(не указан)') AS TITLE,
+            @@ISLEAF,
+            0 as ICON_SELECTOR,
+            c.ObjectID as ContractID
+            from dbo.Contract c inner join dbo.Folder f WITH(NOLOCK) on c.Project = f.ObjectID
+            where (f.ObjectID = @@ParentID(1) AND SEARCH_CONDITIONS)
+            OR 
+						(c.ObjectID = @@OBJECT_ID)
+					]]>
+      </ds:cmd-text>
+		</ds:data-source>
+		<i:tree-level ref="BudgetUnderContract" />
+		<i:tree-level ref="IncDocsUnderContract" />
+		<i:tree-level ref="OutContractsUnderContract" />
+		<i:tree-level ref="OutDocsUnderContract" />
+		<i:tree-level ref="OutcomesUnderContract" />
+		<i:tree-level ref="AOsUnderContract" />
+	</i:tree-level>
+	<!-- Виртуальный группирующий уровень "Бюджет" (забюджетированные расходы по договору)-->
+	<i:tree-level n="BudgetUnderContract" ot="Budget" virtual="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+				SELECT 
+					NULL AS ObjectID,
+					'Бюджет' AS TITLE,
+					0 AS IS_LEAF,
+					cast(@@ParentID(2) as uniqueidentifier) AS FolderID,
+          cast(@@ParentID(1) as uniqueidentifier) AS ContractID,
+          dbo.GetSumString((SELECT SUM(bo.Sum) FROM dbo.BudgetOut bo 
+	                            inner join dbo.[Contract] c WITH(NOLOCK) on bo.[InContract] = c.ObjectID
+                            WHERE c.ObjectID = @@ParentID(1)), NULL) as BudgetOutSum,
+          dbo.GetSumString((SELECT SUM(ol.Sum) FROM dbo.OutLimit ol 
+	                            inner join dbo.[Contract] c WITH(NOLOCK) on ol.[Contract] = c.ObjectID
+                            WHERE c.ObjectID = @@ParentID(1)), NULL) as OutLimitSum,
+          dbo.GetSumString((SELECT SUM(ol.Sum) FROM dbo.AOLimit ol 
+	                            inner join dbo.[Contract] c WITH(NOLOCK) on ol.[Contract] = c.ObjectID
+                            WHERE c.ObjectID = @@ParentID(1)), NULL) as AOLimitSum
+			]]>
+      </ds:cmd-text>
+		</ds:data-source>
+		<i:level-menu>
+			<i:menu>
+				<i:caption>@@Title</i:caption>
+				<i:menu-item action="DoCreate" t="Создать бюджетный расход по проекту">
+					<i:params>
+						<i:param n="ObjectType">BudgetOut</i:param>
+						<i:param n="URLPARAMS">.InContract=@@ContractID</i:param>
+						<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoCreate" t="Создать расходный лимит по проекту">
+					<i:params>
+						<i:param n="ObjectType">OutLimit</i:param>
+						<i:param n="URLPARAMS">.Contract=@@ContractID</i:param>
+						<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoCreate" t="Создать AO лимит по проекту">
+					<i:params>
+						<i:param n="ObjectType">AOLimit</i:param>
+						<i:param n="URLPARAMS">.Contract=@@ContractID</i:param>
+						<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-section t="Информация" n="Info">
+					<i:menu-item-info>
+						<i:caption>Общая сумма прямых расходов</i:caption>
+						<i:value>@@BudgetOutSum</i:value>
+					</i:menu-item-info>
+					<i:menu-item-info>
+						<i:caption>Общая сумма расходных лимитов</i:caption>
+						<i:value>@@OutLimitSum</i:value>
+					</i:menu-item-info>
+					<i:menu-item-info>
+						<i:caption>Общая сумма лимитов по АО</i:caption>
+						<i:value>@@AOLimitSum</i:value>
+					</i:menu-item-info>
+				</i:menu-section>
+			</i:menu>
+		</i:level-menu>
+		<i:tree-level ref="BudgetOutsUnderBudget" />
+		<i:tree-level ref="OutLimitsUnderBudget" />
+		<i:tree-level ref="AOLimitsUnderBudget" />
+	</i:tree-level>
+	<!-- Виртуальный группирующий уровень "Прямые расходы" (забюджетированные расходы по договору)-->
+	<i:tree-level n="BudgetOutsUnderBudget" ot="BudgetOuts" virtual="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+				  SELECT 
+					  NULL AS ObjectID,
+					  'Прямые расходы' AS TITLE,
+					  0 AS IS_LEAF,
+					  cast(@@ParentID(3) as uniqueidentifier) AS FolderID,
+            cast(@@ParentID(2) as uniqueidentifier) AS ContractID,
+            dbo.GetSumString((SELECT SUM(bo.Sum) FROM dbo.BudgetOut bo 
+	                            inner join dbo.[Contract] c WITH(NOLOCK) on bo.[InContract] = c.ObjectID
+                            WHERE c.ObjectID = @@ParentID(2)), NULL) as BudgetOutSum
+				  WHERE 
+					  EXISTS ( SELECT 1 FROM dbo.BudgetOut bo 
+	                      inner join dbo.[Contract] c WITH(NOLOCK) on bo.[InContract] = c.ObjectID
+	                      inner join dbo.Folder f on c.Project = f.ObjectID 
+                      WHERE f.ObjectID = @@ParentID(3))
+			  ]]>
+      </ds:cmd-text>
+		</ds:data-source>
+		<i:level-menu>
+			<i:menu>
+				<i:caption>@@Title</i:caption>
+				<i:menu-item action="DoCreate" t="Создать бюджетный расход по проекту">
+					<i:params>
+						<i:param n="ObjectType">BudgetOut</i:param>
+						<i:param n="URLPARAMS">.InContract=@@ContractID</i:param>
+						<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-section t="Информация" n="Info">
+					<i:menu-item-info>
+						<i:caption>Общая сумма прямых расходов</i:caption>
+						<i:value>@@BudgetOutSum</i:value>
+					</i:menu-item-info>
+				</i:menu-section>
+			</i:menu>
+		</i:level-menu>
+		<!--Забюджетированные расходны по приходному договору -->
+		<i:tree-level n="BudgetOutUnderBudget" ot="BudgetOut" alias="o" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					  SELECT DISTINCT
+	            bo.ObjectID, 
+	            (isnull(org.Name, 'Контрагент не указан') + ' - ' + dbo.GetSumString(bo.[Sum], NULL) + ' - ' + bo.Name) AS TITLE,
+	            org.Name,
+	            1 AS IS_LEAF,
+              0 as ICON_SELECTOR,
+	            f.ObjectID AS FolderID
+            FROM
+	            dbo.BudgetOut bo 
+                join dbo.[Contract] c WITH(NOLOCK) on bo.[InContract] = c.ObjectID
+                join dbo.Folder f WITH(NOLOCK) on c.Project = f.ObjectID 
+                left join dbo.Organization org WITH(NOLOCK) on bo.Org = org.ObjectID 
+					  WHERE 
+						  (f.ObjectID = @@ParentID(4) AND SEARCH_CONDITIONS)
+						  OR 
+						  (bo.ObjectID = @@OBJECT_ID)
+            ORDER BY TITLE
+				  ]]>
+        </ds:cmd-text>
+			</ds:data-source>
+		</i:tree-level>
+	</i:tree-level>
+	<!-- Виртуальный группирующий уровень "Лимиты по расходам"-->
+	<i:tree-level n="OutLimitsUnderBudget" ot="OutLimits" virtual="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+				  SELECT 
+            NULL AS ObjectID,
+            'Лимиты по расходам' AS TITLE,
+            0 AS IS_LEAF,
+            cast(@@ParentID(3) as uniqueidentifier) AS FolderID,
+            cast(@@ParentID(2) as uniqueidentifier) AS ContractID,
+            dbo.GetSumString((SELECT SUM(ol.[Sum]) 
+					            FROM dbo.OutLimit ol 
+						            inner join dbo.[Contract] c WITH(NOLOCK) on ol.[Contract] = c.ObjectID
+					            WHERE c.ObjectID = @@ParentID(2)), NULL) as OutLimitSum
+          WHERE 
+            EXISTS ( SELECT 1 FROM dbo.OutLimit ol 
+			                  inner join dbo.[Contract] c WITH(NOLOCK) on ol.[Contract] = c.ObjectID
+                     WHERE  c.ObjectID = @@ParentID(2))
+			  ]]>
+      </ds:cmd-text>
+		</ds:data-source>
+		<i:level-menu>
+			<i:menu>
+				<i:caption>@@Title</i:caption>
+				<i:menu-item action="DoCreate" t="Создать расходный лимит по проекту">
+					<i:params>
+						<i:param n="ObjectType">OutLimit</i:param>
+						<i:param n="URLPARAMS">.Contract=@@ContractID</i:param>
+						<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE+TRM_PARENTNODE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-section t="Информация" n="Info">
+					<i:menu-item-info>
+						<i:caption>Общая сумма расходных лимитов</i:caption>
+						<i:value>@@OutLimitSum</i:value>
+					</i:menu-item-info>
+				</i:menu-section>
+			</i:menu>
+		</i:level-menu>
+		<!--Забюджетированные расходны по приходному договору -->
+		<i:tree-level n="OutLimitUnderBudget" ot="OutLimit" alias="o" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					  SELECT DISTINCT
+                ol.ObjectID, 
+                (ot.Name + ' - ' + dbo.GetSumString(ol.[Sum], NULL)  ) AS TITLE,
+                1 AS IS_LEAF,
+                0 as ICON_SELECTOR,
+                f.ObjectID AS FolderID,
+                c.ObjectID AS ContractID
+            FROM
+                dbo.OutLimit ol 
+                join dbo.[Contract] c WITH(NOLOCK) on ol.[Contract] = c.ObjectID
+                join dbo.Folder f WITH(NOLOCK) on c.Project = f.ObjectID
+                join dbo.OutType ot WITH(NOLOCK) on ol.OutType = ot.ObjectID  
+					  WHERE 
+						  (c.ObjectID = @@ParentID(3) AND SEARCH_CONDITIONS)
+						  OR 
+						  (ol.ObjectID = @@OBJECT_ID)
+            ORDER BY TITLE
+				  ]]>
+        </ds:cmd-text>
+			</ds:data-source>
+		</i:tree-level>
+	</i:tree-level>
+	<!-- Виртуальный группирующий уровень "Лимиты по AO"-->
+	<i:tree-level n="AOLimitsUnderBudget" ot="AOLimits" virtual="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+				  SELECT 
+            NULL AS ObjectID,
+            'Лимиты по AO' AS TITLE,
+            0 AS IS_LEAF,
+            cast(@@ParentID(3) as uniqueidentifier) AS FolderID,
+            cast(@@ParentID(2) as uniqueidentifier) AS ContractID,
+            dbo.GetSumString((SELECT SUM(al.[Sum]) 
+					            FROM dbo.AOLimit al 
+						            inner join dbo.[Contract] c WITH(NOLOCK) on al.[Contract] = c.ObjectID
+					            WHERE c.ObjectID = @@ParentID(2)), NULL) as AOLimitSum
+          WHERE 
+            EXISTS ( SELECT 1 FROM dbo.OutLimit ol 
+			                  inner join dbo.[Contract] c WITH(NOLOCK) on ol.[Contract] = c.ObjectID
+                     WHERE  c.ObjectID = @@ParentID(2))
+			  ]]>
+      </ds:cmd-text>
+		</ds:data-source>
+		<i:level-menu>
+			<i:menu>
+				<i:caption>@@Title</i:caption>
+				<i:menu-item action="DoCreate" t="Создать AO лимит по проекту">
+					<i:params>
+						<i:param n="ObjectType">AOLimit</i:param>
+						<i:param n="URLPARAMS">.Contract=@@ContractID</i:param>
+						<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-section t="Информация" n="Info">
+					<i:menu-item-info>
+						<i:caption>Общая сумма AO лимитов</i:caption>
+						<i:value>@@AOLimitSum</i:value>
+					</i:menu-item-info>
+				</i:menu-section>
+			</i:menu>
+		</i:level-menu>
+		<!--Забюджетированные расходны "Лимиты по АО"-->
+		<i:tree-level n="AOLimitUnderBudget" ot="AOLimit" alias="o" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					  SELECT DISTINCT
+                al.ObjectID, 
+                (ar.Name + ' - ' + dbo.GetSumString(al.[Sum], NULL)  ) AS TITLE,
+                1 AS IS_LEAF,
+                0 AS ICON_SELECTOR,
+                f.ObjectID AS FolderID,
+                c.ObjectID AS ContractID
+            FROM
+                dbo.AOLimit al 
+                join dbo.[Contract] c WITH(NOLOCK) on al.[Contract] = c.ObjectID
+                join dbo.Folder f WITH(NOLOCK) on c.Project = f.ObjectID
+                join dbo.AOReason ar WITH(NOLOCK) on al.Reason = ar.ObjectID  
+					  WHERE 
+						  (c.ObjectID = @@ParentID(3) AND SEARCH_CONDITIONS)
+						  OR 
+						  (al.ObjectID = @@OBJECT_ID)
+            ORDER BY TITLE
+				  ]]>
+        </ds:cmd-text>
+			</ds:data-source>
+		</i:tree-level>
+	</i:tree-level>
+	<!-- Виртуальный группирующий уровень "Приходные документы по договору"-->
+	<i:tree-level n="IncDocsUnderContract" ot="IncDocs" virtual="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+				  SELECT 
+					  NULL AS ObjectID,
+					  'Приходные документы' AS TITLE,
+					  0 AS IS_LEAF,
+					  cast(@@ParentID(2) as uniqueidentifier) AS FolderID,
+            cast(@@ParentID(1) as uniqueidentifier) AS ContractID,
+            (CASE
+              WHEN EXISTS(SELECT TOP 1 * 
+                          FROM dbo.IncDoc id 
+                          WHERE (id.[Contract] = @@ParentID(1)) AND (id.Signed = 0) AND (GETDATE() >= id.[Date])) THEN 
+                  'NotSignedOutdated'
+              WHEN EXISTS(SELECT TOP 1 * 
+                          FROM dbo.IncDoc id   
+                          WHERE (id.[Contract] = @@ParentID(1)) AND (id.Signed = 0) AND (GETDATE() < id.[Date])) THEN 
+                  'NotSigned'
+              ELSE
+                  'AllSigned'
+             END) AS ICON_SELECTOR,
+            dbo.GetSumString((SELECT SUM(id.Sum) FROM dbo.IncDoc id 
+	                            inner join dbo.[Contract] c WITH(NOLOCK) on id.[Contract] = c.ObjectID
+                            WHERE c.ObjectID = @@ParentID(1)), NULL) as IncDocSum
+				  WHERE 
+					  EXISTS ( SELECT 1 FROM dbo.IncDoc id 
+	                      inner join dbo.[Contract] c WITH(NOLOCK) on id.[Contract] = c.ObjectID
+                      WHERE c.ObjectID = @@ParentID(1))
+			  ]]>
+      </ds:cmd-text>
+		</ds:data-source>
+		<i:level-menu>
+			<i:menu>
+				<i:caption>@@Title</i:caption>
+				<i:menu-item action="DoCreate" t="Создать приход по проекту">
+					<i:params>
+						<i:param n="ObjectType">IncDoc</i:param>
+						<i:param n="URLPARAMS">.Contract=@@ContractID</i:param>
+						<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-section t="Информация" n="Info">
+					<i:menu-item-info>
+						<i:caption>Общая сумма приходных документов</i:caption>
+						<i:value>@@IncDocSum</i:value>
+					</i:menu-item-info>
+				</i:menu-section>
+			</i:menu>
+		</i:level-menu>
+		<!--Приходные документы по договору -->
+		<i:tree-level n="IncDocUnderContract" ot="IncDoc" alias="o" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					  SELECT DISTINCT
+	            id.ObjectID,
+	            ('[ ' + CONVERT(varchar, id.[Date], 4)+' ]' + ' - ' + dbo.GetSumString(id.[Sum], NULL) + ' - ' + dt.ShortName) AS TITLE,
+              id.[Date] as IncDocDate,
+              (CASE
+                WHEN  (id.Signed = 0) AND (id.[Date] < GETDATE()) THEN 
+		              'NotSignedOutdated'
+	              WHEN  (id.Signed = 0) AND (id.[Date] > GETDATE()) THEN 
+		              'NotSigned'
+	              ELSE
+		              'Signed'
+                END) AS ICON_SELECTOR,
+              1 as IS_LEAF,
+	            @@ParentID(3) AS FolderID
+            FROM
+              dbo.IncDoc id 
+	            join dbo.[Contract] c WITH(NOLOCK) on id.[Contract] = c.ObjectID
+              join dbo.DocType dt WITH (NOLOCK) on id.[Type] = dt.ObjectID
+					  WHERE 
+						  (c.ObjectID = @@ParentID(2) AND SEARCH_CONDITIONS)
+						  OR 
+						  (id.ObjectID = @@OBJECT_ID)
+				  ]]>
+        </ds:cmd-text>
+				<ds:order-by>IncDocDate</ds:order-by>
+			</ds:data-source>
+			<i:level-menu>
+				<i:menu>
+					<i:caption>@@Title</i:caption>
+					<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать">
+						<i:params>
+							<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE+TRM_PARENTNODE</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoCreate" hotkey="VK_INS" t="Создать">
+						<i:params>
+							<i:param n="ObjectType">OutContract</i:param>
+							<i:param n="URLPARAMS">.Contract=@@ContractID</i:param>
+							<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE+TRM_PARENTNODE</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoDelete" hotkey="VK_DEL" t="Удалить" separator-after="1" separator-before="1">
+						<i:params>
+							<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE+TRM_PARENTNODE</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoRefresh" t="Обновить" />
+				</i:menu>
+			</i:level-menu>
+		</i:tree-level>
+	</i:tree-level>
+	<!-- Расходные договра по приходному договору -->
+	<i:tree-level n="OutContractsUnderContract" ot="OutContracts" virtual="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+				SELECT 
+					NULL AS ObjectID,
+					'Расходные договоры' AS TITLE,
+					0 AS IS_LEAF,
+					cast(@@ParentID(2) as uniqueidentifier) AS FolderID,
+          cast(@@ParentID(1) as uniqueidentifier) AS ContractID,
+          dbo.GetSumString((SELECT SUM(oc.Sum) FROM dbo.OutContract oc 
+	                            inner join dbo.[Contract] c WITH(NOLOCK) on oc.[Contract] = c.ObjectID
+	                            inner join dbo.Folder f WITH(NOLOCK) on c.Project = f.ObjectID 
+                            WHERE f.ObjectID = @@ParentID(2)), NULL) as OutContractsSum
+				WHERE 
+					EXISTS ( SELECT 1 FROM dbo.OutContract oc 
+	                    inner join dbo.[Contract] c WITH(NOLOCK) on oc.[Contract] = c.ObjectID
+	                    inner join dbo.Folder f WITH(NOLOCK) on c.Project = f.ObjectID 
+                    WHERE f.ObjectID = @@ParentID(2))
+			]]>
+      </ds:cmd-text>
+		</ds:data-source>
+		<i:level-menu>
+			<i:menu>
+				<i:caption>@@Title</i:caption>
+				<i:menu-item action="DoCreate" t="Создать расходный договор">
+					<i:params>
+						<i:param n="ObjectType">OutContract</i:param>
+						<i:param n="URLPARAMS">.Contract=@@ContractID</i:param>
+						<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-section t="Информация" n="Info">
+					<i:menu-item-info>
+						<i:caption>Общая сумма договоров</i:caption>
+						<i:value>@@OutContractsSum</i:value>
+					</i:menu-item-info>
+				</i:menu-section>
+			</i:menu>
+		</i:level-menu>
+		<!-- Расходные договры-->
+		<i:tree-level n="OutContractUnderContract" ot="OutContract" alias="oc" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					  SELECT DISTINCT
+						  oc.ObjectID, 
+						  '[' + org.Name + '] №' + isnull(oc.Number, '(номер не указан)') + ' - ' + dbo.GetSumString(oc.[Sum], null) AS TITLE,
+						  @@ISLEAF,
+              org.Name as OrgName,
+              (CASE
+                WHEN EXISTS(SELECT TOP 1 * 
+					              FROM dbo.OutContract ocInt 
+					              JOIN dbo.OutDoc od WITH(NOLOCK) ON od.OutContract = ocInt.ObjectID
+				              WHERE (ocInt.[Contract] = @@ParentID(2)) AND (od.Signed = 0) AND (GETDATE() >= od.[Date]) AND oc.ObjectID = ocInt.ObjectID) THEN 
+		              'NotSignedOutdated'
+	              WHEN  EXISTS(SELECT TOP 1 * 
+					              FROM dbo.OutContract ocInt 
+					              JOIN dbo.OutDoc od WITH(NOLOCK) ON od.OutContract = ocInt.ObjectID
+				              WHERE (ocInt.[Contract] = @@ParentID(2)) AND (od.Signed = 0) AND (GETDATE() < od.[Date]) AND oc.ObjectID = ocInt.ObjectID) THEN 
+		              'NotSigned'
+	              ELSE
+		              'AllSigned'
+               END) AS ICON_SELECTOR,
+						  f.ObjectID AS FolderID
+					  FROM
+						  dbo.OutContract oc 
+	            join dbo.[Contract] c WITH(NOLOCK) on oc.[Contract] = c.ObjectID
+	            join dbo.Folder f WITH(NOLOCK) on c.Project = f.ObjectID
+	            join dbo.Organization org WITH(NOLOCK) on oc.Org = org.ObjectID
+					  WHERE 
+						  (f.ObjectID = @@ParentID(3) AND SEARCH_CONDITIONS)
+						  OR 
+						  (oc.ObjectID = @@OBJECT_ID)
+				  ]]>
+        </ds:cmd-text>
+				<ds:order-by>OrgName</ds:order-by>
+			</ds:data-source>
+			<i:tree-level ref="OutDocUnderOutContract" />
+		</i:tree-level>
+	</i:tree-level>
+	<!-- Расходные документы под расходным договром-->
+	<i:tree-level n="OutDocUnderOutContract" ot="OutDoc" alias="od" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+					  SELECT DISTINCT
+						  od.ObjectID, 
+						  '['+ CONVERT(varchar(10), od.[Date], 4) + '] - ' + dbo.GetSumString(od.Sum, NULL) + ' - ' + dt.ShortName + ' №' + isnull(od.Number, '(не указан)')  AS TITLE,
+              od.[Date] as OutDocDate,
+						  @@ISLEAF,
+              (CASE
+		            WHEN  (od.Signed = 0) AND (od.[Date] < GETDATE()) THEN 
+			              'NotSignedOutdated'
+		            WHEN  (od.Signed = 0) AND (od.[Date] > GETDATE()) THEN 
+			              'NotSigned'
+		            ELSE
+			              'Signed'
+		           END) AS ICON_SELECTOR
+					  FROM
+						 dbo.OutDoc od WITH (NOLOCK)
+	            join dbo.OutContract oc WITH (NOLOCK) on od.OutContract = oc.ObjectID
+              join dbo.[DocType] dt WITH (NOLOCK) on od.Type = dt.ObjectID
+					  WHERE 
+						  (oc.ObjectID = @@ParentID(1) AND SEARCH_CONDITIONS)
+						  OR 
+						  (od.ObjectID = @@OBJECT_ID)
+				  ]]>
+      </ds:cmd-text>
+			<ds:order-by>OutDocDate</ds:order-by>
+		</ds:data-source>
+	</i:tree-level>
+	<!-- Расходные документы под приходным договром-->
+	<i:tree-level n="OutDocsUnderContract" ot="OutDocs" virtual="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+            SELECT
+						  	NULL AS ObjectID,
+					      'Расходные документы без Договора' AS TITLE,
+					      0 AS IS_LEAF,
+					      cast(@@ParentID(1) as uniqueidentifier) AS ContractID,
+                cast(@@ParentID(2) as uniqueidentifier) AS FolderID,
+                (CASE
+                  WHEN EXISTS(SELECT TOP 1 * 
+		                      FROM dbo.OutDoc od 
+	                          WHERE (od.[Contract] = @@ParentID(1)) AND (od.Signed = 0) AND (GETDATE() >= od.[Date])) THEN 
+                      'NotSignedOutdated'
+                  WHEN EXISTS(SELECT TOP 1 * 
+		                      FROM dbo.OutDoc od  
+	                          WHERE (od.[Contract] = @@ParentID(1)) AND (od.Signed = 0) AND (GETDATE() < od.[Date])) THEN 
+                      'NotSigned'
+                  ELSE
+                      'AllSigned'
+                 END) AS ICON_SELECTOR,
+                dbo.GetSumString((SELECT SUM(oc.Sum) FROM dbo.OutContract oc 
+	                                  inner join dbo.[Contract] c WITH(NOLOCK) on oc.[Contract] = c.ObjectID
+	                               WHERE c.ObjectID = @@ParentID(1)), NULL) as OutDocSum
+				    WHERE 
+					      EXISTS ( SELECT 1 FROM dbo.OutDoc od 
+	                          inner join dbo.[Contract] c WITH(NOLOCK) on od.[Contract] = c.ObjectID
+                          WHERE c.ObjectID = @@ParentID(1))
+				  ]]>
+      </ds:cmd-text>
+		</ds:data-source>
+		<i:level-menu>
+			<i:menu>
+				<i:caption>@@Title</i:caption>
+				<i:menu-item action="DoCreate" t="Создать расходный документ">
+					<i:params>
+						<i:param n="ObjectType">OutDoc</i:param>
+						<i:param n="URLPARAMS">.Contract=@@ContractID</i:param>
+						<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-section t="Информация" n="Info">
+					<i:menu-item-info>
+						<i:caption>Общая сумма расходных документов без Договора</i:caption>
+						<i:value>@@OutDocSum</i:value>
+					</i:menu-item-info>
+				</i:menu-section>
+			</i:menu>
+		</i:level-menu>
+		<!-- Расходные документы-->
+		<i:tree-level n="OutDocUnderContract" ot="OutDoc" alias="od" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					  SELECT DISTINCT
+						  od.ObjectID, 
+						  '['+ CONVERT(varchar, od.[Date], 4) + '] - ' + dbo.GetSumString(od.Sum, NULL) + ' - ' +  dt.ShortName + ' №' + isnull(od.Number, '(не указан)')  AS TITLE,
+						  @@ISLEAF,
+              od.[Date] as OutDocDate,
+              (CASE
+		            WHEN  (od.Signed = 0) AND (od.[Date] < GETDATE()) THEN 
+			              'NotSignedOutdated'
+		            WHEN  (od.Signed = 0) AND (od.[Date] > GETDATE()) THEN 
+			              'NotSigned'
+		            ELSE
+			              'Signed'
+		           END) AS ICON_SELECTOR
+					  FROM
+						   dbo.OutDoc od WITH (NOLOCK)
+	              join dbo.[Contract] c WITH (NOLOCK) on od.[Contract] = c.ObjectID
+	              join dbo.[DocType] dt WITH (NOLOCK) on od.[Type] = dt.ObjectID
+					  WHERE 
+						  (c.ObjectID = @@ParentID(2) AND SEARCH_CONDITIONS)
+						  OR 
+						  (od.ObjectID = @@OBJECT_ID)
+				  ]]>
+        </ds:cmd-text>
+				<ds:order-by>OutDocDate</ds:order-by>
+			</ds:data-source>
+		</i:tree-level>
+	</i:tree-level>
+	<!-- Виртуальный группирующий уровень "Расходы без документов по договору"-->
+	<i:tree-level n="OutcomesUnderContract" ot="Outcomes" virtual="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+				  SELECT 
+					  NULL AS ObjectID,
+					  'Расходы без Договора' AS TITLE,
+					  0 AS IS_LEAF,
+					  cast(@@ParentID(2) as uniqueidentifier) AS FolderID,
+            cast(@@ParentID(1) as uniqueidentifier) AS ContractID,
+            dbo.GetSumString(dbo.GetProjectSupFeeSum(@@ParentID(1)) + (SELECT SUM(oc.Sum) FROM dbo.Outcome oc 
+	                            inner join dbo.[Contract] c WITH(NOLOCK) on oc.[Contract] = c.ObjectID
+                            WHERE c.ObjectID = @@ParentID(1)), NULL) as OutcomesSum,
+            (CASE
+              WHEN EXISTS(SELECT TOP 1 * 
+                          FROM dbo.Outcome o 
+                          WHERE (o.[Contract] = @@ParentID(1)) AND (o.Fact = 0) AND (GETDATE() >= o.[Date])) 
+                 THEN 'NotPaidOutdated'
+              WHEN EXISTS(SELECT TOP 1 * 
+                          FROM dbo.Outcome o  
+                          WHERE (o.[Contract] = @@ParentID(1)) AND (o.Fact = 0) AND (GETDATE() < o.[Date])) 
+                 THEN    'NotPaid'
+              ELSE
+                  'AllPaid'
+             END) AS ICON_SELECTOR
+				  WHERE 
+					  EXISTS ( SELECT 1 FROM dbo.Outcome o 
+	                      inner join dbo.[Contract] c WITH(NOLOCK) on o.[Contract] = c.ObjectID                 
+                      WHERE c.ObjectID = @@ParentID(1))
+			  ]]>
+      </ds:cmd-text>
+		</ds:data-source>
+		<i:level-menu>
+			<i:menu>
+				<i:caption>@@Title</i:caption>
+				<i:menu-item action="DoCreate" t="Создать расход по проекту">
+					<i:params>
+						<i:param n="ObjectType">Outcome</i:param>
+						<i:param n="URLPARAMS">.Contract=@@ContractID</i:param>
+						<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-section t="Информация" n="Info">
+					<i:menu-item-info>
+						<i:caption>Общая сумма расходов без договора</i:caption>
+						<i:value>@@OutcomesSum</i:value>
+					</i:menu-item-info>
+				</i:menu-section>
+			</i:menu>
+		</i:level-menu>
+		<!--Расходны по приходному договору -->
+		<i:tree-level n="OutcomesUnderContract" ot="Outcome" alias="o" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					  SELECT DISTINCT
+	            o.ObjectID,
+	            ('[ ' + CONVERT(varchar, o.[Date], 4)+' ]' + ' - ' + dbo.GetSumString(o.[Sum], NULL) + ' - ' + ot.Name) AS TITLE,
+	            1 as IS_LEAF,
+	            (CASE
+		            WHEN  (o.Fact = 0) AND (o.[Date] < GETDATE()) THEN 
+			              'NotPaidOutdated'
+		            WHEN  (o.Fact = 0) AND (o.[Date] > GETDATE()) THEN 
+			              'NotPaid'
+		            ELSE
+			              'Paid'
+		           END) AS ICON_SELECTOR	
+            FROM
+              dbo.Outcome o
+	            join dbo.[Contract] c on o.[Contract] = c.ObjectID
+	            join dbo.OutType ot WITH (NOLOCK) on o.[Type] = ot.ObjectID
+					  WHERE 
+						  (c.ObjectID = @@ParentID(2) AND SEARCH_CONDITIONS)
+						  OR 
+						  (o.ObjectID = @@OBJECT_ID)
+				  ]]>
+        </ds:cmd-text>
+			</ds:data-source>
+		</i:tree-level>
+	</i:tree-level>
+	<!-- Виртуальный группирующий уровень "Авансовые отчеты"-->
+	<i:tree-level n="AOsUnderContract" ot="AOs" virtual="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+				  SELECT 
+					  NULL AS ObjectID,
+					  'Авансовые отчеты' AS TITLE,
+					  0 AS IS_LEAF,
+					  cast(@@ParentID(2) as uniqueidentifier) AS FolderID,
+            cast(@@ParentID(1) as uniqueidentifier) AS ContractID,
+            dbo.GetSumString((SELECT SUM(a.[Sum]) FROM dbo.AO a 
+	                              inner join dbo.[Contract] c WITH(NOLOCK) on a.[Contract] = c.ObjectID
+                              WHERE c.ObjectID = @@ParentID(1)), NULL) as AOSum,
+            (CASE 
+		            WHEN EXISTS(SELECT TOP 1 * 
+					                  FROM dbo.AOLimit al 
+						                  join dbo.AOReason ar WITH (NOLOCK) ON ar.ObjectID = al.Reason 
+						                  inner join (SELECT SUM(aInt.[Sum]) as AOSum, ar.ObjectID as AOReason  
+									                        FROM dbo.AO aInt 
+										                        join dbo.AOReason ar WITH (NOLOCK) ON aInt.Reason = ar.ObjectID
+									                        WHERE aInt.[Contract] = @@ParentID(1)
+									                        GROUP BY ar.ObjectID) AO ON AO.AOSum > al.[Sum] AND AO.AOReason = al.Reason
+					                  WHERE  
+						                  al.[Contract] = @@ParentID(1)) 
+			            THEN 'OverLimit'
+		            ELSE
+			            'NotExceedLimit'
+	            END) AS ICON_SELECTOR
+				  WHERE 
+					  EXISTS ( SELECT 1 FROM dbo.AO a 
+	                    inner join dbo.[Contract] c WITH(NOLOCK) on a.[Contract] = c.ObjectID                 
+                     WHERE c.ObjectID = @@ParentID(1))
+			  ]]>
+      </ds:cmd-text>
+		</ds:data-source>
+		<i:level-menu>
+			<i:menu>
+				<i:caption>@@Title</i:caption>
+				<i:menu-item action="DoCreate" t="Создать АО по проекту">
+					<i:params>
+						<i:param n="ObjectType">AO</i:param>
+						<i:param n="URLPARAMS">.Contract=@@ContractID</i:param>
+						<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-section t="Информация" n="Info">
+					<i:menu-item-info>
+						<i:caption>Общая сумма авансовых отчетов</i:caption>
+						<i:value>@@AOSum</i:value>
+					</i:menu-item-info>
+				</i:menu-section>
+			</i:menu>
+		</i:level-menu>
+		<!--Авансовые отчеты, сгруппированные по типам -->
+		<i:tree-level n="AOReasonUnderContract" ot="AOReason" alias="a" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+              SELECT
+                ar.ObjectID as ObjectID,
+                (ar.Name + ' - ' + dbo.GetSumString(SUM(a.[Sum]), NULL) + ISNULL(' Лимит: '+ CONVERT(varchar(100), al.[Sum], 1), ' (Лимит не определен)')) AS TITLE,
+                1 as IS_LEAF,
+                (CASE
+                  WHEN al.[Sum] IS NULL THEN
+                  'LimitNotDefined'
+                  WHEN 80 < (SUM(a.[Sum])/al.[Sum]*100) AND (SUM(a.[Sum])/al.[Sum]*100) <= 100 THEN
+                  'CloseToExceedLimit'
+                  WHEN (SUM(a.[Sum])/al.[Sum]*100) > 100 THEN
+                  'OverLimit'
+                  ELSE
+                  'NotExceedLimit'
+                 END) AS ICON_SELECTOR,
+                ar.Name
+              FROM
+                dbo.AO a
+                join dbo.[Contract] c WITH (NOLOCK) on a.[Contract] = c.ObjectID
+                join dbo.AOReason ar WITH (NOLOCK) on ar.ObjectID = a.Reason
+                left join dbo.AOLimit al WITH (NOLOCK) on al.[Contract] = a.[Contract] AND al.Reason = a.Reason
+              WHERE 
+                (c.ObjectID = @@ParentID(2) AND SEARCH_CONDITIONS)
+                OR 
+                (ar.ObjectID = @@OBJECT_ID)
+              GROUP BY ar.ObjectID, ar.Name, al.[Sum] 
+				  ]]>
+        </ds:cmd-text>
+				<ds:order-by>ar.Name</ds:order-by>
+			</ds:data-source>
+		</i:tree-level>
+	</i:tree-level>
+</ds:metadata>

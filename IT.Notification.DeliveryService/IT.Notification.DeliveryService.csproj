@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B81668F2-02E7-439D-A9ED-C51E36B8648F}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Croc.IncidentTracker.Notification.DeliveryService</RootNamespace>
+    <AssemblyName>Croc.IncidentTracker.Notification.DeliveryService</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>"%24/IT.root/IT", PXCAAAAA</SccProjectName>
+    <SccLocalPath>..</SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>MSSCCI:Microsoft Visual SourceSafe</SccProvider>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Strong name keys\public.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>true</DelaySign>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\IT.Web\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\IT\Source\APP\IT.Web\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Croc.XmlFramework.Commands, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Commands.dll</HintPath>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Commands.Interop, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Commands.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Data.Public, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Data.Public.dll</HintPath>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Public, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Public.dll</HintPath>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.XUtils, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.XUtils.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Common project files\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="DeliveryService.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DeliveryService.Designer.cs">
+      <DependentUpon>DeliveryService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DeliveryServiceInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DeliveryServiceInstaller.Designer.cs">
+      <DependentUpon>DeliveryServiceInstaller.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IT.Commands.Interop\IT.Commands.Interop.csproj">
+      <Project>{93CF0CA9-8182-4604-B31A-C30F29616F7A}</Project>
+      <Name>IT.Commands.Interop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Commands\IT.Commands.csproj">
+      <Project>{0C584F7F-80E5-4E53-8347-5F5C8EA7A0FC}</Project>
+      <Name>IT.Commands</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Core\IT.Core.csproj">
+      <Project>{7597DE6E-EE57-44D4-AD6E-393416A4868E}</Project>
+      <Name>IT.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Storage\IT.Storage.csproj">
+      <Project>{A5E09F69-A28F-4A24-A6F8-C0B8909D70E7}</Project>
+      <Name>IT.Storage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Tools.DbCheck\IT.Tools.DbCheck.csproj">
+      <Project>{4079831B-3BA7-4A0E-A0EB-301928EBC799}</Project>
+      <Name>IT.Tools.DbCheck</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Utility\IT.Utility.csproj">
+      <Project>{BDFC46ED-DE3D-4268-8195-EA96DD130DC2}</Project>
+      <Name>IT.Utility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="it-MessagingFormatter-HTML.xsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DeliveryService.resx">
+      <DependentUpon>DeliveryService.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DeliveryServiceInstaller.resx">
+      <DependentUpon>DeliveryServiceInstaller.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>Клиентский профиль .NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Установщик Windows 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="Sign" DependsOnTargets="AfterBuild">
+    <GetFrameworkSdkPath>
+      <Output TaskParameter="Path" PropertyName="SdkPath" />
+    </GetFrameworkSdkPath>
+    <Exec Command="&quot;$(SdkPath)Bin\sn.exe&quot; -R &quot;$(TargetPath)&quot; &quot;..\Strong name keys\keyPair.snk&quot;" Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
+  </Target>
+</Project>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="windows-1251" ?> 
+<!--
+********************************************************************************
+	Система оперативного управления проектами - Incident Tracker
+	ЗАО КРОК инкорпорейтед, 2005
+	
+	Отчет "Баланс списаний сотрудника" (код в ФС - 9.18)
+********************************************************************************
+-->
+<r:report 
+	r:t="Баланс списаний сотрудника"
+	r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll"
+	r:class="Croc.IncidentTracker.ReportService.Reports.r_EmployeeExpensesBalance" 
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	
+	
+	xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd
+		
+	"
+>
+	<!-- ОБЩИЕ ОПРЕДЕЛЕНИЯ -->
+	<r:common>
+		<!-- 
+			ОПРЕДЕЛЕНИЯ СПЕЦИАЛЬНЫХ СТИЛЕЙ
+			Используются только в данном отчете; основаны на стиле TABLE_CELL
+			(NB! При изменении стиля TABLE_CELL данные стили так же д.б. скорректированы!)
+		-->
+		<!-- Специальный стиль: отображение дня из периода НЕ-работы -->
+		<r:style-class r:n="TABLE_CELL_COLOR_NOWORK"><![CDATA[
+			font-family="Verdana" font-size="8pt" font-weight="normal"
+			color="#30353A" background-color="#D0D0D0"
+			border="1px solid" border-color="#50729C" 
+			padding="2px 5px 3px 5px"
+		]]></r:style-class>
+		<!-- Специальный стиль: отображение "выходного" дня -->
+		<r:style-class r:n="TABLE_CELL_COLOR_FREE"><![CDATA[
+			font-family="Verdana" font-size="8pt" font-weight="normal"
+			color="#30353A" background-color="#CCDDEE"
+			border="1px solid" border-color="#50729C" 
+			padding="2px 5px 3px 5px"
+		]]></r:style-class>
+		<!-- Специальный стиль: отображение данных "положительного" баланса -->
+		<r:style-class r:n="TABLE_CELL_COLOR_GREEN"><![CDATA[
+			font-family="Verdana" font-size="8pt" font-weight="normal"
+			color="#30353A" background-color="#AAFF99"
+			border="1px solid" border-color="#50729C" 
+			padding="2px 5px 3px 5px"
+		]]></r:style-class>
+		<!-- Специальный стиль: отображение данных "отрицательного" баланса -->
+		<r:style-class r:n="TABLE_CELL_COLOR_RED"><![CDATA[
+			font-family="Verdana" font-size="8pt" font-weight="normal"
+			color="#30353A" background-color="#FFCCC0"
+			border="1px solid" border-color="#50729C" 
+			padding="2px 5px 3px 5px"
+		]]></r:style-class>
+		
+	</r:common>
+	
+	<!-- ПАРАМЕТРЫ ОТЧЕТА -->
+	<r:params>
+		<!-- дата начала периода, обязательный параметр -->
+		<r:param r:n="IntervalBegin" r:vt="date" />
+		<!-- дата конца периода, необязательный параметр (если не задан - то отчет за один день) -->
+		<r:param r:n="IntervalEnd" r:vt="date" />
+		<!-- идентификатор сотрудника, по которому строится отчет, обязательный параметр -->
+		<r:param r:n="Employee" r:vt="uuid" r:required="true" />
+		<!-- признак "Показывть выходные дни без списаний" -->
+		<r:param r:n="ShowFreeWeekends" r:vt="boolean" r:default="0" />
+		<!-- используемое отображение едениц времени (0 - дни/часы/минуты, 1 - просто часы) -->
+		<r:param r:n="TimeMeasureUnits" r:vt="i4" r:default="0" />
+		<!-- признак "включать в отчет условия поиска" -->
+		<r:param r:n="ShowRestrictions" r:vt="boolean" r:default="0" />
+	</r:params>
+	<r:data-sources>
+		<r:config-data-source r:n="dsMain" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.EmployeeExpencesDS" r:section=""/>
+		<r:config-data-source r:n="dsAdditionaly" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.EmployeeExpencesAdditionalDS" r:section=""/>
+	</r:data-sources>
+</r:report>

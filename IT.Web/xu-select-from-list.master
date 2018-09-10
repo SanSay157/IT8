@@ -1,0 +1,204 @@
+<%@ Master 
+	Language="C#"
+	ClassName="Croc.XmlFramework.Web.XSelectFromListMaster"  
+%>
+<%@ Implements 
+	Interface="Croc.XmlFramework.Web.IXMasterPageControl" 
+%>
+
+<script runat="server" enableviewstate="false">
+
+	/// <summary>
+	/// Управление видимостью управляющих элементов мастер-страницы
+	/// </summary>
+	/// <remarks>
+	/// Реализация метода IXMasterPageControl.HideControl()
+	/// </remarks>
+	/// <param name="component">Элемент мастер-страницы</param>
+	public void HideControl(XMasterPageComponent component)
+	{
+		switch (component)
+		{
+			case XMasterPageComponent.OpenHelp: cmdOpenHelp.Visible = false; break;
+				
+			case XMasterPageComponent.Caption: Caption.Visible = false; break;
+			case XMasterPageComponent.SpecialCaption: SpecialCaption.Visible = false; break;
+				
+			case XMasterPageComponent.Refresh: cmdRefresh.Visible = false; break;
+			case XMasterPageComponent.ClearFilter: cmdClearFilter.Visible = false; break;
+			case XMasterPageComponent.HideFilter: cmdHideFilter.Visible = false; break;
+			case XMasterPageComponent.SelectAll: cmdSelectAll.Visible = false; break;
+			case XMasterPageComponent.InvertSelection: cmdInvertSelection.Visible = false; break;
+			case XMasterPageComponent.Deselect: cmdDeselect.Visible = false; break;
+			case XMasterPageComponent.Ok: cmdOk.Visible = false; break;
+			case XMasterPageComponent.Cancel: cmdCancel.Visible = false; break;
+
+			case XMasterPageComponent.PaneFilter: xPaneFilter.Parent.Visible = false; break;
+			case XMasterPageComponent.PaneMain: xPaneMain.Parent.Visible = false; break;
+		}
+	}
+
+	/// <summary>
+	/// Инициализация адреса перехода для кнопок типа "Назад", "Домой", "Помощ" и т.п.
+	/// </summary>
+	/// <remarks>
+	/// Реализация метода IXMasterPageControl.SetControlUrl()
+	/// </remarks>
+	/// <param name="component">Элемент мастер-страницы</param>
+	/// <param name="sUrl">URL</param>
+	public void SetControlUrl(XMasterPageComponent component, string sUrl)
+	{
+		switch (component)
+		{
+			case XMasterPageComponent.OpenHelp: cmdOpenHelp.NavigateUrl = sUrl; break;
+		}
+	}
+
+	/// <summary>
+	/// Инициализация страницы в состояние "В доступе отказано"
+	/// </summary>
+	public void SetAccessDenied()
+	{
+		xPaneAccessDenied.Visible = true;
+		xPaneAccessDenied.Style["display"] = "block";
+		xPaneFilter.Visible = false;
+		xPaneMain.Visible = false;
+	}
+
+    /// <summary>
+    /// Метод осуществляет управление видимостью компонентов master-страницы.
+    /// </summary>
+    /// <param name="component">Элемент master\-страницы (значение
+    ///                         перечисления <see cref="Croc.XmlFramework.Web.XMasterPageComponent" text="XMasterPageComponent" />).</param>
+    public void SetControlVisiblity(XMasterPageComponent component, bool bVisible)
+    {
+    }
+
+    /// <summary>
+    /// Метод осуществляет установку дополнительных аттрибутов  компонентов master-страницы.
+    /// </summary>
+    public void SetAdditionalAttribute(XMasterPageComponent component, string sAtrributeName, string sAtrributeValue)
+    {
+    }
+</script>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xfw="http://www.croc.ru/XmlFramework/Behaviors">
+<head runat="server" enableviewstate="false">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"/>
+    <title>Заголовок списка</title>
+    <link rel="SHORTCUT ICON" href="Icons/xu-application-icon.ico"/>
+    <link href="x.css" rel="STYLESHEET" type="text/css" />
+</head>
+<body runat="server" enableviewstate="false" scroll="no">
+    <form id="XListForm" runat="server" enableviewstate="false">
+        <table ID="xLayoutGrid" runat="server" class="x-page-layoutgrid" cellpadding="0" cellspacing="0">
+            <tr runat="server">
+                <td ID="xPaneHeader" runat="server" class="x-pane-header">
+                    <table runat="server" class="x-header" width="100%" height="100%">
+                        <tr runat="server">
+                            <td id="Caption" class="x-header-title" runat="server"><%= Page.Title %></td>
+                            <td id="SpecialCaption" class="x-header-special-title" runat="server"/>
+                            
+                            <td runat="server" class="x-header-control" nowrap>
+                            
+                               <button id="cmdRefresh"
+                                    runat="server"
+                                    CLASS="x-button x-button-nav x-button-control it-toolbar-button" 
+					                BUTTONIMAGE="Images/ToolBar/btn-Refresh.gif" 
+					                STYLE="position: relative; overflow: hidden; width: 30px; height: 30px; padding: 0px; border-width: 1px; border-color: #6699cc; background-color: #336699; cursor: hand; behavior:url(x-ImageButton.htc) url(x-ToolTip.htc); " 
+					                TOOLTIPHTML="<B>Обновить данные представления</B><BR/>При нажатии на кнопку все данные представления будут обновлены"
+				               />
+						        
+						       <button id="cmdClearFilter"
+				                    runat="server"
+				                    CLASS="x-button x-button-nav x-button-control it-toolbar-button" 
+				                    BUTTONIMAGE="Images/ToolBar/btn-FilterClear.gif" 
+							        STYLE="position: relative; overflow: hidden; width: 30px; height: 30px; padding: 0px; border-width: 1px; border-color: #6699cc; background-color: #336699; cursor: hand; behavior:url(x-ImageButton.htc) url(x-ToolTip.htc); " 
+					                TOOLTIPHTML="<B>Очистить фильтр</B><BR/>Нажмите на кнопку для сброса настроек фильтра"
+						       />
+						       <button id="cmdHideFilter"
+                                    runat="server"
+                                    CLASS="x-button x-button-nav x-button-control it-toolbar-button" 
+							        BUTTONIMAGE="Images/ToolBar/btn-FilterHide.gif" 
+							        SWITCHBUTTONIMAGE="Images/ToolBar/btn-FilterShow.gif"
+							        STYLE="position: relative; overflow: hidden; width: 30px; height: 30px; padding: 0px; border-width: 1px; border-color: #6699cc; background-color: #336699; cursor: hand; behavior:url(x-ImageButton.htc) url(x-ToolTip.htc); " 
+							        TOOLTIPHTML="<B>Скрыть отображение фильтра</B><BR/>При нажатии на кнопку фильтр будет скрыт."/>
+                             	<asp:HyperLink ID="cmdOpenHelp" runat="server" TabIndex="-1" CssClass="x-open-help-control"
+									Target="_blank" ImageUrl="Images/x-open-help.gif">Справка</asp:HyperLink>
+								&nbsp;
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr runat="server">
+                <td ID="xPaneFilter" runat="server" class="x-pane-filter">
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolderForFilter" runat="server">
+                        Зона размещения фильтра
+                    </asp:ContentPlaceHolder>
+                </td>
+            </tr>
+            <tr runat="server">
+                <td ID="xPaneMain" runat="server" class="x-pane-main">
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolderForList" runat="server">
+                        Зона размещения списка объектов
+                    </asp:ContentPlaceHolder>
+                </td>
+            </tr>
+			<tr id="xPaneAccessDenied" style="display:none;" runat="server">
+				<td class="x-pane-main-warning">Нет доступа...</td>
+			</tr>
+            <tr runat="server">
+				<td ID="xPaneСontrol" runat="server" class="x-pane-control">
+				<table ID="xBarControl" runat="server" class="x-controlbar">
+					<tr>
+						<td class="x-controlbar-left-zone" nowrap>
+							<asp:Button runat="server" ID="cmdSelectAll" 
+								CssClass="x-button" 
+								ToolTip="Выбрать все элементы"
+								Enabled="False"
+								Text="Выбрать все"
+								UseSubmitBehavior="False" 
+								CausesValidation="False"/>
+
+							<asp:Button runat="server" ID="cmdInvertSelection" 
+								CssClass="x-button" 
+								ToolTip="Изменить выделение элементов"
+								Enabled="False"
+								Text="Изменить выделение"
+								UseSubmitBehavior="False" 
+								CausesValidation="False"/>
+
+							<asp:Button runat="server" ID="cmdDeselect" 
+								CssClass="x-button" 
+								ToolTip="Снять выделение"
+								Enabled="False"
+								Text="Снять выделение"
+								UseSubmitBehavior="False" 
+								CausesValidation="False"/>
+						</td>
+						<td class="x-bar-control-place x-editor-bar-control-place">
+							<asp:Button runat="server" ID="cmdOk" 
+								CssClass="x-button-wide" 
+								ToolTip="Выбрать"
+								Enabled="False"
+								Text="OK"
+								UseSubmitBehavior="False" 
+								CausesValidation="False"/>
+
+							<asp:Button runat="server" ID="cmdCancel" 
+								CssClass="x-button-wide" 
+								ToolTip="Закрыть окно" 
+								Enabled="False"
+								Text="Отменить"
+								UseSubmitBehavior="False" 
+								CausesValidation="False"/>								
+						</td>
+					</tr>
+				</table>
+				</td>
+			</tr>
+        </table>
+    </form>
+</body>
+</html>

@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<!--
+	CROC XML Framework .NET
+	КОНФИГУРАЦИОННЫЙ ФАЙЛ ОПРЕДЕЛЕНИЯ ПРИКЛАДНЫХ ЭЛЕМЕНТОВ ЯДРА
+	
+	Внимание! Файл описывает конфигурацию модельного приложения учебного курса 
+	и может использоваться только как пример конфигурационного файла!
+-->
+<server-objects xmlns="http://www.croc.ru/Schemas/XmlFramework/Core/Config/ServerObjects/1.0" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Core/Config/ServerObjects/1.0 x-net-server-objects-schema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!-- ПЕРЕЧЕНЬ СБОРОК ПРИЛОЖЕНИЯ -->
+  <assemblies>
+    <assembly>Croc.XmlFramework.Commands</assembly>
+    <assembly>Croc.XmlFramework.ReportService.Commands</assembly>
+    <assembly>Croc.XmlFramework.ReportService</assembly>
+    <assembly>Croc.XmlFramework.TransferService.Commands</assembly>
+    <assembly>Croc.IncidentTracker.Commands</assembly>
+  </assemblies>
+  <!-- ПЕРЕЧЕНЬ GUARD-ОБЪЕКТОВ ПРИЛОЖЕНИЯ -->
+  <guards default-connection="ROConnection">
+    <guard n="CheckAppUser" class-name="Croc.IncidentTracker.Commands.Guards.CheckAppUserGuard"/>
+    <guard n="ListAccessCheck" class-name="Croc.IncidentTracker.Commands.Guards.ListAccessCheckGuard" />
+    <guard n="TreeAccessCheck" class-name="Croc.IncidentTracker.Commands.Guards.TreeAccessCheckGuard" />
+  </guards>
+  <!-- ПЕРЕЧЕНЬ ОПЕРАЦИЙ ПРИЛОЖЕНИЯ -->
+  <commands default-connection="ROConnection" default-guard="CheckAppUser">
+    <!--<command n="SendNotificationsAsync"
+			d="Рассылка сообщений"
+			class-name="Croc.IncidentTracker.Commands.FakeSendNotificationMailAsyncCommand"
+			connection="RWConnection"
+			is-public="false"
+			/>-->
+
+    <command n="GetKassBallance"
+      d="Возвращает текущий балланс ДС в кассе"
+      class-name="Croc.IncidentTracker.Commands.GetKassBallanceCommand"
+      connection="RWConnection"
+      is-public="true"
+			/>
+    
+    <command n="CheckDeadlinedIncidents"
+			d="Генерирует события для инцидетов с просроченным/надвигающимся дедлайном"
+			class-name="Croc.IncidentTracker.Commands.CheckDeadlinedIncidentsCommand"
+			connection="RWConnection"
+			is-public="true"
+			/>
+
+    <command n="UserSubscriptionForEventClass"
+			d="Управление подпиской пользователя"
+			class-name="Croc.IncidentTracker.Commands.UserSubscriptionForEventClassCommand"
+			connection="RWConnection"
+			is-public="true"
+			/>
+
+    <command n="GetCurrentUserNavInfo"
+			d="Получение данных, описывающих навигационные элементы, доступные для текущего пользователя"
+			class-name="Croc.IncidentTracker.Commands.GetCurrentUserNavInfoCommand"
+			connection="ROConnection"
+			is-public="true"
+			/>
+    <command n="GetCurrentUserProfile"
+			d="Получение данных объекта, описывающего настройки текущего пользователя"
+			class-name="Croc.IncidentTracker.Commands.GetCurrentUserProfileCommand"
+			connection="ROConnection"
+			is-public="true"
+			/>
+    <command n="GetExpensesData"
+			d="Получение детальных данных о затратах сотрудника за предыдущий, текущий месяц и текущий день"
+			class-name="Croc.IncidentTracker.Commands.GetExpensesDataCommand"
+			connection="ROConnection"
+			is-public="true"
+			/>
+    <command n="DeleteUnusedObjects"
+			d="Удаляет неиспользуемые объекты из БД"
+			class-name="Croc.IncidentTracker.Commands.DeleteUnusedObjectsCommand"
+			connection="RWConnection"
+			is-public="true"
+			/>
+    <command n="JobsScheduler"
+			d="Запускает планировщик заданий"
+			class-name="Croc.IncidentTracker.Jobs.JobsSchedulerCommand"
+			is-public="true"
+			/>
+    <command n="SaveObjectWithSignature"
+			d="Сохраняет XML-объект или множество XML-объектов с добавлением подписи к определенным полям"
+			class-name="Croc.IncidentTracker.Commands.SaveObjectWithSignatureCommand"
+			connection="RWConnection"
+			is-public="true"
+			/>
+    <command n="SaveTimeLossObject"
+			class-name="Croc.IncidentTracker.Commands.SaveTimeLossObjectCommand"
+			d="Сохраняет объекты Списание времени"
+			connection="RWConnection"
+			is-public="true"
+			/>
+
+    <command n="GetFilterTendersInfo"
+			d="Получения данных для фильтра списка тендеров"
+			class-name="Croc.IncidentTracker.Commands.GetFilterTendersInfoCommand"
+			is-public="true"
+			/>
+    <command n="GetCurrentUserClientProfile"
+			d="Получение xml-объекта с описанием текущего сотрудника-пользователя"
+			class-name="Croc.IncidentTracker.Commands.GetCurrentUserClientProfileCommand"
+			is-public="true"
+			/>
+    <command n="GetCurrentTime"
+			d="Получение времени на сервере"
+			class-name="Croc.XmlFramework.Commands.XGetCurrentTimeCommand"
+			is-public="true"
+			/>
+    <command n="GetSoftwareVersions"
+			d="Получение версий ПО на сервере"
+			class-name="Croc.XmlFramework.Commands.XGetServerSoftwareVersionCommand"
+			is-public="true"
+			/>
+    <command n="GetAssemblyVersions"
+			d="Получение версий сборок на сервере"
+			class-name="Croc.XmlFramework.Commands.XGetAssemblyVersionsCommand"
+			is-public="true"
+			/>
+    <command n="GetCurrentUser"
+			d="Возвращает информацию о пользователе, выполняющем данный запрос"
+			class-name="Croc.XmlFramework.Commands.XGetCurrentUserCommand"
+			is-public="true"
+			/>
+    <command n="GetListData"
+			d="Возвращает XML-данные списка, отображаемые компонентой CROC.XListView с подстановкой общих параметрв"
+			class-name="Croc.IncidentTracker.Commands.GetDataCommonCommand"
+			is-public="true"
+			guard-name="ListAccessCheck"
+			/>
+    <command n="XGetListData"
+			d="Возвращает XML-данные списка, отображаемые компонентой CROC.XListView"
+			class-name="Croc.XmlFramework.Commands.XGetListDataCommand"
+			is-public="false"
+			/>
+    <command n="GetTreeData"
+			d="Возвращает XML-данные иерархии, отображаемой компонентой CROC.XTreeView с подстановкой общих параметров"
+			class-name="Croc.IncidentTracker.Commands.GetDataCommonCommand"
+			is-public="true"
+			guard-name="TreeAccessCheck"
+			/>
+    <command n="XGetTreeData"
+			d="Возвращает XML-данные иерархии, отображаемой компонентой CROC.XTreeView"
+			class-name="Croc.IncidentTracker.Commands.GetTreeDataEntryCommand"
+			is-public="false"
+			/>
+    <command n="GetTreeMenu"
+			d="Возвращает описание меню для заданного узла иерархии с подстановкой общих параметров"
+			class-name="Croc.IncidentTracker.Commands.GetDataCommonCommand"
+			is-public="true"
+			/>
+    <command n="XGetTreeMenu"
+			d="Возвращает описание меню для заданного узла иерархии"
+			class-name="Croc.IncidentTracker.Commands.GetTreeMenuEntryCommand"
+			is-public="false"
+			/>
+    <command n="GetTreeNodeDrag"
+			d="Возвращает описание операции переноса для заданного узла иерархии"
+			class-name="Croc.XmlFramework.Extension.Commands.XXGetTreeNodeDragCommand"
+			is-public="true"
+			/>
+
+    <command n="GetObject"
+			d="Возвращает данные объекта, заданного или нового, в XML-формате"
+			class-name="Croc.IncidentTracker.Commands.GetObjectCommand"
+			is-public="true"
+			/>
+    <command n="GetObjects"
+			d="Возвращает список запрошенных объектов"
+			class-name="Croc.IncidentTracker.Commands.GetObjectsCommand"
+			is-public="true"
+			/>
+    <command n="GetProperty"
+			d="Возвращает данные свойства объекта из БД"
+			class-name="Croc.IncidentTracker.Commands.GetPropertyCommand"
+			is-public="true"
+			/>
+    <command n="GetTypeMD"
+			d="Возвращает метаданные для заданного ds-типа"
+			class-name="Croc.XmlFramework.Commands.XGetTypeMDCommand"
+			is-public="true"
+			/>
+    <command n="GetMetadataVersion"
+			d="Возвращает информацию о версии метаданных приложения"
+			class-name="Croc.XmlFramework.Commands.XGetMetadataVersionCommand"
+			is-public="true"
+			/>
+    <command n="GetMetadataRoot"
+			d="Возвращает корневой элемент метаданных приложения"
+			class-name="Croc.XmlFramework.Commands.XGetMetadataRootCommand"
+			is-public="true"
+			/>
+    <command n="GetMetadata"
+			d="Возвращает все метаданные приложения"
+			class-name="Croc.XmlFramework.Commands.XGetMetadataCommand"
+			is-public="true"
+			/>
+    <command n="SaveObject"
+			d="Сохраняет XML-объект или множество XML-объектов"
+			class-name="Croc.IncidentTracker.Commands.SaveObjectCommand"
+			connection="RWConnection"
+			is-public="true"
+			/>
+    <command n="ChunkUpload"
+			d="Загружает в БД данные 'кусками'"
+			class-name="Croc.XmlFramework.Commands.XChunkUploadCommand"
+			connection="RWConnection"
+			is-public="true"
+			/>
+    <command n="ChunkPurge"
+			d="Удаляет данные, загруженные посредством ChunkUpload"
+			class-name="Croc.XmlFramework.Commands.XChunkPurgeCommand"
+			connection="RWConnection"
+			is-public="true"
+			/>
+    <command n="DeleteObject"
+			d="Удаляет данные заданного ds-объекта из БД"
+			class-name="Croc.IncidentTracker.Commands.DeleteObjectCommand"
+			connection="RWConnection"
+			is-public="true"
+			/>
+    <command n="GetObjectsRights"
+			d="Проверка наличия прав на объекты"
+			class-name="Croc.IncidentTracker.Commands.GetObjectsRightsCommand"
+			is-public="true"
+			/>
+    <command n="GetObjectsRightsEx"
+			d="Проверка наличия прав на объекты в датаграмме"
+			class-name="Croc.IncidentTracker.Commands.GetObjectsRightsExCommand"
+			is-public="true"
+			/>
+    <command n="ExecuteDataSource"
+			d="Выполнение выделенного источника данных"
+			class-name="Croc.IncidentTracker.Commands.GetDataCommonCommand"
+			is-public="true"
+			/>
+    <command n="XExecuteDataSource"
+			d="Выполнение выделенного источника данных"
+			class-name="Croc.XmlFramework.Commands.XExecuteDataSourceCommand"
+			connection="RWConnection"
+			is-public="false"
+			/>
+    <command n="GetConfigElement"
+			d="Получение XML-элемента конфигурационного файла"
+			class-name="Croc.XmlFramework.Commands.XGetConfigElementCommand"
+			is-public="true"
+			/>
+    <command n="Reset"
+			d="Сброс сервера"
+			class-name="Croc.XmlFramework.Commands.XResetCommand"
+			is-public="true"
+			/>
+    <command n="EmployeeLocatorInCompanyTree"
+			class-name="Croc.IncidentTracker.Commands.EmployeeLocatorInCompanyTreeCommand"
+			is-public="true"
+			/>
+    <command n="IncidentLocatorInTree"
+			class-name="Croc.IncidentTracker.Commands.IncidentLocatorInTreeCommand"
+			is-public="true"
+			/>
+    <command n="FolderLocatorInTree"
+			class-name="Croc.IncidentTracker.Commands.FolderLocatorInTreeCommand"
+			is-public="true"
+			/>
+    <command n="ContractLocatorInTree"
+			class-name="Croc.IncidentTracker.Commands.ContractLocatorInTreeCommand"
+			is-public="true"
+			/>
+    <command n="GetObjectIdByExKey"
+			d="Получение идентификатора объекта, заданного значениями своих реквизитов"
+			class-name="Croc.IncidentTracker.Commands.GetObjectIdByExKeyCommand"
+			is-public="true"
+			/>
+    <!-- Для корректной работы этой операции в конфигурации так же должна быть определена операция GetObject -->
+    <command n="GetObjectByExKey"
+			d="Возвращает данные ds-объекта, заданного значениями своих реквизитов, в XML формате"
+			class-name="Croc.IncidentTracker.Commands.GetObjectByExKeyCommand"
+			is-public="true"
+			/>
+    <!-- Для корректной работы этой операции в конфигурации так же должна быть определена операция DeleteObject -->
+    <command n="DeleteObjectByExKey"
+			d="Удаляет данные ds-объекта, заданного значениями своих реквизитов, из БД"
+			class-name="Croc.IncidentTracker.Commands.DeleteObjectByExKeyCommand"
+			connection="RWConnection"
+			is-public="true"
+			/>
+    <command n="GetMailMsgInfo"
+			d="Возвращает информацию для создания письма"
+			class-name="Croc.IncidentTracker.Commands.GetMailMsgInfoCommand"
+			is-public="true"
+			/>
+    <command n="GetAvailableStatesOfUserRole"
+			d="Возвращает список доступных состояних для инцидента, в которые его может перевести текущий пользователей"
+			class-name="Croc.IncidentTracker.Commands.GetAvailableStatesOfUserRoleCommand"
+			is-public="true"
+			/>
+    <command n="MoveObjects"
+			d="Перенос объектов"
+			class-name="Croc.IncidentTracker.Commands.MoveObjectsCommand"
+			connection="RWConnection"
+			is-public="true"
+			/>
+    <command n="MoveFolder"
+			d="Перенос папок"
+			class-name="Croc.IncidentTracker.Commands.MoveFolderCommand"
+			connection="RWConnection"
+			is-public="true"
+			/>
+    <command n="GetEmployeesExpenses"
+			d="Получение данных о списаниях времени за период для списка сотрудников"
+			class-name="Croc.IncidentTracker.Commands.GetEmployeesExpensesCommand"
+			connection="RWConnection"
+			is-public="true"
+			/>
+    <!-- Операции Report Service -->
+    <command n="GetReportAvailableOutputFormatList"
+			d="Получение доступных выходных форматов отчета"
+			class-name="Croc.XmlFramework.ReportService.Commands.XGetReportAvailableOutputFormatListCommand"
+			is-public="true"
+			/>
+    <command n="GetReport"
+			d="Получение отчета"
+			class-name="Croc.XmlFramework.ReportService.Commands.XGetReportCommand"
+			is-public="true"
+			/>
+    <command n="GetReportsList"
+			d="Получение списка отчетов"
+			class-name="Croc.XmlFramework.ReportService.Commands.XGetReportsListCommand"
+			is-public="true"
+			/>
+    <command n="GetBinProperty"
+		  d="Возвращает данные двоичного свойства объекта из БД"
+			class-name="Croc.XmlFramework.Commands.XGetBinPropertyCommand"
+			is-public="true" />
+    <command n="UpdateActivityState"
+	    d="Обновляет состояние активности"
+			class-name="Croc.IncidentTracker.Commands.UpdateActivityStateCommand"
+			connection="RWConnection"
+			is-public="true" />
+    <command n="FactorizeProjectOutcome"
+	    d="Добовляем фактический платеж по проекту, погашая(удаляя) плановые на соответствующую сумму"
+			class-name="Croc.IncidentTracker.Commands.FactorizeProjectOutcomeCommand"
+			connection="RWConnection"
+			is-public="true" />
+
+    <!-- Операции Transfer Service -->
+    <command n="TransferServiceExportData" d="Обмен данными - экспорт" class-name="Croc.XmlFramework.TransferService.Commands.ExportCommand" is-public="true" />
+    <command n="TransferServiceImportData" d="Обмен данными - импорт" class-name="Croc.XmlFramework.TransferService.Commands.ImportCommand" is-public="true" connection="RWConnection" />
+  </commands>
+  <!-- ПЕРЕЧЕНЬ ОПЕРАЦИЙ-ОБРАБОТЧИКОВ СОБЫТИЙ -->
+  <!-- ПЕРЕЧЕНЬ ОПЕРАЦИЙ-ОБРАБОТЧИКОВ СОБЫТИЙ -->
+  <event-handlers default-connection="RWConnection">
+    <!-- Обработчик старта приложения -->
+    <event-handler n="OnApplicationStart" class-name="Croc.IncidentTracker.EventHandlers.Handler_OnApplicationStart">
+      <use-for event="OnApplicationStart"></use-for>
+    </event-handler>
+    <!-- Обработчик старта сессии -->
+    <event-handler n="OnSessionStart" class-name="Croc.IncidentTracker.EventHandlers.Handler_OnSessionStart">
+      <use-for event="OnSessionStart"></use-for>
+    </event-handler>
+  </event-handlers>
+</server-objects>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema 
+  xmlns="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" 
+  xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0" 
+  xmlns:mstns="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" 
+  targetNamespace="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" 
+  elementFormDefault="qualified" 
+  attributeFormDefault="unqualified"
+  version="1.0">
+  <xsd:import namespace="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" schemaLocation="x-net-interface-schema.xsd"/>
+  <xsd:import namespace="http://www.croc.ru/Schemas/XmlFramework/Data/1.0" schemaLocation="x-net-data-schema.xsd"/>
+  <xsd:attribute name="node-drag" type="xsd:NMTOKEN" />
+  <xsd:complexType name="tNodeDrag">
+    <xsd:sequence>
+      <xsd:element name="before-node-drag-handler" type="i:userCode" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="node-drag-handler" type="i:userCode" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="node-drag-over-handler" type="i:userCode" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="after-node-drag-over-handler" type="i:userCode" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="node-drag-drop-handler" type="i:userCode" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="node-drag-canceled-handler" type="i:userCode" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="i:nameAndRef"/>
+    <xsd:attribute name="allow-self-drop" type="ds:bit" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Признак разрешения переноса узлов самих на себя</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="allow-drop-to-parent" type="ds:bit" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Признак разрешения переноса узлов в текущего родителя</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="allow-drop-beside" type="ds:bit" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Признак разрешения переноса узлов вне узлов</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="allow-drop-to-subtree" type="ds:bit" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Признак разрешения переноса узлов в поддерево</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="cache-for" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>Признак кэширования описания операции переноса, если атрибут не указан, то кэшируется для уровня</xsd:documentation>
+      </xsd:annotation>
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="nocache"/>
+          <xsd:enumeration value="type"/>
+          <xsd:enumeration value="level"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:complexType>
+  <xsd:element name="node-drag" type="tNodeDrag">
+    <xsd:annotation>
+      <xsd:documentation>
+        Описание операции переноса узлов дерева
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:complexType name="tNodeDragWithMenu">
+    <xsd:complexContent>
+      <xsd:extension base="tNodeDrag">
+        <xsd:sequence>
+          <xsd:element ref="node-drag-menu" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="tNodeDragMenu">
+    <xsd:sequence>
+      <xsd:element ref="i:menu" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="i:nameAndRef"/>
+  </xsd:complexType>
+  <xsd:element name="node-drag-menu" type="tNodeDragMenu"/>
+  
+</xsd:schema>

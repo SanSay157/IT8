@@ -1,0 +1,420 @@
+<!-- 
+********************************************************************************
+ CROC.Behaviors :: XImageButton
+ Стилевая компонента отображения кнопки с изображением
+ Реализация - Behaviors (см. MSDN, Web Development, Behaviors)
+********************************************************************************
+-->
+<PUBLIC:COMPONENT
+	ID="XImageButton"
+	NAME="XImageButton"
+	lightWeight="false"
+	literalContent="false"
+	supportsEditMode="false"
+	URN="http://www.croc.ru/Behaviors/XmlFramework/XImageButton"
+>
+	<!-- Обрабатываемые события "внешнего" документа / элемента -->
+	<PUBLIC:ATTACH EVENT="ondocumentready" FOR="element" ONEVENT="Initialize"/>
+	<PUBLIC:ATTACH EVENT="onmouseover" FOR="element" ONEVENT="ButtonHighlight true"/>
+	<PUBLIC:ATTACH EVENT="onmouseleave" FOR="element" ONEVENT="ButtonHighlight false"/>
+	<PUBLIC:ATTACH EVENT="onmouseout" FOR="element" ONEVENT="ButtonHighlight false"/>
+	<PUBLIC:ATTACH EVENT="onblur" FOR="window" ONEVENT="ButtonHighlight false"/>
+	<PUBLIC:ATTACH EVENT="onclick" FOR="element" ONEVENT="ButtonSwitch"/>
+	
+	<!-- Свойства, определяемые для элемента стилевой компонентой -->
+	<!-- "Базовое" изображение для кнопки -->
+	<PUBLIC:PROPERTY NAME="ButtonImage" ID="prop_ButtonImage" 
+		GET="get_ButtonImage" 
+		PUT="put_ButtonImage"
+	/>
+	<!--
+		Альтернативное изображение для кнопки; указание значения для этого 
+		свойства задает режим "переключателя" - при нажатии на кнопку 
+		изображение будет попеременно меняться;
+	-->
+	<PUBLIC:PROPERTY NAME="SwitchButtonImage" ID="prop_ButtonImage" 
+		GET="get_SwitchButtonImage" 
+		PUT="put_SwitchButtonImage"
+	/>
+	<!--
+		Свойство, отражающее состояние кнопки-переключателя: SELECTED=true
+		если кнопа-переключатель установлена в режим "включено" и false - 
+		в противном случае. Если кнопка - не переключатель, то значение 
+		свойства всегда есть false
+	-->
+	<PUBLIC:PROPERTY NAME="Selected" ID="prop_Selected" 
+		GET="get_Selected" 
+		PUT="put_Selected"
+	/>
+	<!-- 
+		Определение свойства Disabled "перекрывает" реальное свойство элемента
+		Таким образом обеспечивается прикладная обработка установки значения 
+		свойства - изменение изображения при блокировке кнопки
+	-->
+	<PUBLIC:PROPERTY NAME="Disabled" ID="prop_Disabled"
+		GET="get_Disabled" 
+		PUT="put_Disabled" 
+		VALUE="false"
+	/>
+	<!-- 
+		Опредедение этих свойств "перекрывает" реальные свойства InnerText 
+		и InnerHtml элемента, для которого применена стилевая компонента: 
+		так блокируются изменения внутреннего состава элемента
+	-->
+	<PUBLIC:PROPERTY NAME="InnerText" ID="prop_InnerText"
+		GET="get_InnerText"
+	/>
+	<PUBLIC:PROPERTY NAME="InnerHtml" ID="prop_InnerHtml"
+		GET="get_InnerHtml"
+	/>
+	
+	<!-- Метод, определяемый для элемента стилевой компонентой -->
+	<PUBLIC:METHOD NAME="ButtonHighlight"/>
+	
+<!-- 
+********************************************************************************
+ Реализация логики стилевой компоненты
+********************************************************************************
+-->
+	<SCRIPT LANGUAGE="VBScript">
+	Option Explicit
+	
+	Dim g_oButtonImage			' HTML-объект IMG, представляющий картинку в кнопке
+	Dim g_bIsDisabled			' Признак, что кнопка заблокированна; значение свойства DISABLED
+	Dim g_bIsHighLighted		' Признак, что кнопка подсвечена (зависит от событий мышки)
+	
+	Dim g_sImageURL				' "Базовый" (без расширения) ULR основной картинки кнопки
+	Dim g_sImageFormat			' Расширение для картинок кнопки
+	
+	Dim g_bIsSwitcher			' Признак кнопки - переключателя
+	Dim g_sSwitchImageURL		' "Базовый" (без расширения) ULR альтернативной картинки кнопки
+	Dim g_sSwitchImageFormat	' Расширение для альтернативных картинок кнопки
+	Dim g_bIsSwitchOn			' Текущее состояние переключателя (включено / выключено)
+	Dim g_oElement
+	' Пред-инициализация значений
+	Set g_oElement = Nothing
+	Set g_oButtonImage = Nothing
+	g_bIsHighLighted = false
+	g_bIsSwitcher = false
+	g_bIsSwitchOn = false
+	
+	
+	'---------------------------------------------------------------------------
+	' Метод инициализации компоненты; вызывается при генерации события 
+	' "готовности" документа, содержащего элемент, для которого назначена 
+	' стилевая компонента
+	Sub Initialize()
+		Dim oChildElement	' Подчиненный элемент кнопки, итератор цикла
+	    Set  g_oElement = element
+		' Сама стилевая компонента назначается для кнопки; компонента отображает
+		' в этой кнопке заданную картинку, и меняет ее при наведении мышки. Это 
+		' поведение требует обработки событий мышки не только для кнопки, но и 
+		' для изображения в ее составе - поэтому behavior автоматически 
+		' назначается и для изображения тоже (см. далее). 
+		' Из-за этого метод инициализации вызывается дважды - сначала для кнопки, 
+		' потом для изображения; второй случай обрабатывать не требуется:
+		If UCase(element.tagName)="IMG" Then 
+			Exit Sub
+		End If
+		' Далее выполняется инициализация компоненты, назначенной для КНОПКИ
+	
+		' #1: Требуется заменить содержимое кнопки изображением: сначала уберем 
+		' из кнопки все подчиненные элементы:
+		For Each oChildElement In element.children
+			element.removeChild oChildElement
+			MsgBox "child"
+		Next
+		' #2: Зачитаем все значения свойств, заданных для элмента, при этом 
+		' будут инициализированы глобальные переменные - все, кроме ссылки
+		' g_oButtonImage (см. далее)
+		g_bIsDisabled = CBool(getAttributeValue( element, "DISABLED", false ))
+		put_ButtonImage( getAttributeValue( element,"BUTTONIMAGE","" ) )
+		put_SwitchButtonImage( getAttributeValue( element,"SWITCHBUTTONIMAGE","" ) )
+		g_bIsSwitchOn = CBool(getAttributeValue( element, "SELECTED", false ))
+		
+		' #3: Создадим HTML-элемент картинки, отображаемой на кнопке
+		Set g_oButtonImage = document.createElement("IMG")
+		' Установим текущее изображение в соотв. с текущими значениями 
+		' глобальных переменных:
+		document.body.appendChild g_oButtonImage
+		updateButtonImage
+		
+		' #4: Назначем ЭТУ ЖЕ стилевую компоненту для изображения - что бы 
+		' события мышки отслеживались и для изображения:
+		g_oButtonImage.addBehavior "x-ImageButton.htc"
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства DISABLED
+	' ::Чтение значения свойства
+	Function get_Disabled()
+		get_Disabled = CBool(g_bIsDisabled)
+	End Function
+	
+	' ::Изменение значения свойства
+	Function put_Disabled( value )
+		g_bIsDisabled = CBool(value)
+		element.SetAttribute "disabled", g_bIsDisabled
+		' Обновим отображение картинки в кнопке
+		updateButtonImage
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства BUTTONIMAGE
+	' ::Чтение значения свойства
+	Function get_ButtonImage()
+		get_ButtonImage = "" & g_sImageURL & g_sImageFormat 
+	End Function
+	
+	' ::Изменение значения свойства
+	Function put_ButtonImage( sValue )
+		Dim sPrevUrl	' Предыдущий URL - что бы лишний раз не перегружать картинку
+	
+		' Проверяем заданное значение - одно не должно быть пустым (или null):
+		sValue = "" & sValue
+		If 0 = Len(sValue) Then
+			Err.Raise _
+				vbObjectError + 1, _
+				"XImageButton (для элемента " & getElementFullName(element) & ")", _
+				"Значение атрибута BUTTONIMAGE для элемента " & getElementFullName(element) & " не задано!"
+		End If
+		
+		' Инициализируем глобальые переменные: на основании заданного значения
+		' получаем "базовый" URL картинки и суффикс формата картинки. Но сначала
+		' запомним предыдущее значение - понадобится далее
+		sPrevUrl = "" & g_sImageURL & g_sImageFormat
+		g_sImageURL = getBaseImageUrl( sValue,g_sImageFormat )
+		
+		' Если если заданный адрес отличается от предыдущего и если элемент 
+		' изображения уже существует и - обновим его: 
+		If (sPrevUrl <> sValue) Then updateButtonImage
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства SWITCHBUTTONIMAGE
+	' ::Чтение значения свойства
+	Function get_SwitchButtonImage()
+		get_SwitchButtonImage = "" & g_sSwitchImageURL & g_sSwitchImageFormat 
+	End Function
+	
+	' ::Изменение значения свойства
+	Function put_SwitchButtonImage( sValue )
+		' Проверяем заданное значение - если оно не задано или пустая строка,
+		' то режим "переключателя" БЛОКИРУЕТСЯ, иначе - АКТИВИРУЕТСЯ
+		sValue = "" & sValue
+		g_bIsSwitcher = CBool( Len(sValue) > 0 )
+		
+		If g_bIsSwitcher Then
+			' Флаг переключателя изначально сбросим:
+			g_bIsSwitchOn = false
+			' Инициализируем глобальые переменные: на основании заданного 
+			' значения получаем "базовый" URL альтернативной картинки и суффикс 
+			' ее формата картинки:
+			g_sSwitchImageURL = getBaseImageUrl( sValue,g_sSwitchImageFormat )
+		
+		Else
+			' Режим переключателя БЛОКИРОВАН - сбросим все данные об 
+			' альтернативном изображении кнопки:
+			g_sSwitchImageURL = ""
+			g_sSwitchImageFormat = ""
+			' сбросим флаг переключателя
+			g_bIsSwitchOn = false
+			' Обновим отображение картинки; т.к. флаг g_bIsSwitcher сброшен, 
+			' изображение переключится в основное:
+			updateButtonImage
+		End If
+	
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства SELECTED
+	' ::Чтение значения свойства
+	Function get_Selected()
+		get_Selected = CBool(g_bIsSwitcher And g_bIsSwitchOn)
+	End Function
+	
+	' ::Изменение значения свойства
+	Function put_Selected( bValue )
+		bValue = CBool(bValue)
+		
+		' Если кнопка - переключатель, то обновим значение свойства и саму картинку
+		If g_bIsSwitcher Then
+			g_bIsSwitchOn = bValue
+			updateButtonImage
+		' ...в противном случае, если задаваемое значение есть true, сгенерируем 
+		' исключение, т.к. такое компонента отобразить не может 
+		ElseIf bValue Then
+			Err.Raise _
+				vbObjectError + 1, _
+				"XImageButton (для элемента " & getElementFullName(element) & ")", _
+				"Значение атрибута SELECTED для элемента " & getElementFullName(element) & " " & _ 
+				"не может быть задано в True, так как элемент не является переключателем"
+		End If
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Реализация метода ButtonHighlight
+	' Метод используется как обработчик событий onmouseover и onmouseleave, для 
+	' отображения "подсветки" кнопки
+	Sub ButtonHighlight( bIsHighlighted )
+		' Если событие пришло для самой картинки - вызовем метод родительского 
+		' элемента (в силу инциализации, см. Initialize, мы знаем что у него так
+		' же назначена эта же компонента обслуживания и, соотв., есть этот метод)
+		If UCase(element.tagName)="IMG" Then 
+			element.ParentElement.ButtonHighlight bIsHighlighted
+			
+		' Это событие (или вызов) - для самой кнопки: изменяем внутренний флаг
+		' и обновляем отображение (метод обновления учтет флаг)
+		ElseIf isButtonExists() Then
+			g_bIsHighLighted = bIsHighlighted
+			updateButtonImage
+		End If
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Обработчик нажатия кнопки (аддитивный обработчик, обработке события OnClick
+	' в основном документе не мешает): если кнопка - переключатель, то изменяет
+	' состояние Selected:
+	Sub ButtonSwitch()
+		If g_bIsSwitcher Then
+			g_bIsSwitchOn = Not g_bIsSwitchOn
+			updateButtonImage
+		End If
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Обслуживание свойств InnerText и InnerHtml: ТОЛЬКО ПОЛУЧЕНИЕ ЗНАЧЕНИЙ
+	' Такая реализация ("поверх" существующих свойств) запрещает изменение 
+	' реальных свойств - т.о. блокируется изменение внутреннего контента кнопки
+	'
+	' Замчание: ТАКОЕ блокирование свойства на запись при попытен записи НЕ БУДЕТ
+	' приводить к ошибкам. Это позволяет применить комопненту к кнопкам XFW, для
+	' которых стандартная логика XFW изменят текст в runtime
+	Sub get_InnerText()
+		get_InnerText = ""
+	End Sub
+	
+	Sub get_InnerHtml()
+		If isButtonExists() Then
+			get_InnerHtml = g_oButtonImage.outerHtml
+		Else
+			get_InnerHtml = ""
+		End If
+	End Sub
+	
+	
+	'***************************************************************************
+	' Внутренние методы / функции компоненты
+	
+	'---------------------------------------------------------------------------
+	' Возвращает логический признак наличия элемента изображения в кнопке
+	Function isButtonExists()
+		If IsObject(g_oButtonImage) Then
+			isButtonExists = Not(g_oButtonImage Is Nothing)
+		Else
+			isButtonExists = False
+		End If
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Обновляет изображение в кнопке в соответствии со значениями глобальных
+	' переменных (подсветка, блокировка, переключатель, состояние переключателя)
+	Sub updateButtonImage()
+		Dim sImageURL 	' используемый URL для SRC активной картинки
+		Dim sUsedSuffix	' суффикс (расширение) в этом URL
+		If isButtonExists() Then
+		
+			If g_bIsSwitcher And g_bIsSwitchOn Then
+			    sImageURL = g_sSwitchImageURL
+			    sUsedSuffix = g_sSwitchImageFormat
+			    
+			Else
+			    sImageURL = g_sImageURL
+			    sUsedSuffix = g_sImageFormat
+			    
+			End If
+			If g_bIsDisabled Then
+				sImageURL = sImageURL & "-Disabled"
+				
+			ElseIf g_bIsHighLighted Then
+				sImageURL = sImageURL & "-Light"
+			End If
+			
+			sImageURL = sImageURL & sUsedSuffix 
+			' Устанавливаем полученный URL как SRC картинки элемента-изображения:
+			g_oButtonImage.Src = sImageURL
+			g_oElement.style.backgroundimage = "url(" & sImageURL & ")"
+		End If
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Возвращает строку с наименованием указанного элемента в виде 
+	' <ТЕГ ID="ИДЕНТИФИКАТОР"/>; используется при отображении ошибок
+	Function getElementFullName( oElement ) 
+		Dim sName 	' итоговое описание 
+		
+		sName = ""
+		If Not oElement Is Nothing Then
+			sName = "<" & oElement.tagName
+			If 0<>Len("" & oElement.ID) Then
+				sName = sName & " ID=""" & oElement.ID & """"
+			End If
+			sName = sName & "/>"
+		End If
+		getElementFullName = sName
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Разбивает заданный URL на две части: "базовый" - все, кроме расширения, 
+	' и само расширение (передается как значение sImageFormatSuffix)
+	'	[in] sImageUrl 				- Исходный URL 
+	'	[in,out] sImageFormatSuffix - суффикс - расширение
+	Function getBaseImageUrl( sImageUrl, ByRef sImageFormatSuffix )
+		Dim sImageBaseUrl	' Результирующий "базовый" URL 
+		Dim nIndex			' Позиция последнего символа "." в исходном URL 
+		
+		nIndex = InStrRev( sImageUrl,"." )
+		If (nIndex>0) Then
+			sImageFormatSuffix = Right( sImageUrl, Len(sImageUrl)-nIndex+1 )
+			sImageBaseUrl = Left( sImageUrl, nIndex-1 )
+		Else
+			sImageFormatSuffix = ""
+			sImageBaseUrl = sImageUrl
+		End If
+		
+		getBaseImageUrl	= sImageBaseUrl
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Внутренняя функция получения значения указанного атрибута заданного элемента
+	' Если у элемента такого атрибута нет, функция создает атрибут и устанавливает
+	' заданное значение по умолчанию
+	'	[in] oElement		- элемен, для которого проверяется атрибут
+	'	[in] sAttrName		- наименование атрибута
+	'	[in] oDefaultValue	- значение по умолчанию
+	Function getAttributeValue( oElement, sAttrName, oDefaultValue )
+		Dim oAttribute
+		
+		Set oAttribute = oElement.GetAttributeNode(sAttrName)
+		If oAttribute Is Nothing Then 
+			oElement.SetAttribute sAttrName, oDefaultValue, 0
+			getAttributeValue = oDefaultValue
+		Else
+			getAttributeValue = oAttribute.nodeValue
+		End If
+	End Function
+	
+	</SCRIPT>
+
+</PUBLIC:COMPONENT>

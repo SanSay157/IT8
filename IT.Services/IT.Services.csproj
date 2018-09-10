@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build;" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{463ACB07-619D-4AEE-8689-0BA85A72E63F}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Croc.IncidentTracker.Services</RootNamespace>
+    <AssemblyName>Croc.IncidentTracker.Services</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <SccProjectName>"%24/IT.root/IT", PXCAAAAA</SccProjectName>
+    <SccLocalPath>..</SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>MSSCCI:Microsoft Visual SourceSafe</SccProvider>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DelaySign>true</DelaySign>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <UseIISExpress>false</UseIISExpress>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\IT.Web\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>DOC.Croc.IncidentTracker.Services.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\IT\Source\APP\IT.Web\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'BuildAgent|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>DOC.Croc.IncidentTracker.Services.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Croc.XmlFramework.Commands.Interop, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Commands.Interop.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Data.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Data.Public, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Data.Public.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Public, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Public.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.ServiceInterfaces, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.ServiceInterfaces.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Web.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.XUtils, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.XUtils.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CommonService.asmx" />
+    <Content Include="Config\it-services.config.xml" />
+    <Content Include="NSISyncService.asmx" />
+    <Content Include="Schemas\it-common-service-data-schema.example.xml" />
+    <Content Include="TASSyncService.asmx" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Common project files\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="ApplicationServerProxy.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CommonService.asmx.cs">
+      <DependentUpon>CommonService.asmx</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NSISyncService.asmx.cs">
+      <DependentUpon>NSISyncService.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Support\CommonServiceConfigParams.cs" />
+    <Compile Include="Support\DataTableCodeNamedXmlFormatter.cs" />
+    <Compile Include="Support\DataTableXmlFormatter.cs" />
+    <Compile Include="Support\ObjectOperationHelper.cs" />
+    <Compile Include="Support\ServiceConfig.cs" />
+    <Compile Include="Support\UserFlagsToRolesMap.cs" />
+    <Compile Include="TASSyncService.asmx.cs">
+      <DependentUpon>TASSyncService.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Types\BP_EducationRequestResult.cs" />
+    <Compile Include="Types\ChangeRequestLink.cs" />
+    <Compile Include="Types\ChangeRequestResult.cs" />
+    <Compile Include="Types\SyncOrganizations.cs" />
+    <Compile Include="Types\SyncPresale.cs" />
+    <Compile Include="Types\SyncProjects.cs" />
+    <Compile Include="Types\SyncTASTenders.cs" />
+    <Compile Include="Types\TenderFolder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Config\it-services.config.xsd" />
+    <None Include="Schemas\it-common-service-data-schema.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IT.Commands.Interop\IT.Commands.Interop.csproj">
+      <Project>{93CF0CA9-8182-4604-B31A-C30F29616F7A}</Project>
+      <Name>IT.Commands.Interop</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Commands\IT.Commands.csproj">
+      <Project>{0C584F7F-80E5-4E53-8347-5F5C8EA7A0FC}</Project>
+      <Name>IT.Commands</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Core\IT.Core.csproj">
+      <Project>{7597DE6E-EE57-44D4-AD6E-393416A4868E}</Project>
+      <Name>IT.Core</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Storage\IT.Storage.csproj">
+      <Project>{A5E09F69-A28F-4A24-A6F8-C0B8909D70E7}</Project>
+      <Name>IT.Storage</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Tools.DbCheck\IT.Tools.DbCheck.csproj">
+      <Project>{4079831B-3BA7-4A0E-A0EB-301928EBC799}</Project>
+      <Name>IT.Tools.DbCheck</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Utility\IT.Utility.csproj">
+      <Project>{BDFC46ED-DE3D-4268-8195-EA96DD130DC2}</Project>
+      <Name>IT.Utility</Name>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CommonService.asmx.resx">
+      <DependentUpon>CommonService.asmx.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NSISyncService.asmx.resx">
+      <DependentUpon>NSISyncService.asmx.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Old_App_Code\httpHandlers\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>53876</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

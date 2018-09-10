@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="windows-1251" ?> 
+<r:report
+	r:t="Сальдо ДС по сотрудникам"
+	r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll"
+	r:class="Croc.IncidentTracker.ReportService.Reports.r_AllEmpSaldoDS" 
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+	<!-- Подключение клиентского скрипта -->
+	<r:common>
+		<r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+	</r:common>
+  <r:params>
+    <r:param r:n="IntervalBegin" r:vt="date" />
+    <r:param r:n="IntervalEnd" r:vt="date" />
+  </r:params>
+	<r:data-sources>
+		<r:config-data-source r:n="AllEmpSaldoDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.AllEmpSaldoDS" r:section=""/>
+	</r:data-sources>
+</r:report>

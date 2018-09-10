@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Koloto (Ru-Board) -->
+<!--
+********************************************************************************
+	Система оперативного управления проектами - Incident Tracker
+	ЗАО КРОК инкорпорейтед, 2005-2006
+********************************************************************************
+-->
+<xsd:schema 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" 
+	targetNamespace="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" 
+	elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="it-special-config-schema">
+	
+	<xsd:element name="access-requirements">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="demand-privilege" minOccurs="0" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:attribute name="n" type="xsd:NMTOKEN"/>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

@@ -1,0 +1,2345 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<ds:enum n="STATE_CONTRACT_BUDGET" d="Состояние бюджета проекта" vt="i2">
+		<ds:value n="WORKING" d="В разработке">0</ds:value>
+		<ds:value n="TO_FIN_DEP" d="Передано на согласование в финансовую службу">1</ds:value>
+		<ds:value n="FIN_ACCEPTED" d="Согласовано финансовой службой">2</ds:value>
+		<ds:value n="TO_GD" d="Передано на согласование ГД">3</ds:value>
+		<ds:value n="GD_ACCEPTED" d="Согласовано ГД">4</ds:value>
+		<ds:value n="ACCEPTED" d="Утверждено">5</ds:value>
+	</ds:enum>
+	<ds:enum n="TYPE_SUPPLAING" d="Тип комплектации" vt="i2">
+		<ds:value n="PROC_FROM_DIFF" d="Процент от разницы">0</ds:value>
+		<ds:value n="PROC_FROM_SUM" d="Процент от суммы">1</ds:value>
+		<ds:value n="PROC_FROM_SUM_SUPPL" d="Процент от суммы поставки">2</ds:value>
+	</ds:enum>
+	<ds:type n="DocType" d="Тип документа" tp="persistent">
+		<ds:prop n="Name" d="Название" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="ShortName" d="Краткое название" vt="string" cp="scalar">
+			<ds:max>32</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" default-for-creation="1" width="400" height="250" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Типы документов" n="DocTypeSelector" off-icons="1" off-rownumbers="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[ShortName],
+					t.[Rem]
+				FROM [dbo].[DocType] t
+				WHERE_CLAUSE
+        ORDER BY Name
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Название" width="300" />
+			<i:column t="Краткое название" vt="string" width="200" />
+			<i:column t="Примечание" width="300" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="OutContract" d="Расходный договор" tp="persistent">
+		<ds:prop n="Org" d="Контрагент" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-presentation use-list-selector="SupplierSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Signed" d="Подписан" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Number" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="Company2" d="Компания 2" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="AvansSum" d="Сумма аванса" vt="fixed" cp="scalar" maybenull="1" />
+		<ds:prop n="AvansPaid" d="Аванс оплачен" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="AvansDate" d="Дата оплаты аванса" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="AvansPayNumber" d="Номер поручения" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="OutDocs" d="Документы" vt="object" ot="OutDoc" cp="link" built-on="OutContract">
+			<i:elements-list off-unlink="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Дата" width="250" align="center" vt="date">item.Date</i:column>
+				<i:column t="Подписан" width="100" align="center" vt="string">it_FormatBool(item.Signed)</i:column>
+				<i:column t="Номер" width="200" align="center" vt="string">item.Number</i:column>
+				<i:column t="Сумма" width="200" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Тип" width="450" align="right" vt="string">item.Type.Name</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1">
+							<i:params>
+								<i:param n="Metaname">ShortEditor</i:param>
+							</i:params>
+						</i:menu-item>
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK">
+							<i:params>
+								<i:param n="Metaname">ShortEditor</i:param>
+							</i:params>
+						</i:menu-item>
+						<i:menu-item action="DoSelectFromDb" t="Выбрать" />
+						<i:menu-item action="DoUnlink" t="Очистить" />
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Contract" d="Основной договор" vt="object" ot="Contract" cp="scalar" maybenull="1">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Suppliers" d="Комплектаторы" vt="object" ot="Supplier" cp="link" built-on="OutContract">
+			<i:elements-list off-select="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Сумма" width="100" vt="fixed">item.Sum</i:column>
+				<i:column t="Процент" width="100" vt="r4">item.Percent</i:column>
+				<i:column t="Производитель" width="100">item.Manufacturer.ShortName</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="BudgetOut" d="Расход в бюджете" vt="object" ot="BudgetOut" cp="scalar" maybenull="1">
+			<i:object-presentation use-list-selector="BudgetOutListSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu>
+						<i:execution-handler mode="replace">OutContract_BudgetOut_MenuExecutionHandler</i:execution-handler>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoSelectFromDb" t="Выбрать" may-be-default="1">
+							<i:params>
+								<i:param n="ObjectType">BudgetOut</i:param>
+								<i:param n="Metaname">BudgetOutListSelector</i:param>
+								<i:param n="UrlParams" />
+							</i:params>
+						</i:menu-item>
+					</i:menu>
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="IsVirtual" d="Виртуальный" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Outcomes" d="Платежи по расходному договору" vt="object" ot="Outcome" cp="link" built-on="OutContract">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Факт" width="100" vt="boolean">item.Fact</i:column>
+				<i:column t="Процент комиссии (для кода 100)" width="100" vt="r4">item.Percent</i:column>
+				<i:column t="Дата" width="100" vt="date">item.Date</i:column>
+				<i:column t="Сумма" width="100" vt="fixed">item.Sum</i:column>
+				<i:column t="Номер" width="100">item.Number</i:column>
+				<i:column t="Примечание" width="100">item.Rem</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<i:editor n="CustomEditor" default-for-editing="1" default-for-creation="1" width="800" height="900" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:client-script>s-OutContract.vbs</i:client-script>
+			<i:page n="Main" t=" ">p-OutContract.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Расходные договора" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Number],
+          org.Name AS Org,
+          dbo.GetSumString(t.[Sum], NULL) AS Sum,
+          t.[Date],
+          f.ExternalID AS ProjectCode,
+          f.Name AS Project,
+          own.ShortName AS Owner,
+          cy.Year
+				FROM [dbo].[OutContract] t
+					LEFT JOIN dbo.Contract AS c WITH(NOLOCK) ON t.Contract = c.ObjectID
+					LEFT JOIN dbo.Folder AS f WITH(NOLOCK) ON c.Project = f.ObjectID
+					LEFT JOIN dbo.Organization AS org WITH(NOLOCK) ON t.Org = org.ObjectID
+          LEFT JOIN dbo.ContractYear AS cy WITH(NOLOCK) ON c.Year = cy.ObjectID
+          LEFT JOIN dbo.Organization AS own WITH(NOLOCK) ON f.Owner = own.ObjectID
+        WHERE dbo.CP_OutContracts(t.ObjectID, @CurrentEmployeeID) = 1
+        AND SEARCH_CONDITIONS
+        ORDER BY Date DESC
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="CurrentEmployeeID" vt="uuid" />
+					<ds:param n="PrjCode" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							f.ExternalID LIKE :PrjCode
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="ContrNum" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							c.Number LIKE :ContrNum 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="OutContrNum" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							t.Number LIKE :OutContrNum 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateFrom" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[ 
+							t.Date >= dbo.DATETRIM(:DateFrom) 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateTo" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							t.Date < DATEADD(d, 1, dbo.DATETRIM(:DateTo))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="InContrOwner" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  f.Owner = :InContrOwner
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="InContrYear" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  c.Year = :InContrYear
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Org" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  t.Org = :Org
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterOutContractsList" height="90" />
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Номер контракта" vt="string" width="250" />
+			<i:column t="Контрагент" vt="string" width="450" />
+			<i:column t="Сумма" vt="string" width="200" align="right" />
+			<i:column t="Дата" vt="date" width="150" />
+			<i:column t="Код проекта" vt="string" width="200" />
+			<i:column t="Проект" vt="string" width="300" />
+			<i:column t="Владелец" vt="string" width="250" />
+			<i:column t="Отчетрый год" vt="string" width="150" />
+		</i:objects-list>
+		<!-- для выпадающего списка расходных договоров редактора/мастера расходного документа -->
+		<i:objects-list t="Расходный договор" n="OutContratsListForComboSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					t.[ObjectID],
+					t.[Number]
+				FROM [dbo].[OutContract] t
+        WHERE t.Contract = @ContractID
+        ORDER BY Number
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="ContractID" vt="uuid" required="1" />
+				</ds:params>
+			</ds:data-source>
+		</i:objects-list>
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="NotSignedOutdated">Folder-Directory-Open-InWork.ico</i:icon>
+			<i:icon selector="NotSigned">Folder-Directory-Open.ico</i:icon>
+			<i:icon selector="AllSigned">Folder-Directory-Open-Complete.ico</i:icon>
+		</i:icons>
+	</ds:type>
+	<ds:type n="OutLimit" d="Лимит по расходам" tp="persistent">
+		<ds:prop n="OutType" d="Тип расхода" vt="object" ot="OutType" cp="scalar">
+			<i:object-dropdown use-list="OutTypesSelectorForLimits" empty-value-text="(Укажите тип)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Contract" d="Приходный договор" vt="object" ot="Contract" cp="scalar" delete-cascade="1">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" default-for-creation="1" width="400" height="250" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-OutLimit.vbs</i:client-script>
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Лимиты по расходам" off-rownumbers="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Sum],
+					t.[Rem]
+				FROM [dbo].[OutLimit] t
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Сумма" vt="fixed" width="100" />
+			<i:column t="Примечание" width="100" />
+		</i:objects-list>
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="0">Folder-PreSale-Open.ico</i:icon>
+		</i:icons>
+	</ds:type>
+	<ds:type n="OutDoc" d="Проектный расходный документ" tp="persistent">
+		<ds:prop n="Year" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Type" d="Тип" vt="object" ot="DocType" cp="scalar">
+			<i:object-dropdown use-list="DocTypeSelector" empty-value-text="(Укажите тип)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Signed" d="Подписан" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Number" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="AvansSum" d="Сумма аванса" vt="fixed" cp="scalar" maybenull="1" />
+		<ds:prop n="AvansDate" d="Дата оплаты аванса" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Organization" d="Контрагент" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-presentation use-list-selector="SupplierSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="OutContract" d="Расходный договор" vt="object" ot="OutContract" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Number</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Contract" d="Договор" vt="object" ot="Contract" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Number</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Outcomes" d="Расходы" vt="object" ot="Outcome" cp="link" built-on="Document">
+			<i:elements-list off-select="1" off-unlink="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Дата" width="170" align="center" vt="date">item.Date</i:column>
+				<i:column t="Сумма" width="200" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Факт" width="100" align="center" vt="string">it_FormatBool(item.Fact)</i:column>
+				<i:column t="Тип" width="250" align="center" vt="string">item.Type.Name</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK" />
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Company2" d="Компания 2" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="BudgetOut" d="Расход в бюджете" vt="object" ot="BudgetOut" cp="scalar" maybenull="1">
+			<i:object-presentation use-list-selector="BudgetOutListSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu>
+						<i:execution-handler mode="replace">OutDoc_BudgetOut_ExecutionHandler</i:execution-handler>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoSelectFromDb" t="Выбрать" may-be-default="1">
+							<i:params>
+								<i:param n="ObjectType">BudgetOut</i:param>
+								<i:param n="Metaname">BudgetOutListSelector</i:param>
+								<i:param n="UrlParams" />
+							</i:params>
+						</i:menu-item>
+					</i:menu>
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Supplier" d="Комплектатор" vt="object" ot="Supplier" cp="scalar" maybenull="1">
+			<i:elements-list off-select="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Сумма" width="100" vt="fixed">item.Sum</i:column>
+				<i:column t="Процент" width="100" vt="r4">item.Percent</i:column>
+				<i:column t="Производитель" width="100">item.Manufacturer.ShortName</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<i:editor n="ShortEditor" width="700" height="750" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:client-script>s-OutDoc.vbs</i:client-script>
+			<i:page n="Main" t=" ">p-OutDoc-short.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:editor n="ShortEditorWithSupplier" width="750" height="900" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:client-script>s-OutDoc.vbs</i:client-script>
+			<i:page n="Main" t=" ">p-OutDoc-short-wSuppl.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:editor n="FullPropsEditor" width="700" height="850" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:client-script>s-OutDoc.vbs</i:client-script>
+			<i:page n="Main" t=" ">p-OutDoc-full.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Проектные расходные документы" off-rownumbers="1" off-create="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+        SELECT TOP @@MAXROWS 
+					od.[ObjectID],
+					od.Date,
+					dbo.GetSumString(od.Sum, null) AS Sum,
+          dt.Name AS Type,
+          dbo.[GetOutDocProjectCode](od.ObjectID) AS ExternalID,
+          dbo.GetBoolString(od.Signed) AS Signed,
+          dbo.[GetOrgNameByID](dbo.[GetOutDocOrgID](od.ObjectID)) AS Organization,
+          [dbo].[GetProjectOwnerShortNameByID](dbo.[GetOutDocProjectOwnerID](od.ObjectID)) AS Owner,
+					[dbo].[GetYearByID](dbo.[GetOutDocYearID](od.ObjectID)) AS Year,
+          od.Number AS Number
+				FROM [dbo].[OutDoc] od
+          LEFT JOIN dbo.DocType AS dt WITH(NOLOCK) ON od.Type = dt.ObjectID
+        WHERE dbo.CP_OutDocs(od.ObjectID, @CurrentEmployeeID) = 1
+        AND SEARCH_CONDITIONS
+        ORDER BY Date DESC
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="CurrentEmployeeID" vt="uuid" />
+					<ds:param n="PrjCode" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							dbo.[GetOutDocProjectCode](od.ObjectID) LIKE :PrjCode
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateFrom" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[ 
+							od.Date >= dbo.DATETRIM(:DateFrom) 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateTo" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							od.Date < DATEADD(d, 1, dbo.DATETRIM(:DateTo))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Type" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  dt.ObjectID = :Type
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Owner" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  dbo.[GetOutDocProjectOwnerID](od.ObjectID) = :Owner
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Org" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  dbo.[GetOutDocOrgID](od.ObjectID) = :Org
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="ContrYear" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  dbo.[GetOutDocYearID](od.ObjectID) = :ContrYear
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterOutDocsList" height="60" />
+			<i:list-menu>
+				<i:menu>
+					<i:menu-item action="DoCreate" hotkey="VK_INS" t="Создать">
+						<i:params>
+							<i:param n="MetanameForCreate">FullPropsEditor</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать">
+						<i:params>
+							<i:param n="MetanameForEdit">FullPropsEditor</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoDelete" hotkey="VK_DEL" t="Удалить" separator-before="1" />
+					<i:menu-item action="DoRefresh" t="Обновить" />
+					<i:menu-item action="DoResetFilter" t="Очистить фильтр" />
+				</i:menu>
+			</i:list-menu>
+			<i:column t="Дата" vt="date" align="center" width="150" />
+			<i:column t="Сумма" vt="string" align="right" width="200" />
+			<i:column t="Тип" vt="string" align="left" width="300" />
+			<i:column t="Код проекта" vt="string" align="left" width="150" />
+			<i:column t="Подписан" vt="string" align="center" width="100" />
+			<i:column t="Контрагент" vt="string" align="left" width="400" />
+			<i:column t="Владелец" vt="string" align="center" width="150" />
+			<i:column t="Отчетный год" vt="i4" align="center" width="150" />
+			<i:column t="Номер" align="right" width="100" />
+		</i:objects-list>
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="NotSignedOutdated">TenderLotState-StateContract.ico</i:icon>
+			<i:icon selector="NotSigned">TenderLotState-Accept.ico</i:icon>
+			<i:icon selector="Signed">TenderLotState-Accept-NoDocsFeedDate.ico</i:icon>
+		</i:icons>
+	</ds:type>
+	<ds:type n="OutType" d="Тип расхода" tp="persistent">
+		<ds:prop n="Name" d="Название" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Parent" d="Вышестоящий" vt="object" ot="OutType" cp="scalar" maybenull="1">
+			<i:object-presentation off-create="1" off-delete="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Code" d="Код" vt="i4" cp="scalar" maybenull="1" />
+		<ds:prop n="IsProject" d="По проекту" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="IsCompanyOut" d="Расход за отчетный период" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="IsLimitOut" d="Может быть лимитом" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="IsCodeOut" d="По коду" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Childrens" d="Подчиненные" vt="object" ot="OutType" cp="link" built-on="Parent">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Название" width="300">item.Name</i:column>
+				<i:column t="Код" width="100" vt="i4">item.Code</i:column>
+				<i:column t="Примечание" width="300">item.Rem</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" default-for-creation="1" width="650" height="650" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Типы расходов" n="Main" off-icons="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+         	dbo.GetFullOutTypeName(t.[ObjectID]) AS FullName,
+					t.[Code], 
+          dbo.GetBoolString(t.IsProject),
+					dbo.GetBoolString(t.IsCompanyOut),
+          dbo.GetBoolString(t.IsLimitOut),
+          dbo.GetBoolString(t.IsCodeOut)
+				FROM [dbo].[OutType] t
+				WHERE_CLAUSE
+        ORDER BY FullName
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Название" width="650" />
+			<i:column t="Код" width="200" />
+			<i:column t="По проекту" align="center" width="250" />
+			<i:column t="Расход за отчетный период" align="center" width="300" />
+			<i:column t="Может быть лимитом" align="center" width="250" />
+			<i:column t="Может быть по коду" align="center" width="250" />
+		</i:objects-list>
+		<i:objects-list t="Тип расхода" n="OutTypeIsProjectSelector" off-icons="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT 
+					t.[ObjectID],
+         	dbo.GetFullOutTypeName(t.[ObjectID]) AS FullName
+				FROM [dbo].[OutType] t
+        WHERE t.IsProject = 1
+        ORDER BY FullName
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column t="Название" width="300" />
+		</i:objects-list>
+		<i:objects-list t="Тип расхода" n="OutTypeGeneralSelector" off-icons="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT 
+					t.[ObjectID],
+         	dbo.GetFullOutTypeName(t.[ObjectID]) AS FullName
+				FROM [dbo].[OutType] t
+        WHERE t.IsCompanyOut = 1
+        ORDER BY FullName
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column t="Название" width="300" />
+		</i:objects-list>
+		<i:objects-list t="Тип расхода" n="OutTypesSelectorForLimits" off-icons="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT 
+					t.[ObjectID],
+         	t.[Name]
+				FROM [dbo].[OutType] t
+        WHERE t.IsLimitOut = 1 and t.IsProject = 1
+        ORDER BY t.[Name]
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column t="Название" width="300" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="IncDoc" d="Проектный приходный документ" tp="persistent">
+		<ds:prop n="Year" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Type" d="Тип" vt="object" ot="DocType" cp="scalar">
+			<i:object-dropdown use-list="DocTypeSelector" empty-value-text="(Укажите тип)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="Signed" d="Подписан" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Number" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="AvansSum" d="Сумма аванса" vt="fixed" cp="scalar" maybenull="1" />
+		<ds:prop n="Incomes" d="Приходы" vt="object" ot="Income" cp="link" built-on="Document">
+			<i:elements-list off-select="1" off-unlink="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Дата" width="170" align="center" vt="date">item.Date</i:column>
+				<i:column t="Сумма" width="200" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Факт" width="100" align="center" vt="string">it_FormatBool(item.Fact)</i:column>
+				<i:column t="Тип" width="250" align="center" vt="string">item.Type.Name</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK" />
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Contract" d="Договор" vt="object" ot="Contract" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Number</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="AvansDate" d="Дата оплаты аванса" vt="date" cp="scalar" maybenull="1">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" default-for-creation="1" width="700" height="770" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:client-script>s-IncDoc.vbs</i:client-script>
+			<i:page n="Main" t=" ">p-IncDoc.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:editor n="FullPropsEditor" width="700" height="700" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:client-script>s-IncDoc.vbs</i:client-script>
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Приходные документы" off-rownumbers="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+        SELECT TOP @@MAXROWS 
+					id.[ObjectID],
+					id.Date,
+					dbo.GetSumString(id.Sum, null) AS Sum,
+          dt.Name AS Type,
+          cust.Name AS Customer,
+          f.ExternalID,
+					id.Number AS Number,
+					dbo.GetBoolString(id.Signed) AS Signed,
+					co.ShortName AS Owner,
+					[dbo].[GetYearByID]([dbo].[GetIncDocYearID](id.ObjectID)) AS Year,
+					c.Number AS ContNumber
+				FROM [dbo].[IncDoc] id
+          LEFT JOIN dbo.DocType AS dt WITH(NOLOCK) ON id.Type = dt.ObjectID
+					LEFT JOIN dbo.Contract AS c WITH(NOLOCK) ON id.Contract = c.ObjectID
+					LEFT JOIN dbo.Folder AS f WITH(NOLOCK) ON c.Project = f.ObjectID
+					LEFT JOIN dbo.Organization AS co WITH(NOLOCK) ON f.Owner = co.ObjectID
+          LEFT JOIN dbo.Organization AS cust WITH(NOLOCK) ON f.Customer = cust.ObjectID
+					LEFT JOIN dbo.ContractYear AS cy WITH(NOLOCK) ON c.Year = cy.ObjectID
+        WHERE dbo.CP_IncDocs(id.ObjectID, @CurrentEmployeeID) = 1
+        AND SEARCH_CONDITIONS
+        ORDER BY Date DESC
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="CurrentEmployeeID" vt="uuid" />
+					<ds:param n="PrjCode" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							f.ExternalID LIKE :PrjCode
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="ContrNum" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							c.Number LIKE :ContrNum 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateFrom" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[ 
+							id.Date >= dbo.DATETRIM(:DateFrom) 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateTo" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							id.Date < DATEADD(d, 1, dbo.DATETRIM(:DateTo))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Type" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  dt.ObjectID = :Type
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Owner" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  f.Owner = :Owner
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Org" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  cust.ObjectID = :Org
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="ContrYear" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  c.Year = :ContrYear
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterIncDocsList" height="60" />
+			<i:list-menu>
+				<i:menu>
+					<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать">
+						<i:params>
+							<i:param n="MetanameForEdit">FullPropsEditor</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoDelete" hotkey="VK_DEL" t="Удалить" separator-before="1" />
+					<i:menu-item action="DoRefresh" t="Обновить" />
+					<i:menu-item action="DoResetFilter" t="Очистить фильтр" />
+				</i:menu>
+			</i:list-menu>
+			<i:column t="Дата" vt="date" align="center" width="150" />
+			<i:column t="Сумма" vt="string" align="right" width="200" />
+			<i:column t="Тип" vt="string" align="left" width="300" />
+			<i:column t="Заказчик" vt="string" align="left" width="400" />
+			<i:column t="Код проекта" vt="string" align="left" width="200" />
+			<i:column t="Номер" align="right" width="200" />
+			<i:column t="Подписан" vt="string" align="center" width="100" />
+			<i:column t="Владелец" vt="string" align="center" width="250" />
+			<i:column t="Отчетный год" vt="i4" align="center" width="150" />
+			<i:column t="Номер договора" vt="string" align="center" width="350" />
+		</i:objects-list>
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="NotSignedOutdated">TenderLotState-StateContract.ico</i:icon>
+			<i:icon selector="NotSigned">TenderLotState-Accept.ico</i:icon>
+			<i:icon selector="Signed">TenderLotState-Accept-NoDocsFeedDate.ico</i:icon>
+		</i:icons>
+	</ds:type>
+	<ds:type n="Income" d="Проектный приход" tp="persistent">
+		<ds:prop n="Year" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Type" d="Тип" vt="object" ot="IncType" cp="scalar">
+			<i:object-dropdown use-list="IncTypeSelector" empty-value-text="(Укажите тип)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Fact" d="Факт" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Contract" d="Договор" vt="object" ot="Contract" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>
+          <![CDATA[item.Date & " - " & it_FormatCurr(item.Sum)]]>
+        </i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Document" d="Документ" vt="object" ot="IncDoc" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>
+          <![CDATA[item.Date & " - " & it_FormatCurr(item.Sum)]]>
+        </i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Number" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" default-for-creation="1" width="400" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Income.vbs</i:client-script>
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Main" t=" ">p-Income.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:editor n="FullPropsEditor" width="400" height="500" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Income.vbs</i:client-script>
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Приходы" off-rownumbers="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					i.[ObjectID],
+					i.Date,
+					dbo.GetSumString(i.Sum, null) AS Sum,
+          it.Name AS Type,
+          f.ExternalID,
+					i.Number AS Number,
+					dbo.GetBoolString (i.Fact) AS Fact,
+          id.Number AS IDNumber,
+					co.ShortName AS Owner,
+          dbo.[GetYearByID](dbo.GetIncomeYearID(i.[ObjectID])) AS Year,
+					c.Number AS ContrNumber,
+					i.[Rem]
+				FROM [dbo].[Income] i
+          LEFT JOIN dbo.IncType AS it WITH(NOLOCK) ON i.Type= it.ObjectID
+					LEFT JOIN dbo.IncDoc AS id WITH(NOLOCK) ON i.Document = id.ObjectID
+					LEFT JOIN dbo.Contract AS c WITH(NOLOCK) ON id.Contract = c.ObjectID
+					LEFT JOIN dbo.Folder AS f WITH(NOLOCK) ON c.Project = f.ObjectID
+					LEFT JOIN dbo.Organization AS co WITH(NOLOCK) ON f.Owner = co.ObjectID
+					LEFT JOIN dbo.ContractYear AS cy WITH(NOLOCK) ON c.Year = cy.ObjectID
+        WHERE dbo.CP_Incomes(i.ObjectID, @CurrentEmployeeID) = 1
+        AND SEARCH_CONDITIONS
+        ORDER BY Date DESC
+      ]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="CurrentEmployeeID" vt="uuid" />
+					<ds:param n="PrjCode" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							f.ExternalID LIKE :PrjCode
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="ContrNum" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							c.Number LIKE :ContrNum 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateFrom" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[ 
+							i.Date >= dbo.DATETRIM(:DateFrom) 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateTo" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							i.Date < DATEADD(d, 1, dbo.DATETRIM(:DateTo))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="MacroType" vt="i4">
+						<ds:param-selector op="equal" value="0"><![CDATA[i.Contract IS NOT NULL]]></ds:param-selector>
+						<ds:param-selector op="equal" value="1"><![CDATA[i.Document IS NOT NULL]]></ds:param-selector>
+						<ds:param-selector op="equal" value="2"><![CDATA[1=1]]></ds:param-selector>
+						<ds:param-selector op="equal" value="3"><![CDATA[i.Loan IS NOT NULL]]></ds:param-selector>
+						<ds:param-selector op="equal" value="10"><![CDATA[(i.Document IS NULL) AND (i.Contract IS NULL) AND (i.Loan IS NULL) ]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="Type" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  it.ObjectID = :Type
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Owner" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  f.Owner = :Owner
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="ContrYear" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  c.Year = :ContrYear
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterIncomesList" height="60" />
+			<i:list-menu>
+				<i:menu>
+					<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать">
+						<i:params>
+							<i:param n="MetanameForEdit">FullPropsEditor</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoDelete" hotkey="VK_DEL" t="Удалить" separator-before="1" />
+					<i:menu-item action="DoRefresh" t="Обновить" />
+					<i:menu-item action="DoResetFilter" t="Очистить фильтр" />
+				</i:menu>
+			</i:list-menu>
+			<i:column t="Дата" vt="date" align="center" width="150" />
+			<i:column t="Сумма" vt="string" align="right" width="200" />
+			<i:column t="Тип" vt="string" align="left" width="450" />
+			<i:column t="Код проекта" vt="string" align="left" width="200" />
+			<i:column t="Номер поручения" align="right" width="200" />
+			<i:column t="Факт" vt="string" align="center" width="100" />
+			<i:column t="Документ" vt="string" align="center" width="150" />
+			<i:column t="Владелец" vt="string" align="center" width="250" />
+			<i:column t="Отчетный год" vt="i4" align="center" width="150" />
+			<i:column t="Номер контракта" vt="string" align="center" width="350" />
+			<i:column t="Примечание" width="400" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="ContractYear" d="Отчетный год" tp="persistent">
+		<ds:prop n="Year" d="Год" vt="i4" cp="scalar">
+			<ds:min>2000</ds:min>
+			<ds:max>2099</ds:max>
+		</ds:prop>
+		<ds:prop n="Current" d="Текущий" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Archive" d="В архиве" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" default-for-creation="1" width="300" height="250" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Отчетные года" off-icons="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Year],
+					case t.[Current] when 1 then 'Текущий' else '' end,
+					case t.[Archive] when 1 then 'В архиве' else '' end
+				FROM [dbo].[ContractYear] t
+				WHERE_CLAUSE
+        ORDER BY t.[Year]
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Год" vt="i4" width="200" />
+			<i:column t="Текущий" vt="string" width="300" />
+			<i:column t="В архиве" vt="string" width="300" />
+		</i:objects-list>
+		<i:objects-list t="Отчетный год" n="ContractYearSelector" off-icons="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					t.[ObjectID],
+					t.[Year],
+          t.[Current]
+				FROM [dbo].[ContractYear] t
+				WHERE t.[Archive] = 0
+        ORDER BY t.[Year]
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column t="Год" vt="i4" width="200" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="IncType" d="Тип прихода" tp="persistent">
+		<ds:prop n="Name" d="Название" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Code" d="Код" vt="i4" cp="scalar" maybenull="1" />
+		<ds:prop n="IsProject" d="По проекту" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" width="400" height="350" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Типы приходов" off-icons="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Code],
+					case t.[IsProject] when 1 then 'Да' else 'Нет' end,
+          t.[Rem]
+				FROM [dbo].[IncType] t
+				WHERE_CLAUSE
+        ORDER BY t.[IsProject], t.[Name]
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Название" width="300" />
+			<i:column t="Код" vt="i4" width="150" />
+			<i:column t="По проекту" vt="string" width="250" />
+			<i:column t="Примечание" width="300" />
+		</i:objects-list>
+		<i:objects-list t="Тип прихода" n="IncTypeSelector" off-icons="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT 
+					t.[ObjectID],
+					t.[Name]
+				FROM [dbo].[IncType] t
+				WHERE t.[IsProject] = 1
+        ORDER BY t.[Name]
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column t="Название" width="300" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="Outcome" d="Проектный расход" tp="persistent">
+		<ds:prop n="Year" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Number" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="Type" d="Тип" vt="object" ot="OutType" cp="scalar">
+			<i:object-dropdown use-list="OutTypeIsProjectSelector" empty-value-text="(Укажите тип)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Percent" d="Процент комиссии (для кода 100)" vt="r4" cp="scalar" maybenull="1" />
+		<ds:prop n="Fact" d="Факт" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Contract" d="Договор" vt="object" ot="Contract" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>
+          <![CDATA[item.Date & " - " & it_FormatCurr(item.Sum)]]>
+        </i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Document" d="Документ" vt="object" ot="OutDoc" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>
+          <![CDATA[item.Date & " - " & it_FormatCurr(item.Sum)]]>
+        </i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="OutContract" d="Расходный договор" vt="object" ot="OutContract" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.AvansPayNumber</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" default-for-creation="1" width="550" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Outcome.vbs</i:client-script>
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:preload>Type</i:preload>
+			<i:page n="Main" t=" ">p-Outcome.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:editor n="FullPropsEditor" width="550" height="550" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Outcome.vbs</i:client-script>
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:preload>Type.IsCodeOut</i:preload>
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Проектные расходы" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+        SELECT TOP @@MAXROWS 
+					o.[ObjectID],
+					o.Date,
+					dbo.GetSumString(o.Sum, null) AS Sum,
+          dbo.GetBoolString(o.Fact) AS Fact,
+          ot.Name AS Type,
+          dbo.GetOutcomeProjectCode(o.[ObjectID]),
+          dbo.[GetProjectOwnerShortNameByID](dbo.GetOutcomeProjectOwnerID(o.[ObjectID])),
+          dbo.[GetYearByID](dbo.GetOutcomeYearID(o.[ObjectID])),
+					o.Number AS Number,
+          od.Number AS ODNumber,
+					o.[Rem]
+				FROM [dbo].[Outcome] o
+          LEFT JOIN dbo.OutType AS ot WITH(NOLOCK) ON o.Type = ot.ObjectID
+					LEFT JOIN dbo.OutDoc AS od WITH(NOLOCK) ON o.Document = od.ObjectID
+        WHERE dbo.CP_Outcomes(o.ObjectID, @CurrentEmployeeID) = 1
+        AND SEARCH_CONDITIONS
+        ORDER BY Date DESC
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="CurrentEmployeeID" vt="uuid" />
+					<ds:param n="PrjCode" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							dbo.GetOutcomeProjectCode(o.[ObjectID]) LIKE :PrjCode
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateFrom" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[ 
+							o.Date >= dbo.DATETRIM(:DateFrom) 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateTo" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							o.Date < DATEADD(d, 1, dbo.DATETRIM(:DateTo))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Type" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  ot.ObjectID = :Type
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Owner" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  dbo.GetOutcomeProjectOwnerID(o.[ObjectID]) = :Owner
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="ContrYear" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  dbo.GetOutcomeYearID(o.ObjectID) = :ContrYear
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterOutcomesList" height="60" />
+			<i:list-menu>
+				<i:menu>
+					<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать">
+						<i:params>
+							<i:param n="MetanameForEdit">FullPropsEditor</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoDelete" hotkey="VK_DEL" t="Удалить" separator-before="1" />
+					<i:menu-item action="DoRefresh" t="Обновить" />
+					<i:menu-item action="DoResetFilter" t="Очистить фильтр" />
+				</i:menu>
+			</i:list-menu>
+			<i:column t="Дата" vt="date" align="center" width="150" />
+			<i:column t="Сумма" vt="string" align="right" width="200" />
+			<i:column t="Факт" vt="string" align="center" width="100" />
+			<i:column t="Тип" vt="string" align="left" width="300" />
+			<i:column t="Код проекта" vt="string" align="left" width="200" />
+			<i:column t="Владелец" vt="string" align="center" width="250" />
+			<i:column t="Отчетный год" vt="string" align="center" width="250" />
+			<i:column t="Номер поручения" align="right" width="200" />
+			<i:column t="Документ" vt="string" align="center" width="150" />
+			<i:column t="Примечание" width="400" />
+		</i:objects-list>
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="NotPaidOutdated">TenderLotState-StateContract.ico</i:icon>
+			<i:icon selector="NotPaid">TenderLotState-Accept.ico</i:icon>
+			<i:icon selector="Paid">TenderLotState-Accept-NoDocsFeedDate.ico</i:icon>
+		</i:icons>
+	</ds:type>
+	<ds:type n="OutCode" d="Код расхода" tp="persistent">
+		<ds:prop n="Code" d="Код" vt="string" cp="scalar">
+			<ds:max>5</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Описание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<i:objects-list t="Коды расходов" n="OutCode" off-icons="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Code],
+					t.[Rem]
+				FROM [dbo].[OutCode] t
+				WHERE_CLAUSE
+        ORDER BY t.[Code]
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Код" width="200" />
+			<i:column t="Описание" width="400" />
+		</i:objects-list>
+		<i:editor n="editor" default-for-editing="1" width="400" height="250" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="Contract" d="Приходный договор" tp="persistent">
+		<ds:prop n="Year" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Incomes" d="Приходы" vt="object" ot="Income" cp="link" built-on="Contract">
+			<i:elements-list off-select="1" off-unlink="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:hide-if>not IsNull(item.Document)</i:hide-if>
+				<i:column t="Дата" width="170" align="center" vt="date">item.Date</i:column>
+				<i:column t="Сумма" width="200" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Факт" width="100" align="center" vt="string">it_FormatBool(item.Fact)</i:column>
+				<i:column t="Тип" width="400" align="center" vt="string">item.Type.Name</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK" />
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Outcomes" d="Расходы" vt="object" ot="Outcome" cp="link" built-on="Contract">
+			<i:elements-list off-select="1" off-unlink="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:hide-if>not IsNull(item.Document)</i:hide-if>
+				<i:column t="Дата" width="170" align="center" vt="date">item.Date</i:column>
+				<i:column t="Сумма" width="200" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Факт" width="100" align="center" vt="string">it_FormatBool(item.Fact)</i:column>
+				<i:column t="Тип" width="400" align="center" vt="string">item.Type.Name</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK" />
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="OutLimits" d="Лимиты по расходам" vt="object" ot="OutLimit" cp="link" built-on="Contract">
+			<i:elements-list off-select="1" off-unlink="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Тип" width="250" align="center" vt="string">item.OutType.Name</i:column>
+				<i:column t="Сумма" width="200" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Примечание" width="300" align="left">item.Rem</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK" />
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Project" d="Проект" vt="object" ot="Folder" cp="scalar">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="IncDocs" d="Приходные документы" vt="object" ot="IncDoc" cp="link" built-on="Contract">
+			<i:elements-list off-unlink="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Дата" width="250" align="center" vt="date">item.Date</i:column>
+				<i:column t="Подписан" width="100" align="center" vt="string">it_FormatBool(item.Signed)</i:column>
+				<i:column t="Номер" width="200" align="center" vt="string">item.Number</i:column>
+				<i:column t="Сумма" width="200" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Тип" width="350" align="right" vt="string">item.Type.Name</i:column>
+				<i:column t="Примечание" width="300">item.Rem</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK" />
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="OutDocs" d="Расходные документы" vt="object" ot="OutDoc" cp="link" built-on="Contract">
+			<i:elements-list off-unlink="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:hide-if>not IsNull(item.OutContract)</i:hide-if>
+				<i:column t="Дата" width="150" align="center" vt="date">item.Date</i:column>
+				<i:column t="Контрагент" width="300" align="left" vt="string">item.Organization.Name</i:column>
+				<i:column t="Подписан" width="100" align="center" vt="string">it_FormatBool(item.Signed)</i:column>
+				<i:column t="Номер" width="150" align="center" vt="string">item.Number</i:column>
+				<i:column t="Сумма" width="150" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Тип" width="250" align="center" vt="string">item.Type.Name</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1">
+							<i:params>
+								<i:param n="Metaname">ShortEditorWithSupplier</i:param>
+							</i:params>
+						</i:menu-item>
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK">
+							<i:params>
+								<i:param n="Metaname">ShortEditorWithSupplier</i:param>
+							</i:params>
+						</i:menu-item>
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="AvansSum" d="Сумма аванса" vt="fixed" cp="scalar" maybenull="1" />
+		<ds:prop n="AvansDate" d="Дата оплаты аванса" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="AvansPaid" d="Аванс оплачен" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="AvansPayNumber" d="Номер поручения" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="OutContracts" d="Расходные договора" vt="object" ot="OutContract" cp="link" built-on="Contract">
+			<i:elements-list off-select="1" off-unlink="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Номер" width="200" align="center" vt="string">item.Number</i:column>
+				<i:column t="Контрагент" width="250" align="center" vt="string">item.Org.Name</i:column>
+				<i:column t="Сумма" width="200" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Дата" width="250" align="center" vt="date">item.Date</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK">
+							<i:params>
+								<i:param n="Metaname">CustomEditor</i:param>
+							</i:params>
+						</i:menu-item>
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Signed" d="Подписан" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Number" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="MaxCost" d="Предельная себестоимость" vt="fixed" cp="scalar" maybenull="1" />
+		<ds:prop n="AO" d="АО" vt="object" ot="AO" cp="link" built-on="Contract">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Дата" width="150" align="center" vt="date">item.Date</i:column>
+				<i:column t="Сумма" width="200" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Назначение" width="550" align="right" vt="string">item.Reason.Name</i:column>
+				<i:column t="Сотрудник" width="350" align="left" vt="string">it_FormatName(item.Employee.LastName, item.Employee.FirstName, item.Employee.PhoneExt)</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK">
+							<i:params>
+								<i:param n="Metaname">AONoOwner</i:param>
+							</i:params>
+						</i:menu-item>
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="BudgetOuts" d="Забюджетированные расходы" vt="object" ot="BudgetOut" cp="link" built-on="InContract">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Сумма" width="200">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Название" width="250">item.Name</i:column>
+				<i:column t="Контрагент" width="300">item.Org.Name</i:column>
+				<i:column t="Комплектатор" width="300">item.Supplier.Manufacturer.Name</i:column>
+				<i:column t="Описание" width="250">item.Rem</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK" />
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="BudgetState" d="Состояние бюджета проекта" vt="i2" cp="scalar" maybenull="1" enum="STATE_CONTRACT_BUDGET">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="В разработке">0</i:const-value>
+				<i:const-value n="Передано на согласование в финансовую службу">1</i:const-value>
+				<i:const-value n="Согласовано финансовой службой">2</i:const-value>
+				<i:const-value n="Передано на согласование ГД">3</i:const-value>
+				<i:const-value n="Согласовано ГД">4</i:const-value>
+				<i:const-value n="Утверждено">5</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="AOLimits" d="Лимиты по АО" vt="object" ot="AOLimit" cp="link" built-on="Contract">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Тип" width="250" align="center" vt="string">item.Reason.Name</i:column>
+				<i:column t="Сумма" width="200" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Примечание" width="300" align="left">item.Rem</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK" />
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="BudgedApproved" d="Бюджет утвержден" vt="date" cp="scalar" maybenull="1" />
+		<i:editor default-for-creation="1" wizard-mode="get-data" width="60" height="60" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Contract.vbs</i:client-script>
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Main" t="Договор">p-Contract-Main.xsl</i:page>
+			<i:menu ref="std-wizard-menu" />
+		</i:editor>
+		<i:editor default-for-editing="1" width="60" height="93" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Contract.vbs</i:client-script>
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:preload>Project</i:preload>
+			<i:preload>IncDocs</i:preload>
+			<i:preload>OutDocs</i:preload>
+			<i:preload>OutContracts</i:preload>
+			<i:preload>Outcomes</i:preload>
+			<i:preload>AO</i:preload>
+			<i:preload>AOLimits</i:preload>
+			<i:preload>BudgetOuts</i:preload>
+			<i:preload>OutLimits</i:preload>
+			<i:page n="Main" t="Договор">p-Contract-Main.xsl</i:page>
+			<i:page n="Budget" t="Бюджет">p-Contract-Budget.xsl</i:page>
+			<i:page n="Incomes" t="Приходы">p-Contract-Incomes.xsl</i:page>
+			<i:page n="Outcomes" t="Расходы">p-Contract-Outcomes.xsl</i:page>
+			<i:page n="AO" t="АО, Расходы (бД)">p-Contract-AO.xsl</i:page>
+			<i:menu ref="std-wizard-menu" />
+		</i:editor>
+		<i:objects-list t="Приходные договора" off-create="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+          f.ExternalID AS ProjectCode,
+          f.Name AS Project,
+          t.[Date],
+          dbo.GetSumString(t.[Sum], NULL),
+          t.Number AS  ContrNum,
+          cy.Year,
+          o.ShortName AS Owner
+				FROM [dbo].[Contract] t
+          LEFT JOIN dbo.Folder AS f WITH(NOLOCK) ON t.Project = f.ObjectID
+          LEFT JOIN dbo.Organization AS o WITH(NOLOCK) ON f.Owner= o.ObjectID
+          LEFT JOIN dbo.ContractYear AS cy WITH(NOLOCK) ON t.Year= cy.ObjectID
+				WHERE dbo.CP_Contracts(t.ObjectID, @CurrentEmployeeID) = 1
+        AND SEARCH_CONDITIONS
+        ORDER BY [Date] DESC
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="CurrentEmployeeID" vt="uuid" />
+					<ds:param n="PrjCode" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							f.ExternalID LIKE :PrjCode
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="ContrNum" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							t.Number LIKE :ContrNum 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateFrom" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[ 
+							t.Date >= dbo.DATETRIM(:DateFrom) 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateTo" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							t.Date < DATEADD(d, 1, dbo.DATETRIM(:DateTo))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Owner" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  f.Owner = :Owner
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="ContrYear" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  t.Year = :ContrYear
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterContractsList" height="60" />
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Код проекта" vt="string" width="150" />
+			<i:column t="Проект" vt="string" width="500" />
+			<i:column t="Дата" vt="date" width="150" />
+			<i:column t="Сумма" vt="string" width="200" align="right" />
+			<i:column t="Номер контракта" vt="string" width="250" />
+			<i:column t="Отчетрый год" vt="string" width="150" />
+			<i:column t="Владелец" vt="string" width="150" />
+		</i:objects-list>
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="0">Folder-Directory-Open-Complete.ico</i:icon>
+		</i:icons>
+	</ds:type>
+	<ds:type n="Loan" d="Займ" tp="persistent">
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Income" d="Входящий" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="Owner" d="Владелец" vt="object" ot="Organization" cp="scalar">
+			<i:object-dropdown use-list="OwnerSelector" empty-value-text="(Укажите владельца)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="ForAllHolding" d="Доступен всем компаниям холдинга" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="Organization" d="Организация" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Employee" d="Сотрудник" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:object-presentation off-create="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>it_FormatName(item.LastName, item.FirstName, item.PhoneExt)</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Conditions" d="Условия" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="GenIncomes" d="Приходы" vt="object" ot="GenIncome" cp="link" built-on="Loan">
+			<i:elements-list off-select="1" off-unlink="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Дата" width="150" align="center" vt="date">item.Date</i:column>
+				<i:column t="Сумма" width="250" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Факт" width="100" align="center" vt="string">it_FormatBool(item.Fact)</i:column>
+				<i:column t="Номер поручения" align="center" width="100">item.Number</i:column>
+				<i:column t="Примечание" width="100">item.Rem</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK" />
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="GenOutcomes" d="Расходы" vt="object" ot="GenOutcome" cp="link" built-on="Loan">
+			<i:elements-list off-select="1" off-unlink="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Дата" width="150" align="center" vt="date">item.Date</i:column>
+				<i:column t="Сумма" width="250" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Факт" width="100" align="center" vt="string">it_FormatBool(item.Fact)</i:column>
+				<i:column t="Номер поручения" align="center" width="100">item.Number</i:column>
+				<i:column t="Примечание" width="100">item.Rem</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK" />
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Number" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" width="600" height="550" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Main" t="Займ">p-Loan-Main.xsl</i:page>
+			<i:page n="InOut" t="Приходы-расходы">p-Loan-IncOut.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Займы" off-rownumbers="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				  SELECT TOP @@MAXROWS 
+				    l.[ObjectID],
+				    l.[Date],
+				    dbo.GetSumString(l.Sum, NULL) AS Sum,
+				    dbo.GetBoolString(l.Income) AS Income,
+            own.Name AS Owner,
+				    o.Name AS Organization,
+				    dbo.GetEmployeeString(e.ObjectID) AS Employee,
+				    l.Conditions AS Conditions,
+				    l.[Rem]
+			    FROM [dbo].[Loan] l
+			    LEFT JOIN dbo.Organization AS o WITH(NOLOCK) ON l.Organization = o.ObjectID
+          LEFT JOIN dbo.Organization AS own WITH(NOLOCK) ON l.Owner = own.ObjectID
+			    LEFT JOIN dbo.Employee AS e WITH(NOLOCK) ON l.Employee = e.ObjectID
+				  WHERE_CLAUSE
+          ORDER BY Date DESC
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Дата" align="center" vt="date" width="150" />
+			<i:column t="Сумма" align="right" vt="string" width="200" />
+			<i:column t="Входящий" align="center" vt="string" width="150" />
+			<i:column t="Владелец" vt="string" width="300" />
+			<i:column t="Организация" vt="string" width="300" />
+			<i:column t="Сотрудник" vt="string" width="300" />
+			<i:column t="Условия" width="500" />
+			<i:column t="Примечание" width="200" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="PartOfFOT" d="Доля ФОТ" tp="persistent">
+		<ds:prop n="Employee" d="Сотрудник" vt="object" ot="Employee" cp="scalar">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.LastName</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Company" d="Компания" vt="object" ot="Organization" cp="scalar">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Percent" d="Доля ФОТ, %" vt="i4" cp="scalar">
+			<ds:min>1</ds:min>
+			<ds:max>99</ds:max>
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<i:objects-list t="Доля ФОТ" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Percent],
+					t.[Date]
+				FROM [dbo].[PartOfFOT] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Доля ФОТ, %" vt="i4" width="100" />
+			<i:column t="Дата" vt="date" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="FOT" d="ФОТ" tp="persistent">
+		<ds:prop n="Employee" d="Сотрудник" vt="object" ot="Employee" cp="scalar">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.LastName</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="FOT" d="ФОТ" vt="i4" cp="scalar" />
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<i:objects-list t="ФОТ" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[FOT],
+					t.[Date]
+				FROM [dbo].[FOT] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="ФОТ" vt="i4" width="100" />
+			<i:column t="Дата" vt="date" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="Commettie" d="Комиссия" tp="persistent">
+		<ds:prop n="InitDate" d="Дата" vt="date" cp="scalar">
+			<ds:def default-type="both">#CURRENT</ds:def>
+		</ds:prop>
+		<ds:prop n="Percent" d="Процент" vt="r4" cp="scalar" />
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" default-for-creation="1" width="400" height="250" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Комиссия" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[InitDate],
+					t.[Percent],
+					t.[Rem]
+				FROM [dbo].[Commettie] t
+				WHERE_CLAUSE
+        ORDER BY InitDate DESC
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Дата" vt="date" width="200" />
+			<i:column t="Процент" vt="r4" width="200" />
+			<i:column t="Примечание" width="400" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="GenOutDoc" d="Общий расходный документ" tp="persistent">
+		<ds:prop n="Organization" d="Контрагент" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-presentation use-list-selector="CompanySelectorForGenOutDoc" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Type" d="Тип" vt="object" ot="DocType" cp="scalar">
+			<i:object-dropdown use-list="DocTypeSelector" empty-value-text="(Укажите тип)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Company2" d="Компания 2" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Number" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="TargetCompany" d="Владелец" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OwnerSelector" empty-value-text="(Укажите владельца)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Year" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="GenOutcomes" d="Расходы" vt="object" ot="GenOutcome" cp="link" built-on="Document">
+			<i:elements-list off-select="1" off-unlink="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Дата" width="170" align="center" vt="date">item.Date</i:column>
+				<i:column t="Сумма" width="200" align="right" vt="string">it_FormatCurr(item.Sum)</i:column>
+				<i:column t="Факт" width="100" align="center" vt="string">it_FormatBool(item.Fact)</i:column>
+				<i:column t="Тип" width="400" align="center" vt="string">item.Type.Name</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoCreate" t="Создать" hotkey="VK_INS" may-be-default="1" />
+						<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK" />
+						<i:menu-item action="DoMarkDelete" t="Удалить" hotkey="VK_DEL" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" width="600" height="800" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Общие расходные документы" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+        SELECT TOP @@MAXROWS 
+					god.[ObjectID],
+					god.Date,
+					dbo.GetSumString(god.Sum, null) AS Sum,
+          dt.Name AS Type,
+          dbo.[GetFullOutTypeName](dbo.GetGenOutcomeTypeByGenOutDoc(god.[ObjectID])),
+          o.ShortName AS Owner,
+          y.Year,
+					god.Number AS Number,
+          god.Rem
+				FROM [dbo].[GenOutDoc] god
+          LEFT JOIN dbo.DocType AS dt WITH(NOLOCK) ON god.Type = dt.ObjectID
+					LEFT JOIN dbo.Organization AS o WITH(NOLOCK) ON god.TargetCompany = o.ObjectID
+					LEFT JOIN dbo.ContractYear AS y WITH(NOLOCK) ON god.Year = y.ObjectID
+				WHERE_CLAUSE
+        ORDER BY Date DESC
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="Organization" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  god.Organization = :Organization
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateFrom" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[ 
+							god.Date >= dbo.DATETRIM(:DateFrom) 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateTo" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							god.Date < DATEADD(d, 1, dbo.DATETRIM(:DateTo))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Type" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  dt.ObjectID = :Type
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Owner" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  god.TargetCompany = :Owner
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Year" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  god.Year = :Year
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="OutType" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  dbo.GetGenOutcomeTypeByGenOutDoc(god.[ObjectID]) = :OutType
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterGenOutDocsList" height="60" />
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Дата" vt="date" align="center" width="150" />
+			<i:column t="Сумма" vt="string" align="right" width="150" />
+			<i:column t="Тип документа" vt="string" align="left" width="300" />
+			<i:column t="Тип затрат" vt="string" align="left" width="550" />
+			<i:column t="Владелец" vt="string" align="left" width="250" />
+			<i:column t="Отчетный год" vt="i4" align="center" width="200" />
+			<i:column t="Номер" align="right" width="100" />
+			<i:column t="Примечание" align="right" width="300" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="GenOutcome" d="Общий расход" tp="persistent">
+		<ds:prop n="Year" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Type" d="Тип" vt="object" ot="OutType" cp="scalar">
+			<i:object-dropdown use-list="OutTypeGeneralSelector" empty-value-text="(Укажите тип)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Fact" d="Факт" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Number" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="TargetCompany" d="Владелец" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OwnerSelector" empty-value-text="(Укажите владельца)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Document" d="Документ" vt="object" ot="GenOutDoc" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Number</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Loan" d="Займ" vt="object" ot="Loan" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Conditions</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Code" d="Код" vt="object" ot="OutCode" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OutCode" empty-value-text="(Укажите код)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" default-for-creation="1" width="550" height="400" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Main" t=" ">p-GenOutcome.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:editor n="FullPropsEditor" width="550" height="500" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Общие расходы" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+        SELECT TOP @@MAXROWS 
+					o.[ObjectID],
+					o.Date,
+					dbo.GetSumString(o.Sum, null) AS Sum,
+          dbo.GetBoolString(o.Fact) AS Fact,
+          ot.Name AS Type,
+					dbo.[GetProjectOwnerShortNameByID]([dbo].[GetGenOutcomeProjectOwnerID](o.[ObjectID])),          
+          dbo.[GetYearByID]([dbo].[GetGenOutcomeYearID](o.[ObjectID])),
+          oc.Code,
+					o.Number AS Number,
+          od.Number AS ODNumber,
+					o.[Rem]
+				FROM [dbo].[GenOutcome] o
+					LEFT JOIN dbo.OutDoc AS od WITH(NOLOCK) ON o.Document = od.ObjectID
+          LEFT JOIN dbo.OutType AS ot WITH(NOLOCK) ON o.Type = ot.ObjectID
+          LEFT JOIN dbo.OutCode AS oc WITH(NOLOCK) ON o.Code = oc.ObjectID
+				WHERE_CLAUSE
+        ORDER BY Date DESC
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="DateFrom" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[ 
+							o.Date >= dbo.DATETRIM(:DateFrom) 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateTo" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							o.Date < DATEADD(d, 1, dbo.DATETRIM(:DateTo))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Type" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  ot.ObjectID = :Type
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Owner" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  [dbo].[GetGenOutcomeProjectOwnerID](o.[ObjectID]) = :Owner
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="ContrYear" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  [dbo].[GetGenOutcomeYearID](o.[ObjectID]) = :ContrYear
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterGenOutcomesList" height="60" />
+			<i:list-menu>
+				<i:menu>
+					<i:menu-item action="DoCreate" hotkey="VK_INS" t="Создать">
+						<i:params>
+							<i:param n="MetanameForCreate">FullPropsEditor</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать">
+						<i:params>
+							<i:param n="MetanameForEdit">FullPropsEditor</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoDelete" hotkey="VK_DEL" t="Удалить" separator-before="1" />
+					<i:menu-item action="DoRefresh" t="Обновить" />
+					<i:menu-item action="DoResetFilter" t="Очистить фильтр" />
+				</i:menu>
+			</i:list-menu>
+			<i:column t="Дата" vt="date" align="center" width="150" />
+			<i:column t="Сумма" vt="string" align="right" width="200" />
+			<i:column t="Факт" vt="string" align="center" width="100" />
+			<i:column t="Тип" vt="string" align="left" width="300" />
+			<i:column t="Владелец" vt="string" align="left" width="250" />
+			<i:column t="Отчетный год" vt="string" align="center" width="250" />
+			<i:column t="Код" vt="string" align="center" width="200" />
+			<i:column t="Номер поручения" align="right" width="200" />
+			<i:column t="Документ" vt="string" align="center" width="150" />
+			<i:column t="Примечание" width="400" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="GenIncome" d="Общий приход" tp="persistent">
+		<ds:prop n="Loan" d="Займ" vt="object" ot="Loan" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Conditions</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Fact" d="Факт" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Number" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<i:objects-list t="Общий приход" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Fact],
+					t.[Date],
+					t.[Sum],
+					t.[Number],
+					t.[Rem]
+				FROM [dbo].[GenIncome] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Факт" vt="boolean" width="100" />
+			<i:column t="Дата" vt="date" width="100" />
+			<i:column t="Сумма" vt="fixed" width="100" />
+			<i:column t="Номер" width="100" />
+			<i:column t="Примечание" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="BudgetOut" d="Бюджетный расход" tp="persistent">
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Org" d="Контрагент" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-presentation use-list-selector="SupplierSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="InContract" d="Приходный договор" vt="object" ot="Contract" cp="scalar" delete-cascade="1">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="OutContracts" d="Расходные договоры" vt="object" ot="OutContract" cp="link" built-on="BudgetOut">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="OutDocs" d="Расходные документы без Договора" vt="object" ot="OutDoc" cp="link" built-on="BudgetOut">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Name" d="Название" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Supplier" d="Комплектатор" vt="object" ot="Supplier" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Sum</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" width="500" height="300" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Бюджетный расход" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+          t.[Name],
+					t.[Sum],
+          org.ShortName,
+					t.[Rem]
+				FROM [dbo].[BudgetOut] t
+          LEFT JOIN dbo.Organization org WITH (NOLOCK) ON t.Org = org.ObjectID
+        WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Название" width="200" />
+			<i:column t="Сумма" vt="fixed" width="100" />
+			<i:column t="Контрагент" width="200" />
+			<i:column t="Описание" width="100" />
+		</i:objects-list>
+		<i:objects-list t="Бюджетный расход" n="BudgetOutListSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+          t.[Name],
+					t.[Sum],
+          org.ShortName,
+					t.[Rem]
+				FROM [dbo].[BudgetOut] t
+          LEFT JOIN dbo.Organization org WITH (NOLOCK) ON t.Org = org.ObjectID
+        WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="Contract" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							t.InContract = :Contract
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterBudgetOutList" height="50" />
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Название" width="200" />
+			<i:column t="Сумма" vt="fixed" width="100" />
+			<i:column t="Контрагент" width="200" />
+			<i:column t="Описание" width="100" />
+		</i:objects-list>
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="0">Folder-PreSale-Open.ico</i:icon>
+		</i:icons>
+	</ds:type>
+	<ds:type n="Supplier" d="Комплектатор" tp="persistent">
+		<ds:prop n="OutContract" d="Расходный договор" vt="object" ot="OutContract" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:behavior hide-on-edit="1" hide-on-create="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Number</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Percent" d="Процент" vt="r4" cp="scalar" />
+		<ds:prop n="Manufacturer" d="Производитель" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-presentation use-list-selector="SupplierSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="OutDocs" d="Расходные документы" vt="object" ot="OutDoc" cp="link" built-on="Supplier">
+			<i:behavior hide-on-edit="1" hide-on-create="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="TypeOfSupplaing" d="Тип комплектации" vt="i2" cp="scalar" enum="TYPE_SUPPLAING">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection selector="combo" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Процент от разницы">0</i:const-value>
+				<i:const-value n="Процент от суммы">1</i:const-value>
+				<i:const-value n="Процент от суммы поставки">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="BudgetOut" d="Укомплектованная статья бюджета" vt="object" ot="BudgetOut" cp="link" built-on="Supplier">
+			<i:behavior hide-on-edit="1" hide-on-create="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<i:editor n="editor" default-for-editing="1" default-for-creation="1" width="400" height="300" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Комплектатор" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Sum],
+					t.[Percent],
+					t.[TypeOfSupplaing]
+				FROM [dbo].[Supplier] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Сумма" vt="fixed" width="100" />
+			<i:column t="Процент" vt="r4" width="100" />
+			<i:column t="Тип комплектации" vt="i2" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="AOLimit" d="Лимит по АО" tp="persistent">
+		<ds:prop n="Contract" d="Приходный договор" vt="object" ot="Contract" cp="scalar" delete-cascade="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Project.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Reason" d="Назначение АО" vt="object" ot="AOReason" cp="scalar">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="0">Folder-PreSale-Open.ico</i:icon>
+		</i:icons>
+		<i:objects-list t="Лимит по АО" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Sum],
+					t.[Rem]
+				FROM [dbo].[AOLimit] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Сумма" vt="fixed" width="100" />
+			<i:column t="Примечание" width="100" />
+		</i:objects-list>
+	</ds:type>
+</ds:metadata>

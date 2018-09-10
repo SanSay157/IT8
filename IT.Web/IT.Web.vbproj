@@ -1,0 +1,1074 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>
+    </SchemaVersion>
+    <ProjectGuid>{4CEFB800-8FD0-4AE0-9961-59465F294077}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>IT.Web</RootNamespace>
+    <AssemblyName>IT.Web</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <MyType>Custom</MyType>
+    <UseIISExpress>false</UseIISExpress>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication>disabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>true</IISExpressUseClassicPipelineMode>
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>IT.Web.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,42353,42354,42355</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>IT.Web.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,42353,42354,42355</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Mobile" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Collections.Specialized" />
+    <Import Include="System.Configuration" />
+    <Import Include="System.Text" />
+    <Import Include="System.Text.RegularExpressions" />
+    <Import Include="System.Web" />
+    <Import Include="System.Web.Caching" />
+    <Import Include="System.Web.SessionState" />
+    <Import Include="System.Web.Security" />
+    <Import Include="System.Web.Profile" />
+    <Import Include="System.Web.UI" />
+    <Import Include="System.Web.UI.WebControls" />
+    <Import Include="System.Web.UI.WebControls.WebParts" />
+    <Import Include="System.Web.UI.HtmlControls" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Metadata\it-special-config-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\it-special-data-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\it-special-dbcheck-config-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\it-special-dbcheck-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\it-special-interface-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\it-special-security-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\x-net-config-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\x-net-config-storage-factory-provider-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\x-net-data-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\x-net-interface-extension-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\x-net-interface-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\x-net-reportservice-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\x-net-server-objects-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\x-net-transferservice-configuration-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metadata\x-net-transferservice-schema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Controls\msxml3.cab" />
+    <Content Include="Controls\XControls.cab" />
+    <Content Include="Icons\ActivityType.ico" />
+    <Content Include="Icons\ActivityTypeExternal.ico" />
+    <Content Include="Icons\ActivityTypeInternal.ico" />
+    <Content Include="Icons\AOLimits.ico" />
+    <Content Include="Icons\Budget.ico" />
+    <Content Include="Icons\BudgetOuts.ico" />
+    <Content Include="Icons\croc-logo-small.ico" />
+    <Content Include="Icons\Department-Archive.ico" />
+    <Content Include="Icons\Department.ico" />
+    <Content Include="Icons\Direction-Incorrect.ico" />
+    <Content Include="Icons\Direction-Obsolete.ico" />
+    <Content Include="Icons\Direction.ico" />
+    <Content Include="Icons\DirectionsFolder.ico" />
+    <Content Include="Icons\Employee-Archived.ico" />
+    <Content Include="Icons\Employee-TemporaryDisability.ico" />
+    <Content Include="Icons\Employee.ico" />
+    <Content Include="Icons\EventClass-[0].ico" />
+    <Content Include="Icons\EventClass-[1].ico" />
+    <Content Include="Icons\EventClass-[2].ico" />
+    <Content Include="Icons\EventClass-[3].ico" />
+    <Content Include="Icons\EventType-Disabled.ico" />
+    <Content Include="Icons\EventType-NoRestrictions.ico" />
+    <Content Include="Icons\EventType-Normal.ico" />
+    <Content Include="Icons\ExternalLinkType-1.ico" />
+    <Content Include="Icons\ExternalLinkType-2.ico" />
+    <Content Include="Icons\ExternalLinkType-3.ico" />
+    <Content Include="Icons\ExternalLinkType-4.ico" />
+    <Content Include="Icons\ExternalLinkType-5.ico" />
+    <Content Include="Icons\Folder-Directory-Closed.ico" />
+    <Content Include="Icons\Folder-Directory-Frozen.ico" />
+    <Content Include="Icons\Folder-Directory-Open-Complete.ico" />
+    <Content Include="Icons\Folder-Directory-Open-InWork.ico" />
+    <Content Include="Icons\Folder-Directory-Open-OnCheck.ico" />
+    <Content Include="Icons\Folder-Directory-Open.ico" />
+    <Content Include="Icons\Folder-Directory-PreClosed-Complete.ico" />
+    <Content Include="Icons\Folder-Directory-PreClosed-InWork.ico" />
+    <Content Include="Icons\Folder-Directory-PreClosed-OnCheck.ico" />
+    <Content Include="Icons\Folder-Directory-PreClosed.ico" />
+    <Content Include="Icons\Folder-Directory.ico" />
+    <Content Include="Icons\Folder-PreSale-Closed.ico" />
+    <Content Include="Icons\Folder-Presale-Frozen.ico" />
+    <Content Include="Icons\Folder-Presale-Open-Complete.ico" />
+    <Content Include="Icons\Folder-Presale-Open-InWork.ico" />
+    <Content Include="Icons\Folder-Presale-Open-OnCheck.ico" />
+    <Content Include="Icons\Folder-PreSale-Open.ico" />
+    <Content Include="Icons\Folder-Presale-PreClosed-Complete.ico" />
+    <Content Include="Icons\Folder-Presale-PreClosed-InWork.ico" />
+    <Content Include="Icons\Folder-Presale-PreClosed-OnCheck.ico" />
+    <Content Include="Icons\Folder-Presale-PreClosed.ico" />
+    <Content Include="Icons\Folder-Presale.ico" />
+    <Content Include="Icons\Folder-Project-Closed.ico" />
+    <Content Include="Icons\Folder-Project-Frozen.ico" />
+    <Content Include="Icons\Folder-Project-Open-Complete.ico" />
+    <Content Include="Icons\Folder-Project-Open-InWork.ico" />
+    <Content Include="Icons\Folder-Project-Open-OnCheck.ico" />
+    <Content Include="Icons\Folder-Project-Open.ico" />
+    <Content Include="Icons\Folder-Project-PreClosed-Complete.ico" />
+    <Content Include="Icons\Folder-Project-PreClosed-InWork.ico" />
+    <Content Include="Icons\Folder-Project-PreClosed-OnCheck.ico" />
+    <Content Include="Icons\Folder-Project-PreClosed.ico" />
+    <Content Include="Icons\Folder-Project.ico" />
+    <Content Include="Icons\Folder-Tender-Closed.ico" />
+    <Content Include="Icons\Folder-Tender-Forzen.ico" />
+    <Content Include="Icons\Folder-Tender-Open-Complete.ico" />
+    <Content Include="Icons\Folder-Tender-Open-InWork.ico" />
+    <Content Include="Icons\Folder-Tender-Open-OnCheck.ico" />
+    <Content Include="Icons\Folder-Tender-Open.ico" />
+    <Content Include="Icons\Folder-Tender-PreClosed-Complete.ico" />
+    <Content Include="Icons\Folder-Tender-PreClosed-InWork.ico" />
+    <Content Include="Icons\Folder-Tender-PreClosed-OnCheck.ico" />
+    <Content Include="Icons\Folder-Tender-PreClosed.ico" />
+    <Content Include="Icons\Folder-Tender.ico" />
+    <Content Include="Icons\HomeOrganization.ico" />
+    <Content Include="Icons\incident.ico" />
+    <Content Include="Icons\IncidentCategoriesFolder.ico" />
+    <Content Include="Icons\IncidentCategory.ico" />
+    <Content Include="Icons\IncidentLinkFromThis.ico" />
+    <Content Include="Icons\IncidentLinkToThis.ico" />
+    <Content Include="Icons\IncidentRolesFolder.ico" />
+    <Content Include="Icons\IncidentState-start.ico" />
+    <Content Include="Icons\IncidentState.ico" />
+    <Content Include="Icons\IncidentStatesFolder.ico" />
+    <Content Include="Icons\IncidentType.ico" />
+    <Content Include="Icons\InfoSourceOrign-ByEmployee.ico" />
+    <Content Include="Icons\InfoSourceOrign-Inside.ico" />
+    <Content Include="Icons\InfoSourceOrign-Outside.ico" />
+    <Content Include="Icons\Organization-Const.ico" />
+    <Content Include="Icons\Organization-Home.ico" />
+    <Content Include="Icons\Organization-HomeParticipant.ico" />
+    <Content Include="Icons\Organization-Participant.ico" />
+    <Content Include="Icons\Organization-Temp.ico" />
+    <Content Include="Icons\Organization.ico" />
+    <Content Include="Icons\Outcomes.ico" />
+    <Content Include="Icons\OutContracts.ico" />
+    <Content Include="Icons\OutDocs.ico" />
+    <Content Include="Icons\OutLimits.ico" />
+    <Content Include="Icons\Participation-Competitor-Winner.ico" />
+    <Content Include="Icons\Participation-Competitor.ico" />
+    <Content Include="Icons\Participation-CompetitorDebtor-Winner.ico" />
+    <Content Include="Icons\Participation-CompetitorDebtor.ico" />
+    <Content Include="Icons\Participation-CompetitorHelper-Winner.ico" />
+    <Content Include="Icons\Participation-CompetitorHelper.ico" />
+    <Content Include="Icons\Participation-Participant-Winner.ico" />
+    <Content Include="Icons\Participation-Participant.ico" />
+    <Content Include="Icons\Project-[32].ico" />
+    <Content Include="Icons\ProjectParticipant-[0].ico" />
+    <Content Include="Icons\ProjectParticipant-[1].ico" />
+    <Content Include="Icons\ProjectParticipant-[2].ico" />
+    <Content Include="Icons\ResourceGroup.ico" />
+    <Content Include="Icons\Stuff.ico" />
+    <Content Include="Icons\SystemUser.ico" />
+    <Content Include="Icons\Task.ico" />
+    <Content Include="Icons\TenderLotState-Accept-1day.ico" />
+    <Content Include="Icons\TenderLotState-Accept-2days.ico" />
+    <Content Include="Icons\TenderLotState-Accept-3days.ico" />
+    <Content Include="Icons\TenderLotState-Accept-NoDocsFeedDate.ico" />
+    <Content Include="Icons\TenderLotState-Accept.ico" />
+    <Content Include="Icons\TenderLotState-Canceled.ico" />
+    <Content Include="Icons\TenderLotState-DocsReceiving.ico" />
+    <Content Include="Icons\TenderLotState-Expired.ico" />
+    <Content Include="Icons\TenderLotState-Loser.ico" />
+    <Content Include="Icons\TenderLotState-Reject.ico" />
+    <Content Include="Icons\TenderLotState-StateContract.ico" />
+    <Content Include="Icons\TenderLotState-Thinking-NoDocsFeedDate.ico" />
+    <Content Include="Icons\TenderLotState-Thinking.ico" />
+    <Content Include="Icons\TenderLotState-Waiting.ico" />
+    <Content Include="Icons\TenderLotState-Winner.ico" />
+    <Content Include="Icons\TimeLoss.ico" />
+    <Content Include="Icons\Transition.ico" />
+    <Content Include="Icons\TransitionsFolder.ico" />
+    <Content Include="Icons\TransitionsFrom.ico" />
+    <Content Include="Icons\TransitionsTo.ico" />
+    <Content Include="Icons\UserRoleInIncident.ico" />
+    <Content Include="Icons\UserRoleInProject.ico" />
+    <Content Include="Icons\xu-application-icon.ico" />
+    <Content Include="Images\ApplicationSign.gif" />
+    <Content Include="Images\bullet-info.gif" />
+    <Content Include="Images\bullet-minus.gif" />
+    <Content Include="Images\bullet-operation.gif" />
+    <Content Include="Images\bullet-plus.gif" />
+    <Content Include="Images\delimiter-vertical.gif" />
+    <Content Include="Images\it-header-left-369.gif" />
+    <Content Include="Images\it-header-right-369.gif" />
+    <Content Include="Images\it-info-mini.gif" />
+    <Content Include="Images\it-thumbnail-link.gif" />
+    <Content Include="Images\it-thumbnail-report.gif" />
+    <Content Include="Images\link-fromThis.gif" />
+    <Content Include="Images\link-toThis.gif" />
+    <Content Include="Images\menu-background.jpg" />
+    <Content Include="Images\NavigationBar\toolBtn-ActivityTree-Off-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-ActivityTree-Off.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-ActivityTree-On-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-ActivityTree-On.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Administration-Off-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Administration-Off.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Administration-On-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Administration-On.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Find-Off-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Find-Off.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Find-On-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Find-On.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Home-Off-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Home-Off.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Home-On-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Home-On.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-IncidentList-Off-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-IncidentList-Off.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-IncidentList-On-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-IncidentList-On.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Incidents-Off-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Incidents-Off.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Incidents-On-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Incidents-On.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-OrgStructure-Off-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-OrgStructure-Off.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-OrgStructure-On-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-OrgStructure-On.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-ProjectsList-Off-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-ProjectsList-Off.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-ProjectsList-On-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-ProjectsList-On.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Reports-Off-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Reports-Off.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Reports-On-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Reports-On.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-TenderList-Off-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-TenderList-Off.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-TenderList-On-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-TenderList-On.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Timing-Off-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Timing-Off.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Timing-On-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-Timing-On.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-TMS-Off-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-TMS-Off.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-TMS-On-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-TMS-On.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-UserInfo-Off-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-UserInfo-Off.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-UserInfo-On-Light.gif" />
+    <Content Include="Images\NavigationBar\toolBtn-UserInfo-On.gif" />
+    <Content Include="Images\no-access-sign.gif" />
+    <Content Include="Images\TimeSpentMonitor.jpg" />
+    <Content Include="Images\tms-Background.gif" />
+    <Content Include="Images\tms-footer.gif" />
+    <Content Include="Images\tms-header-left.jpg" />
+    <Content Include="Images\tms-header-lots-A.jpg" />
+    <Content Include="Images\tms-header-lots.jpg" />
+    <Content Include="Images\tms-header-tenders-A.jpg" />
+    <Content Include="Images\tms-header-tenders.jpg" />
+    <Content Include="Images\tms-header-topleft.gif" />
+    <Content Include="Images\tms-header-topright.gif" />
+    <Content Include="Images\ToolBar\btn-FilterClear-Disabled.gif" />
+    <Content Include="Images\ToolBar\btn-FilterClear-Light.gif" />
+    <Content Include="Images\ToolBar\btn-FilterClear.gif" />
+    <Content Include="Images\ToolBar\btn-FilterHide-Disabled.gif" />
+    <Content Include="Images\ToolBar\btn-FilterHide-Light.gif" />
+    <Content Include="Images\ToolBar\btn-FilterHide.gif" />
+    <Content Include="Images\ToolBar\btn-FilterShow-Disabled.gif" />
+    <Content Include="Images\ToolBar\btn-FilterShow-Light.gif" />
+    <Content Include="Images\ToolBar\btn-FilterShow.gif" />
+    <Content Include="Images\ToolBar\btn-HelpDoc-Disabled.gif" />
+    <Content Include="Images\ToolBar\btn-HelpDoc-Light.gif" />
+    <Content Include="Images\ToolBar\btn-HelpDoc.gif" />
+    <Content Include="Images\ToolBar\btn-Operation-Disabled.gif" />
+    <Content Include="Images\ToolBar\btn-Operation-Light.gif" />
+    <Content Include="Images\ToolBar\btn-Operation.gif" />
+    <Content Include="Images\ToolBar\btn-Refresh-Disabled.gif" />
+    <Content Include="Images\ToolBar\btn-Refresh-Light.gif" />
+    <Content Include="Images\ToolBar\btn-Refresh.gif" />
+    <Content Include="Images\toolBtn-ActivityTree-On.gif" />
+    <Content Include="Images\x-arrowdown.gif" />
+    <Content Include="Images\x-arrowright.gif" />
+    <Content Include="Images\x-bckgrnd.jpg" />
+    <Content Include="Images\x-caption.jpg" />
+    <Content Include="Images\x-excel.gif" />
+    <Content Include="Images\x-execute-command-async.gif" />
+    <Content Include="Images\x-execute-report-async.gif" />
+    <Content Include="Images\x-footnote.jpg" />
+    <Content Include="Images\x-go-back.gif" />
+    <Content Include="Images\x-go-home.gif" />
+    <Content Include="Images\x-go-on.gif" />
+    <Content Include="Images\x-go.gif" />
+    <Content Include="Images\x-open-help.gif" />
+    <Content Include="Images\x-refresh-on.gif" />
+    <Content Include="Images\x-refresh.gif" />
+    <Content Include="Images\x-reload.gif" />
+    <Content Include="Images\x-transfer-export-complete.gif" />
+    <Content Include="Images\x-transfer-export.gif" />
+    <Content Include="Images\x-transfer-import-complete.gif" />
+    <Content Include="Images\x-transfer-import.gif" />
+    <Content Include="Metadata\it-app-config.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\it-dbcheck-config.xml" />
+    <Content Include="Metadata\itmd-ds.xml" />
+    <Content Include="Metadata\itmd-fb-cash-filters.xml" />
+    <Content Include="Metadata\itmd-fb-cash-reports.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\itmd-fb-cash.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\itmd-fb-reports.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\itmd-guitars.xml" />
+    <Content Include="Metadata\itmd-nav-menu-_old_.xml" />
+    <Content Include="Metadata\itmd-nav-menu.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\itmd-pms-refs.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\itmd-security-filters.xml" />
+    <Content Include="Metadata\itmd-tree-main.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\itmd-tree-refs.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\it-metadata.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\it-rs-config.xml" />
+    <Content Include="Metadata\it-server-objects.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\it-transfer.xml" />
+    <Content Include="Metadata\itmd-fb-filters.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\itmd-fb.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\itmd-mms.xml" />
+    <Content Include="Metadata\itmd-pms-filters.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\itmd-pms-reports.xml" />
+    <Content Include="Metadata\itmd-security.xml" />
+    <Content Include="Metadata\itmd-tms-filters.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\itmd-tms.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\itmd-treelevel-contract.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Metadata\itmd-tree-virtuallevel-icons.xml" />
+    <Content Include="Reports\r-ActivityList.xml" />
+    <Content Include="Reports\r-AllEmpSaldoDS.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\r-CostsByDepartments.xml" />
+    <Content Include="Reports\r-DepartmentExpensesStructure.xml" />
+    <Content Include="Reports\r-Employee.xml" />
+    <Content Include="Reports\r-EmployeeExpensesBalance.xml" />
+    <Content Include="Reports\r-EmployeeExpensesList.xml" />
+    <Content Include="Reports\r-EmployeeKassTrans.xml" />
+    <Content Include="Reports\r-EmployeeSaldoDS.xml" />
+    <Content Include="Reports\r-EmployeesBusynessInProjects.xml" />
+    <Content Include="Reports\r-EmployeesRate.xml" />
+    <Content Include="Reports\r-Employment.xml" />
+    <Content Include="Reports\r-ExpensesByDirections.xml" />
+    <Content Include="Reports\r-FinPlan.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\r-Folder.xml" />
+    <Content Include="Reports\r-FolderIncidentsHistory.xml" />
+    <Content Include="Reports\r-Incident.xml" />
+    <Content Include="Reports\r-LastExpenseDates.xml" />
+    <Content Include="Reports\r-LoansIncOut.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\r-Lot.xml" />
+    <Content Include="Reports\r-LotsAndParticipants.xml" />
+    <Content Include="Reports\r-OrganizationHistory.xml" />
+    <Content Include="Reports\r-ProjectBDDS.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\r-ProjectBudget.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\r-ProjectCashGap.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\r-ProjectIncidentsAndExpenses.xml" />
+    <Content Include="Reports\r-ProjectIncOut.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\r-ProjectParticipantsAndExpenses.xml" />
+    <Content Include="Reports\r-ReportUsersExpences.xml" />
+    <Content Include="Reports\r-Tender.xml" />
+    <Content Include="Reports\r-Tenders.xml" />
+    <Content Include="Reports\r-TimeLosses.xml" />
+    <Content Include="Reports\readme.txt" />
+    <Content Include="Reports\r-ProjectBDR.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="VBS\it-const.vbs" />
+    <Content Include="VBS\it-editor-security.vbs" />
+    <Content Include="VBS\it-format-value.vbs" />
+    <Content Include="VBS\it-pe-any-type-objects-tree-selector.vbs" />
+    <Content Include="VBS\it-pe-incident-links.vbs" />
+    <Content Include="VBS\it-pe-object-dropdown-ChangeState.vbs" />
+    <Content Include="VBS\it-pe-readonly.vbs" />
+    <Content Include="VBS\it-pe-time-edit-button.vbs" />
+    <Content Include="VBS\it-period-selector.vbs" />
+    <Content Include="VBS\it-proxy.vbs" />
+    <Content Include="VBS\it-security.vbs" />
+    <Content Include="VBS\it-tools.vbs" />
+    <Content Include="VBS\s-BudgetOut.vbs" />
+    <Content Include="VBS\s-Contract.vbs" />
+    <Content Include="VBS\s-CopyFolderStructureWizard.vbs" />
+    <Content Include="VBS\s-Department.vbs" />
+    <Content Include="VBS\s-DepartmentParticipation-editor.vbs" />
+    <Content Include="VBS\s-Employee.vbs" />
+    <Content Include="VBS\s-Employment.vbs" />
+    <Content Include="VBS\s-EventSubscription-editor.vbs" />
+    <Content Include="VBS\s-EventSubscription-list-USER.vbs" />
+    <Content Include="VBS\s-ExternalLink-editor.vbs" />
+    <Content Include="VBS\s-ExternalLink.vbs" />
+    <Content Include="VBS\s-Filter-EmploeesList.vbs" />
+    <Content Include="VBS\s-Filter-FolderLotSelector.vbs" />
+    <Content Include="VBS\s-Filter-Lots.vbs" />
+    <Content Include="VBS\s-Filter-Organizations-tms.vbs" />
+    <Content Include="VBS\s-Filter-Tenders.vbs" />
+    <Content Include="VBS\s-FilterCompanyTree.vbs" />
+    <Content Include="VBS\s-FilterCurrentTaskList-InDialog.vbs" />
+    <Content Include="VBS\s-FilterCurrentTaskList.vbs" />
+    <Content Include="VBS\s-FilterDPK-IncidentSortEditor.vbs" />
+    <Content Include="VBS\s-Report-ProjectCashGap.vbs" />
+    <Content Include="VBS\s-FilterDPK-InDialog.vbs" />
+    <Content Include="VBS\s-FilterDPK.vbs" />
+    <Content Include="VBS\s-FilterIncidentSearchingList.vbs" />
+    <Content Include="VBS\s-FilterReportDepartmentCost.vbs" />
+    <Content Include="VBS\s-FilterReportEmployeeExpensesBalance.vbs" />
+    <Content Include="VBS\s-FilterReportUsersExpences.vbs" />
+    <Content Include="VBS\s-FilterTimeLossSearchingList.vbs" />
+    <Content Include="VBS\s-Folder.vbs" />
+    <Content Include="VBS\s-gkGuitar.vbs" />
+    <Content Include="VBS\s-Guarantee-editor.vbs" />
+    <Content Include="VBS\s-IncDoc.vbs" />
+    <Content Include="VBS\s-Incident-common.vbs" />
+    <Content Include="VBS\s-Incident-editor.vbs" />
+    <Content Include="VBS\s-Incident-WizardWithSelectFolder.vbs" />
+    <Content Include="VBS\s-IncidentLink-common.vbs" />
+    <Content Include="VBS\s-IncidentLink-editor.vbs" />
+    <Content Include="VBS\s-IncidentLink-wizard.vbs" />
+    <Content Include="VBS\s-IncidentProp-editor.vbs" />
+    <Content Include="VBS\s-IncidentState-editor.vbs" />
+    <Content Include="VBS\s-IncidentType-editor.vbs" />
+    <Content Include="VBS\s-Income.vbs" />
+    <Content Include="VBS\s-it-reports.vbs" />
+    <Content Include="VBS\s-KassTrans-list.vbs" />
+    <Content Include="VBS\s-list-CurrentTaskList.vbs" />
+    <Content Include="VBS\s-list-FolderList.vbs" />
+    <Content Include="VBS\s-list-IncidentSearchingList.vbs" />
+    <Content Include="VBS\s-Lot-editor-share.vbs" />
+    <Content Include="VBS\s-Lot-editor.vbs" />
+    <Content Include="VBS\s-LotParticipant-editor.vbs" />
+    <Content Include="VBS\s-LotsList.vbs" />
+    <Content Include="VBS\s-Organization.vbs" />
+    <Content Include="VBS\s-Outcome.vbs" />
+    <Content Include="VBS\s-OutContract.vbs" />
+    <Content Include="VBS\s-OutDoc.vbs" />
+    <Content Include="VBS\s-OutLimit.vbs" />
+    <Content Include="VBS\s-ProjectParticipant.vbs" />
+    <Content Include="VBS\s-Report-ActivityList.vbs" />
+    <Content Include="VBS\s-Report-ActivitySelector.vbs" />
+    <Content Include="VBS\s-Report-AllEmpSaldoDS.vbs" />
+    <Content Include="VBS\s-Report-DepartmentExpensesStructure.vbs" />
+    <Content Include="VBS\s-Report-EmployeesBusynessInProjects.vbs" />
+    <Content Include="VBS\s-Report-EmployeesEmployment.vbs" />
+    <Content Include="VBS\s-Report-ExpensesByDirections.vbs" />
+    <Content Include="VBS\s-Report-FolderIncidentsHistory.vbs" />
+    <Content Include="VBS\s-Report-LastExpenseDates.vbs" />
+    <Content Include="VBS\s-Report-LotsAndParticipants.vbs" />
+    <Content Include="VBS\s-Report-ProjectIncidentsAndExpenses.vbs" />
+    <Content Include="VBS\s-Report-ProjectParticipantsAndExpenses.vbs" />
+    <Content Include="VBS\s-Report-Tenders.vbs" />
+    <Content Include="VBS\s-Report-TimeLosses.vbs" />
+    <Content Include="VBS\s-Report-UsersExpences.vbs" />
+    <Content Include="VBS\s-ReportEmployeeExpensesList.vbs" />
+    <Content Include="VBS\s-Task-editor-change.vbs" />
+    <Content Include="VBS\s-Task-editor-create.vbs" />
+    <Content Include="VBS\s-Task-editor.vbs" />
+    <Content Include="VBS\s-Tender-editor-share.vbs" />
+    <Content Include="VBS\s-Tender-SingleLot-editor.vbs" />
+    <Content Include="VBS\s-TendersList.vbs" />
+    <Content Include="VBS\s-TimeLoss.vbs" />
+    <Content Include="VBS\s-TimeSpent.vbs" />
+    <Content Include="VBS\s-TmsOrganizationsList.vbs" />
+    <Content Include="VBS\s-Transition.vbs" />
+    <Content Include="VBS\s-tree-Company.vbs" />
+    <Content Include="VBS\s-tree-DKP.vbs" />
+    <Content Include="VBS\s-tree-IncidentWorkflow.vbs" />
+    <Content Include="VBS\s-tree-UserSubscription.vbs" />
+    <Content Include="VBS\s-update-button-text.vbs" />
+    <Content Include="VBS\s-UserDefaultRoleInIncident.vbs" />
+    <Content Include="VBS\s-UserProfile.vbs" />
+    <Content Include="VBS\s-UserProfileEditor.vbs" />
+    <Content Include="VBS\tms-date-calc.vbs" />
+    <Content Include="VBS\tms-pe-object-sum.vbs" />
+    <Content Include="VBS\tms-tools.vbs" />
+    <Content Include="VBS\x-const.vbs" />
+    <Content Include="VBS\x-create-outlook-letter.vbs" />
+    <Content Include="VBS\x-editor-harvester.vbs" />
+    <Content Include="VBS\x-editor-in-dialog-window.vbs" />
+    <Content Include="VBS\x-editor-in-filter.vbs" />
+    <Content Include="VBS\x-editor-page.vbs" />
+    <Content Include="VBS\x-editor.vbs" />
+    <Content Include="VBS\x-event-engine.vbs" />
+    <Content Include="VBS\x-execute-command-async.vbs" />
+    <Content Include="VBS\x-execute-data-source.vbs" />
+    <Content Include="VBS\x-filter.vbs" />
+    <Content Include="VBS\x-list-page.vbs" />
+    <Content Include="VBS\x-list-xml.vbs" />
+    <Content Include="VBS\x-list.vbs" />
+    <Content Include="VBS\x-menu-html-htc.vbs" />
+    <Content Include="VBS\x-menu.vbs" />
+    <Content Include="VBS\x-pe-bool.vbs" />
+    <Content Include="VBS\x-pe-datetime.vbs" />
+    <Content Include="VBS\x-pe-file.vbs" />
+    <Content Include="VBS\x-pe-flags.vbs" />
+    <Content Include="VBS\x-pe-number.vbs" />
+    <Content Include="VBS\x-pe-object-common.vbs" />
+    <Content Include="VBS\x-pe-object-dropdown.vbs" />
+    <Content Include="VBS\x-pe-object-list-selector.vbs" />
+    <Content Include="VBS\x-pe-object-tree-selector.vbs" />
+    <Content Include="VBS\x-pe-object.vbs" />
+    <Content Include="VBS\x-pe-objects-selector.vbs" />
+    <Content Include="VBS\x-pe-objects-tree-selector.vbs" />
+    <Content Include="VBS\x-pe-objects.vbs" />
+    <Content Include="VBS\x-pe-selector.vbs" />
+    <Content Include="VBS\x-pe-string.vbs" />
+    <Content Include="VBS\x-pool.vbs" />
+    <Content Include="VBS\x-proxy.vbs" />
+    <Content Include="VBS\x-quick-sort.vbs" />
+    <Content Include="VBS\x-report.js" />
+    <Content Include="VBS\x-save-object-multipart.vbs" />
+    <Content Include="VBS\x-select-from-tree.vbs" />
+    <Content Include="VBS\x-srv-cmd.vbs" />
+    <Content Include="VBS\x-stack.vbs" />
+    <Content Include="VBS\x-transfer-error-page.vbs" />
+    <Content Include="VBS\x-transfer-page.vbs" />
+    <Content Include="VBS\x-transfer.vbs" />
+    <Content Include="VBS\x-transferservice-proxy.vbs" />
+    <Content Include="VBS\x-tree-drag-drop-controller.vbs" />
+    <Content Include="VBS\x-tree-std-op.vbs" />
+    <Content Include="VBS\x-tree.vbs" />
+    <Content Include="VBS\x-utils.vbs" />
+    <Content Include="VBS\x-vbs.vbs" />
+    <Content Include="VBS\xx-tree-drag-drop-dispatcher.vbs" />
+    <Content Include="VBS\xx-tree-drag-drop-md-manager.vbs" />
+    <Content Include="VBS\xx-tree-drag-drop-menu-tree.vbs" />
+    <Content Include="VBS\xx-tree-drag-drop-tree.vbs" />
+    <Content Include="VBS\xx-tree-drag-drop-utils.vbs" />
+    <Content Include="VBS\xx-tree-menu.vbs" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="WebService\XFacade.asmx" />
+    <Content Include="XSL\it-editor-borders.xsl" />
+    <Content Include="XSL\it-Incident-Props.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\it-MessagingFormatter-HTML.xsl" />
+    <Content Include="XSL\it-nav-menu.xsl" />
+    <Content Include="XSL\it-pe-any-type-objects-tree-selector.xsl" />
+    <Content Include="XSL\it-pe-incident-links.xsl" />
+    <Content Include="XSL\it-pe-object-dropdown-ChangeState.xsl" />
+    <Content Include="XSL\it-pe-readonly.xsl" />
+    <Content Include="XSL\it-pe-time-edit-button.xsl" />
+    <Content Include="XSL\it-period-selector.xsl" />
+    <Content Include="XSL\p-AO-NoOwner.xsl" />
+    <Content Include="XSL\p-Contract-AO.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Contract-Budget.xsl" />
+    <Content Include="XSL\p-Contract-Main.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Contract-AllOutcomes.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Contract-OutDocs.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Contract-Outcomes.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Contract-Incomes.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-CopyFolderStructureWizard.xsl" />
+    <Content Include="XSL\p-DateRatio.xsl" />
+    <Content Include="XSL\p-DepartmentParticipation-editor.xsl" />
+    <Content Include="XSL\p-Employee-SystemUser.xsl" />
+    <Content Include="XSL\p-EmployeeRate.xsl" />
+    <Content Include="XSL\p-ExternalLink-editor.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Filter-AO.xsl" />
+    <Content Include="XSL\p-Filter-Contracts.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Filter-DirectionList.xsl" />
+    <Content Include="XSL\p-Filter-EmpMoneyMove.xsl" />
+    <Content Include="XSL\p-Filter-FolderList.xsl" />
+    <Content Include="XSL\p-Filter-FolderLotSelector.xsl" />
+    <Content Include="XSL\p-Filter-GenOutcomes.xsl" />
+    <Content Include="XSL\p-Filter-GenOutDocs.xsl" />
+    <Content Include="XSL\p-Filter-IncDocs.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Filter-Incomes.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Filter-KassTrans.xsl" />
+    <Content Include="XSL\p-Filter-Lots-1.xsl" />
+    <Content Include="XSL\p-Filter-Lots-2.xsl" />
+    <Content Include="XSL\p-Filter-Lots-3.xsl" />
+    <Content Include="XSL\p-Filter-Organizations-tms-1.xsl" />
+    <Content Include="XSL\p-Filter-Organizations-tms-2.xsl" />
+    <Content Include="XSL\p-Filter-Outcomes.xsl" />
+    <Content Include="XSL\p-Filter-OutContracts.xsl" />
+    <Content Include="XSL\p-Filter-OutDocs.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Filter-Protocol.xsl" />
+    <Content Include="XSL\p-Filter-Tenders-1.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Filter-Tenders-3.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-FilterCompanyTree.xsl" />
+    <Content Include="XSL\p-FilterCurrentTaskList-InDialog.xsl" />
+    <Content Include="XSL\p-FilterCurrentTaskList.xsl" />
+    <Content Include="XSL\p-FilterDKP.xsl" />
+    <Content Include="XSL\p-Report-ProjectCashGap.xsl" />
+    <Content Include="XSL\p-FilterDPK-InDialog.xsl" />
+    <Content Include="XSL\p-FilterEmployeeExpenses.xsl" />
+    <Content Include="XSL\p-FilterIncidentSearchingList-Folders.xsl" />
+    <Content Include="XSL\p-FilterIncidentSearchingList-People.xsl" />
+    <Content Include="XSL\p-FilterIncidentSearchingList.xsl" />
+    <Content Include="XSL\p-FilterReportEmployeeExpensesBalance.xsl" />
+    <Content Include="XSL\p-FilterReportUsersExpences.xsl" />
+    <Content Include="XSL\p-FilterTimeLossSearchingList-Folders.xsl" />
+    <Content Include="XSL\p-FilterTimeLossSearchingList.xsl" />
+    <Content Include="XSL\p-Folder-Directions.xsl" />
+    <Content Include="XSL\p-Folder-editor-Links.xsl" />
+    <Content Include="XSL\p-Folder-Risks.xsl" />
+    <Content Include="XSL\p-Folder-wizard-SelectActivityType.xsl" />
+    <Content Include="XSL\p-Folder-Main.xsl" />
+    <Content Include="XSL\p-FolderDirection-ExpenseRatioOnly.xsl" />
+    <Content Include="XSL\p-GenOutcome.xsl" />
+    <Content Include="XSL\p-gkGuitar-Common.xsl" />
+    <Content Include="XSL\p-gkGuitar-Device.xsl" />
+    <Content Include="XSL\p-Guarantee-editor.xsl" />
+    <Content Include="XSL\p-IncDoc.xsl" />
+    <Content Include="XSL\p-Incident-editor-AdditionalProperties.xsl" />
+    <Content Include="XSL\p-Incident-editor-Links.xsl" />
+    <Content Include="XSL\p-Incident-editor-MainPage.xsl" />
+    <Content Include="XSL\p-Incident-wizard-1.xsl" />
+    <Content Include="XSL\p-Incident-wizard-2.xsl" />
+    <Content Include="XSL\p-Incident-wizard-SelectFolderStep.xsl" />
+    <Content Include="XSL\p-IncidentLink-wizard.xsl" />
+    <Content Include="XSL\p-IncidentProp-editor.xsl" />
+    <Content Include="XSL\p-Income.xsl" />
+    <Content Include="XSL\p-Loan-IncOut.xsl" />
+    <Content Include="XSL\p-Loan-Main.xsl" />
+    <Content Include="XSL\p-Lot-editor-ExternalLinks.xsl" />
+    <Content Include="XSL\p-Lot-editor-Finances.xsl" />
+    <Content Include="XSL\p-Lot-editor-Main.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Lot-editor-Participants.xsl" />
+    <Content Include="XSL\p-Lot-editor-Results.xsl" />
+    <Content Include="XSL\p-Lot-editor-TenderInfo.xsl" />
+    <Content Include="XSL\p-LotParticipant-editor.xsl" />
+    <Content Include="XSL\p-Organization-editor-Admin.xsl" />
+    <Content Include="XSL\p-Organization-editor-Suppl.xsl" />
+    <Content Include="XSL\p-Organization-editor-TMS.xsl" />
+    <Content Include="XSL\p-Outcome.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-OutContract.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-OutDoc-full.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-OutDoc-short-wSuppl.xsl" />
+    <Content Include="XSL\p-OutDoc-short.xsl" />
+    <Content Include="XSL\p-PrjGroup.xsl" />
+    <Content Include="XSL\p-Report-ActivityList-1.xsl" />
+    <Content Include="XSL\p-Report-ActivityList-2.xsl" />
+    <Content Include="XSL\p-Report-ActivitySelector.xsl" />
+    <Content Include="XSL\p-Report-AllEmpSaldoDS.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Report-DepartmentExpensesStructure-Format.xsl" />
+    <Content Include="XSL\p-Report-DepartmentExpensesStructure-Main.xsl" />
+    <Content Include="XSL\p-Report-EmployeesBusynessInProjects-1.xsl" />
+    <Content Include="XSL\p-Report-EmployeesBusynessInProjects-2.xsl" />
+    <Content Include="XSL\p-Report-EmployeesBusynessInProjects-3.xsl" />
+    <Content Include="XSL\p-Report-EmployeesRate.xsl" />
+    <Content Include="XSL\p-Report-Employment-1.xsl" />
+    <Content Include="XSL\p-Report-Employment-2.xsl" />
+    <Content Include="XSL\p-Report-ExpensesByDirections.xsl" />
+    <Content Include="XSL\p-Report-FolderIncidentsHistory.xsl" />
+    <Content Include="XSL\p-Report-LastExpenseDates-1.xsl" />
+    <Content Include="XSL\p-Report-LastExpenseDates-2.xsl" />
+    <Content Include="XSL\p-Report-LastExpenseDates-3.xsl" />
+    <Content Include="XSL\p-Report-LotsAndParticipants.xsl" />
+    <Content Include="XSL\p-Report-ProjectIncidentsAndExpenses-1.xsl" />
+    <Content Include="XSL\p-Report-ProjectIncidentsAndExpenses-2.xsl" />
+    <Content Include="XSL\p-Report-ProjectIncidentsAndExpenses-3.xsl" />
+    <Content Include="XSL\p-Report-ProjectIncidentsAndExpenses-4.xsl" />
+    <Content Include="XSL\p-Report-ProjectIncidentsAndExpenses-5.xsl" />
+    <Content Include="XSL\p-Report-ProjectIncidentsAndExpenses-6.xsl" />
+    <Content Include="XSL\p-Report-ProjectParticipantsAndExpenses-1.xsl" />
+    <Content Include="XSL\p-Report-ProjectParticipantsAndExpenses-2.xsl" />
+    <Content Include="XSL\p-Report-ProjectParticipantsAndExpenses-3.xsl" />
+    <Content Include="XSL\p-Report-ProjectParticipantsAndExpenses-4.xsl" />
+    <Content Include="XSL\p-Report-Tenders.xsl" />
+    <Content Include="XSL\p-Report-TimeLosses-1.xsl" />
+    <Content Include="XSL\p-Report-TimeLosses-2.xsl" />
+    <Content Include="XSL\p-Report-TimeLosses-3.xsl" />
+    <Content Include="XSL\p-Report-UsersExpences-1.xsl" />
+    <Content Include="XSL\p-Report-UsersExpences-2.xsl" />
+    <Content Include="XSL\p-Task-editor-change.xsl" />
+    <Content Include="XSL\p-Task-editor-create.xsl" />
+    <Content Include="XSL\p-Tender-editor-ExternalLinks.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Tender-editor-Additional.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-Tender-editor-Main.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="XSL\p-TimeLoss.xsl" />
+    <Content Include="XSL\p-TimeSpent-editor.xsl" />
+    <Content Include="XSL\p-tree-menu-in-dialog.xsl" />
+    <Content Include="XSL\p-UserProfile.xsl" />
+    <Content Include="XSL\tms-pe-object-sum.xsl" />
+    <Content Include="XSL\x-array.xsl" />
+    <Content Include="XSL\x-debug.xsl" />
+    <Content Include="XSL\x-editor.xsl" />
+    <Content Include="XSL\x-editor2.xsl" />
+    <Content Include="XSL\x-error.xsl" />
+    <Content Include="XSL\x-fo2html.xsl" />
+    <Content Include="XSL\x-list.xsl" />
+    <Content Include="XSL\x-pe-bool.xsl" />
+    <Content Include="XSL\x-pe-datetime.xsl" />
+    <Content Include="XSL\x-pe-file.xsl" />
+    <Content Include="XSL\x-pe-flags.xsl" />
+    <Content Include="XSL\x-pe-image.xsl" />
+    <Content Include="XSL\x-pe-number.xsl" />
+    <Content Include="XSL\x-pe-object-list-selector.xsl" />
+    <Content Include="XSL\x-pe-object-tree-selector.xsl" />
+    <Content Include="XSL\x-pe-object.xsl" />
+    <Content Include="XSL\x-pe-objects-selector.xsl" />
+    <Content Include="XSL\x-pe-objects-tree-selector.xsl" />
+    <Content Include="XSL\x-pe-objects.xsl" />
+    <Content Include="XSL\x-pe-selector.xsl" />
+    <Content Include="XSL\x-pe-string.xsl" />
+    <Content Include="XSL\x-report.xsl" />
+    <Content Include="XSL\x-tree-menu.xsl" />
+    <Content Include="XSL\p-Outcome-WithoutOrgAndBudget.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xu-choose-image.master" />
+    <Content Include="xu-command-executor.master" />
+    <Content Include="xu-default-tms.master" />
+    <Content Include="xu-default.master" />
+    <Content Include="xu-editor-filter.master" />
+    <Content Include="xu-editor-wizard.master" />
+    <Content Include="xu-editor.master" />
+    <Content Include="xu-execute-command-async.master" />
+    <Content Include="xu-get-report.master" />
+    <Content Include="xu-it-reports.master" />
+    <Content Include="xu-list.master" />
+    <Content Include="xu-report-filter.master" />
+    <Content Include="xu-save-object-multipart.master" />
+    <Content Include="xu-select-from-list.master" />
+    <Content Include="xu-select-from-tree.master" />
+    <Content Include="xu-select-from-xml.master" />
+    <Content Include="xu-tree.master" />
+    <None Include="Reports\Croc.IncidentTracker.ReportService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.DataSources.ConfigDataSource.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.DataSources.OdbcDataSource.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.DataSources.OlapDataSource.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.DataSources.OleDbDataSource.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.DataSources.StorageDataSource.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.DataSources.XFWDataSource.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.LayoutMaster.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.ChartLayout.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.EmptyLayout.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.Evaluators.PercentageEvaluator.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.Formatters.DateTimeEvaluator.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.Formatters.EmptyValueEvaluator.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.Formatters.HrefEvaluator.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.Formatters.ImageEvaluator.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.Formatters.PercentageEvaluator.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.Formatters.SimpleReportCellClassEvaluator.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.Formatters.StringEvaluator.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.Formatters.TemplateEvaluator.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.HeaderLayout.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.MasterDatailLayout.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Layouts.TableLayout.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.ParamProcessors.FillReportParamProcessor.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.ParamProcessors.ParamByParamProcessor.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.ParamProcessors.ReportParamDefinitionProcessor.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.Types.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reports\Croc.XmlFramework.ReportService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Default-TMS.aspx" />
+    <Content Include="Default.aspx" />
+    <Content Include="dlg-IncidentFinder.htm" />
+    <Content Include="Global.asax" />
+    <Content Include="it-access-denied.aspx" />
+    <Content Include="it-ExpensesPanel.htc" />
+    <Content Include="IT-Install-XControls-via-VBS.aspx" />
+    <Content Include="it-reports.aspx" />
+    <Content Include="it-styles-menu.css" />
+    <Content Include="it-styles-SubscriptionTree.css" />
+    <Content Include="it-styles-tips-2.css" />
+    <Content Include="it-styles-tips.css" />
+    <Content Include="it-styles.css" />
+    <Content Include="nsi-redirect.aspx" />
+    <Content Include="p-TimeChange.aspx" />
+    <Content Include="tms-date-calc.htm" />
+    <Content Include="x-choose-image.aspx" />
+    <Content Include="x-command-executor.aspx" />
+    <Content Include="x-data-source-loader.aspx" />
+    <Content Include="x-default.aspx" />
+    <Content Include="x-download.aspx" />
+    <Content Include="x-editor.aspx" />
+    <Content Include="x-execute-command-async.aspx" />
+    <Content Include="x-get-report.aspx" />
+    <Content Include="x-html-dom-navigator.aspx" />
+    <Content Include="x-ImageButton.htc" />
+    <Content Include="x-list.aspx" />
+    <Content Include="x-menu-editor.htc" />
+    <Content Include="x-menu-editor.htc.ascx" />
+    <Content Include="x-menu-html-pe.htc" />
+    <Content Include="x-menu-html.htc" />
+    <Content Include="x-NavigationBar.htc" />
+    <Content Include="x-progress-bar.htc" />
+    <Content Include="x-report-filter.aspx" />
+    <Content Include="x-report.css" />
+    <Content Include="x-reports-list.aspx" />
+    <Content Include="x-reset.aspx" />
+    <Content Include="x-save-object-multipart.aspx" />
+    <Content Include="x-select-from-tree.aspx" />
+    <Content Include="x-select-from-xml.aspx" />
+    <Content Include="x-tab-strip.htc" />
+    <Content Include="x-ToolTip.htc" />
+    <Content Include="x-tree-menu.css" />
+    <Content Include="x-tree.aspx" />
+    <Content Include="x.css" />
+    <Content Include="xx-overlay.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="MSXML2">
+      <Guid>{F5078F18-C551-11D3-89B9-0000F81FE221}</Guid>
+      <VersionMajor>3</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="My Project\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>7655</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>http://it/it/</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

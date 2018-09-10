@@ -1,0 +1,489 @@
+<!--
+********************************************************************************
+ CROC.Behaviors :: XNavigationBar
+ Стилевая компонента отображения навигационной панели 
+ Реализация - Behaviors (см. MSDN, Web Development, Behaviors)
+********************************************************************************
+-->
+<PUBLIC:COMPONENT
+	ID="XNavigationBar"
+	NAME="XNavigationBar"
+	lightWeight="false"
+	literalContent="false"
+	supportsEditMode="false"
+	URN="http://www.croc.ru/Behaviors/XmlFramework/XNavigationBar"
+>
+	<!-- Обрабатываемые события "внешнего" документа / элемента -->
+	<PUBLIC:ATTACH EVENT="ondocumentready" FOR="element" ONEVENT="Initialize"/>
+	<PUBLIC:ATTACH EVENT="onmouseover" FOR="element" ONEVENT="ItemHighlight true"/>
+	<PUBLIC:ATTACH EVENT="onmouseleave" FOR="element" ONEVENT="ItemHighlight false"/>
+	<PUBLIC:ATTACH EVENT="onmousedown" FOR="element" ONEVENT="ItemPreSelect true"/>
+	<PUBLIC:ATTACH EVENT="onmouseup" FOR="element" ONEVENT="ItemPreSelect false"/>
+	<PUBLIC:ATTACH EVENT="onclick" FOR="element" ONEVENT="ItemSelect"/>
+
+	<!-- Свойства, определяемые для элемента стилевой компонентой -->
+	<!-- "Базовое" изображение для кнопки -->
+	<PUBLIC:PROPERTY NAME="BaseImage" ID="prop_BaseImage" 
+		GET="get_BaseImage" 
+		PUT="put_BaseImage"
+	/>
+	<!-- 
+		Свойство, представляющее URL страницы, с которой ассоциированн
+		соответствующий элемент навигационной панели. Прм "нажатии" на 
+		элемент указанный URL будет задан для window.location.href
+		
+		В качестве значения свойства может быть так же задана строка 
+		вида "CODE:NNNN", где "CODE:" - фиксированный префикс, NNNN = 
+		некоторый текст корректного выражения VBScript. В этом случае,
+		при "нажатии" на элемент указанное выражение будет выполнено 
+		в контексте окна/HTML-документа, в котором размещен 
+		навигационный элемент. Изменение window.location.href в данном
+		случае не выполняется.
+	-->
+	<PUBLIC:PROPERTY NAME="NavigationRef" ID="prop_NavigationRef" 
+		GET="get_NavigationRef" 
+		PUT="put_NavigationRef"
+	/>
+	<!--
+		Свойство, отражающее "тип" ссылки, заданной свойством NavigationRef:
+		Если ссылка задает выражение VBScript (см. комментарии к свойству
+		NavigationRef), то значение данного свойства - TRUE; во всех остальных
+		случаях - FALSE;
+		Свойство только для чтения.
+	-->
+	<PUBLIC:PROPERTY NAME="IsNavigateByCode" ID="prop_IsNavigateByCode" 
+		GET="get_IsNavigateByCode" 
+	/>
+	<!--
+		Свойство, отражающее состояние кнопки-переключателя: SELECTED=true
+		если кнопа-переключатель установлена в режим "включено" и false - 
+		в противном случае. Если кнопка - не переключатель, то значение 
+		свойства всегда есть false
+	-->
+	<PUBLIC:PROPERTY NAME="Selected" ID="prop_Selected" 
+		GET="get_Selected" 
+		PUT="put_Selected"
+	/>
+	
+	<!-- Метод контейнера, вызываемый элементами при выборе: изменение URL страницы -->
+	<PUBLIC:METHOD NAME="ActivateItem"/>
+
+
+<!-- 
+********************************************************************************
+ Реализация логики стилевой компоненты
+********************************************************************************
+-->
+	<SCRIPT LANGUAGE="VBScript">
+	Option Explicit
+	
+	Dim g_oSelectedTool		' Выбранный элемент навигационной панели, ссылка на IMG
+	Dim g_bIsInitialization	' Признак выполнения фазы инициализации - в этот момент 
+							' навигация блокируется
+	
+	Dim g_oNaviImage		' HTML-объект IMG, представляющий картинку элемента навигации
+	Dim g_bIsHighLighted	' Признак, что элемент подсвечена (зависит от событий мышки)
+	Dim g_bIsPreSelected	' Признак, что элемент в процессе выбора (но еще не выбран)
+	Dim g_bIsSelected		' Признак, что элемент выбран; значение свойства SELECTED
+	
+	Dim g_sNavigationRef	' URL ассоциированой страницы, значение свойства NAVIGATIONREF
+	Dim g_bIsScriptCode		' Признак, отмечающий, что значение NAVIGATIONREF есть строка 
+							' c текстом VBScript-выражения 	
+	
+	Dim g_sImageURL			' "Базовый" (без расширения) ULR основной картинки элемента
+	Dim g_sImageFormat		' Расширение для картинок кнопки
+	
+	' Константные значения:
+	' - префикс, указание которого в NAVIGATIONREF указвает на то, что значение 
+	'	"ссылки" есть VBscript-выражение; см. так же реализацию put_NavigationRef
+	Const SCRIPT_CODE_PREFIX = "CODE:"
+	
+	' Пред-инициализация значений:
+	Set g_oSelectedTool = Nothing
+	Set g_oNaviImage = Nothing
+	g_bIsHighLighted = false
+	g_bIsPreSelected = false
+	g_bIsSelected = false
+	g_sNavigationRef = ""
+	g_bIsScriptCode = false
+	
+	
+	'---------------------------------------------------------------------------
+	' Метод инициализации компоненты; вызывается при генерации события 
+	' "готовности" документа, содержащего элемент, для которого назначена 
+	' стилевая компонента
+	Sub Initialize()
+		Dim oItemImage	' Элемент IMG, соотв. навигационному элементу; итератор цикла
+		Dim oAtrribute	' Атрибут элемента NAVIGATIONBAR, определяющий IMG как навигационнй элемент
+		
+		' Начало процесса инициализации
+		g_bIsInitialization = true
+		' Стилевая компонента явно назначается для элемента - контейнера 
+		' навигационной панели, и - автоматически - для изображений-элементов 
+		' этой панели (см. далее, ELSE-секцию); В случае с элементами компонента 
+		' отвечает за изменение изображения при наведении / кликах мышки. 
+		' Из-за такой "двойной" привязки метод инициализации вызывается дважды - 
+		' сначала для элемента - контейнера панели, потом для каждого изображения
+		'
+		' Каждый случай обрабатыаем независимо:
+		If UCase(element.tagName)="IMG"  Then
+		    ' ИНИЦИАЛИЗАЦИЯ ЭЛЕМЕНТА:
+		    
+		    Set g_oNaviImage = element
+		    ' Зачитаем свойства, определяемые для элемента (соотв. put-методы 
+		    ' реализуют проверку корректности):
+			put_NavigationRef ( getAttributeValue( g_oNaviImage,"NAVIGATIONREF","" ) )
+			put_Selected( getAttributeValue( g_oNaviImage,"SELECTED",false ) )
+			put_BaseImage( getAttributeValue( g_oNaviImage,"BASEIMAGE","" ) )
+			' Обновляем картинку, в соответствии с полученными значениями:	
+			updateButtonImage
+		Else
+		    ' ИНИЦИАЛИЗАЦИЯ ПАНЕЛИ-КОНТЕЙНЕРА:
+		    Dim i
+		    ' Ожидается, что элементы панели - это IMG-элементы, определенные 
+		    ' в составе HTML-текста панели. Проитерируем все IMG:
+			For Each oItemImage In element.all.tags("IMG")
+				' ...Элементом считается тот IMG, у которого задан идентификатор
+				' панели-контейнера - все остальные это просто картинки
+				Set oAtrribute = oItemImage.GetAttributeNode("NAVIGATIONBAR")
+				If Not(oAtrribute Is Nothing)  Then 
+				 If CStr(oAtrribute.nodeValue)=element.ID Then 
+					' В специальный атрибут элемента проставляем "обратную" ссылку 
+					' на объект контейнера - что бы элемент всегда мог вызвать свой
+					' контейнер (в частности, его метод ActivateItem):
+					oItemImage.SetAttribute "NAVIGATION_BAR_REF", element, 0
+					
+					' Назначаем для элемента эту же стилевую компоненту (что 
+					' приведет к независимой инициализации компоненты уже для 
+					' IMG-элемента - см. IF-секцию):
+					oItemImage.addBehavior "x-NavigationBar.htc"
+					
+					' Если у нас еще нет запомненного выбранного элемента, 
+					' и рассматриваемый элемент - выбранный (т.е. есть свойство
+					' SELECTED=1), то его и будем считать выбранным:
+					If g_oSelectedTool Is Nothing Then
+						If getAttributeValue(oItemImage,"SELECTED",false) Then
+							Set g_oSelectedTool = oItemImage
+						End If
+					End If
+				end if	
+				End If
+			Next
+				
+		End If
+		
+		' Процесс инициализации завершен
+		g_bIsInitialization = false
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства BASEIMAGE
+	' ::Чтение значения свойства
+	Function get_BaseImage()
+		get_BaseImage = "" & g_sImageURL & g_sImageFormat 
+	End Function
+	
+	' ::Изменение значения свойства
+	Function put_BaseImage( sValue )
+		Dim sPrevUrl	' Предыдущий URL - что бы лишний раз не перегружать картинку
+	
+		' Проверяем заданное значение - одно не должно быть пустым (или null):
+		sValue = "" & sValue
+		If 0 = Len(sValue) Then
+			Err.Raise _
+				vbObjectError + 1, _
+				"XNavigationBar (для элемента " & getElementFullName(element) & ")", _
+				"Значение атрибута BASEIMAGE для элемента " & getElementFullName(element) & " не задано!"
+		End If
+		
+		' Инициализируем глобальые переменные: на основании заданного значения
+		' получаем "базовый" URL картинки и суффикс формата картинки. Но сначала
+		' запомним предыдущее значение - понадобится далее
+		sPrevUrl = "" & g_sImageURL & g_sImageFormat
+		g_sImageURL = getBaseImageUrl( sValue,g_sImageFormat )
+		
+		' Если заданный адрес отличается от предыдущего и если навигационный 
+		' элемент уже существует - обновим его: 
+		If (sPrevUrl <> sValue) Then 
+			' Обновляем текущее отображение элемента
+			updateButtonImage
+		End If			
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства NAVIGATIONREF	
+	' ::Чтение значения свойства
+	Function get_NavigationRef()
+		get_NavigationRef = g_sNavigationRef & ""
+	End Function
+	
+	' ::Изменение значения свойства
+	Function put_NavigationRef( sValue )
+		Dim sPrefixProbe	' Часть NavigationRef, для сравнения в префиксом
+		Dim nPrefixLength   ' Длина реального префикса
+		
+		' Проверяем заданное значение - одно не должно быть пустым (или null):
+		sValue = "" & sValue
+		If 0 = Len(sValue) Then
+			Err.Raise _
+				vbObjectError + 1, _
+				"XNavigationBar (для элемента " & getElementFullName(element) & ")", _
+				"Значение атрибута NAVIGATIONREF для элемента " & getElementFullName(element) & " не задано!"
+		End If
+		
+		' Инициализируем глобальые переменные: 
+		' Разберем полученную сслыку - код это или нет:
+		nPrefixLength = Len( SCRIPT_CODE_PREFIX )
+		sPrefixProbe = Left( sValue, nPrefixLength )
+		g_bIsScriptCode = (0 = StrComp(SCRIPT_CODE_PREFIX, sPrefixProbe, 1))
+		If (g_bIsScriptCode) Then
+		    ' Указанное значение - VBScript-выражение; вырезаем префикс
+		    g_sNavigationRef = Mid( sValue, nPrefixLength+1 )
+		Else
+		    ' Указанное значение - ссылка; сохраняем без изменений
+			g_sNavigationRef = sValue 
+		End If
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения значения свойства ISNAVIGATEBYCODE
+	Function get_IsNavigateByCode()
+		get_IsNavigateByCode = g_bIsScriptCode 
+	End Function
+	
+
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства SELECTED
+	' ::Чтение значения свойства
+	Function get_Selected()
+		get_Selected = g_bIsSelected
+	End Function
+	
+	' ::Изменение значения свойства
+	Function put_Selected( bValue )
+		Dim oAtrribute	' Атрибут NAVIGATION_BAR_REF - ссылка на панель-контейнер 
+		
+		' Изменяем значение внутренней переменной, соотв. состоянию "выбрано"
+		g_bIsSelected = CBool(bValue)
+		
+		If isImageExists() Then
+			' Если выделение УСТАНАВЛИВАЕТСЯ и мы не в процессе инициализации - 
+			' вызываем метод контейнера, который и изменит URL страницы: 
+			If g_bIsSelected And Not g_bIsInitialization Then
+			    
+				Set oAtrribute = g_oNaviImage.GetAttributeNode("NAVIGATION_BAR_REF")
+				If Not(oAtrribute Is Nothing) Then oAtrribute.nodeValue.ActivateItem g_oNaviImage
+			End If
+		
+			' Обновим картинку в соотв. с выделением:
+			updateButtonImage
+		End If
+		
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Реализация метода ElementHighlight
+	' Метод используется как обработчик событий onmouseover и onmouseleave, для 
+	' отображения "подсветки" навигационного элемента
+	Sub ItemHighlight( bIsHighlighted )
+		' События обрабатываем только для картинок - элементов навигационной 
+		' панели (события мышки приходят для изображений в силу инциализации, 
+		' где bahavior назначается IMG-элементам, подчинанным исходному элементу
+		' контейнеру, которому behavior задан изначально - см. Initialize)		
+		If UCase(element.tagName)="IMG" Then 
+			g_bIsHighLighted = bIsHighlighted
+			If Not bIsHighlighted Then g_bIsPreSelected = false
+			updateButtonImage
+		End If
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Реализация метода ElementPreSelect
+	' Метод используется как обработчик событий onmousedown и onmouseup, для 
+	' отображения "выделения" навигационного элемента
+	Sub ItemPreSelect( bIsPreSelected )
+		' События обрабатываем только для картинок - элементов навигационной 
+		' панели (события мышки приходят для изображений в силу инциализации, 
+		' где bahavior назначается IMG-элементам, подчинанным исходному элементу
+		' контейнеру, которому behavior задан изначально - см. Initialize)		
+		If UCase(element.tagName)="IMG" Then 
+			g_bIsPreSelected = bIsPreSelected
+			updateButtonImage
+		End If
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Обработка клика мышки по элементу навигационной панели: приводит к выбору
+	' элемента (и, как следствие, в изменению URL в странице - см. реализацию
+	' put_Selected)
+	Sub ItemSelect()
+		' Событие обрабатываем только для картинок - элементов навигационной 
+		' панели (события мышки приходят для изображений в силу инциализации, 
+		' где bahavior назначается IMG-элементам, подчинанным исходному элементу
+		' контейнеру, которому behavior задан изначально - см. Initialize)		
+		If UCase(element.tagName)="IMG" Then 
+		    
+			If get_IsNavigateByCode() Then
+				ActivateItem(element)
+				
+			
+			Else
+				' Вызываем метод, обслуживающий установку свойства "SELECTED" - т.к.
+				' по сути и логике "нажатие" на элемент навигации есть его выбор:
+				put_Selected( true )
+			End If
+			
+		End If
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Реализация метода элемента-контейнера навигационной панели, вызываемого 
+	' элементом при его выборе (см. реализацию put_Selected); реализует:
+	'	- сброс выделения у элемента, выбранного ранее
+	'	- изменение URL страницы на адрес, соотв. вновь выбранному элементу
+	Sub ActivateItem( oNewlySelectedItem )
+		If (oNewlySelectedItem.IsNavigateByCode) Then
+		    ' Указанное значение - VBScript-выражение; ВЫПОЛНЯЕМ КОД:
+			window.execScript oNewlySelectedItem.NavigationRef, "VBScript"
+		Else
+			If Not(g_oSelectedTool Is Nothing) Then
+				g_oSelectedTool.Selected = false
+				Set g_oSelectedTool = Nothing
+			End If
+			If Not(oNewlySelectedItem Is Nothing) Then
+				Set g_oSelectedTool = oNewlySelectedItem
+			
+			    ' Указанное значение - ссылка; ВЫПОЛНЯЕМ ПЕРЕХОД
+				' Изменение URL выполняется через небольшой таймаут - для того, 
+				' что бы текущая страница могла корректно отобразить изменения 
+				' кнопок. В противном случае изменение Src у картинок прерывается
+				' и вместо картинок отображаются placeholders. И хотя страница
+				' уже перегружается - эффект все же заметен
+				window.setTimeout _
+					"window.location.href = """ & oNewlySelectedItem.NavigationRef & """", _
+					100, "VBScript"
+			End If
+		End If
+	End Sub
+
+
+	'***************************************************************************
+	' Внутренние методы / функции компоненты
+	
+	'---------------------------------------------------------------------------
+	' Возвращает логический признак наличия элемента изображения в кнопке
+	Function isImageExists()
+		If IsObject(g_oNaviImage) Then
+			isImageExists = Not(g_oNaviImage Is Nothing)
+		Else
+			isImageExists = False
+		End If
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Возвращает строку с наименованием указанного элемента в виде 
+	' <ТЕГ ID="ИДЕНТИФИКАТОР"/>; используется при отображении ошибок
+	Function getElementFullName( oElement ) 
+		Dim sName 	' итоговое описание 
+		
+		sName = ""
+		If Not oElement Is Nothing Then
+			sName = "<" & oElement.tagName
+			If 0<>Len("" & oElement.ID) Then
+				sName = sName & " ID=""" & oElement.ID & """"
+			End If
+			sName = sName & "/>"
+		End If
+		getElementFullName = sName
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Разбивает заданный URL на две части: "базовый" - все, кроме расширения, 
+	' и само расширение (передается как значение sImageFormatSuffix)
+	'	[in] sImageUrl 				- Исходный URL 
+	'	[in,out] sImageFormatSuffix - суффикс - расширение
+	Function getBaseImageUrl( sImageUrl, ByRef sImageFormatSuffix )
+		Dim sImageBaseUrl	' Результирующий "базовый" URL 
+		Dim nIndex			' Позиция последнего символа "." в исходном URL 
+		
+		nIndex = InStrRev( sImageUrl,"." )
+		If (nIndex>0) Then
+			sImageFormatSuffix = Right( sImageUrl, Len(sImageUrl)-nIndex+1 )
+			sImageBaseUrl = Left( sImageUrl, nIndex-1 )
+		Else
+			sImageFormatSuffix = ".gif"
+			sImageBaseUrl = sImageUrl
+		End If
+		
+		getBaseImageUrl	= sImageBaseUrl
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Обновляет изображение наигационного элемента в соответствии со значениями 
+	' глобальных переменных (подсветка, блокировка, выделенный элемент)
+	Sub updateButtonImage()
+		Dim sImageURL 	' итоговый URL с SRC картинки навигационного элемента
+		
+		' Если изображения нет (либо еще не создана, либо это элемент-контейнер)
+		' то ничено не делаем - просто выходим:
+		If Not isImageExists() Then Exit Sub
+		
+		sImageURL = g_sImageURL
+		If g_bIsPreSelected Or g_bIsSelected Then
+			sImageURL = sImageURL & "-On"
+		Else
+			sImageURL = sImageURL & "-Off"
+		End If
+			
+		If g_bIsHighLighted Then sImageURL = sImageURL & "-Light"
+		sImageURL = sImageURL & g_sImageFormat
+		
+		' Устанавливаем полученный URL как SRC картинки элемента:
+		g_oNaviImage.src = sImageURL
+	End Sub
+	
+
+	'---------------------------------------------------------------------------
+	' Внутреняя функция "дозагрузки" изображения: создает скрытый элемент IMG,
+	' для котрого определяет указанный Src, и добавляет созданный элемент к 
+	' HTML-документу
+	Sub uploadImage( sSrc )
+		Dim oImage
+		
+		Set oImage = document.createElement("IMG")
+		oImage.style.display = "none"
+		oImage.Src = sSrc
+		document.body.appendChild oImage
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Внутренняя функция получения значения указанного атрибута заданного элемента
+	' Если у элемента такого атрибута нет, функция создает атрибут и устанавливает
+	' заданное значение по умолчанию
+	'	[in] oElement		- элемен, для которого проверяется атрибут
+	'	[in] sAttrName		- наименование атрибута
+	'	[in] oDefaultValue	- значение по умолчанию
+	Function getAttributeValue(oElement, sAttrName, oDefaultValue )
+		Dim oAttribute
+		Set oAttribute = oElement.GetAttributeNode(sAttrName)
+		If oAttribute Is Nothing Then 
+			oElement.setAttribute sAttrName, oDefaultValue, 0
+			getAttributeValue = oDefaultValue
+		Else
+			getAttributeValue = oAttribute.nodeValue
+		End If
+	End Function
+	
+	</SCRIPT>
+</PUBLIC:COMPONENT>

@@ -1,0 +1,13 @@
+[version]    
+signature="$CHICAGO$"    
+AdvancedINF=2.0
+
+[Add.Code]    
+XControls.dll=XControls.dll
+
+[XControls.dll]    
+file-win32-x86=thiscab
+DestDir=
+clsid={8E7F0DB5-1BA3-45FE-86D3-1FF9BEC32549}    
+FileVersion=2,0,10,6
+RegisterServer=yes

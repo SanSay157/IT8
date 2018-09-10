@@ -1,0 +1,233 @@
+<!-- 
+********************************************************************************
+ CROC.Behaviors :: XMenuHtmlPE
+ Компонента, реализующая HTML-меню на основе MenuClass для редактора свойства (PE)
+ Реализация - Viewlink Element Behaviors (см. MSDN, Web Development, Behaviors)
+********************************************************************************
+-->
+<PUBLIC:COMPONENT 
+	tagName="XMenuHtmlPE"
+	lightWeight="false"
+	literalContent="false"
+	supportsEditMode="false"
+	URN="http://www.croc.ru/XmlFramework/Behaviors/XMenuHtmlPE"
+>
+	<META HTTP-EQUIV="MSThemeCompatible" CONTENT="yes">
+	<PUBLIC:DEFAULTS
+		canHaveHTML = "true"
+		viewLinkContent = "true"
+		viewInheritStyle = "false"
+		tabStop = "true" 
+		viewMasterTab = "false"
+		contentEditable  = "false"
+	/>
+	<!-- Custom-тег элемента HTC-компонента может (должен) содержать следующие атрибуты, используемые для инициализации:
+		propmenu-xml - строка с xml метаданными меню, узел i:prop-menu. Если не задан или пуст, то меню отсутствует, компонент ни отображает ничего
+		menu-style - стиль меню, значения: horizonal-buttons, vertical-buttons, op-button (по умолчанию)
+		X_DISABLED - если передано значение "1", то кнопки меню остаются недоступными
+		button-width - ширина кнопки
+		button-height - высота кнопки
+	-->
+	<!-- Обрабатываем событие: элемент бихейвера распарсен IE -->
+	<PUBLIC:ATTACH EVENT="oncontentready" FOR="element" ONEVENT="Initialize" />
+
+	<!-- МЕТОДЫ КОМПОНЕНТЫ -->
+	<!-- Инициализация. Вызывается редактором свойства -->
+	<PUBLIC:METHOD NAME="Init" />
+
+	<!-- Устанавливает (не)доступность кнопок -->
+	<PUBLIC:METHOD NAME="SetEnableState" />
+
+	<!-- Обновляет представление меню -->	
+	<PUBLIC:METHOD NAME="UpdateMenuState" />
+	
+	<!-- Выполняет пункт меню, соответствующий комбинации клавиш -->
+	<PUBLIC:METHOD NAME="ExecuteHotkey" />
+	
+	<!-- Отображает выпадающее меню в текущей позиции указателя мыши -->
+	<PUBLIC:METHOD NAME="ShowPopupMenu" />
+	
+	<!-- Отображает выпадающее меню в заданной позиции указателя мыши -->
+	<PUBLIC:METHOD NAME="ShowPopupMenuWithPos" />
+	
+	<!-- Устанавливает название операции, меняя заголовок соответствующей ей кнопки при необходимости -->
+	<PUBLIC:METHOD NAME="SetMenuItemTitle" />
+</PUBLIC:COMPONENT>
+<!-- 
+********************************************************************************
+ HTML-реализация компоненты
+********************************************************************************
+-->
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1251">
+<LINK href="x.css" rel="STYLESHEET" type="text/css">
+<SCRIPT LANGUAGE="VBScript" TYPE="text/vbscript">
+	Option Explicit
+	Dim m_oXmlMenuMD				' As IXMLDOMElement - метаданные меню
+	Dim m_bHasMenu					' As Boolean - признак наличия меню
+	Dim m_sMenuStyle				' Режим меню: horizonal-buttons (горизонтальная строка кнопок операций 1-го уровня), vertical-buttons (верникальный ряд кнопок операций 1-го уровня), op-button (кнопка "Операции")
+	Dim m_oMenu						' As MenuClass
+	Dim m_oSender					' As Object - ссылка на редактор свойства
+	Dim m_bVertical					' As Boolean - признак вертикального (в столбик) расположения кнопок
+	Dim m_bOpButton					' As Boolean - признак режима меню "op-button"
+	Dim m_bAppDisabled				' As Boolean - Признак начальной заблокированности редактора свойства
+
+	m_bHasMenu = False
+	'================================================================
+	' Обработчик загрузки страницы, как-бы конструктор
+	Sub Initialize
+		Dim sMenuXmlString		' XML-текст метаданных меню
+		Dim nButtonWidth		' Ширина кнопки
+		Dim nButtonHeight		' Высота кнопки
+		Dim nElementWidth		' Ширина клиентской области всего behavior'a (element)
+		Dim nElementHeight		' Высота клиентской области всего behavior'a (element)
+
+		' получим метаданные меню и загрузим их в XmlDocument
+		sMenuXmlString = XMENUHTC_getHostElementAttributeValue( element, "propmenu-xml", "")
+		If Len(sMenuXmlString) = 0 Then Exit Sub
+		Set m_oXmlMenuMD = XService.XmlFromString( XService.URLDecode(sMenuXmlString) ).selectSingleNode("*[local-name()='menu']")
+		If m_oXmlMenuMD Is Nothing Then Exit Sub
+		m_bHasMenu = True
+
+		m_sMenuStyle	= XMENUHTC_getHostElementAttributeValue( element, "menu-style", "op-button")
+		m_bVertical		= (m_sMenuStyle = "vertical-buttons")
+		m_bOpButton		= (m_sMenuStyle = "op-button")
+		m_bAppDisabled	= (1 = CLng(XMENUHTC_getHostElementAttributeValue( element, "X_DISABLED", "0")))
+		nButtonWidth	= CLng(XMENUHTC_getHostElementAttributeValue( element, "button-width", 110))
+		nButtonHeight	= CLng(XMENUHTC_getHostElementAttributeValue( element, "button-height", 21))
+'
+		' присвоим переданные ширину/высоту невидимой кнопке Dummy, чтобы потом расчитать размеры element'a
+		If nButtonWidth > 0 Then oDummyButton.style.width = nButtonWidth
+		If nButtonHeight > 0 Then oDummyButton.style.height = nButtonHeight
+		' считаем размеры DIV'a, в котором сидит oDummyButton, это будут размеры области бихейвера
+		nElementWidth = oDummyHolder.offsetWidth
+		nElementHeight = oDummyHolder.offsetHeight
+		
+		document.body.innerHtml = XMENUHTC_getMenuButtonsHtml( m_oXmlMenuMD, m_sMenuStyle, nButtonWidth, nButtonHeight, "x-editor-pe-menu-button" )
+		
+		' установим стили custom-тега, чтобы его "расперло" на страницы, иначе, он может быть не видимым
+		If m_bVertical Then
+			If nElementWidth > 0 Then element.style.width = CStr(nElementWidth + 2) & "px"
+		Else
+			If nElementHeight > 0 Then element.style.height = CStr(nElementHeight + 5) & "px"
+		End If
+	End Sub
+
+
+	'==============================================================================
+	' Вторая фаза инициализции, вызывается из редактора свойства
+	'	[in] oSender - ссылка на редактор свойста
+	'	[in] oMenuMacrosResolver - делегат обработчика macros-resolver'a
+	'	[in] oMenuVisibilityHandler - делегат обработчика visibility-handler'a
+	'	[in] oMenuExecutionHandler - делегат обработчика execution-handler'a
+	Sub Init(oSender, oMenuMacrosResolver, oMenuVisibilityHandler, oMenuExecutionHandler)
+		If Not m_bHasMenu  Then Exit Sub
+		Set m_oSender = oSender
+		Set m_oMenu = New_MenuClass()
+		m_oMenu.AddMacrosResolver oMenuMacrosResolver
+		m_oMenu.AddVisibilityHandler oMenuVisibilityHandler
+		m_oMenu.AddExecutionHandler oMenuExecutionHandler
+		m_oMenu.Init m_oXmlMenuMD
+	End Sub
+
+
+	'==============================================================================
+	' Установка (не)доступности кнопок
+	Sub SetEnableState(bEnabled)
+		If Not m_bHasMenu  Then Exit Sub
+		' При первом разблокировании сбросим признак начальной блокировки (он больше не нужен)
+		If bEnabled And m_bAppDisabled  Then m_bAppDisabled = False
+		If m_bAppDisabled Then Exit Sub	' блокировать (bEnabled=False, иначе мы бы попали в предыдущий if), если уже заблокировано не надо
+		If m_bOpButton Then
+			document.all("ButtonOperation").disabled = Not bEnabled
+		Else
+			XMENUHTC_SetButtonsEnableState bEnabled, document.body
+		End If
+	End Sub
+
+
+	'==========================================================================
+	' Обновление состояния меню
+	'	[in] bVisualUpdate - если True - то обновляется визуальное представление меню
+	Sub UpdateMenuState(bVisualUpdate)
+		If Not m_bHasMenu  Then Exit Sub
+		If m_bOpButton Then Exit Sub
+		XMENUHTC_UpdateMenuState m_oMenu, m_oSender, document.body, bVisualUpdate, m_bAppDisabled
+	End Sub
+
+
+	'==========================================================================
+	' Стандартный обработчик события "Accel"
+	'	[in] oEventArgs As AccelerationEventArgsClass
+	Sub ExecuteHotkey(oEventArgs)
+		If Not m_bHasMenu  Then Exit Sub
+		m_oMenu.ExecuteHotkey m_oSender, oEventArgs
+	End Sub
+
+
+	'==============================================================================
+	' Отображает popup меню
+	Sub ShowPopupMenu
+		If Not m_bHasMenu  Then Exit Sub
+		m_oMenu.ShowPopupMenu m_oSender
+	End Sub
+
+
+	'==============================================================================
+	' Открывает PopUp меню с указанием позиции
+	'	[in] nPosX, nPosY As Long - экранные координаты показа меню
+	Sub ShowPopupMenuWithPos(nPosX, nPosY)
+		If Not m_bHasMenu  Then Exit Sub
+		m_oMenu.ShowPopupMenuWithPos m_oSender, nPosX, nPosY 
+	End Sub
+	
+	
+	'==============================================================================
+	' Устанавливает название операции, меняя заголовок соответствующей ей кнопки при необхордимости
+	'	[in] sItemName - наименование пункта меню (атрибут n)
+	'	[in] sItemTitle - заголовок пункта меню/кнопки (атрибут t)
+	'	[in] sItemHint - hint пункта меню, всплывающая подсказка. Если Empty, то не модифицируется, если Null, то удаляется текущая.
+	Sub SetMenuItemTitle(sItemName, sItemTitle, sItemHint)
+		XMENUHTC_SetMenuItemTitle m_oMenu, document.body, sItemName, sItemTitle, sItemHint
+	End Sub
+
+	
+	'==============================================================================
+	' Обработчик клика на кнопке, соответствующей menu-item
+	Sub Internal_OnMenuButtonClick(sMenuItemName)
+		m_oMenu.RunExecutionHandlers m_oSender, sMenuItemName
+		element.blur
+	End Sub
+
+
+	'==============================================================================
+	' Обработчик клика на кнопке, соответствующей menu-section
+	Sub Internal_OnMenuSectionButtonClick(oButton, sMenuItemName)
+		Dim nPosX			'
+		Dim nPosY			'
+
+		XMENUHTC_calculateElementScreenCoordinates element, oButton, nPosX, nPosY
+		m_oMenu.ShowPopupMenuSectionWithPos m_oSender, sMenuItemName, nPosX, nPosY
+		element.blur
+	End Sub
+
+
+	'==============================================================================
+	' Обработчик клика на кнопке "Операции"
+	Sub Internal_OnOperationButtonClick (oButton)
+		Dim nPosX			'
+		Dim nPosY			'
+
+		XMENUHTC_calculateElementScreenCoordinates element, oButton, nPosX, nPosY
+		m_oMenu.ShowPopupMenuWithPosEx m_oSender, nPosX, nPosY, True
+		element.blur
+	End Sub
+
+</SCRIPT>
+</HEAD>
+<!-- margin-bottom:-4px; - обход бага, иначе появляется скроллер border: solid 1px red;-->
+<body style="padding:0;margin:0 0 -4px 0;text-align:right; overflow:hidden; background-color: transparent;" >
+	<div id="oDummyHolder" style="overflow:scroll; ">
+		<button id="oDummyButton" class="x-editor-pe-menu-button" style="visibility:hidden;">Dummy</button>
+	</div>
+</body>

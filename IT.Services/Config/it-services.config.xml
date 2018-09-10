@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<!--
+	СИСТЕМА ОПЕРАТИВНОГО УПРАВЛЕНИЯ ПРОЕКТАМИ - INCIDENT TRACKER
+	ЗАО КРОК инкорпорейтед, 2005
+	
+	КОНФИГУРАЦИОННЫЙ ФАЙЛ WEB-СЕРВИСОВ ПРИЛОЖЕНИЯ
+-->
+<itws:configuration
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dt="urn:schemas-microsoft-com:datatypes"
+	xmlns:itws="http://www.croc.ru/Schemas/IncidentTracker/WebServices/Config/1.0"
+	xsi:schemaLocation="
+		http://www.croc.ru/Schemas/IncidentTracker/WebServices/Config/1.0 it-services.config.xsd"
+>
+  <!-- ОБЩИЕ ПАРАМЕТРЫ КОНФИГУРАЦИИ -->
+  <itws:common-params>
+    <!-- Общее: идентификатор "собственной" организации - КРОКа -->
+    <itws:own-organization id="8F82A5A5-303B-4D1F-9FE2-2150E700B44F" />
+    <!-- Идентификатор типа проектных затрат для "Внешних проектов" -->
+    <itws:external-projects-activity-type id="43524F43-0000-0000-FFFF-00000000000C" />
+    <!-- Идентификатор типа проектных затрат для проектов по ведению возможностей (presale) -->
+    <itws:presale-projects-activity-type id="43524F43-0000-0000-FFFF-00000000000B" />
+	  <!-- Идентификатор типа проектных затрат для проектов по ведению Тендеров -->
+	<itws:tender-projects-activity-type id="43524F43-0000-0000-FFFF-000000000008" />
+	  <!-- Идентификатор типа проектных затрат для "пилотных/инвестиционных" -->
+	<itws:pilot-projects-activity-type  id="43524f43-0000-0000-0000-000000000007" />
+  </itws:common-params>
+
+  <!-- ПАРАМЕТРЫ "ОБЩЕГО" СЕРВИСА ВЗАИМОДЕЙСТВИЯ С ВНЕШНИМИ СИСТЕМАМИ -->
+  <itws:common-service>
+
+    <!-- Параметры для методов обеспечения бизнес-процессов -->
+    <itws:business-process-methods>
+      <!-- :: Парамтры метода создания заявки на обучение -->
+      <itws:on-training-request-process>
+        <!-- ... целевая папка -->
+        <itws:target-folder id="877EAAEA-97D1-48CF-A633-4066355CE7FB"/>
+        <!-- ... тип инцидента и роли в инциденте (см. "Задание на обучение") -->
+        <itws:incident-type id="73B8E069-A5AB-B748-8B16-493053D0426F"/>
+        <itws:role-for-trained id="9A550C03-A618-FB45-BB43-F3EAC5A391B1"/>
+        <itws:role-for-manager id="819E1FFC-BD1E-CF4F-8D7E-32B9171E914F"/>
+        <!-- ... свойства в определении инцидента -->
+        <itws:prop-for-course-number id="BCDBF5F6-8F75-7D45-810A-59D50C626830"/>
+        <itws:prop-for-course-beginning-date id="8728CF88-A8EB-364A-8B9D-0098CC25C07D"/>
+        <itws:prop-for-goal-status id="A17674D3-A226-2640-8FFE-1A46467E73F2"/>
+        <itws:prop-for-training-direction id="522B97E0-51E0-894A-98D2-2F46A0657E8E"/>
+        <itws:prop-for-training-center id="79328E02-3B5C-2E49-9CD2-7D7DDBB94CDC"/>
+        <itws:prop-for-education-sum id="8498111d-a3fc-8d4f-b31b-fa5cce1e6b9e"/>
+      </itws:on-training-request-process>
+    </itws:business-process-methods>
+
+    <!-- Параметры для методов взаимодействия с CMDB -->
+    <itws:cmdb-process-methods>
+      <!-- ::Параметры метода создания запроса на изменение (change) -->
+      <itws:on-change-request-process>
+        <!-- ...тип инцидента и наблюдающая роль в этом типе -->
+        <itws:incident-type id="1025C7C5-E313-11D4-A9DD-0008C7286B92"/>
+        <itws:role-for-observer id="8B5C6A3C-4E6F-4D4D-8383-B81CEA26AAB7"/>
+      </itws:on-change-request-process>
+    </itws:cmdb-process-methods>
+
+    <!-- Параметры для методов получения данных о списаниях -->
+    <itws:expenses-process-methods>
+      <!-- ::Параметры метода получения данных о суммарных списаниях перечня сотрудников -->
+      <itws:get-employees-expenses-process>
+        <!-- ... перечень подразделений, сотрудники которых не регистрируют списания -->
+        <itws:excepted-departments>
+          <!-- Административно-хозяйственная служба -->
+          <itws:department id="F807BC56-4E27-41E4-92F1-E3C0219CD321" include-nested="true" />
+          <!-- Администрация -->
+          <itws:department id="80CB1F2B-BAC7-417B-B49A-038C7C412266" include-nested="true" />
+          <!-- Бывшие сотрудники -->
+          <itws:department id="057A1ECF-2A45-44F6-8BD0-8F9C3A4E16DB" include-nested="true" />
+          <!-- Внештатники - Р.В.С. -->
+          <itws:department id="32CF07DB-3DC6-48B7-A948-619DF5D9DD5B" include-nested="true" />
+          <!-- Группа СДТУ -->
+          <itws:department id="F52646B8-3521-4626-B175-8657B8B0004F" include-nested="true" />
+          <!-- группа системных администраторов -->
+          <itws:department id="03234503-D3DF-4A07-B6B8-FE3A701079B3" include-nested="true" />
+          <!-- Департамент автоматизации инженерных систем -->
+          <itws:department id="D15CF5EF-E400-4CFB-8A72-A2630C246B4A" include-nested="true" />
+          <!-- Департамент бизнес-приложений -->
+          <itws:department id="1B1B69D5-9CB0-45F9-8292-3AE11FD21E71" include-nested="true" />
+          <!-- Департамент избирательных технологий -->
+          <itws:department id="8FC38A23-0F06-4993-94D7-3911E517E484" include-nested="true" />
+          <!-- Департамент интеллектуальных зданий -->
+          <itws:department id="FB990F3E-3E4A-4C0B-9978-5734F5DA8BA4" include-nested="true" />
+          <!-- Департамент интеллектуальных зданий-old -->
+          <itws:department id="CAA7B58F-879E-457F-AE12-AB1C7CF3DCDE" include-nested="true" />
+          <!-- Департамент логистики -->
+          <itws:department id="5B78D8F3-23EC-594E-BE52-C9085ABAB70F" include-nested="true" />
+          <!-- Департамент маркетинга -->
+          <itws:department id="08CE4119-0475-4D0D-9AC2-1169B98C5B5B" include-nested="true" />
+          <!-- Департамент по работе с персоналом -->
+          <itws:department id="EEAC2B26-AB81-9E4F-88D7-E577CB0D0AF6" include-nested="true" />
+          <!-- Департамент продаж -->
+          <itws:department id="AE8CF9A6-4718-42F0-B0F1-B42FED824C03" include-nested="true" />
+          <!-- Департамент телефонных систем -->
+          <itws:department id="25A0C90E-92B5-4ECD-BFB8-500E6A6382C3" include-nested="true" />
+          <!-- МГУ -->
+          <itws:department id="FA110BFC-3EDF-4098-8A29-46AFA64F7463" include-nested="true" />
+          <!-- Медкор -->
+          <itws:department id="77B89A2F-DCF7-432D-B3C0-4CDB82D0EEE4" include-nested="true" />
+          <!-- Международный отдел -->
+          <itws:department id="6934BCF8-0B01-4229-8AF5-2844235A50D1" include-nested="true" />
+          <!-- ОП Гусиноозерское -->
+          <itws:department id="B27C337A-9FF3-4038-AD0C-EA45CCC53CA5" include-nested="true" />
+          <!-- ОП Костромское -->
+          <itws:department id="08A8E03E-AE43-4EDD-8D55-ED55A2D6A127" include-nested="true" />
+          <!-- ОП Печорское -->
+          <itws:department id="35DC65FB-63E0-4ED9-B6FC-59003CDE0EA4" include-nested="true" />
+          <!-- ОП Черепетское -->
+          <itws:department id="E08EB866-6C58-4AB8-8403-4535581FF941" include-nested="true" />
+          <!-- ОП Южноуральское -->
+          <itws:department id="37B50F18-5D39-4C62-A635-FA07FEFFD921" include-nested="true" />
+          <!-- Отдел деловых поездок -->
+          <itws:department id="0677BEDE-F25B-4755-860E-8D5F2117C1BC" include-nested="true" />
+          <!-- Отдел доставки -->
+          <itws:department id="6D6D44B1-2520-41F3-84B7-0403BF597EB4" include-nested="true" />
+          <!-- Отдел материально-технического обеспечения -->
+          <itws:department id="324C2AEE-6958-409B-BAD2-6200E81B3198" include-nested="true" />
+          <!-- Отдел развития бизнеса -->
+          <itws:department id="1CCF6FD5-FA57-402A-B6A8-04371D7F1978" include-nested="true" />
+          <!-- Отдел эксплуатации -->
+          <itws:department id="46C6538C-009A-4421-B761-75E1D659FD44" include-nested="true" />
+          <!-- Правовой департамент -->
+          <itws:department id="A99DE179-6011-4FFC-B9B4-A63AFAFFC57D" include-nested="true" />
+          <!-- Склад -->
+          <itws:department id="3BCCB8DA-27F6-4132-8F59-3AE7D9B63867" include-nested="true" />
+          <!-- Служба качества -->
+          <itws:department id="1E46AAE1-65C2-40C2-BE1F-61E20CBDA702" include-nested="true" />
+          <!-- Служба охраны -->
+          <itws:department id="55AFA595-D208-BF44-8A86-F7CAAAB6E8A4" include-nested="true" />
+          <!-- Служба по охране труда и технике безопасности -->
+          <itws:department id="C948BD51-F0A3-4B38-BE15-796299C57A3B" include-nested="true" />
+          <!-- сотрудники РВС -->
+          <itws:department id="2698F916-4A9A-49E4-9213-8CFB420B4950" include-nested="true" />
+          <!-- Технический департамент -->
+          <itws:department id="BE7D4843-CC0C-4F03-B956-703F8EB59099" include-nested="true" />
+          <!-- Технический департамент, обособленное подразделение -->
+          <itws:department id="CB4C8F67-2121-46A5-B828-9836E987265E" include-nested="true" />
+          <!-- Технический отдел -->
+          <itws:department id="A7314592-771B-4DBA-B009-718B0F7267B2" include-nested="true" />
+          <!-- Финансовый департамент -->
+          <itws:department id="F0766651-51C4-4128-AF68-98908C2CDBB9" include-nested="true" />
+          <!-- Энергетический отдел -->
+          <itws:department id="D7535283-D192-48BD-9202-E44D685A1010" include-nested="true" />
+          <!-- Юридический отдел -->
+          <itws:department id="7C6FE1BC-6CB3-4211-B646-9541CDFC1AF8" include-nested="true" />
+          <!-- ДИТ/ Бойцы невидимого фронта -->
+          <itws:department id="188A73BD-8EC9-42D1-998B-4C2D81A4D29D" include-nested="true" />
+          <!-- ДИТ/ Сканерное подразделение /Внештатники -->
+          <itws:department id="B4339D10-A974-4AA1-9F97-3642D1383377" include-nested="true" />
+        </itws:excepted-departments>
+      </itws:get-employees-expenses-process>
+    </itws:expenses-process-methods>
+
+  </itws:common-service>
+
+  <!-- ПАРАМЕТЫ СЕРВИСА СИНХРОНИЗАЦИИ С НСИ -->
+  <itws:nsi-sync-service>
+    <!-- Карта перевода флагов пользователей в соотв. системные роли -->
+    <itws:flags-to-roles-map>
+      <!-- Флаг наличия административных полномочий в системе -->
+      <itws:role-link for-flag="1" to-role="0A0A0A0A-0000-0001-0000-000000000001" />
+      <!-- (*) Флаг, являющийся признаком того, что пользователь в данный момент не работает (в системе) -->
+      <itws:role-link for-flag="2" clear-roles="1"/>
+      <!-- (*) Менеджер проекта (для тендеров) -->
+      <itws:role-link for-flag="4" />
+      <!-- (*) Исполнитель от департамента (для тендеров) -->
+      <itws:role-link for-flag="16" />
+      <!-- (*) Исполнитель по справкам (для тендеров) -->
+      <itws:role-link for-flag="32" />
+      <!-- Принятие решения (для тендеров) -->
+      <itws:role-link for-flag="64" to-role="0A0A0A0A-0000-0002-0000-000000000003" />
+      <!-- Админ. справочников (тендерных) -->
+      <itws:role-link for-flag="128" to-role="0A0A0A0A-0000-0002-0000-000000000002" />
+      <!-- Директор accounta (для тендеров) -->
+      <itws:role-link for-flag="256" to-role="0A0A0A0A-0000-0002-0000-000000000004" />
+      <!-- Имеет доступ к системе тендеров -->
+      <itws:role-link for-flag="512" to-role="0A0A0A0A-0000-0002-0000-000000000005" />
+      <!-- (*) Внешний пользователь -->
+      <itws:role-link for-flag="1024" />
+      <!-- (*) Получает системные сообщения -->
+      <itws:role-link for-flag="2048" />
+      <!-- (*) Не получает никаких сообщений -->
+      <itws:role-link for-flag="4096" />
+      <!-- Административные права на все проекты -->
+      <itws:role-link for-flag="8192" to-role="0A0A0A0A-0000-0001-0000-000000000006" />
+      <!-- На испытательном сроке -->
+      <itws:role-link for-flag="16384" clear-roles="1"/>
+      <!-- Директор компании -->
+      <itws:role-link for-flag="65536" to-role="0A0A0A0A-0000-0001-0000-000000000007" />
+      <!-- (*) Видит всю финансовую информацию -->
+      <itws:role-link for-flag="131072" />
+    </itws:flags-to-roles-map>
+  </itws:nsi-sync-service>
+
+</itws:configuration>
+
+

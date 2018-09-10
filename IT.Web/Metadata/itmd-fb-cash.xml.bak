@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<ds:enum n="TYPE_MONEY_TRANS" d="Тип движения ДС в кассе" vt="i2">
+		<ds:value n="INCOME" d="Поступление">0</ds:value>
+		<ds:value n="OUT_EMP" d="Выдача сотруднику">1</ds:value>
+		<ds:value n="INC_EMP" d="Возврат сотрудником">2</ds:value>
+	</ds:enum>
+	<ds:type n="AOReason" d="Назначение АО" tp="persistent">
+		<ds:prop n="Name" d="Название" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Code" d="Код" vt="i4" cp="scalar" maybenull="1" />
+		<ds:prop n="Parent" d="Вышестоящий" vt="object" ot="AOReason" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Childrens" d="Подчиненные" vt="object" ot="AOReason" cp="link" built-on="Parent">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Название" width="400">item.Name</i:column>
+				<i:column t="Код" width="100" vt="i4">item.Code</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="IsLimitAO" d="Может быть лимитом" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<i:editor n="Main" width="500" height="500" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list n="MainList" t="Назначение АО" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					dbo.[GetFullAOReasonName](t.[ObjectID]) AS FullName,
+          t.[Code]
+				FROM [dbo].[AOReason] t
+				WHERE_CLAUSE
+        ORDER BY FullName
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Название" width="650" />
+			<i:column t="Код" width="200" />
+		</i:objects-list>
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="OverLimit">Folder-Presale-Open-InWork.ico</i:icon>
+			<i:icon selector="NotExceedLimit">Folder-Presale-Open-Complete.ico</i:icon>
+			<i:icon selector="CloseToExceedLimit">Folder-Presale-Open-OnCheck.ico</i:icon>
+			<i:icon selector="LimitNotDefined">Folder-PreSale-Closed.ico</i:icon>
+		</i:icons>
+	</ds:type>
+	<ds:type n="EmpMoneyMove" d="Передача ДС" tp="persistent">
+		<ds:prop n="From" d="Передал" vt="object" ot="Employee" cp="scalar">
+			<i:object-presentation off-create="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>it_FormatName(item.LastName, item.FirstName, item.PhoneExt)</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="To" d="Получил" vt="object" ot="Employee" cp="scalar">
+			<i:object-presentation off-create="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>it_FormatName(item.LastName, item.FirstName, item.PhoneExt)</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<i:editor n="editor" width="500" height="350" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Передача ДС" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Date],
+					dbo.GetSumString(t.[Sum], NULL),
+          dbo.GetEmployeeString(t.[From]),
+          dbo.GetEmployeeString(t.[To]),
+					t.[Rem]
+				FROM [dbo].[EmpMoneyMove] t
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="DateFrom" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[ 
+							t.Date >= dbo.DATETRIM(:DateFrom) 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateTo" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							t.Date < DATEADD(d, 1, dbo.DATETRIM(:DateTo))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="From" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  t.[From] = :From
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="To" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  t.[To] = :To
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterEmpMoneyMove" height="60" />
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Дата" vt="date" align="center" width="200" />
+			<i:column t="Сумма" align="right" width="200" />
+			<i:column t="Передал" width="300" />
+			<i:column t="Получил" width="300" />
+			<i:column t="Примечание" width="400" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="KassTrans" d="Движение ДС в кассе" tp="persistent">
+		<ds:prop n="Type" d="Тип" vt="i2" cp="scalar" enum="TYPE_MONEY_TRANS">
+			<i:const-value-selection xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Поступление">0</i:const-value>
+				<i:const-value n="Выдача сотруднику">1</i:const-value>
+				<i:const-value n="Возврат сотрудником">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Emp" d="Сотрудник" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:object-presentation off-create="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>it_FormatName(item.LastName, item.FirstName, item.PhoneExt)</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Percent" d="Процент комиссии" vt="r4" cp="scalar" maybenull="1" />
+		<i:editor n="Main" width="500" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Движение ДС в кассе" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-KassTrans-list.vbs</i:client-script>
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					dbo.NameOf_TYPE_MONEY_TRANS(t.[Type]),
+					t.[Date],
+					dbo.GetSumString(t.[Sum], NULL),
+          dbo.GetEmployeeString(t.Emp),
+					t.[Rem]
+				FROM [dbo].[KassTrans] t
+				WHERE_CLAUSE
+        ORDER BY Date DESC
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="DateFrom" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[ 
+							t.Date >= dbo.DATETRIM(:DateFrom) 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateTo" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							t.Date < DATEADD(d, 1, dbo.DATETRIM(:DateTo))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Type" vt="i4">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  t.Type = :Type
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Emp" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  t.Emp = :Emp
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterKassTrans" height="60" />
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Тип" width="250" />
+			<i:column t="Дата" vt="date" align="center" width="200" />
+			<i:column t="Сумма" align="right" width="200" />
+			<i:column t="Сотрудник" align="center" width="300" />
+			<i:column t="Примечание" width="450" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="AO" d="АО" tp="persistent">
+		<ds:prop n="Employee" d="Сотрудник" vt="object" ot="Employee" cp="scalar">
+			<i:object-presentation off-create="1" off-delete="1" off-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>it_FormatName(item.LastName, item.FirstName, item.PhoneExt)</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Contract" d="Договор" vt="object" ot="Contract" cp="scalar" maybenull="1">
+			<i:object-presentation off-create="1" off-delete="1" off-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Project.ExternalID</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Owner" d="Владелец (для общих АО)" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OwnerSelector" empty-value-text="(Укажите владельца)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="Sum" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="Reason" d="Назначение" vt="object" ot="AOReason" cp="scalar">
+			<i:object-dropdown use-list="MainList" empty-value-text="(Укажите назначение)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Number" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Supplier" d="Комплектатор" vt="object" ot="Supplier" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Sum</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<i:editor n="AONoOwner" width="500" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Main" t=" ">p-AO-NoOwner.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:editor n="Main" default-for-creation="1" default-for-editing="1" width="500" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="АО" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+          t.[Date],
+					dbo.GetSumString(t.[Sum], NULL),
+          dbo.GetEmployeeString(t.Employee),
+          dbo.GetFullAOReasonName(t.Reason) AS Reason,
+          dbo.GetPrjCodeByAO(t.[ObjectID]) AS ProjectCode,
+          o.ShortName,
+          t.[Number],
+					t.[Rem]
+				FROM [dbo].[AO] t
+          LEFT JOIN dbo.Organization AS o WITH(NOLOCK) ON t.Owner = o.ObjectID
+				WHERE_CLAUSE
+        ORDER BY t.[Date] DESC
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="DateFrom" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[ 
+							t.Date >= dbo.DATETRIM(:DateFrom) 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateTo" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							t.Date < DATEADD(d, 1, dbo.DATETRIM(:DateTo))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Reason" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  t.Reason = :Reason
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Employee" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  t.Employee = :Employee
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Contract" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  t.Contract = :Contract
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Number" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							t.Number LIKE :Number 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterAOList" height="60" />
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Дата" vt="date" align="center" width="150" />
+			<i:column t="Сумма" align="right" width="200" />
+			<i:column t="Сотрудник" width="300" />
+			<i:column t="Назначение" width="450" />
+			<i:column t="Код проекта" width="150" />
+			<i:column t="Владелец" align="center" width="150" />
+			<i:column t="Номер" align="center" width="100" />
+			<i:column t="Примечание" width="300" />
+		</i:objects-list>
+	</ds:type>
+</ds:metadata>

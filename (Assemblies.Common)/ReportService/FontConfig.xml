@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<font-mapper xmlns="http://www.ecrion.com/fnt/1.0">
+	<adobe-std-fonts>
+		<font-family name="Helvetica" display-family-name="Arial">
+			<font type="Type1" is-bold="false" is-italic="false">
+				<alias>SansSerif</alias>
+				<alias>Sans-Serif</alias>
+				<alias>Sans Serif</alias>
+			</font>
+			<font type="Type1" is-bold="true" is-italic="false">
+				<alias>Helvetica-Bold</alias>
+				<alias>Helvetica Bold</alias>
+				<alias>SansSerif-Bold</alias>
+				<alias>SansSerif Bold</alias>
+				<alias>Sans Serif Bold</alias>
+			</font>
+			<font type="Type1" is-bold="false" is-italic="true">
+				<alias>Helvetica-Oblique</alias>
+				<alias>Helvetica Oblique</alias>
+				<alias>SansSerif-Italic</alias>
+				<alias>Sans-Serif-Italic</alias>
+				<alias>Sans Serif Italic</alias>
+			</font>
+			<font type="Type1" is-bold="true" is-italic="true">
+				<alias>Helvetica-BoldOblique</alias>
+				<alias>Helvetica BoldOblique</alias>
+				<alias>SansSerif-BoldItalic</alias>
+				<alias>Sans-Serif-BoldItalic</alias>
+				<alias>Sans Serif BoldItalic</alias>
+			</font>
+		</font-family>
+		<font-family name="Times" display-family-name="Times New Roman">
+			<font type="Type1" is-bold="false" is-italic="false">
+				<alias>Times-Roman</alias>
+				<alias>Times Roman</alias>
+				<alias>Serif</alias>
+				<alias>TimesNewRoman</alias>
+			</font>
+			<font type="Type1" is-bold="true" is-italic="false">
+				<alias>Times-Bold</alias>
+				<alias>Times Bold</alias>
+				<alias>Serif-Bold</alias>
+				<alias>Serif Bold</alias>
+			</font>
+			<font type="Type1" is-bold="false" is-italic="true">
+				<alias>Times-Italic</alias>
+				<alias>Times Italic</alias>
+				<alias>Cursive</alias>
+				<alias>Cursive-Italic</alias>
+				<alias>Cursive Italic</alias>
+				<alias>Fantasy</alias>
+				<alias>Fantasy-Italic</alias>
+				<alias>Fantasy Italic</alias>
+				<alias>Serif-Italic</alias>
+				<alias>Serif Italic</alias>
+			</font>
+			<font type="Type1" is-bold="true" is-italic="true">
+				<alias>Times-BoldItalic</alias>
+				<alias>Times BoldItalic</alias>
+				<alias>Cursive-Bold</alias>
+				<alias>Cursive Bold</alias>
+				<alias>Cursive-BoldItalic</alias>
+				<alias>Cursive BoldItalic</alias>
+				<alias>Fantasy-Bold</alias>
+				<alias>Fantasy Bold</alias>
+				<alias>Fantasy-BoldItalic</alias>
+				<alias>Fantasy BoldItalic</alias>
+				<alias>Serif-BoldItalic</alias>
+				<alias>Serif BoldItalic</alias>
+			</font>
+		</font-family>
+		<font-family name="Courier" display-family-name="Courier New">
+			<font type="Type1" is-bold="false" is-italic="false">
+				<alias>Monospace</alias>
+			</font>
+			<font type="Type1" is-bold="true" is-italic="false">
+				<alias>Courier-Bold</alias>
+				<alias>Courier Bold</alias>
+				<alias>Monospace-Bold</alias>
+				<alias>Monospace Bold</alias>
+			</font>
+			<font type="Type1" is-bold="false" is-italic="true">
+				<alias>Courier-Oblique</alias>
+				<alias>Courier Oblique</alias>
+				<alias>Monospace-Oblique</alias>
+				<alias>Monospace Oblique</alias>
+			</font>
+			<font type="Type1" is-bold="true" is-italic="true">
+				<alias>Courier-BoldOblique</alias>
+				<alias>Courier BoldOblique</alias>
+				<alias>Monospace-BoldOblique</alias>
+				<alias>Monospace BoldOblique</alias>
+			</font>
+		</font-family>
+		<font-family name="ZapfDingbats" display-family-name="Arial">
+			<font type="Type1" is-bold="false" is-italic="false">
+			</font>
+		</font-family>
+		<font-family name="Symbol" display-family-name="Arial">
+			<font type="Type1" is-bold="false" is-italic="false">
+			</font>
+		</font-family>
+	</adobe-std-fonts>
+</font-mapper>

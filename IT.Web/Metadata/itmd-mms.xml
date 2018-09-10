@@ -1,0 +1,1014 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<ds:enum n="EventClass" d="Класс события" vt="i4">
+		<ds:value n="EVENT_TYPE_01" d="Создание инцидента">1</ds:value>
+		<ds:value n="EVENT_TYPE_02" d="Изменение состояние инцидента">2</ds:value>
+		<ds:value n="EVENT_TYPE_03" d="Удаление инцидента">3</ds:value>
+		<ds:value n="EVENT_TYPE_04" d="Создание описания нового задания по инциденту">4</ds:value>
+		<ds:value n="EVENT_TYPE_05" d="Изменение роли исполнителя в задании по инциденту">5</ds:value>
+		<ds:value n="EVENT_TYPE_06" d="Удаление задания по инциденту">6</ds:value>
+		<ds:value n="EVENT_TYPE_07" d="Изменение наименования, описания или описания решения инцидента">7</ds:value>
+		<ds:value n="EVENT_TYPE_08" d="Изменение приоритета или крайнего срока инцидента">8</ds:value>
+		<ds:value n="EVENT_TYPE_09" d="Перенос инцидента в другую активность - экспорт">9</ds:value>
+		<ds:value n="EVENT_TYPE_10" d="Перенос инцидента в другую активность - импорт">10</ds:value>
+		<ds:value n="EVENT_TYPE_11" d="Добавление участника проектной команды">11</ds:value>
+		<ds:value n="EVENT_TYPE_12" d="Удаление участника проектной команды">12</ds:value>
+		<ds:value n="EVENT_TYPE_13" d="Снятие роли для участника проектной команды">13</ds:value>
+		<ds:value n="EVENT_TYPE_14" d="Добавление роли для участника проектной команды">14</ds:value>
+		<ds:value n="EVENT_TYPE_15" d="Удаление организации">15</ds:value>
+		<ds:value n="EVENT_TYPE_16" d="Снятие Директора Клиента (организации)">16</ds:value>
+		<ds:value n="EVENT_TYPE_17" d="Задание Директора Клиента (организации)">17</ds:value>
+		<ds:value n="EVENT_TYPE_18" d="Изменение наименования проектной активности (папки)">18</ds:value>
+		<ds:value n="EVENT_TYPE_19" d="Изменение внешнего ID проектной активности (папки)">19</ds:value>
+		<ds:value n="EVENT_TYPE_20" d="Изменение блокировки списаний по проектной активности (папки)">20</ds:value>
+		<ds:value n="EVENT_TYPE_21" d="Удаление корневой проектной активности (папки)">21</ds:value>
+		<ds:value n="EVENT_TYPE_22" d="Удаление некорневой проектной активности (папки)">22</ds:value>
+		<ds:value n="EVENT_TYPE_23" d="Создание корневой проектной активности (папки)">23</ds:value>
+		<ds:value n="EVENT_TYPE_24" d="Создание некорневой проектной активности (папки)">24</ds:value>
+		<ds:value n="EVENT_TYPE_25" d="Изменение Клиента у проектной активности - экспорт">25</ds:value>
+		<ds:value n="EVENT_TYPE_26" d="Изменение Клиента у проектной активности - импорт">26</ds:value>
+		<ds:value n="EVENT_TYPE_27" d="Перенос проектной активности в другую папку - экспорт">27</ds:value>
+		<ds:value n="EVENT_TYPE_28" d="Перенос проектной активности в другую папку - импорт">28</ds:value>
+		<ds:value n="EVENT_TYPE_29" d="Изменение состояния у проектной активности">29</ds:value>
+		<ds:value n="EVENT_TYPE_30" d="Изменение типа активности у проектной активности">30</ds:value>
+		<ds:value n="EVENT_TYPE_31" d="Перенос организации - экспорт">31</ds:value>
+		<ds:value n="EVENT_TYPE_32" d="Перенос организации - импорт">32</ds:value>
+		<ds:value n="EVENT_TYPE_33" d="Изменение наименования или сокращённого наименования организации">33</ds:value>
+		<ds:value n="EVENT_TYPE_34" d="Создание организации">34</ds:value>
+		<ds:value n="EVENT_TYPE_65" d="Нарушение плана занятости сотрудником">65</ds:value>
+		<ds:value n="EVENT_TYPE_35" d="Изменение запланированного времени">35</ds:value>
+		<ds:value n="EVENT_TYPE_36" d="Изменение оставшегося времени">36</ds:value>
+		<ds:value n="EVENT_TYPE_37" d="Установка (изменение) общесистемной блокировки списаний">37</ds:value>
+		<ds:value n="EVENT_TYPE_38" d="Создание временной организации">38</ds:value>
+		<ds:value n="EVENT_TYPE_39" d="Замена временного описания организации постоянным">39</ds:value>
+		<ds:value n="EVENT_TYPE_40" d="Создание нового тендера">40</ds:value>
+		<ds:value n="EVENT_TYPE_41" d="Создание участия в лоте">41</ds:value>
+		<ds:value n="EVENT_TYPE_42" d="Модификация участника в лоте">42</ds:value>
+		<ds:value n="EVENT_TYPE_43" d="Удаление участника в лоте">43</ds:value>
+		<ds:value n="EVENT_TYPE_44" d="Изменение директора тендера - снятие">44</ds:value>
+		<ds:value n="EVENT_TYPE_45" d="Изменение директора тендера - назначение">45</ds:value>
+		<ds:value n="EVENT_TYPE_46" d="Удаление тендера">46</ds:value>
+		<ds:value n="EVENT_TYPE_47" d="Изменение состояния лота">47</ds:value>
+		<ds:value n="EVENT_TYPE_48" d="Превышение запланированного времени по инциденту">48</ds:value>
+		<ds:value n="EVENT_TYPE_63" d="Изменение плана занятости сотрудника">63</ds:value>
+		<ds:value n="EVENT_TYPE_49" d="Приближение крайнего срока инцидента">49</ds:value>
+		<ds:value n="EVENT_TYPE_50" d="Истечение крайнего срока инцидента">50</ds:value>
+		<ds:value n="EVENT_TYPE_51" d="Создание нового лота">51</ds:value>
+		<ds:value n="EVENT_TYPE_64" d="Превышение плановой занятости сотрудника на проектах">64</ds:value>
+		<ds:value n="EVENT_TYPE_52" d="Изменение лота">52</ds:value>
+		<ds:value n="EVENT_TYPE_53" d="Удаление лота">53</ds:value>
+		<ds:value n="EVENT_TYPE_54" d="Изменение описание тендера">54</ds:value>
+		<ds:value n="EVENT_TYPE_55" d="Измененме состояния тендера">55</ds:value>
+		<ds:value n="EVENT_TYPE_56" d="Добавления сотрудника в список лиц, принимающих участие в подготовке тендера">56</ds:value>
+		<ds:value n="EVENT_TYPE_57" d="Исключение сотрудника из списока лиц, принимающих участие в подготовке тендера">57</ds:value>
+		<ds:value n="EVENT_TYPE_58" d="Добавление направления у проектной активности (папки)">58</ds:value>
+		<ds:value n="EVENT_TYPE_59" d="Удаление направления у проектной активности (папки)">59</ds:value>
+		<ds:value n="EVENT_TYPE_60" d="Изменение доли затрат направления у проектной активности">60</ds:value>
+		<ds:value n="EVENT_TYPE_61" d="Изменение нормы рабочего времени сотрудника">61</ds:value>
+		<ds:value n="EVENT_TYPE_62" d="Переход проектной активности в состояние &quot;Ожидание закрытия&quot;">62</ds:value>
+	</ds:enum>
+	<!--
+		Типы событий - Правила генерации и доставки для сущестующих классов событий
+	-->
+	<ds:type n="EventType" d="Правило генерации события" tp="persistent">
+		<ds:prop n="Name" d="Описание" vt="string" cp="scalar">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Disabled" d="Правило отключено" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="EventType" d="Класс события" vt="i4" cp="scalar" enum="EventClass">
+			<i:const-value-selection selector="combo" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Создание инцидента">1</i:const-value>
+				<i:const-value n="Изменение состояние инцидента">2</i:const-value>
+				<i:const-value n="Удаление инцидента">3</i:const-value>
+				<i:const-value n="Создание описания нового задания по инциденту">4</i:const-value>
+				<i:const-value n="Изменение роли исполнителя в задании по инциденту">5</i:const-value>
+				<i:const-value n="Удаление задания по инциденту">6</i:const-value>
+				<i:const-value n="Изменение наименования, описания или описания решения инцидента">7</i:const-value>
+				<i:const-value n="Изменение приоритета или крайнего срока инцидента">8</i:const-value>
+				<i:const-value n="Перенос инцидента в другую активность - экспорт">9</i:const-value>
+				<i:const-value n="Перенос инцидента в другую активность - импорт">10</i:const-value>
+				<i:const-value n="Добавление участника проектной команды">11</i:const-value>
+				<i:const-value n="Удаление участника проектной команды">12</i:const-value>
+				<i:const-value n="Снятие роли для участника проектной команды">13</i:const-value>
+				<i:const-value n="Добавление роли для участника проектной команды">14</i:const-value>
+				<i:const-value n="Удаление организации">15</i:const-value>
+				<i:const-value n="Снятие Директора Клиента (организации)">16</i:const-value>
+				<i:const-value n="Задание Директора Клиента (организации)">17</i:const-value>
+				<i:const-value n="Изменение наименования проектной активности (папки)">18</i:const-value>
+				<i:const-value n="Изменение внешнего ID проектной активности (папки)">19</i:const-value>
+				<i:const-value n="Изменение блокировки списаний по проектной активности (папки)">20</i:const-value>
+				<i:const-value n="Удаление корневой проектной активности (папки)">21</i:const-value>
+				<i:const-value n="Удаление некорневой проектной активности (папки)">22</i:const-value>
+				<i:const-value n="Создание корневой проектной активности (папки)">23</i:const-value>
+				<i:const-value n="Создание некорневой проектной активности (папки)">24</i:const-value>
+				<i:const-value n="Изменение Клиента у проектной активности - экспорт">25</i:const-value>
+				<i:const-value n="Изменение Клиента у проектной активности - импорт">26</i:const-value>
+				<i:const-value n="Перенос проектной активности в другую папку - экспорт">27</i:const-value>
+				<i:const-value n="Перенос проектной активности в другую папку - импорт">28</i:const-value>
+				<i:const-value n="Изменение состояния у проектной активности">29</i:const-value>
+				<i:const-value n="Изменение типа активности у проектной активности">30</i:const-value>
+				<i:const-value n="Перенос организации - экспорт">31</i:const-value>
+				<i:const-value n="Перенос организации - импорт">32</i:const-value>
+				<i:const-value n="Изменение наименования или сокращённого наименования организации">33</i:const-value>
+				<i:const-value n="Создание организации">34</i:const-value>
+				<i:const-value n="Изменение запланированного времени">35</i:const-value>
+				<i:const-value n="Изменение оставшегося времени">36</i:const-value>
+				<i:const-value n="Установка (изменение) общесистемной блокировки списаний">37</i:const-value>
+				<i:const-value n="Создание временной организации">38</i:const-value>
+				<i:const-value n="Замена временного описания организации постоянным">39</i:const-value>
+				<i:const-value n="Создание нового тендера">40</i:const-value>
+				<i:const-value n="Создание участия в лоте">41</i:const-value>
+				<i:const-value n="Модификация участника в лоте">42</i:const-value>
+				<i:const-value n="Удаление участника в лоте">43</i:const-value>
+				<i:const-value n="Изменение директора тендера - снятие">44</i:const-value>
+				<i:const-value n="Изменение директора тендера - назначение">45</i:const-value>
+				<i:const-value n="Удаление тендера">46</i:const-value>
+				<i:const-value n="Изменение состояния лота">47</i:const-value>
+				<i:const-value n="Превышение запланированного времени по инциденту">48</i:const-value>
+				<i:const-value n="Приближение крайнего срока инцидента">49</i:const-value>
+				<i:const-value n="Истечение крайнего срока инцидента">50</i:const-value>
+				<i:const-value n="Создание нового лота">51</i:const-value>
+				<i:const-value n="Изменение лота">52</i:const-value>
+				<i:const-value n="Удаление лота">53</i:const-value>
+				<i:const-value n="Изменение описание тендера">54</i:const-value>
+				<i:const-value n="Измененме состояния тендера">55</i:const-value>
+				<i:const-value n="Добавления сотрудника в список лиц, принимающих участие в подготовке тендера">56</i:const-value>
+				<i:const-value n="Исключение сотрудника из списока лиц, принимающих участие в подготовке тендера">57</i:const-value>
+				<i:const-value n="Добавление направления у проектной активности (папки)">58</i:const-value>
+				<i:const-value n="Удаление направления у проектной активности (папки)">59</i:const-value>
+				<i:const-value n="Изменение доли затрат направления у проектной активности">60</i:const-value>
+				<i:const-value n="Изменение нормы рабочего времени сотрудника">61</i:const-value>
+				<i:const-value n="Переход проектной активности в состояние &quot;Ожидание закрытия&quot;">62</i:const-value>
+				<i:const-value n="Изменение плана занятости сотрудника">63</i:const-value>
+				<i:const-value n="Превышение плановой занятости сотрудника на проектах">64</i:const-value>
+				<i:const-value n="Нарушение плана занятости сотрудником">65</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="RecipientIsEventCreator" d="Получатель является автором события" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsNotEventCreator" d="Получатель не является автором события" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsBoss" d="Получатель - Директор Клиента" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsTenderBoss" d="Получатель - Директор Клиента (для данного тендера)" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsLotParticipantBoss" d="Получатель - Директор Клиента организации - участника лота" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsCreatorManager" d="Получатель - руководитель подразделения автора" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsEventSubject" d="Получатель - субъект события" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsLotManager" d="Получатель - менеджер лота" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsTenderLotManager" d="Получатель - менеджер любого лота в тендере" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsLotExecutor" d="Получатель - исполнитель от подразделения" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsTenderLotExecutor" d="Получатель - исполнитель от подразделения любого лота в тендере" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsEventSubjectManager" d="Получатель - руководитель подразделения субъекта события" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsIncidentWorkerManager" d="Получатель - руководитель подразделения исполнителя по инциденту" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientHasActiveRoleInIncident" d="Роль получателя в инциденте активна" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientHasNonActiveRoleInIncident" d="Роль получателя в инциденте неактивна" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsDirectionManager" d="Получатель - Администратор направления" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientIsDirectionDirector" d="Получатель - Руководитель направления" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientHasIncidentRole" d="Роль получателя в инциденте" vt="object" ot="UserRoleInIncident" cp="collection">
+			<i:elements-list use-list-selector="AllRoles" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="300">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="RecipientHasRoleInProject" d="Получатель  имеет роль в проекте - источнике события" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientHasProjectRole" d="Роль получателя в проекте" vt="object" ot="UserRoleInProject" cp="collection">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Название" width="300">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="RecipientHasRoleInProjectOrChildren" d="Получатель имеет роль в проекте - источнике события (включая подчинeнные папки)" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="RecipientHasProjectRoleInInnerProject" d="Роль получателя в подчиненном проекте" vt="object" ot="UserRoleInProject" cp="collection">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Название" width="300">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="RecipientHasProjectRoleInClientActiveProjects" d="Роль получателя в активных проектах данного клиента" vt="object" ot="UserRoleInProject" cp="collection">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Название" width="300">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="RecipientIsEmployeeOf" d="Получатель из организации" vt="object" ot="Organization" cp="collection">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Краткое наименование" width="100">item.ShortName</i:column>
+				<i:column t="Наименование" width="300">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="RecipientIsFromDepartment" d="Получатель числится в подразделении" vt="object" ot="Department" cp="collection">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Код" width="100">item.Code</i:column>
+				<i:column t="Наименование" width="300">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="RecipientPositionIs" d="Получатель имеет должность" vt="object" ot="Position" cp="collection">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="300">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="RecipientIsDepartmentManager" d="Получатель - руковолитель подразделения" vt="object" ot="Department" cp="collection">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Код" width="100">item.Code</i:column>
+				<i:column t="Наименование" width="300">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="RecipientIsOneOfList" d="Получатель - один из указанных" vt="object" ot="Employee" cp="collection">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Фамилия" width="150">item.LastName</i:column>
+				<i:column t="Имя" width="150">item.FirstName</i:column>
+				<i:column t="Отчество" width="150">item.MiddleName</i:column>
+				<i:column t="Телефон" width="150"><![CDATA[ item.Phone & item.PhoneExt ]]></i:column>
+				<i:column t="Адрес электронной почты" width="150">item.EMail</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="CreatorIsEmployeeOf" d="Автор события из организации" vt="object" ot="Organization" cp="collection">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Краткое наименование" width="200">item.ShortName</i:column>
+				<i:column t="Наименование" width="300">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="CreatorIsFromDepartment" d="Автор события числится в подразделении" vt="object" ot="Department" cp="collection">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Код" width="100">item.Code</i:column>
+				<i:column t="Наименование" width="300">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="CreatorPositionIs" d="Автор события имеет должность" vt="object" ot="Position" cp="collection">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование должности" width="300">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="DelayPeriod" d="Период отложенной регистрации" vt="i4" cp="scalar" maybenull="1" />
+		<ds:prop n="RepeatPeriod" d="Период повторной регистрации" vt="i4" cp="scalar" maybenull="1" />
+		<!--
+			СПИСОК С ОПРЕДЕЛЕНИЕМ ТИПОВ СОБЫТИЙ
+		-->
+		<i:objects-list t="Типы события - Правила генерации и доставки событий" off-rownumbers="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<it-sec:access-requirements xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0">
+				<it-sec:demand-privilege n="ManageRefObjects" />
+			</it-sec:access-requirements>
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					t.[ObjectID],
+					t.[EventType],
+					dbo.NameOf_EventClass(t.EventType),
+					t.[Name],
+					CASE WHEN 0!=t.[Disabled] THEN 'D'
+						ELSE CASE WHEN 0=[RecipientHasRoleInProject]
+							+ [RecipientIsEventCreator]
+							+ [RecipientHasActiveRoleInIncident] 
+							+ [RecipientHasNonActiveRoleInIncident]
+							+ [RecipientIsBoss]
+							+ [RecipientIsCreatorManager]
+							+ [RecipientIsEventSubject]
+							+ [RecipientIsLotManager]
+							+ [RecipientIsLotExecutor]
+							+ [RecipientHasRoleInProjectOrChildren]
+							+ [RecipientIsNotEventCreator]
+							+ [RecipientIsTenderBoss]
+							+ [RecipientIsEventSubjectManager]
+							+ [RecipientIsIncidentWorkerManager]
+							+ [RecipientIsTenderLotManager]
+							+ [RecipientIsTenderLotExecutor]
+							+ [RecipientIsLotParticipantBoss]
+							+ [RecipientHasIncidentRole]
+							+ [RecipientHasProjectRole]
+							+ [RecipientIsEmployeeOf]
+							+ [RecipientIsFromDepartment]
+							+ [RecipientIsOneOfList]
+							+ [RecipientPositionIs]
+							+ [RecipientHasProjectRoleInClientActiveProjects]
+							+ [RecipientHasProjectRoleInInnerProject]
+							+ [RecipientIsDepartmentManager] 
+							+ [RecipientIsDirectionManager]
+							+ [RecipientIsDirectionDirector]
+					 THEN 'E' ELSE 'N' END 
+					END ICON_SELECTOR
+				FROM 
+					[dbo].[viewEventType] t
+				WHERE_CLAUSE
+				ORDER BY
+					t.EventType,
+					t.[Name]
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="EventClass" vt="i4">
+						<ds:param-selector op="not-is-null">(t.EventType=:EventClass OR 0=:EventClass)</ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterByEventClass" height="40" />
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="№ Класса" vt="i4" width="70" />
+			<i:column t="Класс события" width="350" />
+			<i:column t="Описание условий генерации события" width="600" />
+		</i:objects-list>
+		<!--
+			Список правил генерации событий (для выпадающего списка в редакторе)
+		-->
+		<i:objects-list n="EventCreationAndDelivery" t="Типы события - Правила генерации и доставки событий" off-rownumbers="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<it-sec:access-requirements xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0">
+				<it-sec:demand-privilege n="ManageRefObjects" />
+			</it-sec:access-requirements>
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					t.[ObjectID],
+					dbo.NameOf_EventClass(t.EventType) + ' - ' + t.[Name],
+					t.[EventType]
+				FROM 
+					[dbo].[viewEventType] t
+				WHERE_CLAUSE
+				ORDER BY
+					t.EventType,
+					t.[Name]
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="EventClass" vt="i4">
+						<ds:param-selector op="not-is-null">(t.EventType=:EventClass OR 0=:EventClass)</ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterByEventClass" height="40" />
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Описание условий генерации события" width="600" />
+			<i:column t="№ Класса" vt="i4" width="70" />
+		</i:objects-list>
+		<!-- 
+			Подписка на события
+		-->
+		<i:objects-list t="Подписка на события" n="USER" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-EventType-list-USER.vbs</i:client-script>
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT 
+						t.ObjectID,
+						t.[Name],
+						CASE IsNull(MAX(s.InstantDelivery),1)*2+IsNull(MAX(s.IncludeInDigest),0)
+							WHEN 0 THEN 'Не доставляются'
+							WHEN 1 THEN 'Дайджестом'
+							WHEN 2 THEN 'Доставляются немедленно'
+							WHEN 3 THEN 'Дайджестом и немедленно'
+						END,
+						SUM(CASE WHEN s.ObjectID IS NULL THEN 0 ELSE 1 END) RuleCount,
+						IsNull(SUM(s.XA),0) ExceptingActivities
+					FROM 
+						dbo.EventType t
+						LEFT JOIN (
+							SELECT 
+								s.*, 
+								(SELECT COUNT(*) FROM dbo.EventSubscription_ExceptingActivities x WHERE x.ObjectID=s.ObjectID ) XA 
+							FROM 
+								dbo.EventSubscription s
+							WHERE
+								IsNull(s.[User], '00000000-0000-0000-0000-000000000000') = :CurrentEmployeeID								
+							) s ON s.EventCreationRule=t.ObjectID
+					WHERE
+						0=t.Disabled AND SEARCH_CONDITIONS
+					GROUP BY 
+						t.ObjectID, t.[Name]
+					ORDER BY 2
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="CurrentEmployeeID" vt="uuid" required="1" />
+					<ds:param n="EventClass" vt="i4">
+						<ds:param-selector op="not-is-null">(t.EventType=:EventClass OR 0=:EventClass)</ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterByEventClass" height="40" />
+			<i:list-menu>
+				<i:menu>
+					<i:visibility-handler mode="replace">XListEventTypeSubscription_MenuVisibilityHandler</i:visibility-handler>
+					<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать" />
+				</i:menu>
+			</i:list-menu>
+			<i:column t="Событие" width="200" />
+			<i:column t="Доставка" width="200" />
+			<i:column t="Правила" vt="i4" width="100" />
+			<i:column t="Проекты" vt="i4" width="100" />
+		</i:objects-list>
+		<i:icons default="EventClass-[2].ico" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="0">EventClass-[0].ico</i:icon>
+			<i:icon selector="1">EventClass-[1].ico</i:icon>
+			<i:icon selector="2">EventClass-[2].ico</i:icon>
+			<i:icon selector="3">EventClass-[3].ico</i:icon>
+			<i:icon selector="N">EventType-Normal.ico</i:icon>
+			<i:icon selector="E">EventType-NoRestrictions.ico</i:icon>
+			<i:icon selector="D">EventType-Disabled.ico</i:icon>
+		</i:icons>
+	</ds:type>
+	<ds:type n="EventSubscription" d="Подписка на событие" tp="persistent">
+		<ds:prop n="ExceptingActivities" d="Исключая проекты" vt="object" ot="Folder" cp="collection">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" use-tree-selector="FolderSelector">
+				<i:column t="Наименование" width="400">Join(GetFirstRowValuesFromDataSource("GetFolderPath", Array("FolderID"), Array(item.ObjectID)), " (" ) &amp; ")"</i:column>
+				<i:prop-menu menu-style="vertical-buttons">
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Group" d="Группа" vt="object" ot="DeliveryGroup" cp="scalar" delete-cascade="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name &amp; "(" &amp; item.EMail &amp; ")"</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="User" d="Сотрудник" vt="object" ot="Employee" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.LastName</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="IncludeInDigest" d="Включать в сборник" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="EventCreationRule" d="Правила формирования события" vt="object" ot="EventType" cp="scalar" delete-cascade="1">
+			<i:object-dropdown use-list="EventCreationAndDelivery" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="InstantDelivery" d="Получать уведомления немедленно" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<i:objects-list t="Настройки правил рассылки событий" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-EventSubscription-list-USER.vbs</i:client-script>
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					n.ObjectID,
+					t.[Name],
+					CASE InstantDelivery*2+IncludeInDigest
+						WHEN 0 THEN 'Не доставляются'
+						WHEN 1 THEN 'Дайджестом'
+						WHEN 2 THEN 'Доставляются немедленно'
+						WHEN 3 THEN 'Дайджестом и немедленно'
+					END,
+					(SELECT COUNT(*) FROM dbo.EventSubscription_ExceptingActivities a WHERE a.ObjectID=n.ObjectID)
+				FROM 
+					dbo.EventSubscription n
+					join dbo.EventType t on t.ObjectID=n.EventCreationRule
+				WHERE
+					IsNull(n.[User], '00000000-0000-0000-0000-000000000000') = :CurrentEmployeeID
+					AND SEARCH_CONDITIONS
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="CurrentEmployeeID" vt="uuid" required="1" />
+					<ds:param n="EventTypeID" vt="uuid">
+						<ds:param-selector op="not-is-null">t.ObjectID = @EventTypeID</ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Событие" width="200" />
+			<i:column t="Доставка" width="200" />
+			<i:column t="Проекты" vt="i4" width="100" />
+		</i:objects-list>
+		<i:editor t="Подписка на событие" width="600" height="500" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-EventSubscription-editor.vbs</i:client-script>
+			<i:preload>ExceptingActivities</i:preload>
+			<i:preload>EventCreationRule</i:preload>
+			<i:page t="main">x-editor.xsl?propList=InstantDelivery;IncludeInDigest;ExceptingActivities&amp;DisableHR=1</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list n="GROUPS" t="Подписка на событие (группы рассылки)" use-for-editing="GROUPS" use-for-creation="GROUPS" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<it-sec:access-requirements xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0">
+				<it-sec:demand-privilege n="ManageRefObjects" />
+			</it-sec:access-requirements>
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS
+					n.ObjectID,
+					g.[Name],
+					g.[Email],
+					dbo.NameOf_EventClass(t.EventType) + ' - ' +	t.[Name],
+					CASE InstantDelivery*2+IncludeInDigest
+						WHEN 0 THEN 'Не доставляются'
+						WHEN 1 THEN 'Дайджестом'
+						WHEN 2 THEN 'Доставляются немедленно'
+						WHEN 3 THEN 'Дайджестом и немедленно'
+					END,
+					(SELECT COUNT(*) FROM dbo.EventSubscription_ExceptingActivities a WHERE a.ObjectID=n.ObjectID),
+					InstantDelivery*2+IncludeInDigest AS ICON_SELECTOR
+				FROM 
+					dbo.EventSubscription n
+					join dbo.EventType t on t.ObjectID=n.EventCreationRule
+					left join dbo.DeliveryGroup g on g.ObjectID=n.[Group]
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Группа" width="200" />
+			<i:column t="e-mail" width="200" />
+			<i:column t="Событие" width="200" />
+			<i:column t="Доставка" width="150" />
+			<i:column t="Проекты" vt="i4" width="100" />
+		</i:objects-list>
+		<i:editor t="Подписка группы рассылки на событие" n="GROUPS" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:preload>ExceptingActivities</i:preload>
+			<i:preload>Group</i:preload>
+			<i:page t="main">x-editor.xsl?propList=Group;EventCreationRule;InstantDelivery;IncludeInDigest;ExceptingActivities</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:icons default="EventClass-[2].ico" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="0">EventClass-[0].ico</i:icon>
+			<i:icon selector="1">EventClass-[1].ico</i:icon>
+			<i:icon selector="2">EventClass-[2].ico</i:icon>
+			<i:icon selector="3">EventClass-[3].ico</i:icon>
+		</i:icons>
+	</ds:type>
+	<ds:type n="FilterByEventClass" d="Фильтр по классу события" tp="temporary">
+		<ds:prop n="EventClass" d="Тип события" vt="i4" cp="scalar" maybenull="1" enum="EventClass">
+			<i:const-value-selection selector="combo" empty-value-text="( все )" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Создание инцидента">1</i:const-value>
+				<i:const-value n="Изменение состояние инцидента">2</i:const-value>
+				<i:const-value n="Удаление инцидента">3</i:const-value>
+				<i:const-value n="Создание описания нового задания по инциденту">4</i:const-value>
+				<i:const-value n="Изменение роли исполнителя в задании по инциденту">5</i:const-value>
+				<i:const-value n="Удаление задания по инциденту">6</i:const-value>
+				<i:const-value n="Изменение наименования, описания или описания решения инцидента">7</i:const-value>
+				<i:const-value n="Изменение приоритета или крайнего срока инцидента">8</i:const-value>
+				<i:const-value n="Перенос инцидента в другую активность - экспорт">9</i:const-value>
+				<i:const-value n="Перенос инцидента в другую активность - импорт">10</i:const-value>
+				<i:const-value n="Добавление участника проектной команды">11</i:const-value>
+				<i:const-value n="Удаление участника проектной команды">12</i:const-value>
+				<i:const-value n="Снятие роли для участника проектной команды">13</i:const-value>
+				<i:const-value n="Добавление роли для участника проектной команды">14</i:const-value>
+				<i:const-value n="Удаление организации">15</i:const-value>
+				<i:const-value n="Снятие Директора Клиента (организации)">16</i:const-value>
+				<i:const-value n="Задание Директора Клиента (организации)">17</i:const-value>
+				<i:const-value n="Изменение наименования проектной активности (папки)">18</i:const-value>
+				<i:const-value n="Изменение внешнего ID проектной активности (папки)">19</i:const-value>
+				<i:const-value n="Изменение блокировки списаний по проектной активности (папки)">20</i:const-value>
+				<i:const-value n="Удаление корневой проектной активности (папки)">21</i:const-value>
+				<i:const-value n="Удаление некорневой проектной активности (папки)">22</i:const-value>
+				<i:const-value n="Создание корневой проектной активности (папки)">23</i:const-value>
+				<i:const-value n="Создание некорневой проектной активности (папки)">24</i:const-value>
+				<i:const-value n="Изменение Клиента у проектной активности - экспорт">25</i:const-value>
+				<i:const-value n="Изменение Клиента у проектной активности - импорт">26</i:const-value>
+				<i:const-value n="Перенос проектной активности в другую папку - экспорт">27</i:const-value>
+				<i:const-value n="Перенос проектной активности в другую папку - импорт">28</i:const-value>
+				<i:const-value n="Изменение состояния у проектной активности">29</i:const-value>
+				<i:const-value n="Изменение типа активности у проектной активности">30</i:const-value>
+				<i:const-value n="Перенос организации - экспорт">31</i:const-value>
+				<i:const-value n="Перенос организации - импорт">32</i:const-value>
+				<i:const-value n="Изменение наименования или сокращённого наименования организации">33</i:const-value>
+				<i:const-value n="Создание организации">34</i:const-value>
+				<i:const-value n="Изменение запланированного времени">35</i:const-value>
+				<i:const-value n="Изменение оставшегося времени">36</i:const-value>
+				<i:const-value n="Установка (изменение) общесистемной блокировки списаний">37</i:const-value>
+				<i:const-value n="Создание временной организации">38</i:const-value>
+				<i:const-value n="Замена временного описания организации постоянным">39</i:const-value>
+				<i:const-value n="Создание нового тендера">40</i:const-value>
+				<i:const-value n="Создание участия в лоте">41</i:const-value>
+				<i:const-value n="Модификация участника в лоте">42</i:const-value>
+				<i:const-value n="Удаление участника в лоте">43</i:const-value>
+				<i:const-value n="Изменение директора тендера - снятие">44</i:const-value>
+				<i:const-value n="Изменение директора тендера - назначение">45</i:const-value>
+				<i:const-value n="Удаление тендера">46</i:const-value>
+				<i:const-value n="Изменение состояния лота">47</i:const-value>
+				<i:const-value n="Превышение запланированного времени по инциденту">48</i:const-value>
+				<i:const-value n="Приближение крайнего срока инцидента">49</i:const-value>
+				<i:const-value n="Истечение крайнего срока инцидента">50</i:const-value>
+				<i:const-value n="Создание нового лота">51</i:const-value>
+				<i:const-value n="Изменение лота">52</i:const-value>
+				<i:const-value n="Удаление лота">53</i:const-value>
+				<i:const-value n="Изменение описание тендера">54</i:const-value>
+				<i:const-value n="Измененме состояния тендера">55</i:const-value>
+				<i:const-value n="Добавления сотрудника в список лиц, принимающих участие в подготовке тендера">56</i:const-value>
+				<i:const-value n="Исключение сотрудника из списока лиц, принимающих участие в подготовке тендера">57</i:const-value>
+				<i:const-value n="Добавление направления у проектной активности (папки)">58</i:const-value>
+				<i:const-value n="Удаление направления у проектной активности (папки)">59</i:const-value>
+				<i:const-value n="Изменение доли затрат направления у проектной активности">60</i:const-value>
+				<i:const-value n="Изменение нормы рабочего времени сотрудника">61</i:const-value>
+				<i:const-value n="Переход проектной активности в состояние &quot;Ожидание закрытия&quot;">62</i:const-value>
+				<i:const-value n="Изменение плана занятости сотрудника">63</i:const-value>
+				<i:const-value n="Превышение плановой занятости сотрудника на проектах">64</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+	</ds:type>
+	<ds:type n="EventLog" d="Журнал событий" tp="persistent">
+		<ds:prop n="CreatedBy" d="Автор события" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.LastName</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="EventType" d="Событие" vt="i4" cp="scalar" enum="EventClass">
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Создание инцидента">1</i:const-value>
+				<i:const-value n="Изменение состояние инцидента">2</i:const-value>
+				<i:const-value n="Удаление инцидента">3</i:const-value>
+				<i:const-value n="Создание описания нового задания по инциденту">4</i:const-value>
+				<i:const-value n="Изменение роли исполнителя в задании по инциденту">5</i:const-value>
+				<i:const-value n="Удаление задания по инциденту">6</i:const-value>
+				<i:const-value n="Изменение наименования, описания или описания решения инцидента">7</i:const-value>
+				<i:const-value n="Изменение приоритета или крайнего срока инцидента">8</i:const-value>
+				<i:const-value n="Перенос инцидента в другую активность - экспорт">9</i:const-value>
+				<i:const-value n="Перенос инцидента в другую активность - импорт">10</i:const-value>
+				<i:const-value n="Добавление участника проектной команды">11</i:const-value>
+				<i:const-value n="Удаление участника проектной команды">12</i:const-value>
+				<i:const-value n="Снятие роли для участника проектной команды">13</i:const-value>
+				<i:const-value n="Добавление роли для участника проектной команды">14</i:const-value>
+				<i:const-value n="Удаление организации">15</i:const-value>
+				<i:const-value n="Снятие Директора Клиента (организации)">16</i:const-value>
+				<i:const-value n="Задание Директора Клиента (организации)">17</i:const-value>
+				<i:const-value n="Изменение наименования проектной активности (папки)">18</i:const-value>
+				<i:const-value n="Изменение внешнего ID проектной активности (папки)">19</i:const-value>
+				<i:const-value n="Изменение блокировки списаний по проектной активности (папки)">20</i:const-value>
+				<i:const-value n="Удаление корневой проектной активности (папки)">21</i:const-value>
+				<i:const-value n="Удаление некорневой проектной активности (папки)">22</i:const-value>
+				<i:const-value n="Создание корневой проектной активности (папки)">23</i:const-value>
+				<i:const-value n="Создание некорневой проектной активности (папки)">24</i:const-value>
+				<i:const-value n="Изменение Клиента у проектной активности - экспорт">25</i:const-value>
+				<i:const-value n="Изменение Клиента у проектной активности - импорт">26</i:const-value>
+				<i:const-value n="Перенос проектной активности в другую папку - экспорт">27</i:const-value>
+				<i:const-value n="Перенос проектной активности в другую папку - импорт">28</i:const-value>
+				<i:const-value n="Изменение состояния у проектной активности">29</i:const-value>
+				<i:const-value n="Изменение типа активности у проектной активности">30</i:const-value>
+				<i:const-value n="Перенос организации - экспорт">31</i:const-value>
+				<i:const-value n="Перенос организации - импорт">32</i:const-value>
+				<i:const-value n="Изменение наименования или сокращённого наименования организации">33</i:const-value>
+				<i:const-value n="Создание организации">34</i:const-value>
+				<i:const-value n="Нарушение плана занятости сотрудником">65</i:const-value>
+				<i:const-value n="Изменение запланированного времени">35</i:const-value>
+				<i:const-value n="Изменение оставшегося времени">36</i:const-value>
+				<i:const-value n="Установка (изменение) общесистемной блокировки списаний">37</i:const-value>
+				<i:const-value n="Создание временной организации">38</i:const-value>
+				<i:const-value n="Замена временного описания организации постоянным">39</i:const-value>
+				<i:const-value n="Создание нового тендера">40</i:const-value>
+				<i:const-value n="Создание участия в лоте">41</i:const-value>
+				<i:const-value n="Модификация участника в лоте">42</i:const-value>
+				<i:const-value n="Удаление участника в лоте">43</i:const-value>
+				<i:const-value n="Изменение директора тендера - снятие">44</i:const-value>
+				<i:const-value n="Изменение директора тендера - назначение">45</i:const-value>
+				<i:const-value n="Удаление тендера">46</i:const-value>
+				<i:const-value n="Изменение состояния лота">47</i:const-value>
+				<i:const-value n="Превышение запланированного времени по инциденту">48</i:const-value>
+				<i:const-value n="Изменение плана занятости сотрудника">63</i:const-value>
+				<i:const-value n="Приближение крайнего срока инцидента">49</i:const-value>
+				<i:const-value n="Истечение крайнего срока инцидента">50</i:const-value>
+				<i:const-value n="Создание нового лота">51</i:const-value>
+				<i:const-value n="Превышение плановой занятости сотрудника на проектах">64</i:const-value>
+				<i:const-value n="Изменение лота">52</i:const-value>
+				<i:const-value n="Удаление лота">53</i:const-value>
+				<i:const-value n="Изменение описание тендера">54</i:const-value>
+				<i:const-value n="Измененме состояния тендера">55</i:const-value>
+				<i:const-value n="Добавления сотрудника в список лиц, принимающих участие в подготовке тендера">56</i:const-value>
+				<i:const-value n="Исключение сотрудника из списока лиц, принимающих участие в подготовке тендера">57</i:const-value>
+				<i:const-value n="Добавление направления у проектной активности (папки)">58</i:const-value>
+				<i:const-value n="Удаление направления у проектной активности (папки)">59</i:const-value>
+				<i:const-value n="Изменение доли затрат направления у проектной активности">60</i:const-value>
+				<i:const-value n="Изменение нормы рабочего времени сотрудника">61</i:const-value>
+				<i:const-value n="Переход проектной активности в состояние &quot;Ожидание закрытия&quot;">62</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Occured" d="Дата и время регистрации" vt="dateTime" cp="scalar">
+			<ds:def default-type="both">#CURRENT</ds:def>
+		</ds:prop>
+		<ds:prop n="EventXML" d="Информация о событии (XML)" vt="text" cp="scalar" maybenull="1" />
+		<i:objects-list t="Журнал событий" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[EventType],
+					t.[Occured]
+				FROM [dbo].[EventLog] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Событие" vt="i4" width="100" />
+			<i:column t="Дата и время регистрации" vt="dateTime" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="EventNotificationDelivery" d="Доставка" tp="persistent">
+		<ds:prop n="EventToDeliver" d="Событие" vt="object" ot="EventLog" cp="scalar" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.EventType</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="MustSendImmediatly" d="Подлежит отправке" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="MustIncludeInDigest" d="Необходимо включить в сборник" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="EMail" d="EMail получателя" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<i:objects-list t="Доставка" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[MustSendImmediatly],
+					t.[MustIncludeInDigest],
+					t.[EMail]
+				FROM [dbo].[EventNotificationDelivery] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Подлежит отправке" vt="boolean" width="100" />
+			<i:column t="Необходимо включить в сборник" vt="boolean" width="100" />
+			<i:column t="EMail получателя" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="DeliveryGroup" d="Группа рассылки" tp="persistent">
+		<ds:prop n="Subscription" d="Подписка на события" vt="object" ot="EventSubscription" cp="link" built-on="Group">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Включать в сборник" width="100" vt="boolean">item.IncludeInDigest</i:column>
+				<i:column t="Получать уведомления немедленно" width="100" vt="boolean">item.InstantDelivery</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="EMail" d="Адрес электронной почты" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="text" cp="scalar" maybenull="1" />
+		<i:objects-list t="Группа рассылки" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" off-icons="1">
+			<it-sec:access-requirements xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0">
+				<it-sec:demand-privilege n="ManageRefObjects" />
+			</it-sec:access-requirements>
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[EMail]
+				FROM [dbo].[DeliveryGroup] t
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="100" />
+			<i:column t="Адрес электронной почты" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<i:objects-tree width="70" n="UserSubscription" t="Настройка подписки на события" menu-stylesheet="p-tree-menu-in-dialog.xsl" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:stylesheet>it-styles-SubscriptionTree.css</i:stylesheet>
+		<i:client-script>s-tree-UserSubscription.vbs</i:client-script>
+		<i:tree-struct>
+			<i:tree-level ot="EventClass" alias="t">
+				<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+					<ds:cmd-text>
+            <![CDATA[
+						SELECT 
+						  	CAST(CAST(t.EventType AS BINARY(16)) AS UNIQUEIDENTIFIER) ObjectID,
+							MAX(IsNull(s123.InstantDelivery,1))*2+MAX(IsNull(s123.IncludeInDigest,0)) ICON_SELECTOR,
+							0 IS_LEAF,
+							dbo.NameOf_EventClass(t.EventType) + ' (' +
+							CASE MAX(IsNull(s123.InstantDelivery,1))*2+MAX(IsNull(s123.IncludeInDigest,0))
+								WHEN 0 THEN 'Не доставляются'
+								WHEN 1 THEN 'Дайджестом'
+								WHEN 2 THEN 'Доставляются немедленно'
+								WHEN 3 THEN 'Дайджестом и немедленно'
+							END + ')' TITLE,
+							t.EventType EventClass
+						FROM 
+							dbo.EventType t
+							LEFT JOIN dbo.EventSubscription s123 ON 
+								s123.EventCreationRule=t.ObjectID
+								AND s123.[User] = :CurrentEmployeeID
+						WHERE
+							(SEARCH_CONDITIONS AND t.Disabled=0)
+							OR 
+							(CAST(CAST(t.EventType AS BINARY(16)) AS UNIQUEIDENTIFIER) = @@OBJECT_ID)							
+						GROUP BY 
+							t.EventType
+					]]>
+          </ds:cmd-text>
+					<ds:order-by>dbo.NameOf_EventClass(t.EventType)</ds:order-by>
+					<ds:params>
+						<ds:param n="CurrentEmployeeID" vt="uuid" required="1" />
+					</ds:params>
+				</ds:data-source>
+				<i:level-menu>
+					<i:menu>
+						<i:caption>@@Title</i:caption>
+						<i:execution-handler>MenuExecutionHandler_ForEventClass</i:execution-handler>
+						<i:menu-item action="DoUnsubscribeThis" t="Не получать информацию об этом событии" />
+						<i:menu-item action="DoDigestThis" t="Получать информацию об этом событии в виде дайджеста" />
+						<i:menu-item action="DoResetThis" t="Установить подписку на данное событие по умолчанию" />
+						<i:menu-item-separ />
+						<i:menu-item action="DoUnsubscribeAll" t="Не получать информацию о ВСЕХ событиях" />
+						<i:menu-item action="DoDigestAll" t="Получать информацию о ВСЕХ событиях в виде дайджеста" />
+						<i:menu-item action="DoResetAll" t="Установить подписку на ВСЕ события по умолчанию" />
+					</i:menu>
+				</i:level-menu>
+				<!-- 2-ой уровень: Правила генерации событий -->
+				<i:tree-level ot="EventType" alias="t">
+					<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+						<ds:cmd-text>
+              <![CDATA[
+							SELECT 
+							  	t.ObjectID ObjectID,
+								IsNull(MAX(s.InstantDelivery),1)*2+IsNull(MAX(s.IncludeInDigest),0) ICON_SELECTOR,
+								t.[Name] + ' (' +
+								CASE IsNull(MAX(s.InstantDelivery),1)*2+IsNull(MAX(s.IncludeInDigest),0)
+									WHEN 0 THEN 'Не доставляются'
+									WHEN 1 THEN 'Дайджестом'
+									WHEN 2 THEN 'Доставляются немедленно'
+									WHEN 3 THEN 'Дайджестом и немедленно'
+								END + ')' TITLE,
+								@@ISLEAF
+							FROM 
+								dbo.EventType t
+								LEFT JOIN dbo.EventSubscription s ON s.EventCreationRule=t.ObjectID
+									AND s.[User] = :CurrentEmployeeID
+							WHERE
+								(
+									t.EventType= CAST(CAST(CAST(@@ParentID(1) AS UNIQUEIDENTIFIER) AS BINARY(16)) AS INT)
+									AND SEARCH_CONDITIONS								
+								)
+								OR 
+								(t.ObjectID = @@OBJECT_ID)
+							GROUP BY 
+								t.ObjectID, t.[Name]
+
+						]]>
+            </ds:cmd-text>
+						<ds:order-by>t.Name</ds:order-by>
+						<ds:params>
+							<ds:param n="CurrentEmployeeID" vt="uuid" required="1" />
+						</ds:params>
+					</ds:data-source>
+					<i:level-menu>
+						<i:menu>
+							<i:caption>@@Title</i:caption>
+							<i:menu-item action="DoCreate" t="Создать правило подписки на событие">
+								<i:params>
+									<i:param n="ObjectType">EventSubscription</i:param>
+									<i:param n="URLPARAMS">.EventCreationRule=@@ObjectID</i:param>
+									<i:param n="RefreshFlags">TRM_CHILDS+TRM_NODE+TRM_PARENTNODES+TRM_PARENTNODE</i:param>
+								</i:params>
+							</i:menu-item>
+						</i:menu>
+					</i:level-menu>
+					<!-- 3-й уровень: Правила подписки -->
+					<i:tree-level ot="EventSubscription" alias="s">
+						<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+							<ds:cmd-text>
+                <![CDATA[
+								SELECT 
+								  	s.ObjectID ObjectID,
+									s.InstantDelivery*2+s.IncludeInDigest ICON_SELECTOR,
+									CASE s.InstantDelivery*2+s.IncludeInDigest
+										WHEN 0 THEN 'Не доставляются'
+										WHEN 1 THEN 'Дайджестом'
+										WHEN 2 THEN 'Доставляются немедленно'
+										WHEN 3 THEN 'Дайджестом и немедленно'
+									END TITLE,
+									1 IS_LEAF,
+									s.EventCreationRule EventCreationRule
+									
+								FROM 
+									dbo.EventSubscription s
+								WHERE
+									(
+										s.[User] = @CurrentEmployeeID
+										AND SEARCH_CONDITIONS	
+										AND s.EventCreationRule=@@ParentID(1) 
+									)
+									OR 
+									(s.ObjectID = @@OBJECT_ID)
+							]]>
+              </ds:cmd-text>
+							<ds:params>
+								<ds:param n="CurrentEmployeeID" vt="uuid" required="1" />
+							</ds:params>
+						</ds:data-source>
+						<i:level-menu>
+							<i:menu>
+								<i:caption>@@Title</i:caption>
+								<i:menu-item action="DoCreate" t="Создать правило подписки на событие">
+									<i:params>
+										<i:param n="URLPARAMS">.EventCreationRule=@@EventCreationRule</i:param>
+										<i:param n="RefreshFlags">TRM_NODE+TRM_PARENTNODES+TRM_PARENTNODE</i:param>
+									</i:params>
+								</i:menu-item>
+								<i:menu-item action="DoEdit" t="Редактировать" default="1">
+									<i:params>
+										<i:param n="RefreshFlags">TRM_NODE+TRM_PARENTNODES+TRM_PARENTNODE</i:param>
+									</i:params>
+								</i:menu-item>
+								<i:menu-item-separ horizontal-line="1" />
+								<i:menu-item action="DoDelete" t="Удалить" />
+							</i:menu>
+						</i:level-menu>
+					</i:tree-level>
+				</i:tree-level>
+			</i:tree-level>
+		</i:tree-struct>
+	</i:objects-tree>
+</ds:metadata>

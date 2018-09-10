@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<!--
+	СИСТЕМА ОПЕРАТИВНОГО УПРАВЛЕНИЯ ПРОЕКТАМИ - INCIDENT TRACKER
+	ЗАО КРОК инкорпорейтед, 2008
+	
+	ОСНОВНОЙ КОНФИГУРАЦИОННЫЙ ФАЙЛ ПРИЛОЖЕНИЯ
+-->
+<xfw:configuration
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xfw="http://www.croc.ru/Schemas/XmlFramework/Core/Config/1.0"
+	xmlns:xs="http://www.croc.ru/Schemas/XmlFramework/Core/Config/XStorageFactoryProvider/1.0"
+	xmlns:rs="http://www.croc.ru/Schemas/XmlFramework/ReportService/1.0"
+	xmlns:it="http://www.croc.ru/Schemas/IncidentTracker/Config/1.0"
+	xmlns:dbc="http://www.croc.ru/Schemas/IncidentTracker/DbCheckConfig/1.0"
+	xmlns:ts="http://www.croc.ru/Schemas/XmlFramework/TransferService/1.0"
+	xsi:schemaLocation="
+		http://www.croc.ru/Schemas/XmlFramework/Core/Config/1.0 x-net-config-schema.xsd 
+		http://www.croc.ru/Schemas/XmlFramework/Core/Config/XStorageFactoryProvider/1.0	x-net-config-storage-factory-provider-schema.xsd
+		http://www.croc.ru/Schemas/XmlFramework/ReportService/1.0 x-net-reportservice-schema.xsd
+		http://www.croc.ru/Schemas/IncidentTracker/Config/1.0 it-special-config-schema.xsd
+		http://www.croc.ru/Schemas/IncidentTracker/DbCheckConfig/1.0 it-special-dbcheck-config-schema.xsd
+	">
+  <!-- РЕЖИМЫ ФУНКЦИОНИРОВАНИЯ ЯДРА XFW -->
+  <!-- Указан отладочных режим функционирования Ядра -->
+  <xfw:core debug-mode="true" />
+  <!-- ОПРЕДЕЛЕНИЕ ИСПОЛЬЗУЕМОЙ РЕАЛИЗАЦИИ STORAGE И ПЕРЕЧНЯ СОЕДИНЕНИЙ -->
+  <xfw:storage>
+    <!-- ВНИМАНИЕ! В системе Incident Tracker используется прикладная реализация Storage -->
+    <xfw:connections
+		  storage-assembly="Croc.IncidentTracker.Core"
+			  storage-class-name="Croc.IncidentTracker.Storage.StorageConnection" >
+      <!-- Общее соединение, используется для чтения и записи -->
+      <xfw:connection n="RWConnection" protected="1">
+        <xs:connection-string>
+          <xs:text>Initial Catalog=IT;Data Source=(local)\MSSQLSERVER12;Integrated Security=SSPI;Persist Security Info=False</xs:text>
+        </xs:connection-string>
+        <xs:params>
+          <xs:param n="XS_MaxObjectsPerUpdate">100</xs:param>
+          <xs:param n="XS_CommandTimeout">1000</xs:param>
+          <!--	Параметр, используемый прикладной реализацией storage в IT - 
+							при каждом открытии соединения создает временную таблицу #UserLogin,
+							с идентификаторами текущего пользователя и сотрудника -->
+          <xs:param n="XS_TrackUserLogin">1</xs:param>
+        </xs:params>
+      </xfw:connection>
+      <!-- Так же может быть определено соединение, для которого разрешено только чтение данных -->
+      <xfw:connection n="ROConnection" protected="1">
+        <xs:connection-string>
+          <xs:text>Initial Catalog=IT;Data Source=(local)\MSSQLSERVER12;Integrated Security=SSPI;Persist Security Info=False</xs:text>
+        </xs:connection-string>
+        <xs:params>
+          <xs:param n="XS_MaxObjectsPerUpdate">100</xs:param>
+          <xs:param n="XS_CommandTimeout">1000</xs:param>
+        </xs:params>
+      </xfw:connection>
+    </xfw:connections>
+
+  </xfw:storage>
+  <!-- УКАЗАНИЕ КОНФИГУРАЦИОННОГО ФАЙЛА ОПРЕДЕЛЕНИЯ ПРИКЛАДНЫХ ЭЛЕМЕНТОВ ЯДРА -->
+  <xfw:server-objects>
+    <xfw:file-name>it-server-objects.xml</xfw:file-name>
+  </xfw:server-objects>
+  <!-- ОПРЕДЕЛЕНИЕ МЕТАДАННЫХ ПРИЛОЖЕНИЯ -->
+  <xfw:metadata>
+    <xfw:file-name>it-metadata.xml</xfw:file-name>
+  </xfw:metadata>
+  <!-- ОПРЕДЕЛЕНИЕ КОНФИГУРАЦИОННЫХ ДАННЫХ КОНЕЧНОГО ПРИЛОЖЕНИЯ -->
+  <!-- 
+    	Элемент configuration определен в схеме как "открытый" элемент, для
+    	которого разрешено включение произвольных элементов других схем (см. 
+    	x-net-config-schema.xml). Поэтому для задания "прикладных" данных
+    	конфигурации можно использовать любые элемнты (за исключением тех, что
+    	используются для конфигруации XFW). 
+    	Для корректного определения конфигурационного файла требуется определять 
+    	свою схему описания прикладных конфигурационных данных, и затем 
+    	использовать эту схему при описании "прикладных" элементов (см. 
+    	определение схемы example-app-configuration-schema.xml в начале файла)
+    -->
+  <!-- Для примера: этот элемент задает "наименование" инстанции приложения -->
+  <!--
+    <cfg:app-data >
+		<cfg:instance-name>ТЕСТОВАЯ ИНСТАЛЛЯЦИЯ КРОК</cfg:instance-name>
+    </cfg:app-data>
+    -->
+  <!-- ПОДКЛЮЧЕНИЕ REPORT SERVICE -->
+  <rs:report-service>
+    <!-- Указываем файл конфигурации RS -->
+    <rs:config-file>it-rs-config.xml</rs:config-file>
+  </rs:report-service>
+  <!-- ПОДКЛЮЧЕНИЕ TRANSFER SERVICE -->
+  <ts:transfer-service>
+    <!-- каталог лога -->
+    <ts:log-folder>..\..\TransferServiceLog</ts:log-folder>
+    <!-- каталог файлов обмена при экспорте -->
+    <ts:export-folder>..\..\TransferServiceData</ts:export-folder>
+    <!-- каталог файлов обмена при импорте -->
+    <ts:import-folder>..\..\TransferServiceData</ts:import-folder>
+    <!-- файл сценария -->
+    <ts:scenario-file n="it-main-transfer">it-transfer.xml</ts:scenario-file>
+  </ts:transfer-service>
+  <!-- ОПРЕДЕЛЕНИЕ КОНФИГУРАЦИОННЫХ ДАННЫХ, ВЛИЯЮЩИХ НА РАБОТУ INCIDENT TRACKER -->
+  <it:app-data>
+    <it:messaging>
+      <!-- При задании "тестового" адерса вся рассылка перенаправляется на указанный адрес -->
+      <it:test-email>SEfremov@elgascom.ru</it:test-email>
+      <it:smtp-host>smtp.elgascom.ru</it:smtp-host>
+      <it:smtp-port xsi:nil="true" />
+      <it:mail-from>itmailer-test@elgascom.ru</it:mail-from>
+      <it:smtp-timeout>300</it:smtp-timeout>
+      <it:stylesheet>../xsl/it-MessagingFormatter-HTML.xsl</it:stylesheet>
+      <it:digest-interval>24</it:digest-interval>
+      <it:max-messages-per-digest>1024</it:max-messages-per-digest>
+      <it:max-messages-per-once>128</it:max-messages-per-once>
+      <it:idle-time>1</it:idle-time>
+    </it:messaging>
+    <!-- Определение URL-адреса самого Incident Tracker -->
+    <it:system-location>
+      <!-- Определение базового URL-адреса, используемого для внутренней сети, Intranet -->
+      <it:internal-base-uri>http://IT7/</it:internal-base-uri>
+      <!-- Определение базового URL-адреса, используемого для внешней сети, Intranet -->
+      <it:external-base-uri>https://it.croc.ru/IT/</it:external-base-uri>
+    </it:system-location>
+
+    <!-- Определение адресов размещения внешних сервисов -->
+    <it:services-location>
+
+      <!-- Стартовый адрес корпоративного сайта (используется при формировании ссылки) -->
+      <it:service-location service-type="CorporateInternetSite" friendly-name="КРОК.ru">
+        <it:internal-base-uri>http://www.croc.ru/</it:internal-base-uri>
+        <it:external-base-uri>http://www.croc.ru/</it:external-base-uri>
+      </it:service-location>
+
+      <!-- Стартовый адрес корпоративного портала (используется при формировании ссылки) -->
+      <it:service-location service-type="CorporatePortal" friendly-name="Корпоративный портал КРОК">
+        <it:internal-base-uri>http://crocportal/</it:internal-base-uri>
+        <!-- Внешний адрес не задан - для "внешней" сети сервис будет недоступен -->
+      </it:service-location>
+
+      <!-- Сервисы Documentum WebTop -->
+      <it:service-location service-type="DocumentumWebTop" friendly-name="Documentum">
+        <it:internal-base-uri>http://eai:8080/webtop/</it:internal-base-uri>
+        <!-- Внешний адрес не задан - для "внешней" сети сервис будет недоступен -->
+      </it:service-location>
+
+      <!-- Сервисы корпоративного CRM (используется при формировании прямой ссылки) -->
+      <it:service-location service-type="CRM" friendly-name="Система CRM">
+        <it:internal-base-uri>http://apps.croc.ru:8000/</it:internal-base-uri>
+        <!-- Внешний адрес не задан - для "внешней" сети сервис будет недоступен -->
+      </it:service-location>
+
+      <!-- Приложение с отчетами НСИ -->
+      <it:service-location service-type="NSI-Rep" friendly-name="НСИ - Отчеты">
+        <it:internal-base-uri>http://nsi/nsi-rep/</it:internal-base-uri>
+        <!-- Внешний адрес не задан - для "внешней" сети сервис будет недоступен -->
+      </it:service-location>
+    </it:services-location>
+
+    <it:storage>
+      <!-- Подключение программных триггеров -->
+      <it:triggers>
+        <it:trigger action="Insert,Update" when="After" fire-type="ForEachObject" object-type="*" class-name="Croc.IncidentTracker.Storage.XLogTrigger"/>
+
+        <it:trigger
+					action="Update" when="Before" fire-type="ForEachObject"
+					object-type="Folder"
+					class-name="Croc.IncidentTracker.Core.Triggers.Folder_TrackChangeState"
+				/>
+        <it:trigger
+					action="Insert" when="Before" fire-type="ForEachObject"
+					object-type="Folder"
+					class-name="Croc.IncidentTracker.Core.Triggers.Folder_Create"
+				/>
+        <it:trigger
+					action="All" when="Before" fire-type="ForEachObject"
+					object-type="FolderDirection"
+					class-name="Croc.IncidentTracker.Core.Triggers.FolderDirctionAllActionsTrigger"
+				/>
+
+        <it:trigger
+					action="Update" when="Before" fire-type="ForEachObject"
+					object-type="Employee"
+					class-name="Croc.IncidentTracker.Core.Triggers.Trigger_EmployeeInsertUpdate"
+				/>
+        <it:trigger
+					action="All" when="Before" fire-type="ForEachObject"
+					object-type="EmployeeRate"
+					class-name="Croc.IncidentTracker.Core.Triggers.Trigger_EmployeeRate"
+				/>
+        <it:trigger
+					action="Update" when="Before" fire-type="ForEachObject"
+					object-type="SystemUser"
+					class-name="Croc.IncidentTracker.Core.Triggers.Trigger_SystemUserUpdate"
+				/>
+        <it:trigger
+					action="Update" when="Before" fire-type="ForEachObject"
+					object-type="Department"
+					class-name="Croc.IncidentTracker.Core.Triggers.Trigger_DepartmentUpdate"
+				/>
+        <it:trigger
+					action="Insert" when="Before" fire-type="ForEachObject"
+					object-type="Tender"
+					class-name="Croc.IncidentTracker.Core.Triggers.Tender_Create"
+				/>
+        <it:trigger class-name="Croc.IncidentTracker.Core.Triggers.Task_InsertUpdate_Planner" />
+        <it:trigger class-name="Croc.IncidentTracker.Core.Triggers.Trigger_EventSubscription_Insert" />
+
+        <!-- ВНИМАНИЕ: триггер для нагрузочного тестирования. Изменять идентификатор всем новым объектам перед созранением 
+					После проведения тестирования удалить, т.к. приводит к падению производительности.
+				-->
+        <!-- it:trigger class-name="Croc.IncidentTracker.Core.Triggers.Trigger_ProcessNewObjectsForTests"/ -->
+      </it:triggers>
+    </it:storage>
+
+    <!-- Описания работ, выполняемых по расписанию -->
+    <it:jobs>
+      <it:job command-name="DeleteUnusedObjects"		start-time="20:00:00" />
+      <it:job command-name="CheckDeadlinedIncidents"	start-time="10:00:00" />
+    </it:jobs>
+  </it:app-data>
+  <dbc:dbcheck>
+    <dbc:config-file>it-dbcheck-config.xml</dbc:config-file>
+  </dbc:dbcheck>
+</xfw:configuration>

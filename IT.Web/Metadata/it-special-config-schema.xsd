@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Koloto (Ru-Board) -->
+<!--
+********************************************************************************
+	Система оперативного управления проектами - Incident Tracker
+	ЗАО КРОК инкорпорейтед, 2005
+********************************************************************************
+	Определение формата конфигурационных данных системы, описываемых в секции
+	app-data общего файла конфигурации приложения, it-app-config.xml
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.croc.ru/Schemas/IncidentTracker/Config/1.0" targetNamespace="http://www.croc.ru/Schemas/IncidentTracker/Config/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="it-special-config-schema">
+	<!--
+
+	-->
+	<xsd:complexType name="tMessagingConfiguration" mixed="false">
+		<xsd:sequence>
+			<xsd:element name="test-email" type="xsd:string" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+					Если задан то письма будут приходить только на этот email
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="smtp-host" type="xsd:string"/>
+			<xsd:element name="smtp-port" type="xsd:integer" nillable="true"/>
+			<xsd:element name="mail-from" type="xsd:string"/>
+			<xsd:element name="smtp-timeout" type="xsd:int" nillable="true">
+				<xsd:annotation>
+					<xsd:documentation>
+					Таймаут (в секундах)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="stylesheet" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+					Имя XSL-файла, используемого для форматирования сообщения
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="digest-interval" type="xsd:int">
+				<xsd:annotation>
+					<xsd:documentation>
+					Интервал (в часах) между расылкой дайджестов
+					Рекомендуеися: 24
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="max-messages-per-digest" type="xsd:int">
+				<xsd:annotation>
+					<xsd:documentation>
+					Максимальное количество сообщений, включаемых в один дайджест
+					Рекомендуеися: 100
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="max-messages-per-once" type="xsd:int">
+				<xsd:annotation>
+					<xsd:documentation>
+					Максимальное количество сообщений, отправляемых за одну итерацию
+					Рекомендуеися: 100
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="idle-time" type="xsd:int">
+				<xsd:annotation>
+					<xsd:documentation>
+					Интервал (в минутах) между сериями итераций
+					Рекомендуеися: 5
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<!--
+
+	-->
+	<xsd:complexType name="tServiceLocationAddressing" mixed="false">
+		<xsd:sequence>
+			<xsd:element name="internal-base-uri">
+				<xsd:annotation>
+					<xsd:documentation>
+					Определение базового адреса размещения, используемого для 
+					адресации сервиса во внутренней, защищенной сети (Intranet)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="external-base-uri" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+					Определение базового адреса размещения, используемого в случае 
+					адресации сервиса во внешней, незащищенной сети (Internet);
+					предпологается, что этот адрес определяет защищенный канал (SSL)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--
+
+	-->
+	<xsd:complexType name="tServiceLocation" mixed="false">
+		<xsd:complexContent mixed="false">
+			<xsd:annotation>
+				<xsd:documentation>
+				Описание адресов размещения внешних сервисов и систем, в которые 
+				можно перейти из системы Incindet Tracker; здесь, т.о., задаются 
+				так же адреса сайтов, в которые можно перейти из IT по ссылке
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:extension base="tServiceLocationAddressing">
+				<xsd:attribute name="service-type" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+						Указание типа сервиса (и, т.о., обслуживающей системы в IT)
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="friendly-name" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+						Пользовательское наименование сервиса; если задано, используется 
+						при отображении ссылки; иначе отображается сам адрес
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- 
+		Описание триггера XStorageGateway -->
+	<xsd:complexType name="tTrigger">
+		<xsd:attribute name="action" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Список действий через запятую, на которые должен срабатывать триггер: Insert, Update, Delete, All</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="when">
+			<xsd:annotation>
+				<xsd:documentation>Время срабатывание триггера: до или после сохранения</xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="Before"/>
+					<xsd:enumeration value="After"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="fire-type">
+			<xsd:annotation>
+				<xsd:documentation>Время срабатывания: для каждого объекта заданного типа, для группы объектов заданного типа, для всего множества</xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="ForEachObject"/>
+					<xsd:enumeration value="ForEachObjectGroup"/>
+					<xsd:enumeration value="ForWholeDataSet"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="object-type" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Тип объектов, на которые срабатывает триггер</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="class-name" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Наименование класса триггера. Должен быть унаследован от XTrigger</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<!--
+
+	-->
+	<xsd:element name="app-data">
+		<xsd:complexType>
+			<xsd:all>
+				<!-- Конфигурация подсистемы рассылки сообщений, ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ -->
+				<xsd:element name="messaging" minOccurs="1" maxOccurs="1">
+					<xsd:complexType>
+						<xsd:complexContent>
+							<xsd:annotation>
+								<xsd:documentation>Конфигурация подсистемы рассылки сообщений</xsd:documentation>
+							</xsd:annotation>
+							<xsd:extension base="tMessagingConfiguration"/>
+						</xsd:complexContent>
+					</xsd:complexType>
+				</xsd:element>
+				<!-- Описание адресов размещения самой системы Incident Tracker, ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ -->
+				<xsd:element name="system-location">
+					<xsd:complexType>
+						<xsd:complexContent>
+							<xsd:annotation>
+								<xsd:documentation>Описание адресов размещения самой системы Incident Tracker</xsd:documentation>
+							</xsd:annotation>
+							<xsd:extension base="tServiceLocationAddressing"/>
+						</xsd:complexContent>
+					</xsd:complexType>
+				</xsd:element>
+				<!-- Перечень адресов размещения внешних сервисов и систем, необязательный элемент -->
+				<xsd:element name="services-location" minOccurs="0">
+					<xsd:complexType>
+						<xsd:annotation>
+							<xsd:documentation>Перечень адресов размещения внешних сервисов и систем</xsd:documentation>
+						</xsd:annotation>
+						<xsd:sequence>
+							<xsd:element name="service-location" type="tServiceLocation" minOccurs="0" maxOccurs="unbounded"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<!-- Настройки подсистемы Storage -->
+				<xsd:element name="storage">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="triggers" minOccurs="0">
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="trigger" type="tTrigger" maxOccurs="unbounded"/>
+									</xsd:sequence>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="jobs" minOccurs="0">
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="job" type="tJob" minOccurs="0" maxOccurs="unbounded"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:all>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="tJob">
+		<xsd:annotation>
+			<xsd:documentation>Описание задания</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="start-time" type="xsd:time">
+			<xsd:annotation>
+				<xsd:documentation>Время выполнения задания. Если не задано, то задание начинает выполняться сразу же при старте приложения.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="period" type="xsd:double" default="1440">
+			<xsd:annotation>
+				<xsd:documentation>Период выполнения задания в минутах. По умолчанию равен 24 часам.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="command-name" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>Наименование команды в конфигурационном файле элементов ядра (атрибут n элемента command).</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="description" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Текстовое описание задания.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+</xsd:schema>

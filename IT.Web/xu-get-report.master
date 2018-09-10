@@ -1,0 +1,26 @@
+<%@ Master Language="C#" %>
+<html xmlns="http://www.w3.org/1999/xhtml" runat="server">
+<head enableviewstate="false" runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251" />
+    <title>CROC Report Service - построение отчета</title>
+    <link rel="SHORTCUT ICON" href="Icons/xu-application-icon.ico" runat="server" />
+    <link href="x.css" rel="STYLESHEET" type="text/css" runat="server" />
+</head>
+<body style="overflow: hidden; padding: 0; margin: 0;" enableviewstate="false" runat="server">
+    <table id="xLayoutGrid" runat="server" class="x-page-layoutgrid" cellpadding="0" cellspacing="0">
+        <tr>
+            <td id="xPaneProcessMessage" class="x-pane-main-message" runat="server">
+                <img src="Images/x-execute-report-async.gif" alt="Идет построение отчета..." /><br />
+                Идет построение отчета. Подождите, пожалуйста...
+            </td>
+        </tr>
+        <tr>
+            <td id="xPaneAccessDenied" class="x-pane-main-warning" runat="server">
+                Нет доступа...
+            </td>
+        </tr>
+    </table>
+    <asp:ContentPlaceHolder ID="ContentPlaceHolderForReport" runat="server">
+    </asp:ContentPlaceHolder>
+</body>
+</html>

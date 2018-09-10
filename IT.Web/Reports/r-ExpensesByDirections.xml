@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="windows-1251" ?> 
+<r:report
+	r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll"
+	r:class="Croc.IncidentTracker.ReportService.Reports.r_ExpensesByDirections" 
+
+	r:t="Затраты в разрезе направлений"
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+	<r:common>
+		<r:style-class r:n="WARNING_MESSAGE_TABLE">border="0px solid"</r:style-class>
+		<r:style-class r:n="WARNING_MESSAGE">
+			font-family="Verdana" font-size="12pt" font-weight="bold" 
+			color="#EE3322" 
+			text-alight="left" vertical-align="middle" 
+			padding-left="5px" padding-right="5px" padding-top="10px" padding-bottom="5px"
+		</r:style-class>
+		
+		<r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+	</r:common>
+	
+	<!-- 
+		ПАРАМЕТРЫ ОТЧЕТА 
+		Значения параметров задаются экземпляром ds-типа FilterReportExpensesByDirections;
+		перечень и типы параметров, т.о., соответсвуют свойствам данного типа. Диалог задания 
+		параметров реализуется редактором типа - см. определение в it-metadata-reports.xml
+	-->
+	<r:params>
+		<r:param r:n="IntervalBegin" r:vt="date" />							<!-- Дата начала отчетного периода -->
+		<r:param r:n="IntervalEnd" r:vt="date" />							<!-- Дата конца отчетного периода -->
+		<r:param r:n="Organization" r:vt="uuid" />							<!-- Организация; используется при направлении анализа "Организации-Направления" - задает конкретную организацию (иначе - все) -->
+		<r:param r:n="Folder" r:vt="uuid" />								<!-- Активность; если задано, то определяет направление анализа как "Активности-Направления" -->
+		<r:param r:n="FolderType" r:vt="i4" r:default="0" />				<!-- Тип активности; если не задан (0), то в коде принимаются все типы - 1+4+8 -->
+		<r:param r:n="OnlyActiveFolders" r:vt="boolean" r:default="0" />	<!-- Признак включения в анализ данных только открытых активностей -->
+		<r:param r:n="ShowHistoryInfo" r:vt="boolean" r:default="0" />		<!-- Отображать данные о последнем изменении; применяется только если задана активность -->
+		<r:param r:n="ShowDetails" r:vt="boolean" r:default="0" />			<!-- Детализация; по умолчанию не задана -->
+		<r:param r:n="TimeMeasureUnits" r:vt="i4" r:default="0" />			<!-- Форма представления времени: 0 - Дни,часы,минуты, 1 - часы -->
+		<r:param r:n="SortBy" r:vt="i4" r:default="0" />					<!-- Сортировка: 0 - По направлению, 1 - по сумме затрат -->
+		<r:param r:n="ShowRestrictions" r:vt="boolean" r:default="0" />		<!-- Признак включения в отчет условия поиска -->
+	</r:params>
+	<r:data-sources>
+		<r:config-data-source r:n="dsMain" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ExpencesByDirectionsMainDS" r:section=""/>
+		<r:config-data-source r:n="dsDates" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ExpencesDatesDS" r:section=""/>
+		<r:config-data-source r:n="dsParams" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ExpencesByDirectionsHeaderParamsDS" r:section=""/>
+		<r:config-data-source r:n="dsHistory" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ExpencesByDirectionsHistoryDS" r:section=""/>
+	</r:data-sources>
+</r:report>

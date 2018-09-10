@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="windows-1251" ?> 
+<r:report
+	r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll"
+	r:class="Croc.IncidentTracker.ReportService.Reports.r_UsersExpences" 
+
+	r:t="Динамика затрат сотрудников"
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:it="http://www.croc.ru/Schemas/IncidentTracker/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/IncidentTracker/ReportService Croc.IncidentTracker.ReportService.xsd http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+	<r:common>
+		<r:style-class r:n="SUBTITLE">border="1pt solid" border-color="#50729C" background-color="#e9e9e9" text-align="center" font-size="10px" font-weight="bold" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="SUBTOTAL">border="1pt solid" border-color="#50729C" background-color="#e9e9e9" text-align="center" font-size="10px" font-weight="bold" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="TABLE_HEADER">border="1pt solid" border-color="#50729C" background-color="#E1EAF4" text-align="center" font-size="11px" font-weight="bold" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="TABLE_FOOTER">border="1pt solid" border-color="#50729C" background-color="#E1EAF4" text-align="center" font-size="11px" font-weight="bold" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="CAPTION_CLASS">border="1px solid" border-color="#50729C" text-align="center" font-size="10px" background-color="#e9e9e9" font-family="Tahoma"</r:style-class>
+		<r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+	</r:common>
+	
+	<!-- Параметры отчета -->
+	<r:params>
+		<r:param r:n="HideGroupColumns" r:vt="boolean" r:default="1" />
+		<r:param r:n="IntervalBegin" r:vt="date" />
+		<r:param r:n="IntervalEnd" r:vt="date" />
+		<r:param r:n="Folder" r:vt="uuid" />
+		<r:param r:n="Customer" r:vt="uuid" />
+		<r:param r:n="ActivityAnalysDepth" r:vt="i4" r:default="2" />
+		<r:param r:n="SectionByActivity" r:vt="i4" r:default="1" />
+		<r:param r:n="FolderType" r:vt="i4" r:default="2147483647" />
+		<r:param r:n="ExpensesType" r:vt="i4" r:default="2" />
+		<r:param r:n="IncludeSubProjects" r:vt="boolean" r:default="1" />
+		<r:param r:n="DateDetalization" r:vt="i4" r:default="2" />
+		<r:param r:n="TimeMeasureUnits" r:vt="i4" r:default="0" />
+		<r:param r:n="SortType" r:vt="i4" r:default="0" />
+		<r:param r:n="SortOrder" r:vt="i4" r:default="1" />
+		<r:param r:n="InsertRestrictions" r:vt="boolean" r:default="1" />
+		<r:param r:n="ShowColumnWorkTimeNorm" r:vt="boolean" r:default="1" />
+		<!--<r:param r:n="ShowColumnOverheads" r:vt="boolean" r:default="0" />
+		<r:param r:n="ShowColumnSalaryExpenses" r:vt="boolean" r:default="0" /> -->
+	</r:params>
+	<r:data-sources>
+		<!-- config-data-source выбран как наиболее простой тип, т.к. abstract не сериализует имена сборки и класса -->
+		<r:config-data-source r:n="dsUserExpencesPrimary" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.UserExpencesDS" r:section=""/>
+		<r:config-data-source r:n="dsUserExpencesSecondary" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.UserExpencesSecondaryDS" r:section=""/>
+	</r:data-sources>
+</r:report>

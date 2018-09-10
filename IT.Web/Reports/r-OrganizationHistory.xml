@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<r:report
+	r:t="История организации"
+  r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll"
+	r:class="Croc.IncidentTracker.ReportService.Reports.OrganizationHistory"
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd http://www.croc.ru/Schemas/XmlFramework/Data/1.0 ../Metadata/x-net-data-schema.xsd"
+>
+  <r:common>
+    <r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+  </r:common>
+  
+  <r:params>
+    <r:param r:n="Organization" r:vt="uuid" r:required="true" />
+  </r:params>
+
+  <r:data-sources>
+    <r:storage-data-source r:n="Header">
+      <r:cmd>
+        <![CDATA[
+        SELECT TOP 1
+          (SELECT TOP 1 os.Name FROM OrganizationSnap os WHERE os.Anchor = oa.ObjectID ORDER BY os.DateTime DESC) AS Name
+        FROM
+          OrganizationAnchor oa
+        WHERE
+          ObjectID = @Organization
+        ]]>
+      </r:cmd>
+      <r:cmd-params>
+        <r:cmd-param r:n="@Organization" r:report-param="Organization"/>
+      </r:cmd-params>
+    </r:storage-data-source>
+    <r:storage-data-source r:n="Main">
+      <r:cmd>
+        <![CDATA[
+        SELECT 
+          *
+        FROM
+          (
+            (
+            SELECT
+              osh.DateTime,
+              su.Login AS SystemUser,
+              osh.[Exists],
+              NULL AS [StructureHasDefined],
+	            NULL AS [ExternalID],
+	            NULL AS [Name],
+	            NULL AS [ShortName],
+              NULL AS [Director]
+            FROM
+              OrganizationAnchor oa
+              JOIN OrganizationStatusHistory osh ON
+                osh.Anchor = oa.ObjectID
+              JOIN SystemUser su ON
+                su.ObjectID = osh.SystemUser
+            WHERE
+              oa.ObjectID = @Organization
+            )
+            UNION ALL
+            (
+            SELECT
+              os.DateTime,
+              su.Login AS SystemUser,
+              NULL AS [Exists],
+              os.[StructureHasDefined],
+	            os.[ExternalID],
+	            os.[Name],
+	            os.[ShortName],
+	            d.[LastName] + ' ' + d.[FirstName] + ISNULL(' ' + d.[MiddleName], '') AS [Director]
+            FROM
+              OrganizationAnchor oa
+              JOIN OrganizationSnap os ON
+                os.Anchor = oa.ObjectID
+              JOIN SystemUser su ON
+                su.ObjectID = os.SystemUser
+              LEFT JOIN Employee d ON
+                d.ObjectID = os.Director
+            WHERE
+              oa.ObjectID = @Organization
+            ) 
+          ) t
+        ORDER BY
+          t.DateTime
+        ]]>
+      </r:cmd>
+      <r:cmd-params>
+        <r:cmd-param r:n="@Organization" r:report-param="Organization"/>
+      </r:cmd-params>
+    </r:storage-data-source>
+  </r:data-sources>
+
+</r:report>

@@ -1,0 +1,64 @@
+<HTML>
+	<HEAD>
+		<META NAME="vs_targetSchema" CONTENT="http://schemas.microsoft.com/intellisense/ie5">
+		<TITLE>Калькулятор дат</TITLE>
+		<LINK href="x.css" rel="STYLESHEET" type="text/css">
+		<SCRIPT Language="VBScript">
+	
+		' Обработчик загрузки окна
+		Sub window_OnLoad()
+			SrcDate.Value = Now()
+			SrcDate_OnDateTimeChange SrcDate, Null, SrcDate.Value
+			SrcDate.CheckBox = False
+		End Sub
+	
+		' Обработчик изменения содержимого операции
+		Sub Oper_OnPropertyChange
+			On Error Resume Next
+			If 0 = StrComp( window.event.propertyname,"value",vbTextCompare ) Then EvalData
+		End Sub
+		
+		' Обработчик изменения даты
+		Sub SrcDate_OnDateTimeChange(oSender, vOldValue, vNewValue)
+			EvalData
+		End Sub
+		
+		' Выполняет пересчет и выводит результат на форму
+		Sub EvalData
+			Dim dtRes
+			On Error Resume Next
+			dtRes = DateAdd("d", Oper.value, SrcDate.Value)
+			Res.innerText = FormatDateTime( dtRes, vbLongDate) _
+				& ", " & WeekdayName( Weekday(dtRes) )
+			If Err Then Res.innerText = "Неверное выражение"
+			Err.Clear 
+		End Sub
+		
+		</SCRIPT>
+	</HEAD>
+	<BODY SCROLL="no" CLASS="x-editor-body" STYLE="BORDER-RIGHT:#ccc 3px solid; BORDER-TOP:#ccc 3px solid; MARGIN:0px; BORDER-LEFT:#ccc 3px solid; BORDER-BOTTOM:#ccc 3px solid">
+		<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="0" STYLE="BORDER-RIGHT:medium none; TABLE-LAYOUT:fixed; BORDER-TOP:medium none; BORDER-LEFT:medium none; WIDTH:100%; BORDER-BOTTOM:medium none; HEIGHT:100%">
+			<TBODY>
+				<TR>
+					<TD STYLE="PADDING-RIGHT:1px; PADDING-LEFT:5px; PADDING-BOTTOM:5px; WIDTH:130px; PADDING-TOP:5px">
+						<OBJECT ID="SrcDate" STYLE="WIDTH: 120px; HEIGHT: 20px" CLASSID="CLSID:A5F5AB19-67A3-40EA-BC7C-70A64BBFF8A4" VIEWASTEXT>
+						</OBJECT>
+					</TD>
+					<TD STYLE="PADDING-RIGHT:5px; PADDING-LEFT:5px; PADDING-BOTTOM:5px; WIDTH:100%; PADDING-TOP:5px">
+						<INPUT ID="Oper" VALUE="0" CLASS="x-editor-control x-editor-numeric-field" STYLE="WIDTH:95%">
+					</TD>
+				</TR>
+				<TR>
+					<TD COLSPAN="2" STYLE="VERTICAL-ALIGN:middle; WIDTH:100%; HEIGHT:100%; TEXT-ALIGN:center">
+						<DIV ID="Res" STYLE="FONT:bold 12px Verdana; COLOR:navy" />
+					</TD>
+				</TR>
+				<TR>
+					<TD CLASS="x-pane-control x-editor-pane-control" COLSPAN="2" STYLE="VERTICAL-ALIGN:middle; WIDTH:100%; TEXT-ALIGN:center">
+						<BUTTON CLASS="x-button x-button-control x-editor-button x-editor-button-control" LANGUAGE="VBScript" ONCLICK="close" type="button">Закрыть</BUTTON>
+					</TD>
+				</TR>
+			</TBODY>
+		</TABLE>
+	</BODY>
+</HTML>

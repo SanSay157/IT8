@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+********************************************************************************
+	Система оперативного управления проектами - Incident Tracker
+	ЗАО КРОК инкорпорейтед, 2005
+********************************************************************************
+	Определение формата XML-данных, возвращаемых в результате вызвов методов
+	общего Web-сервиса системы (CommonService)
+-->
+<xsd:schema 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns="http://www.croc.ru/Schemas/IncidentTracker/WebServices/Config/1.0" 
+	targetNamespace="http://www.croc.ru/Schemas/IncidentTracker/WebServices/Config/1.0" 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	version="1.0" 
+	id="it-services-config-data-schema"
+>
+<!-- 
+********************************************************************************
+-->
+	<!-- 
+		Определение общего типа: некоторый элемнт, определяющий некоторый 
+		идентификатор как атрибут "id"
+	-->
+	<xsd:complexType name="tIdentificationElement">
+		<xsd:attribute name="id" type="xsd:string" use="required"/>
+	</xsd:complexType>
+<!-- 
+********************************************************************************
+-->
+	<!-- 
+		Определение карты отношений флагов, задаваемых для пользователей в системе НСИ,
+		к соответствующим системным ролям (ds-объектам типа SystemRole), задаваемы для
+		пользователя в Incident Tracker
+	-->
+	<xsd:complexType name="tRoleMap">
+		<xsd:annotation>
+			<xsd:documentation>
+				Определение карты отношений флагов, задаваемых для пользователей в системе НСИ,
+				к соответствующим системным ролям (ds-объектам типа SystemRole), задаваемы для
+				пользователя в Incident Tracker
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="role-link" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:attribute name="for-flag" type="xsd:int" use="required">
+						<xsd:annotation>
+							<xsd:documentation>Флаг, задаваемый для пользователя в НСИ</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="to-role" type="xsd:string" use="optional">
+						<xsd:annotation>
+							<xsd:documentation>Внутренний идентификатор объекта "Системная Роль" Incident Tracker</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="clear-roles" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:documentation>Указыает, что задание такого флага сбрасывает все роли для пользователя в Incident Tracker</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- Секция конфигурирования сервиса NSISyncService -->
+	<xsd:complexType name="tNSISyncServiceConfiguration">
+		<xsd:all>
+			<xsd:element name="flags-to-roles-map" type="tRoleMap" minOccurs="0"/>
+		</xsd:all>
+	</xsd:complexType>
+<!-- 
+********************************************************************************
+-->
+	<!-- Суб-секция конфигурирования методов обеспечения бизнес-процессов -->
+	<xsd:complexType name="tBusinessProcessMethodsConfiguration">
+		<xsd:all>
+			<!-- :: Параметры метода создания заявки на обучение -->
+			<xsd:element name="on-training-request-process" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Конфигурационные параметры метода создания заявки на обучение - специального
+						инцидента определенного типа ("Обучение"), записываемого в специальную папку
+						специального внутреннего проекта организации-владельца (ID которой, в свою 
+						очередь, задается в секции общих конфигурационных параметров, элементом
+						own-organization)
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:all>
+						<xsd:element name="target-folder" type="tIdentificationElement">
+							<xsd:annotation>
+								<xsd:documentation>
+									В данной суб-секции - ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ!
+									Идентификатор целевой папки, в которой будет создан инцидент,
+									соответствующий заявке на обучение
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="incident-type" type="tIdentificationElement">
+							<xsd:annotation>
+								<xsd:documentation>
+									В данной суб-секции - ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ!
+									Идентификатор типа инцидента, задаваемого для нового инцидента, 
+									соответствующего заявке на обучение
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="role-for-trained" type="tIdentificationElement">
+							<xsd:annotation>
+								<xsd:documentation>
+									В данной суб-секции - ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ!
+									Идентификатор роли, задаваемой в рамках задачи нового инцидента, 
+									соответствующего заявке на обучение, для сотрудника - инициатора
+									заявки
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="role-for-manager" type="tIdentificationElement">
+							<xsd:annotation>
+								<xsd:documentation>
+									В данной суб-секции - ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ!
+									Идентификатор роли, задаваемой в рамках задачи нового инцидента, 
+									соответствующего заявке на обучение, для сотрудника - менеджера
+									по обучению
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<!-- Элементы, задающие идентификаторы определений доп. свойств инцидента -->
+						<xsd:element name="prop-for-course-number" type="tIdentificationElement">
+							<xsd:annotation>
+								<xsd:documentation>
+									В данной суб-секции - ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ!
+									Идентификатор описания доп. реквизита инцидента, в котором будет 
+									сохранено значение параметра "Номер курса", заданное в заявке 
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="prop-for-course-beginning-date" type="tIdentificationElement">
+							<xsd:annotation>
+								<xsd:documentation>
+									В данной суб-секции - ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ!
+									Идентификатор описания доп. реквизита инцидента, в котором будет 
+									сохранено значение параметра "Дата начала обучения", заданное 
+									в заявке на обучение
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="prop-for-goal-status" type="tIdentificationElement">
+							<xsd:annotation>
+								<xsd:documentation>
+									В данной суб-секции - ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ!
+									Идентификатор описания доп. реквизита инцидента, в котором будет 
+									сохранено значение параметра "Для получения статуса...", заданное 
+									в заявке на обучение
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="prop-for-training-direction" type="tIdentificationElement">
+							<xsd:annotation>
+								<xsd:documentation>
+									В данной суб-секции - ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ!
+									Идентификатор описания доп. реквизита инцидента, в котором будет 
+									сохранено значение параметра "Направление обучения", заданное 
+									в заявке на обучение
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="prop-for-training-center" type="tIdentificationElement">
+							<xsd:annotation>
+								<xsd:documentation>
+									В данной суб-секции - ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ!
+									Идентификатор описания доп. реквизита инцидента, в котором будет 
+									сохранено значение параметра "Учебный центр", заданное в заявке 
+									на обучение
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="prop-for-education-sum" type="tIdentificationElement">
+							<xsd:annotation>
+								<xsd:documentation>
+									В данной суб-секции - ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ!
+									Идентификатор описания доп. реквизита инцидента, в котором будет
+									сохранено значение параметра "Сумма", заданное в заявке
+									на обучение
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:all>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:all>
+	</xsd:complexType>
+	<!-- 
+		Суб-секция конфигурирования методов обеспечения взаимодействия с CMDB -->
+	<xsd:complexType name="tCMDBProcessMethodsConfiguration">
+		<xsd:all>
+			<!-- :: Параметры метода создания заявки на изменение -->
+			<xsd:element name="on-change-request-process" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Конфигурационные параметры метода создания заявки на изменение - специального
+						инцидента определенного типа ("Change"), записываемого в задаваемую папку
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:all>
+						<xsd:element name="incident-type" type="tIdentificationElement">
+							<xsd:annotation>
+								<xsd:documentation>
+									В данной суб-секции - ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ!
+									Идентификатор типа инцидента, задаваемого для нового 
+									инцидента, соответствующего заявке на изменение
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="role-for-observer" type="tIdentificationElement">
+							<xsd:annotation>
+								<xsd:documentation>
+									В данной суб-секции - ОБЯЗАТЕЛЬНЫЙ ЭЛЕМЕНТ!
+									Идентификатор роли, задаваемой в рамках задачи нового 
+									инцидента, соответствующего заявке на изменение, для 
+									сотрудника - наблюдателя
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:all>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:all>
+	</xsd:complexType>
+	<!-- 
+		Суб-секция конфигурирования методов получения данных о списаниях -->
+	<xsd:complexType name="tExpensesMethodsConfiguration">
+		<xsd:all>
+			<!-- :: Параметры метода получения данных о списаниях сотрудников за период -->
+			<xsd:element name="get-employees-expenses-process" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Конфигурационные параметры метода получения данных о списаниях 
+						перечня сотрудников в Системе Incident Tracker за отчетный период;
+						Используется в т.ч. в реализации сервиса блокировки зарплатных крат
+						в Системе-3
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:all>
+						<xsd:element name="excepted-departments" minOccurs="0" maxOccurs="1">
+							<xsd:annotation>
+								<xsd:documentation>
+									Перечень подразделений, сотрудники которых не регистрируют
+									списания в системе Incident Tracker
+								</xsd:documentation>
+							</xsd:annotation>
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="department" minOccurs="1" maxOccurs="unbounded">
+										<xsd:annotation>
+											<xsd:documentation>
+												Указание подразделения
+											</xsd:documentation>
+										</xsd:annotation>
+										<xsd:complexType>
+											<!-- Идентификатор подразделения как он представлен в IT (т.е. Department.ObjectID) -->
+											<xsd:attribute name="id" type="xsd:string" use="required" />
+											<!-- Признак учета всех подчиненных подразделений. По умолчанию подчиненные НЕ учитываются -->
+											<xsd:attribute name="include-nested" type="xsd:boolean" use="optional" />
+										</xsd:complexType>
+									</xsd:element>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:all>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:all>
+	</xsd:complexType>
+	<!-- 
+
+		Секция конфигурирования сервиса CommonService -->
+	<xsd:complexType name="tCommonServiceConfiguration">
+		<xsd:all>
+			<xsd:element name="business-process-methods" type="tBusinessProcessMethodsConfiguration" minOccurs="0"/>
+			<xsd:element name="cmdb-process-methods" type="tCMDBProcessMethodsConfiguration" minOccurs="0"/>
+			<xsd:element name="expenses-process-methods" type="tExpensesMethodsConfiguration" minOccurs="0"/>
+		</xsd:all>
+	</xsd:complexType>
+<!-- 
+********************************************************************************
+-->
+	<!-- Секция задания "общих" параметров, используемых в реализации методов сервисов -->
+	<xsd:complexType name="tCommonConfigurationParams">
+		<xsd:all>
+			<!-- :: Задание идентификатора организации - владельца системы -->
+			<xsd:element name="own-organization" type="tIdentificationElement">
+				<xsd:annotation>
+					<xsd:documentation>
+						ОБЯЗАТЕЛЬНО! 
+						Указание идентификатора описания "собственной" организации в системе -
+						ds-объекта типа Organization; указанный объект ОБЯЗАТЕЛЬНО должен иметь
+						установленный признак "Организация - владелец системы" (Organization.Home)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<!-- :: Задание идентификатора "внешнего" типа проектной активности -->
+			<xsd:element name="external-projects-activity-type" type="tIdentificationElement">
+				<xsd:annotation>
+					<xsd:documentation>
+						ОБЯЗАТЕЛЬНО!
+						Задает идентификатор элемента внутренного справочника IT "Тип проектных затрат",
+						сответствующего "внешним проектам"; необходим для корректного создания проектов
+						из-вне системы Incident Tracker (бизнес-процесс "Старт проекта")
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<!-- :: Задание идентификатора типа проектной активности, соотв. проектам по ведению возможностей (presale) -->
+			<xsd:element name="presale-projects-activity-type" type="tIdentificationElement">
+				<xsd:annotation>
+					<xsd:documentation>
+						ОБЯЗАТЕЛЬНО!
+						Задает идентификатор элемента внутренного справочника IT "Тип проектных затрат",
+						сответствующего проектам по ведению возможностей (presale); необходим для 
+						корректного создания проектов-возможностей из-вне системы Incident Tracker 
+						(процессы обмена данными с системой CRM)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<!-- :: Задание идентификатора пилотных/инвестиционных типов проектной активности  -->
+			<xsd:element name="pilot-projects-activity-type" type="tIdentificationElement">
+				<xsd:annotation>
+					<xsd:documentation>
+						ОБЯЗАТЕЛЬНО!
+						Задает идентификатор элемента внутренного справочника IT "Тип проектных затрат",
+						сответствующего пилотным/инвестиционным проектам; необходим для
+						корректного создания проектов-возможностей из-вне системы Incident Tracker
+						(процессы обмена данными с системой CRM)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<!-- :: Задание идентификатора Тендерных типов проектной активности  -->
+			<xsd:element name="tender-projects-activity-type" type="tIdentificationElement">
+				<xsd:annotation>
+					<xsd:documentation>
+						ОБЯЗАТЕЛЬНО!
+						Задает идентификатор элемента внутренного справочника IT "Тип проектных затрат",
+						сответствующего пилотным/инвестиционным проектам; необходим для
+						корректного создания проектов-возможностей из-вне системы Incident Tracker
+						(процессы обмена данными с системой CRM)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:all>
+	</xsd:complexType>
+<!-- 
+********************************************************************************
+-->
+	<!-- Определение состава прикладной конфигурации всех сервисов -->
+	<xsd:element name="configuration">
+		<xsd:complexType>
+			<xsd:all>
+				<xsd:element name="common-params" type="tCommonConfigurationParams"/>
+				<xsd:element name="nsi-sync-service" type="tNSISyncServiceConfiguration" minOccurs="0"/>
+				<xsd:element name="common-service" type="tCommonServiceConfiguration" minOccurs="0"/>
+			</xsd:all>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

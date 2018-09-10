@@ -1,0 +1,330 @@
+<!-- 
+********************************************************************************
+ CROC.Behaviors :: XMenuHtmlPE
+ Компонента, реализующая HTML-меню на основе MenuClass для редактора/мастера
+ Реализация - Viewlink Element Behaviors (см. MSDN, Web Development, Behaviors)
+********************************************************************************
+-->
+<PUBLIC:COMPONENT 
+	tagName="XMenuEditor"
+	lightWeight="false"
+	literalContent="false"
+	supportsEditMode="false"
+	URN="http://www.croc.ru/XmlFramework/Behaviors/XMenuEditor"
+>
+	<META HTTP-EQUIV="MSThemeCompatible" CONTENT="yes">
+	<PUBLIC:DEFAULTS
+		canHaveHTML = "true"
+		viewLinkContent = "true"
+		viewInheritStyle = "false"
+		tabStop = "true" 
+		viewMasterTab = "false"
+		contentEditable  = "false"
+	/>
+	<!-- Custom-тег элемента HTC-компонента может (должен) содержать следующие атрибуты, используемые для инициализации:
+		menu-xml - строка с xml метаданными меню, узел i:menu. Если не задан или пуст, то меню отсутствует, компонент ни отображает ничего
+		menu-style - стиль меню, значения: horizonal-buttons (по умолчанию), vertical-buttons 
+	-->
+	
+	<!-- Обрабатываем событие: элемент бихейвера распарсен IE -->
+	<PUBLIC:ATTACH EVENT="oncontentready" FOR="element" ONEVENT="Initialize" />
+
+	<!-- МЕТОДЫ КОМПОНЕНТЫ -->
+	<!-- Инициализация. Вызывается редактором свойства -->
+	<PUBLIC:METHOD NAME="Init" />
+	
+	<!-- Устанавливает (не)доступность кнопок -->
+	<PUBLIC:METHOD NAME="SetEnableState" />
+
+	<!-- Обновляет представление меню -->	
+	<PUBLIC:METHOD NAME="UpdateMenuState" />
+	
+	<!-- Выполняет пункт меню, соответствующий комбинации клавиш -->
+	<PUBLIC:METHOD NAME="ExecuteHotkey" />
+	
+	<!-- Устанавливает доступность кнопок мастера -->
+	<PUBLIC:METHOD NAME="SetWizardButtonsState" />
+
+	<!-- Устанавливает доступность кнопок редактора -->
+	<PUBLIC:METHOD NAME="SetEditorButtonsState" />
+
+	<!-- Устанавливает название операции, меняя заголовок соответствующей ей кнопки при необходимости -->
+	<PUBLIC:METHOD NAME="SetMenuItemTitle" />
+</PUBLIC:COMPONENT>
+<!-- 
+********************************************************************************
+ HTML-реализация компоненты
+********************************************************************************
+-->
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1251">
+<LINK href="x.css" rel="STYLESHEET" type="text/css">
+<SCRIPT LANGUAGE="VBScript" TYPE="text/vbscript">
+'===============================================================================
+'@@!!FILE_x-menu-editor
+'<GROUP !!SYMREF_VBS>
+'<TITLE x-menu-editor - Компонента\, реализующая HTML-меню>
+':Назначение:	Компонента, реализующая HTML-меню на основе MenuClass для редактора/мастера.
+'===============================================================================
+'@@!!CLASSES_x-menu-editor
+'<GROUP !!FILE_x-menu-editor><TITLE Классы>
+'===============================================================================
+
+Option Explicit
+	Dim m_oXmlMenuMD			' 
+	Dim m_oMenu					' As MenuClass
+	Dim m_bHasMenu				' Признак наличия меню (если False, то экземпляр MenuClass не создавался)
+	Dim m_sObjectEditorVarName	' Наименование переменной, содержащей экземпляр ObjectEditor'a
+	Dim g_oHandlerHolder		' As HandlerHolderClass
+	Dim g_oEditorContext		' As EditorContext - контекст - информация о состоянии редактора, 
+								' которая не всегда может быть получена от экземпляра ObjectEditor в силу переходных процессов,
+								' но необходимая для обработчиков меню редактора
+	
+    '===============================================================================
+    '@@EditorContext
+    '<GROUP !!CLASSES_x-menu-editor><TITLE EditorContext>
+    ':Назначение:	
+    '   Контекст - информация о состоянии редактора, которая не всегда может быть 
+    '   получена от экземпляра ObjectEditor в силу переходных процессов, но 
+    '   необходимая для обработчиков меню редактора.<P/>
+    '   Экземпляр этого класса доступен через коллекцию параметров меню в качестве 
+    '   значения параметра <b>EditorContext</b>.
+    '
+    '@@!!MEMBERTYPE_Properties_EditorContext
+    '<GROUP EditorContext><TITLE Свойства>
+	Class EditorContext
+    	'@@EditorContext.IsFirstPage
+	    '<GROUP !!MEMBERTYPE_Properties_EditorContext><TITLE IsFirstPage>
+	    ':Назначение:	Признак нахождения на первой странице мастера.
+	    ':Сигнатура:	Public IsFirstPage [As Boolean]
+		Dim IsFirstPage
+		
+    	'@@EditorContext.IsLastPage
+	    '<GROUP !!MEMBERTYPE_Properties_EditorContext><TITLE IsLastPage>
+	    ':Назначение:	Признак нахождения на последней странице мастера.
+	    ':Сигнатура:	Public IsLastPage [As Boolean]
+		Dim IsLastPage
+		
+    	'@@EditorContext.CurrentPage
+	    '<GROUP !!MEMBERTYPE_Properties_EditorContext><TITLE CurrentPage>
+	    ':Назначение:	Текущая (становящаяся текущей) страница редактора 
+	    '               (может отличаться от одноименного свойства экземпляра ObjectEditor).
+	    ':Сигнатура:	Public CurrentPage [As EditorPage]
+		Dim CurrentPage
+	End Class
+	
+	'==========================================================================
+	' Класс, для передачи ссылки (Delegate) на обработчик видимости меню
+	' Класс создан из-за того, что XEventEngine (используемый внутри MenuClass) не сможет вызвать глобальную процедуру в HTC-компоненте
+	Class HandlerHolderClass
+		'	[in] oSender - экземпляр ObjectEditor
+		'	[in] oEventArgs As MenuExecuteEventArgsClass
+		Public Sub Internal_MenuVisibilityHandler(oSender, oEventArgs)
+			Dim oNode			' As IXMLDOMElement - текущий menu-item
+			Dim bHidden			' As Boolean - признак сокрытия пункта
+			Dim bProcessed		' As Boolean - признак обработки текущего пункта
+			Dim oContext		' As EditorContext
+			
+			If Not m_bHasMenu Then Exit Sub
+			Set oContext = oEventArgs.Menu.Macros.Item("EditorContext")
+			For Each oNode In oEventArgs.ActiveMenuItems
+				bHidden = Empty
+				bProcessed = False
+				Select Case oNode.getAttribute("action")
+					Case "DoPrevPage"
+						bHidden = oContext.IsFirstPage
+						bProcessed = True
+					Case "DoNextPage"
+						bHidden = oContext.IsLastPage
+						bProcessed = True
+					Case "DoSaveAndClose"
+						bHidden = Not oContext.IsLastPage And Not oSender.IsEditor
+						bProcessed = True
+					Case "DoSaveAndStartNew"
+						bHidden = Not (Not oSender.IsAggregated And oSender.IsObjectCreationMode And (oSender.IsEditor Or oContext.IsLastPage And oSender.IsWizard))
+						bProcessed = True
+				End Select
+				If Not IsEmpty(bHidden) Then
+					If bHidden Then 
+						oNode.setAttribute "hidden", "1"
+					Else
+						oNode.removeAttribute "hidden"
+					End If
+				End If
+				If bProcessed Then
+					oNode.removeAttribute "disabled"
+				End If
+			Next
+		End Sub
+		
+		'	[in] oSender - экземпляр ObjectEditor
+		'	[in] oEventArgs As MenuExecuteEventArgsClass
+		Public Sub Internal_MenuMacroResolver(oSender, oEventArgs)
+			Set oEventArgs.Menu.Macros.Item("EditorContext") = g_oEditorContext
+		End Sub
+	End Class
+
+
+	'================================================================
+	' Обработчик загрузки страницы, как-бы конструктор
+	Sub Initialize
+		Dim sMenuXmlString		' XML-текст метаданных меню
+		Dim sMenuStyle			' атрибут "menu-style", режим меню
+		
+		' получим метаданные меню и загрузим их в XmlDocument
+		sMenuXmlString = XMENUHTC_getHostElementAttributeValue( element, "menu-xml", "")
+		If Len(sMenuXmlString) = 0 Then
+			m_bHasMenu = False
+			Exit Sub
+		End If
+
+		Set m_oXmlMenuMD = XService.XmlFromString( XService.URLDecode(sMenuXmlString) )
+		If m_oXmlMenuMD Is Nothing Then Exit Sub
+		m_bHasMenu = True
+		sMenuStyle = XMENUHTC_getHostElementAttributeValue(element, "menu-style", "horizontal-buttons")
+		document.body.innerHtml = XMENUHTC_getMenuButtonsHtml( m_oXmlMenuMD, sMenuStyle, -1, -1, "x-button-wide" )		
+	End Sub
+
+
+	'==============================================================================
+	' Вторая фаза инициализции, вызывается контейнером редактора
+	'	[in] sObjectEditorVarName - Наименование переменной, содержащей экземпляр ObjectEditor'a (сохраняется в m_sObjectEditorVarName)
+	'	[in] oMenuExecutionHandler - делегат обработчика execution-handler'a
+	Sub Init(sObjectEditorVarName, oMenuExecutionHandler)
+		m_sObjectEditorVarName = sObjectEditorVarName
+		If Not m_bHasMenu Then Exit Sub
+
+		Set m_oMenu = New_MenuClass()
+		Set g_oEditorContext = New EditorContext
+		Set g_oHandlerHolder = New HandlerHolderClass
+		m_oMenu.AddMacrosResolver X_CreateDelegate(g_oHandlerHolder, "Internal_MenuMacroResolver")
+		m_oMenu.AddVisibilityHandler X_CreateDelegate(g_oHandlerHolder, "Internal_MenuVisibilityHandler")
+		m_oMenu.AddExecutionHandler oMenuExecutionHandler
+		m_oMenu.Init m_oXmlMenuMD
+	End Sub
+
+
+	'==============================================================================
+	' Возвращает экземпляр ObjectEditor'a
+	Private Function getObjectEditorInstance()
+		Set getObjectEditorInstance = Eval(m_sObjectEditorVarName)
+	End Function
+
+
+	'==============================================================================
+	' Установка (не)доступности кнопок
+	Sub SetEnableState(bEnabled)
+		If Not m_bHasMenu Then Exit Sub
+		XMENUHTC_SetButtonsEnableState bEnabled, document.body
+	End Sub
+
+
+	'==========================================================================
+	' Обновление состояния меню
+	'	[in] bVisualUpdate - если True - то обновляется визуальное представление меню
+	Sub UpdateMenuState(bVisualUpdate)
+		Internal_UpdateMenuState bVisualUpdate, False
+	End Sub
+	
+	
+	'==========================================================================
+	' Обновление состояния меню
+	'	[in] bVisualUpdate - если True, то обновляется визуальное представление меню
+	'	[in] bShowAsDisabled - если True, то все кнопки остаются заблокированы
+	Private Sub Internal_UpdateMenuState(bVisualUpdate, bShowAsDisabled)
+		Dim oItem			' As IXMLDOMElement - пункт меню
+		Dim sMenuItemName	' наименование пункта меню (атрибут n)
+		Dim oButton			' Объект кнопка
+		
+		If Not m_bHasMenu Then Exit Sub
+		XMENUHTC_UpdateMenuState m_oMenu, getObjectEditorInstance(), document.body, bVisualUpdate, bShowAsDisabled
+		
+		' Сделаем надпись на кнопке, соответствующей пункту меню с горячей клавишей Enter, жирным шрифтом
+		Set oItem = m_oMenu.XmlMenu.selectSingleNode("*[local-name()='menu-item' and @n and not(@disabled) and not(@hidden) and @hotkey='VK_ENTER']")
+		If Not oItem Is Nothing Then
+			sMenuItemName = oItem.getAttribute("n")
+			For Each oButton In document.body.all.tags("button")
+				If oButton.getAttribute("X_MENU_ITEM_NAME") = sMenuItemName Then
+					oButton.style.fontWeight = "bold"
+					oButton.setAttribute "X_DEFAULT", "1"
+				ElseIf Not IsNull( oButton.getAttribute("X_DEFAULT") ) Then
+					oButton.style.fontWeight = "normal"
+					oButton.removeAttribute "X_DEFAULT"
+				End If
+			Next
+		End If
+	End Sub
+
+
+	'==========================================================================
+	' Редактор (в режиме мастера) сообщает об изменении состава операций
+	'	[in] bIsFirstPage	- признак нахождения на первой странице мастера
+	'	[in] bIsLastPage	- признак нахождения на последней странице мастера
+	'	[in] oPage As EditorPage - текущая странци
+	Public Sub SetWizardButtonsState(bIsFirstPage, bIsLastPage, oPage)
+		If Not m_bHasMenu Then Exit Sub
+		g_oEditorContext.IsFirstPage = bIsFirstPage
+		g_oEditorContext.IsLastPage = bIsLastPage
+		Set g_oEditorContext.CurrentPage = oPage
+		Internal_UpdateMenuState True, True
+	End Sub
+
+
+	'==========================================================================
+	' Редактор сообщает об изменении состава операций
+	'	[in] oPage As EditorPage - текущая странци
+	Public Sub SetEditorButtonsState(oPage)
+		If Not m_bHasMenu Then Exit Sub
+		Set g_oEditorContext.CurrentPage = oPage
+		Internal_UpdateMenuState True, True
+	End Sub
+
+
+	'==========================================================================
+	' Стандартный обработчик события "Accel"
+	'	[in] oEventArgs As AccelerationEventArgsClass
+	Public Sub ExecuteHotkey(oEventArgs)
+		If Not m_bHasMenu Then Exit Sub
+		m_oMenu.ExecuteHotkey getObjectEditorInstance, oEventArgs
+	End Sub
+
+
+	'==============================================================================
+	' Устанавливает название операции, меняя заголовок соответствующей ей кнопки при необхордимости
+	'	[in] sItemName - наименование пункта меню (атрибут n)
+	'	[in] sItemTitle - заголовок пункта меню/кнопки (атрибут t)
+	'	[in] sItemHint - hint пункта меню, всплывающая подсказка. Если Empty, то не модифицируется, если Null, то удаляется текущая.
+	Public Sub SetMenuItemTitle(sItemName, sItemTitle, sItemHint)
+		XMENUHTC_SetMenuItemTitle m_oMenu, document.body, sItemName, sItemTitle, sItemHint
+	End Sub
+
+
+	'==============================================================================
+	' Обработчик клика на кнопке, соответствующей menu-item
+	' Для внутренного использования!
+	'	[in] sMenuItemName - наименование пункта меню
+	Sub Internal_OnMenuButtonClick(sMenuItemName)
+		m_oMenu.RunExecutionHandlers getObjectEditorInstance, sMenuItemName
+		element.blur
+	End Sub
+
+
+	'==============================================================================
+	' Обработчик клика на кнопке, соответствующей menu-section
+	' Для внутренного использования!
+	'	[in] oButton - экземпляр кнопки
+	'	[in] sMenuItemName - наименование пункта меню
+	Sub Internal_OnMenuSectionButtonClick(oButton, sMenuItemName)
+		Dim nPosX			'
+		Dim nPosY			'
+		
+		XMENUHTC_calculateElementScreenCoordinates element, oButton, nPosX, nPosY
+		m_oMenu.ShowPopupMenuSectionWithPos getObjectEditorInstance, sMenuItemName, nPosX, nPosY
+		element.blur
+	End Sub
+
+</SCRIPT>
+</HEAD>
+<!-- margin-bottom:-4px; - обход бага, иначе появляется скроллер class="x-editor-body" -->
+<body id="oBody" style="padding:0; margin:0 0 -4px 0; background:inherit;" scroll="no">
+</body>

@@ -1,0 +1,897 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by any (Ru-Board) -->
+<xsd:schema xmlns="http://www.croc.ru/Schemas/XmlFramework/Data/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:mstns="http://www.croc.ru/Schemas/XmlFramework/Data/1.0" targetNamespace="http://www.croc.ru/Schemas/XmlFramework/Data/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" id="x-net-data-schema">
+	<xsd:attributeGroup name="nameAndRef">
+		<xsd:attribute name="n" type="xsd:NMTOKEN"/>
+		<xsd:attribute name="ref" type="xsd:NMTOKEN"/>
+		<xsd:attribute name="with-params" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>Параметры для подстановки в формате: Param1=Value1;Param2=Value. В этом случае в тексте адресуемого элемента должны быть макросы %Param1% и %Param2%.
+				При наличии параметров (атрибута with-params) после подстановки адресуемого элемента, атрибут n будет модифицирован т.о., чтобы он был уникальным. 
+				Для задания детерминированного наименование можно использовать атрибут new-n.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="new-n" type="xsd:NMTOKEN" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>Наименование элемента, которое будет проставлено в атрибут n после разрешения ссылки для случая заданных параметров (with-params)</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+	<xsd:simpleType name="bit">
+		<xsd:annotation>
+			<xsd:documentation>Тип с одним значением "1". Используется для атрибутов</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:int">
+			<xsd:enumeration value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="value">
+		<xsd:annotation>
+			<xsd:documentation>Значение перечисления или флагов</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:string">
+					<xsd:attribute name="n" type="xsd:NMTOKEN" use="optional"/>
+					<xsd:attribute name="d" type="xsd:string" use="required"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="tEnumValue">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="n" type="xsd:NMTOKEN" use="optional"/>
+				<xsd:attribute name="d" type="xsd:string" use="required"/>
+				<xsd:attribute name="hint" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:simpleType name="tVarType">
+		<xsd:annotation>
+			<xsd:documentation>тип свойства</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ui1"/>
+			<xsd:enumeration value="boolean"/>
+			<xsd:enumeration value="i2"/>
+			<xsd:enumeration value="i4"/>
+			<xsd:enumeration value="r4"/>
+			<xsd:enumeration value="r8"/>
+			<xsd:enumeration value="fixed"/>
+			<xsd:enumeration value="date"/>
+			<xsd:enumeration value="time"/>
+			<xsd:enumeration value="dateTime"/>
+			<xsd:enumeration value="bin"/>
+			<xsd:enumeration value="smallBin"/>
+			<xsd:enumeration value="string"/>
+			<xsd:enumeration value="text"/>
+			<xsd:enumeration value="uuid"/>
+			<xsd:enumeration value="object"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="tDBMSType">
+		<xsd:annotation>
+			<xsd:documentation>Типы СУБД</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string"/>
+	</xsd:simpleType>
+	<xsd:complexType name="tParamSelector">
+		<xsd:annotation>
+			<xsd:documentation>
+			Селектор параметра. 
+			Позволяет выбрать sql-условие в зависимости от значения переданного параметра.
+		</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="dbms">
+					<xsd:annotation>
+						<xsd:documentation>Тип БД (может быть несколько)</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="value" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>эталонное значение параметра</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="op" use="optional" default="equal">
+					<xsd:annotation>
+						<xsd:documentation>Операция над параметром для определения применимости param-selector'a</xsd:documentation>
+					</xsd:annotation>
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:enumeration value="is-null">
+								<xsd:annotation>
+									<xsd:documentation>Значение параметра не передано</xsd:documentation>
+								</xsd:annotation>
+							</xsd:enumeration>
+							<xsd:enumeration value="not-is-null">
+								<xsd:annotation>
+									<xsd:documentation>Значение параметра передано</xsd:documentation>
+								</xsd:annotation>
+							</xsd:enumeration>
+							<xsd:enumeration value="equal">
+								<xsd:annotation>
+									<xsd:documentation>Значение параметра равно эталонному значению (указанно в атрибуте value элемента param-selector)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:enumeration>
+							<xsd:enumeration value="not-equal">
+								<xsd:annotation>
+									<xsd:documentation>Значение параметра не равно эталонному значению (указанно в атрибуте value элемента param-selector)</xsd:documentation>
+								</xsd:annotation>
+							</xsd:enumeration>
+							<xsd:enumeration value="less">
+								<xsd:annotation>
+									<xsd:documentation>Значение параметра меньше эталонного значению (указанно в атрибуте value элемента param-selector).Не реализовано.</xsd:documentation>
+								</xsd:annotation>
+							</xsd:enumeration>
+							<xsd:enumeration value="more">
+								<xsd:annotation>
+									<xsd:documentation>Значение параметра больше эталонного значению (указанно в атрибуте value элемента param-selector).Не реализовано.</xsd:documentation>
+								</xsd:annotation>
+							</xsd:enumeration>
+							<xsd:enumeration value="in">
+								<xsd:annotation>
+									<xsd:documentation>Только для массивных параметров. Данная операция не операция сравнения, а режим подстановки параметра. Поэтому param-selector с такой операцией может быть только один. 
+									В результате применения селектора с данной операцией будет сформировано условие: {содержимое param-selectora} IN (:Param1,:Param2, ...), 
+									где :ParamN ADO-параметры, соответствующие значениям массивного параметра. Атрибут value не используется.
+									</xsd:documentation>
+								</xsd:annotation>
+							</xsd:enumeration>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="tParamProcessor">
+		<xsd:attribute name="macro" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Наименование макроса, в качестве значения которого подставляется результат выполнения param-processor'a</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="explicit" type="bit">
+			<xsd:annotation>
+				<xsd:documentation>Признак "точного" определения процессора, обслуживающий код подставляет результат процессора как есть, не добавляя AND и скобок</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:simpleType name="tDataSourceParamOutResult">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="output" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="tDataSourceParamType">
+		<xsd:union memberTypes="tVarType tDataSourceParamOutResult"/>
+	</xsd:simpleType>
+
+	<xsd:complexType name="tDataSourceParams">
+		<xsd:annotation>
+			<xsd:documentation>Набор параметров источника данных</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="params-processor" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation/>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:attribute name="class-name" type="xsd:string" use="required">
+						<xsd:annotation>
+							<xsd:documentation>Наименование CLR-класса, производного от XDataSourceParamsProcessor</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="param" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Параметр запроса (команды)</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:choice>
+						<xsd:sequence>
+							<xsd:element name="param-selector" type="tParamSelector" minOccurs="0" maxOccurs="unbounded"/>
+						</xsd:sequence>
+						<xsd:element name="array-param-processor" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>
+									Парам-процессор для массивного параметра. Возможны следующие варианты использования:
+									задан атрибут macro, не задан текст, не задан атрибут values-macro - результат: список наименований ADO-параметров с переданными значениями массивного параметра
+									задан атрибут macro, задан текст, задан атрибут values-macro - результат: в тексте подзапроса макрос, заданный в атрибуте values-macro (он должен присутствовать обязательно),
+									заменяется на список наименований ADO-параметров с переданными значениями массивного параметра.
+									Полученный подзапрос может быть подставлен в формируемом запросе с помощью макроса, заданного в атрибуте macro
+									не задан атрибут macro, задан текст, задан атрибут values-macro - результат: аналогично предыдущему,
+									только полученный подзапрос подставляется в стандартные макросы SEARCH_CONDITIONS/WHERE_CLAUSE
+								</xsd:documentation>
+							</xsd:annotation>
+							<xsd:complexType>
+								<xsd:simpleContent>
+									<xsd:extension base="xsd:string">
+										<xsd:attribute name="macro" type="xsd:string">
+											<xsd:annotation>
+												<xsd:documentation>Наименование макроса, в качестве значения которого подставляется результат выполнения param-processor'a</xsd:documentation>
+											</xsd:annotation>
+										</xsd:attribute>
+										<xsd:attribute name="values-macro" type="xsd:string">
+											<xsd:annotation>
+												<xsd:documentation>"локальный" макрос, используемый в текст подзапроса для подстановки списка наименованией ADO-параметров со значениями массивного параметра</xsd:documentation>
+											</xsd:annotation>
+										</xsd:attribute>
+									</xsd:extension>
+								</xsd:simpleContent>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="switch" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation/>
+							</xsd:annotation>
+							<xsd:complexType>
+								<xsd:complexContent>
+									<xsd:extension base="tParamProcessor">
+										<xsd:sequence>
+											<xsd:element name="param-selector" type="tParamSelector" minOccurs="0" maxOccurs="unbounded"/>
+										</xsd:sequence>
+									</xsd:extension>
+								</xsd:complexContent>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="string-builder" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>
+									string-builder - разбивает входную строку на массив строк с помощью символа-разделителя (input-delimiter),
+									для каждого элемента выполняет множество param-selector'ов, результат объединяет в строку с помощью output-delimiter
+								</xsd:documentation>
+							</xsd:annotation>
+							<xsd:complexType>
+								<xsd:complexContent>
+									<xsd:extension base="tParamProcessor">
+										<xsd:sequence>
+											<xsd:element name="param-selector" type="tParamSelector" minOccurs="0" maxOccurs="unbounded"/>
+										</xsd:sequence>
+										<xsd:attribute name="input-delimiter" type="xsd:string">
+											<xsd:annotation>
+												<xsd:documentation>Символ разделитель значения строкого параметра</xsd:documentation>
+											</xsd:annotation>
+										</xsd:attribute>
+										<xsd:attribute name="output-delimiter" type="xsd:string">
+											<xsd:annotation>
+												<xsd:documentation>Символ разделитель результирующей строки</xsd:documentation>
+											</xsd:annotation>
+										</xsd:attribute>
+									</xsd:extension>
+								</xsd:complexContent>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="param-processor" minOccurs="0" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>Кастомный param-processor, реализуемый в видел CLR класса</xsd:documentation>
+							</xsd:annotation>
+							<xsd:complexType>
+								<xsd:complexContent>
+									<xsd:extension base="tParamProcessor">
+										<xsd:sequence>
+											<xsd:element name="param-selector" type="tParamSelector" minOccurs="0" maxOccurs="unbounded"/>
+										</xsd:sequence>
+										<xsd:attribute name="class-name" type="xsd:string" use="required">
+											<xsd:annotation>
+												<xsd:documentation>Полное наименование CLR-класса (см. "fully qualified type names" в MSDN), производного от XParamProcessorInfo</xsd:documentation>
+											</xsd:annotation>
+										</xsd:attribute>
+									</xsd:extension>
+								</xsd:complexContent>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:choice>
+					<xsd:attribute name="n" type="xsd:string">
+						<xsd:annotation>
+							<xsd:documentation>Имя параметра</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="required" type="bit">
+						<xsd:annotation>
+							<xsd:documentation>Обязательсноть параметра. Если обязательный параметр не передан с клиента, возбуждается ошибка.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="array" type="xsd:string">
+						<xsd:annotation>
+							<xsd:documentation>
+								Признак того, что параметр - массив. В этом случае с клиента может приходить несколько элементов param с одним именем
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="vt" type="tDataSourceParamType" use="optional">
+						<xsd:annotation>
+							<xsd:documentation>Тип параметра.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="size" type="xsd:int" use="optional">
+						<xsd:annotation>
+							<xsd:documentation>Размер параметра. Присваивается как свойство Size ADO-параметра</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="use-wildcard" use="optional">
+						<xsd:annotation>
+							<xsd:documentation>
+								Признак обработк шаблона.
+								Если определен этот атрибут, то символ "*" заменяется на "%", а символ "?" заменяется на "_".
+								Дополнительно к этому, в зависимости от значения атрибута, значение параметра может обрамляться символом "%":
+								implicit-on-start		% всегда дописывается в начало
+								implicit-on-end			% всегда дописывается в конец
+								implicit-surround		% всегда дописывается в конец и в начало
+								explicit				% принудительно не дописывается
+								conditional-on-start	% дописывается в начало, если значение параметра не содержит "*", "?"
+								conditional-on-end		% дописывается в конец, если значение параметра не содержит "*", "?"
+								conditional-surround	% дописывается в конец и в начало, если значение параметра не содержит "*", "?"
+							</xsd:documentation>
+						</xsd:annotation>
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:enumeration value="implicit-on-start"/>
+								<xsd:enumeration value="implicit-on-end"/>
+								<xsd:enumeration value="implicit-surround"/>
+								<xsd:enumeration value="explicit"/>
+								<xsd:enumeration value="conditional-on-start"/>
+								<xsd:enumeration value="conditional-on-end"/>
+								<xsd:enumeration value="conditional-surround"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="nameAndRef"/>
+		<xsd:attribute name="dbms" type="tDBMSType" use="optional"/>
+	</xsd:complexType>
+	<xsd:element name="params" type="tDataSourceParams" />
+	<xsd:complexType name="tDataSource">
+		<xsd:annotation>
+			<xsd:documentation>Описание источника данных</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="cmd-text" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Текст запроса/Имя ХП</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:simpleContent>
+						<xsd:extension base="xsd:string">
+							<xsd:attribute name="dbms" type="tDBMSType" use="optional"/>
+							<xsd:attribute name="type" use="optional" default="sql">
+								<xsd:annotation>
+									<xsd:documentation>Тип (запрос/ХП)</xsd:documentation>
+								</xsd:annotation>
+								<xsd:simpleType>
+									<xsd:restriction base="xsd:string">
+										<xsd:enumeration value="sql"/>
+										<xsd:enumeration value="sp"/>
+									</xsd:restriction>
+								</xsd:simpleType>
+							</xsd:attribute>
+						</xsd:extension>
+					</xsd:simpleContent>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="order-by" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>
+						Сортировка результата.
+						Может быть задано только содержимое узла, тогда оно используется как значение оператора ORDER BY источника данных,
+						либо сортировка может выбираться в зависимости от значения параметра (называемого параметр-селектор),
+						наименование которого задается в атрибуте param-selector.
+						Сам параметр с param-selector'ами должен быть объявлен как обычный параметр в params
+						В последнем случае должны быть заданы param-selector (более одного).
+						Если хотя бы один param-selector содержит операции equal, not-equal то должен быть задан тип параметра-селектора.
+
+						Описаний order-by может быть несколько. С помощью атрибута macro можно задать произвольные места куда подставить условие сортировки.
+						Все значения order-by с одним значением macro (в том числе отсутствующим)
+						объединяются друг с другом. Результат предваряется "ORDER BY".
+						Однако, это (добавление "ORDER BY") можно отключить с помощью атрибута explicit.
+
+						В случае отсутствия атрибута macro для одного или нескольких ds:order-by
+						их значения подствляются в качестве стандартного макроса ORDERBY_CLAUSE.
+						И уже в случае и его отсутствия подставляется к конец текста команды.
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType mixed="true">
+					<xsd:attribute name="param-selector" type="xsd:string" use="optional">
+						<xsd:annotation>
+							<xsd:documentation>Наименование параметра-селектора</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="macro" type="xsd:string">
+						<xsd:annotation>
+							<xsd:documentation>Наименование макроса, в качестве значения которого подставляется ORDER BY</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="explicit" type="bit">
+						<xsd:annotation>
+							<xsd:documentation>Признак "точного" определения процессора, обслуживающий код подставляет результат процессора как есть, не добавляя лишних символов</xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element ref="params" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="columns" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>описание типов колонок</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="column" maxOccurs="unbounded">
+							<xsd:annotation>
+								<xsd:documentation>описание типа колонки источника данных</xsd:documentation>
+							</xsd:annotation>
+							<xsd:complexType>
+								<xsd:attribute name="n" type="xsd:string">
+									<xsd:annotation>
+										<xsd:documentation>Наименование (алиас) колонки</xsd:documentation>
+									</xsd:annotation>
+								</xsd:attribute>
+								<xsd:attribute name="vt" type="tVarType">
+									<xsd:annotation>
+										<xsd:documentation>Oжидаемый тип колонки</xsd:documentation>
+									</xsd:annotation>
+								</xsd:attribute>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="dbms" type="tDBMSType" use="optional"/>
+		<xsd:attributeGroup ref="nameAndRef"/>
+	</xsd:complexType>
+	<xsd:element name="data-source" type="tDataSource"/>
+	<xsd:element name="metadata">
+		<xsd:annotation>
+			<xsd:documentation>Корневой элемент метаданных</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="include" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>
+							Ссылка на дополнительный файл метаданных
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>Разнообразные навески</xsd:documentation>
+					</xsd:annotation>
+				</xsd:any>
+				<xsd:element name="flags" minOccurs="0" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>Описание флагов</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="value" type="tEnumValue" maxOccurs="unbounded"/>
+						</xsd:sequence>
+						<xsd:attribute name="vt" type="tVarType" use="required">
+							<xsd:annotation>
+								<xsd:documentation>Тип элемента флагов</xsd:documentation>
+							</xsd:annotation>
+						</xsd:attribute>
+						<xsd:attribute name="n" type="xsd:NMTOKEN" use="required">
+							<xsd:annotation>
+								<xsd:documentation>"Физическое" наименование флагов</xsd:documentation>
+							</xsd:annotation>
+						</xsd:attribute>
+						<xsd:attribute name="d" type="xsd:string" use="required">
+							<xsd:annotation>
+								<xsd:documentation>"Логическое" наименование флагов</xsd:documentation>
+							</xsd:annotation>
+						</xsd:attribute>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="enum" minOccurs="0" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>Описание перечисления</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="value" type="tEnumValue" maxOccurs="unbounded"/>
+						</xsd:sequence>
+						<xsd:attribute name="vt" type="tVarType" use="required">
+							<xsd:annotation>
+								<xsd:documentation>Тип элемента enum-а</xsd:documentation>
+							</xsd:annotation>
+						</xsd:attribute>
+						<xsd:attribute name="n" type="xsd:NMTOKEN" use="required">
+							<xsd:annotation>
+								<xsd:documentation>"Физическое" наименование флагов</xsd:documentation>
+							</xsd:annotation>
+						</xsd:attribute>
+						<xsd:attribute name="d" type="xsd:string" use="required">
+							<xsd:annotation>
+								<xsd:documentation>"Логическое" наименование флагов</xsd:documentation>
+							</xsd:annotation>
+						</xsd:attribute>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="type" minOccurs="0" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation>Описание типа объекта слоя хранения</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="prop" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation>Описание свойства объекта слоя хранения</xsd:documentation>
+								</xsd:annotation>
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="min" type="xsd:string" minOccurs="0">
+											<xsd:annotation>
+												<xsd:documentation>Минимальное значение</xsd:documentation>
+											</xsd:annotation>
+										</xsd:element>
+										<xsd:element name="max" type="xsd:string" minOccurs="0">
+											<xsd:annotation>
+												<xsd:documentation>Максимальное значение</xsd:documentation>
+											</xsd:annotation>
+										</xsd:element>
+										<xsd:element name="def" minOccurs="0">
+											<xsd:annotation>
+												<xsd:documentation>Значение по умолчанию</xsd:documentation>
+											</xsd:annotation>
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:string">
+														<xsd:attribute name="default-type" use="optional">
+															<xsd:annotation>
+																<xsd:documentation>Место подстановки значения по умолчанию</xsd:documentation>
+															</xsd:annotation>
+															<xsd:simpleType>
+																<xsd:restriction base="xsd:string">
+																	<xsd:enumeration value="both"/>
+																	<xsd:enumeration value="xml"/>
+																	<xsd:enumeration value="db"/>
+																</xsd:restriction>
+															</xsd:simpleType>
+														</xsd:attribute>
+													</xsd:extension>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:element name="pattern" minOccurs="0">
+											<xsd:annotation>
+												<xsd:documentation>Шаблон (регулярное выражение) для валидации строковых свойств</xsd:documentation>
+											</xsd:annotation>
+											<xsd:complexType>
+												<xsd:simpleContent>
+													<xsd:extension base="xsd:string">
+														<xsd:attribute name="msg" type="xsd:string" use="required">
+															<xsd:annotation>
+																<xsd:documentation>Cообщение, выдаваемое при нарушении ограничения, задаваемого паттерном</xsd:documentation>
+															</xsd:annotation>
+														</xsd:attribute>
+													</xsd:extension>
+												</xsd:simpleContent>
+											</xsd:complexType>
+										</xsd:element>
+										<xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded">
+											<xsd:annotation>
+												<xsd:documentation>Разнообразные навески</xsd:documentation>
+											</xsd:annotation>
+										</xsd:any>
+									</xsd:sequence>
+									<xsd:attribute name="n" type="xsd:NMTOKEN" use="required">
+										<xsd:annotation>
+											<xsd:documentation>Физическое наименование свойства</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="d" type="xsd:string" use="required">
+										<xsd:annotation>
+											<xsd:documentation>Логическое наименование свойства</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="vt" type="tVarType" use="required">
+										<xsd:annotation>
+											<xsd:documentation>Тип свойства</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="ot" type="xsd:NMTOKEN" use="optional">
+										<xsd:annotation>
+											<xsd:documentation>Наименование типа объета(ов) значения для объектоного свойства</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="cp" use="required">
+										<xsd:annotation>
+											<xsd:documentation>Ёмкость свойства</xsd:documentation>
+										</xsd:annotation>
+										<xsd:simpleType>
+											<xsd:restriction base="xsd:string">
+												<xsd:enumeration value="scalar"/>
+												<xsd:enumeration value="link"/>
+												<xsd:enumeration value="link-scalar"/>
+												<xsd:enumeration value="collection"/>
+												<xsd:enumeration value="collection-membership"/>
+												<xsd:enumeration value="array"/>
+												<xsd:enumeration value="array-membership"/>
+											</xsd:restriction>
+										</xsd:simpleType>
+									</xsd:attribute>
+									<xsd:attribute name="maybenull" type="bit" use="optional">
+										<xsd:annotation>
+											<xsd:documentation>Флаг "допустим NULL в качестве значения"</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="hint" type="xsd:string" use="optional">
+										<xsd:annotation>
+											<xsd:documentation>Подсказка</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="built-on" type="xsd:NMTOKEN" use="optional">
+										<xsd:annotation>
+											<xsd:documentation>
+												имя "реального" свойства, на котором построено "виртуальное".
+												для link'a - наименование скалярного свойства 
+												для array-membership или collection-membership - 
+													соответственно наименование свойства массива или коллекции
+											</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="order-by" type="xsd:NMTOKEN" use="optional">
+										<xsd:annotation>
+											<xsd:documentation>Имя свойства задающего порядок для LINK'ов</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="cross-table" type="xsd:NMTOKEN" use="optional">
+										<xsd:annotation>
+											<xsd:documentation>Hаименование кросс-таблицы. только для объектных свойств с емкостью (cp) array и collection</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="constraint-name" type="xsd:NMTOKEN" use="optional">
+										<xsd:annotation>
+											<xsd:documentation>Hаименование констрейнта в БД без префикса</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="delete-cascade" type="bit" use="optional">
+										<xsd:annotation>
+											<xsd:documentation>Признак каскадного удаления. Указывается со стороны свойства вида vt="object" cp="scalar"</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="enum" type="xsd:NMTOKEN" use="optional">
+										<xsd:annotation>
+											<xsd:documentation>Ссылка на перечисление (ds:enum/@n)</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="flags" type="xsd:NMTOKEN" use="optional">
+										<xsd:annotation>
+											<xsd:documentation>Ссылка на флаги (ds:flags/@n)</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="r" use="optional">
+										<xsd:simpleType>
+											<xsd:annotation>
+												<xsd:documentation>Ограничение обработки свойства. Используеться только для необъектных свойств</xsd:documentation>
+											</xsd:annotation>
+											<xsd:restriction base="xsd:string">
+												<xsd:enumeration value="ignore">
+													<xsd:annotation>
+														<xsd:documentation>Свойство игнорируется подсистемой Storage (и при чтении, и при записи)</xsd:documentation>
+													</xsd:annotation>
+												</xsd:enumeration>
+												<xsd:enumeration value="read-only">
+													<xsd:annotation>
+														<xsd:documentation>Свойство только для чтения.</xsd:documentation>
+													</xsd:annotation>
+												</xsd:enumeration>
+											</xsd:restriction>
+										</xsd:simpleType>
+									</xsd:attribute>
+								</xsd:complexType>
+							</xsd:element>
+							<xsd:element name="index" minOccurs="0" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation>Описание индекса</xsd:documentation>
+								</xsd:annotation>
+								<xsd:complexType>
+									<xsd:sequence>
+										<xsd:element name="prop-ref" maxOccurs="unbounded">
+											<xsd:annotation>
+												<xsd:documentation>Сcылка на свойство</xsd:documentation>
+											</xsd:annotation>
+											<xsd:complexType>
+												<xsd:attribute name="sort-order" use="optional" default="asc">
+													<xsd:annotation>
+														<xsd:documentation>Тип сортировки</xsd:documentation>
+													</xsd:annotation>
+													<xsd:simpleType>
+														<xsd:restriction base="xsd:string">
+															<xsd:enumeration value="asc"/>
+															<xsd:enumeration value="desc"/>
+														</xsd:restriction>
+													</xsd:simpleType>
+												</xsd:attribute>
+												<xsd:attribute name="n" type="xsd:NMTOKEN" use="required">
+													<xsd:annotation>
+														<xsd:documentation>Имя свойства</xsd:documentation>
+													</xsd:annotation>
+												</xsd:attribute>
+											</xsd:complexType>
+										</xsd:element>
+									</xsd:sequence>
+									<xsd:attribute name="n" type="xsd:NMTOKEN" use="required">
+										<xsd:annotation>
+											<xsd:documentation>Наименование индекса</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="unique" type="bit" use="optional">
+										<xsd:annotation>
+											<xsd:documentation>Признак уникального индекса</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+									<xsd:attribute name="clustered" type="bit" use="optional">
+										<xsd:annotation>
+											<xsd:documentation>Признак кластерного индекса</xsd:documentation>
+										</xsd:annotation>
+									</xsd:attribute>
+								</xsd:complexType>
+								<xsd:keyref name="fk_PropRef" refer="keyPropName">
+									<xsd:selector xpath="prop-ref"/>
+									<xsd:field xpath="@n"/>
+								</xsd:keyref>
+							</xsd:element>
+							<xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation>
+										Разнообразные навески
+									</xsd:documentation>
+								</xsd:annotation>
+							</xsd:any>
+						</xsd:sequence>
+						<xsd:attribute name="tp" use="optional" default="persistent">
+							<xsd:annotation>
+								<xsd:documentation>
+									Вид объекта: 
+									persistent, постоянный - для таких типов создается таблица в БД и выполняются операции создания, сохранения, загрузки, удаления
+									persistent-foreign, постоянный-внешний - для таких типов НЕ создается таблица в БД, но выполняются создания, сохранения, загрузки, удаления
+									temporary, временный - для таких типов таблица в БД не создается Storage.Net может выполнять операции создания, операция загрузки эквивалентна операции создания, операции сохранения и удаления ничего не делают
+									Если атрибут не указан подразумевается "persistent"
+								</xsd:documentation>
+							</xsd:annotation>
+							<xsd:simpleType>
+								<xsd:restriction base="xsd:string">
+									<xsd:enumeration value="persistent"/>
+									<xsd:enumeration value="persistent-foreign"/>
+									<xsd:enumeration value="temporary"/>
+								</xsd:restriction>
+							</xsd:simpleType>
+						</xsd:attribute>
+						<xsd:attribute name="n" type="xsd:NMTOKEN" use="required">
+							<xsd:annotation>
+								<xsd:documentation>Физическое наименование типа</xsd:documentation>
+							</xsd:annotation>
+						</xsd:attribute>
+						<xsd:attribute name="d" type="xsd:string" use="required">
+							<xsd:annotation>
+								<xsd:documentation>Логическое наименование типа</xsd:documentation>
+							</xsd:annotation>
+						</xsd:attribute>
+						<xsd:attribute name="schema" type="xsd:NMTOKEN">
+							<xsd:annotation>
+								<xsd:documentation>Схема в кторой создаются таблицы объекта</xsd:documentation>
+							</xsd:annotation>
+						</xsd:attribute>
+						<xsd:attribute name="defer-indexes" type="bit" use="optional">
+							<xsd:annotation>
+								<xsd:documentation>
+									Включает отложенную проверку уникальных индексов. В разных СУБД реализуется по-размому:
+										в MSSQL и в DB2 с помощью поля MagicBit
+										в Oracle с помощью deferable констрейнтов						
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:attribute>
+					</xsd:complexType>
+					<xsd:key name="keyPropName">
+						<xsd:selector xpath="prop"/>
+						<xsd:field xpath="@n"/>
+					</xsd:key>
+					<xsd:unique name="uniqueIndexName">
+						<xsd:selector xpath="index"/>
+						<xsd:field xpath="@n"/>
+					</xsd:unique>
+				</xsd:element>
+				<xsd:element ref="params" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element ref="data-source" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element name="constraint-messages" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation>Сообщения о нарушении целостности</xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element name="msg" minOccurs="0" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation>Сообщение о нарушении целостности</xsd:documentation>
+								</xsd:annotation>
+								<xsd:complexType>
+									<xsd:simpleContent>
+										<xsd:extension base="xsd:string">
+											<xsd:attribute name="n" type="xsd:string" use="required">
+												<xsd:annotation>
+													<xsd:documentation>
+														Наименование ограничения
+														Внимание: в отличии от глобально объявленног аттрибута n
+														у данного используется тип string. 
+														
+														Это сделано для того, чтобы на имя Constraint не накладывались
+														ограничения, диктуемые NMTOKEN												
+													</xsd:documentation>
+												</xsd:annotation>
+											</xsd:attribute>
+											<xsd:attribute name="AUTO-GENERATED" type="bit">
+												<xsd:annotation>
+													<xsd:documentation>
+														Признак того, сообщение сгенерировано автоматически генератором
+														метаданных.
+														Внимание! После ручной модификации необходимо убрать этот атрибут, в 
+														противном случае генератор метаданных перепишет модификации!
+													</xsd:documentation>
+												</xsd:annotation>
+											</xsd:attribute>
+											<xsd:attribute name="db-name" type="xsd:string" use="required">
+												<xsd:annotation>
+													<xsd:documentation>Физическое наименование ограничения, может совпадать с логическим</xsd:documentation>
+												</xsd:annotation>
+											</xsd:attribute>
+											<xsd:attribute name="type" type="xsd:NMTOKEN" use="required">
+												<xsd:annotation>
+													<xsd:documentation>Наименование типа (ds:type/@n), для которого создано ограниение</xsd:documentation>
+												</xsd:annotation>
+											</xsd:attribute>
+										</xsd:extension>
+									</xsd:simpleContent>
+								</xsd:complexType>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+					<xsd:unique name="uniqueMsgName">
+						<xsd:selector xpath="msg"/>
+						<xsd:field xpath="@n"/>
+					</xsd:unique>
+				</xsd:element>
+			</xsd:choice>
+			<xsd:attribute name="schema" type="xsd:NMTOKEN">
+				<xsd:annotation>
+					<xsd:documentation>Схема по умолчанию для таблиц объектов</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="mssql" type="bit" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>Признак поддрежки MS SQL</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="oracle" type="bit" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>Признак поддрежки Oracle</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="db2" type="bit" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>Признак поддрежки IBM DB2</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+		<xsd:unique name="uniqueTypeName">
+			<xsd:selector xpath=".//type"/>
+			<xsd:field xpath="@n"/>
+		</xsd:unique>
+		<xsd:unique name="uniqueEnumName">
+			<xsd:selector xpath="enum"/>
+			<xsd:field xpath="@n"/>
+		</xsd:unique>
+		<xsd:unique name="uniqueFlagsName">
+			<xsd:selector xpath="flags"/>
+			<xsd:field xpath="@n"/>
+		</xsd:unique>
+	</xsd:element>
+</xsd:schema>

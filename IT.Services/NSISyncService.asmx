@@ -1,0 +1,1 @@
+<%@ WebService Language="C#" Codebehind="NSISyncService.asmx.cs" Class="Croc.IncidentTracker.Services.NSISyncService" %>

@@ -1,0 +1,1138 @@
+<!-- 
+********************************************************************************
+ CROC.XControls :: XTabStrip 
+ Элемент управления вида "закладки"
+ Реализация - Viewlink Behaviors (см. MSDN, Web Development, Behaviors)
+
+	Компонента представляет собой элемент управления, визуально аналогичный 
+	закладкам разделов записной книжки. Используя этот элемент управления, 
+	приложение может реализовывать идеологию многостраничной области - диалога 
+	или страницы. При этом элемент управления обеспечивает с одной стороны 
+	пользовательский инструмент управления такой многостраничной областью, 
+	а с другой - программный интерфейс, при помощи которого приложение может 
+	отслеживать факт "переключения страницы" области и, соответственно, 
+	выполнить действия по форматированию "страницы". При этом компонента 
+	представляет функционал по управлению "закладками страниц", но не режимами 
+	отображения самих "страниц". Эти задачи реализуются  кодом приложения, 
+	в зависимости от целевой логики, на основании событий и значений свойств 
+	компоненты. 
+
+	Онсновая цель реализации компоненты как linkview behavior - обеспечение
+	максимального контроля над стилем отображения функциональных элементов
+	компоненты, посредством внешней, "общесистемной" страницы стилей (.CSS).
+	При этом компонента использует следующие предопределенные наименования 
+	стилевых классов:
+	
+	.xTab-base
+		базовый стилевой класс; назначается всем функциональным элементам 
+		компоненты; может быть использован для задания общих установок, 
+		определяющих начертание и метрики шрифта, цвет текста и фона;
+	
+	.xTab-back
+		стилевой класс фонового задника компоненты; может быть использовн для 
+		задания цвета фона, а так же размеров отступа первой закладки от 
+		левого края клиентской области компоненты (через padding-Left);
+	
+	.xTab-tab
+		стилевой класс, назначаемый всем "закладкам", включая активную (см. 
+		далее); позволяет ппределить шрифт, цвет и метрики рамки закладки;
+	
+	.xTab-selected
+		стилевой класс, динамически назначаемый активной "закладке"; данный
+		класс назначется в дополнение к классу .xTab-tab; может быть 
+		использован для задания альтернативного отображения активной "закладки".
+	
+	.xTab-pageborder
+		стилевой класс границы элемента управления со "страницой"; используется
+		для задания метрик отоюражения границы (стилевые атрибуты вида border-)
+		
+	.xTab-scroll
+		стилевой класс, назначаемый кнопкам "скроллирования" линейки закладок,
+		доступных в том случае, если суммарная ширина линейки закладки превышает
+		доступную ширину клиентской области.
+		
+	Описанные стилевые классы составляют стилевой "комплект", используемый 
+	компонентой при отображении; количество используемых стилей может быть 
+	расширено за счет введения дополнительных "комплектов", отличающихся от
+	приведенных наименованием: для всех классов дополнительного "комплекта" в
+	наименовании добавляется произвольный суффикс. Для активизации 
+	дополнительного "комплекта" данный суффикс должен быть указан в качестве
+	значения атрибута CssSuffix элемента управления; на данный момент задание 
+	данного атрибута допускается только на момент инициализации компоненты; во 
+	всех прочих случаях задаваемое (изменяемое) значение будет проигнорировано.
+  
+********************************************************************************
+-->
+<PUBLIC:COMPONENT tagName=XTabStrip>
+
+	<!-- Параметры элемента упарвления по-умолчанию -->
+	<PUBLIC:DEFAULTS
+		canHaveHTML = "true"
+		viewLinkContent = "true"
+		viewInheritStyle = "false"
+		tabStop = "false"
+		viewMasterTab = "false"
+		contentEditable  = "false"
+	/>
+	<!-- Обрабатываемые события "внешенго" доекмента -->
+	<PUBLIC:ATTACH EVENT="onload" FOR="window" ONEVENT="xTab_Initialize"/>
+	<PUBLIC:ATTACH EVENT="onresize" FOR="window" ONEVENT="xTab_Resize"/>
+
+	<!-- Свойства элемента управления -->
+	<PUBLIC:PROPERTY NAME="Enabled" ID="prop_En"
+		GET="xTab_get_Enabled"
+		PUT="xTab_put_Enabled"
+	/>
+	<PUBLIC:PROPERTY NAME="Count" ID="prop_Cnt"	
+		GET="xTab_get_Count"
+	/>
+	<PUBLIC:PROPERTY NAME="ActiveTab" ID="prop_ATb"	
+		GET="xTab_get_ActiveTab"		
+		PUT="xTab_put_ActiveTab"
+	/>
+	<PUBLIC:PROPERTY NAME="ActiveTabID" ID="prop_ATbID"
+		GET="xTab_get_ActiveTabID"
+		PUT="xTab_put_ActiveTabID"
+	/>
+	<PUBLIC:PROPERTY NAME="CssSuffix" ID="prop_CS"
+		GET="xTab_get_CssSuffix"
+		PUT="xTab_put_CssSuffix"
+	/>       		
+	<PUBLIC:PROPERTY NAME="AutoHeighting" ID="prop_AH"
+		GET="xTab_get_AutoHeighting"
+		PUT="xTab_put_AutoHeighting"	
+	/>
+	<PUBLIC:PROPERTY NAME="SolidPageBorder"ID="prop_SPB"
+		GET="xTab_get_SolidPageBorder"
+		PUT="xTab_put_SolidPageBorder"
+	/>
+
+	<!-- Методы элемента управления -->
+	<PUBLIC:METHOD NAME="Add" INTERNALNAME="xTab_Add"/>
+	<PUBLIC:METHOD NAME="AddIdentified" INTERNALNAME="xTab_AddIdentified"/>
+	<PUBLIC:METHOD NAME="RemoveTab" INTERNALNAME="xTab_Remove"/>
+	<PUBLIC:METHOD NAME="GetTabLabel" INTERNALNAME="xTab_get_TabLabel"/>
+	<PUBLIC:METHOD NAME="SetTabLabel" INTERNALNAME="xTab_put_TabLabel"/>
+	<PUBLIC:METHOD NAME="GetTabToolTip" INTERNALNAME="xTab_get_TabToolTip"/>
+	<PUBLIC:METHOD NAME="SetTabToolTip" INTERNALNAME="xTab_put_TabToolTip"/>
+	<PUBLIC:METHOD NAME="GetTabTag" INTERNALNAME="xTab_get_TabTag"/>
+	<PUBLIC:METHOD NAME="SetTabTag" INTERNALNAME="xTab_put_TabTag"/>
+	<PUBLIC:METHOD NAME="AutoHeight" INTERNALNAME="xTab_AutoHeight"/>
+	<PUBLIC:METHOD NAME="HideTab" INTERNALNAME="xTab_HideTab"/>
+	<PUBLIC:METHOD NAME="IsTabHidden" INTERNALNAME="xTab_IsTabHidden"/>
+	<PUBLIC:METHOD NAME="GetTabID" INTERNALNAME="xTab_GetTabID"/>
+	<PUBLIC:METHOD NAME="IsTabExist" INTERNALNAME="xTab_IsTabExist"/>
+
+	<!-- События элемнта управления -->
+	<PUBLIC:EVENT NAME="OnSwitch" ID="xTab_event_OnSwitch"/>
+	<PUBLIC:EVENT NAME="OnBeforeSwitch" ID="xTab_event_OnBeforeSwitch"/>
+
+</PUBLIC:COMPONENT>
+
+<!-- 
+********************************************************************************
+ HTML-реализация viewlink behavior компоненты
+********************************************************************************
+-->
+<HEAD ID="htcHEAD">
+	<!-- Внешняя страница описания стилей, см. комментарии к реализации -->
+	<LINK REL=stylesheet HREF="x.css" TYPE="text/css"/>
+
+	<SCRIPT LANGUAGE="VBScript">
+	'***************************************************************************
+	Option Explicit
+	
+	' ---==- ГЛОБАЛЬНЫЕ КОНСТАНТЫ И ПЕРЕМЕННЫЕ -==---
+	' Описание ошибок:
+	const ERR_INVALIDARG = "Некорректное значение параметра"
+	' Константное смещение при скроллинге линейки закладок, в пикселях:
+	const SCROLL_WIDTH = 100
+	
+	Dim g_nTabsQnt			' Кол-во "закладок", отображаемых компонентой
+	Dim g_nTabsCounter		' Счетчик уникальных идентификаторов
+	Dim g_arrTabIDs			' Массив идентификаторов "закладок"
+	Dim g_arrTabNames		' Массив наименований "закладок" 
+	Dim g_arrTabToolTips	' Массив текстов всплывающих подсказок "закладок"
+	Dim g_arrTabTags		' Массив ассоциированных пользоватльских данных
+	Dim g_nActiveTabIndex	' Индекс текущей "активной" закладки (или -1)
+	
+	Dim g_bIsEnabled		' Текущий режим блокировки (Enabled)
+	Dim g_sCssSuffix		' Текущее значение параметра CssSuffix
+	Dim g_bIsAutoHeighting	' Текущее значение параметра AutoHighting
+	Dim g_bIsSolidPageBorder 'Текущее значение параметра SolidPageBorder
+
+	' Переменные-"алиасы" наименований используемых стилевых классов, с учетом
+	' заданного посредством параметра CssSuffix значения:
+	Dim gcs_XTAB_BASE		' ...для стилевого класса .xTab-base
+	Dim gcs_XTAB_BACK		' ...для стилевого класса .xTab-back
+	Dim gcs_XTAB_TAB		' ...для стилевого класса .xTab-tab
+	Dim gcs_XTAB_SELECTED	' ...для стилевого класса .xTab-selected
+	Dim gcs_XTAB_PAGEBORDER	' ...для стилевого класса .xTab-pageborder
+	Dim gcs_XTAB_SCROLL		' ...для стилевого класса .xTab-scroll
+	Dim g_bIsCSFixed		' признак фиксации значений переменных-"алиасов"
+	
+	' Принудительный вызов внутренней процедуры инициализации HTC-компоненты
+	InnerInitialize
+	
+	
+	
+	'***************************************************************************
+	' ---==- ОБРАБОТЧИКИ "ВНЕШНИХ" СОБЫТИЙ -==---
+	
+	' Обработчик window::OnLoad
+	' На данный момент значение свойств, задаваемых атрибутами элемента 
+	' управления, уже установлены - используем заданный CssSuffix и 
+	' AutoHeighting:
+	Sub xTab_Initialize()
+		Dim oStyleSheet	' Объект стилевой страницы, одной из CSS-страниц, применных
+						' к HTML-странице, на которой размещена HTC-компонента
+		Dim oLink		' Объект ссылки (тег LINK) на стилевую страницу
+
+		' Изначально HTC-компонента использует только одну, стандартную стилевую
+		' страницу x.css; Однако базовая HTML-страница, на которой размещена 
+		' компонента, может определять ссылки на др. страницы, в которых в свою
+		' очередь могут быть переопределены стилевые классы, используемые 
+		' компонентой при отображении UI. 
+		' Такие определения д.б. перенесены в документ компоненты явно, до их
+		' анализа кодом компоненты
+		
+		' (1) Проверим наличие определения стилей в базовой HTML-странице:
+		If ( Not (element.parentElement.document Is Nothing) ) Then
+			If ( 0 <> element.parentElement.document.styleSheets.Length ) Then
+				' (2) Итерируем все стилевые страницы, объявленные на базовой
+				For Each oStyleSheet In element.parentElement.document.styleSheets
+					' Если это та же x.css - пропускаем такую страницу
+					If ("x.css"<>LCase(oStyleSheet.href) ) Then
+						' (3) Добавляем в локальный HEAD UI компоненты LINK на 
+						' ту же стилевую страницу:
+						Set oLink = document.createElement("LINK")
+						oLink.href = oStyleSheet.href
+						oLink.type = "text/css"
+						oLink.rel = "stylesheet"
+						htcHEAD.appendChild oLink
+					End If
+				Next
+			End If
+		End If
+
+		' Еще раз простанавливаем CssSuffix, на случай, если свойство 
+		' не устанавливалось атрибутом:
+		xTab_put_CssSuffix( g_sCssSuffix )
+		' ...после чего считаем занчения переменных-"алиасов" 
+		' наименований стилевых классов фиксированными:
+		g_bIsCSFixed = true
+
+		' Принудительно переустанавливаем наименования используемых
+		' стилевых классов для соотв. коррекции стилей:
+		divBack.className = gcs_XTAB_BASE & gcs_XTAB_BACK
+		divPageBorder.className = gcs_XTAB_BASE & gcs_XTAB_PAGEBORDER
+		' После - переназначаем стили для кнопок скроллинга...
+		btnLeft.className = gcs_XTAB_BASE & gcs_XTAB_SCROLL
+		btnRight.className = gcs_XTAB_BASE & gcs_XTAB_SCROLL
+	End sub
+	
+	' Обработчик element::OnResize
+	Sub xTab_Resize()
+		' Выполняем принудительную коррекцию размеров "подложки"
+		' в соответствии с размерами самого элемента управления:
+		divBack.style.width = element.clientWidth
+	End sub
+	
+	
+
+	
+	'***************************************************************************
+	' ---==- РЕАЛИЗАЦИЯ "ВНЕШНИХ" СВОЙСТВ И МЕТОДОВ -==---
+	
+	'...........................................................................
+	' СВОЙСТВА
+	
+	' Получение значения свойства Enabled:
+	Function xTab_get_Enabled()
+		xTab_get_Enabled = g_bIsEnabled
+	End function
+	' Задание значения свойства Enabled:
+	Sub xTab_put_Enabled( bEnabled )
+		bEnabled = CBool(bEnabled)
+		if bEnabled=g_bIsEnabled then exit sub
+		g_bIsEnabled = bEnabled
+	End sub
+	
+	' Получение значения свойства Count:
+	Function xTab_get_Count()
+		xTab_get_Count = g_nTabsQnt
+	End function
+	
+	' Получение значение свойства ActiveTab:
+	Function xTab_get_ActiveTab()
+		xTab_get_ActiveTab = g_nActiveTabIndex
+	End function
+	' Задание значения свойства ActiveTab:
+	Sub xTab_put_ActiveTab( nTabIndex )
+		' ...проверим значение:
+		nTabIndex = GetCheckedTabIdx(nTabIndex)
+		if IsNull(nTabIndex) then
+			Err.Raise vbObjectError,"XTabStrip::ActiveTab",ERR_INVALIDARG&" nTabIndex"
+		end if
+		' ...выполним, если это необходимо активизацию:
+		if nTabIndex<>g_nActiveTabIndex then
+			ActivateTab nTabIndex,true
+		end if
+	End sub
+
+	' Получение значение свойства ActiveTabID:
+	Function xTab_get_ActiveTabID()
+		' Идентификатор активной закладки определям при помощи 
+		' реализации метода GetTabID, передавая ему индекс активной 
+		' закладки:
+		xTab_get_ActiveTabID = xTab_GetTabID(g_nActiveTabIndex)
+	End function
+	' Задание значения свойства ActiveTabID:
+	Sub xTab_put_ActiveTabID( sTabID )
+		' По идее мы должны получить индекс закладки по ее идентификатору - для
+		' этого может быть использована внутренняя функция GetCheckedTabIdx; 
+		' полученный индекс используется для установки значения свойства 
+		' ActiveTab. 
+		' Существующая put-реализация свойства (см. xTab_put_ActiveTab)
+		' так же вызывает GetCheckedTabIdx (для проверки корректности заданного
+		' индекса); поэтому в качестве задаваемого индекса может быть использован
+		' так же и идентификатор - это несколько убыстрит выполнение:
+		xTab_put_ActiveTab sTabID
+	End sub
+	
+	' Получение значения свойства CssSuffix:
+	Function xTab_get_CssSuffix()
+		xTab_get_CssSuffix = g_sCssSuffix
+	End function
+	' Задание значения свойства	CssSuffix:
+	Sub xTab_put_CssSuffix( sNewSuffix )
+		sNewSuffix = Trim(CStr( sNewSuffix ))
+		' Если значения переменных-"алиасов" уже фиксированны, то ничего не делаем:
+		if g_bIsCSFixed then exit sub
+		' Корректируем значения переменных-"алиасов":
+		g_sCssSuffix = sNewSuffix
+		gcs_XTAB_BASE		= "xTab-base" &g_sCssSuffix& " "
+		gcs_XTAB_BACK		= "xTab-back" &g_sCssSuffix& " "
+		gcs_XTAB_TAB		= "xTab-tab" &g_sCssSuffix& " "
+		gcs_XTAB_SELECTED	= "xTab-selected" &g_sCssSuffix& " "
+		gcs_XTAB_PAGEBORDER	= "xTab-pageborder" &g_sCssSuffix& " "
+		gcs_XTAB_SCROLL		= "xTab-scroll" &g_sCssSuffix& " "
+	End sub
+	
+	' Получение значения свойства AutoHeighting:
+	Function xTab_get_AutoHeighting()
+		xTab_get_AutoHeighting = g_bIsAutoHeighting
+	end function
+	
+	' Задание значения свойства AutoHeighting	
+	Sub xTab_put_AutoHeighting( bIsAutoHeight )
+		bIsAutoHeight = CBool( bIsAutoHeight )
+		g_bIsAutoHeighting = bIsAutoHeight
+	end sub
+	
+	' Получение значения свойства SolidPageBorder
+	Function xTab_get_SolidPageBorder()
+		xTab_get_SolidPageBorder = g_bIsSolidPageBorder
+	End function 
+	' Задание значения свойства SolidPageBorder
+	Sub xTab_put_SolidPageBorder( bIsSolidBorder )
+		bIsSolidBorder = CBool( bIsSolidBorder )
+		if bIsSolidBorder=g_bIsSolidPageBorder then exit sub
+		' Т.к. параметр влияет на отображении активной закладки, 
+		' выполним повторную активизацию, заблокировав события:
+		g_bIsSolidPageBorder=bIsSolidBorder
+		ActivateTab g_nActiveTabIndex,false
+	End sub
+	
+	'...........................................................................
+	' МЕТОДЫ
+	
+	' XTabStrip::Add - Процедура добавления "закладки"
+	' Параметры:
+	'	[in] sLabel 	- строка с наименованием закладки;
+	'	[in] sToolTip	- текст всплывающей подсказки закладки (tooltip);
+	'	[in] vTag		- вариант, определяющий ассоциированные пользовательские
+	'					данные; может быть задан как объект;
+	' Результат: индекс добавленной закладки
+	Function xTab_Add( sLabel,sToolTip,vTag )
+		xTab_Add = xTab_AddIdentified( "",sLabel,sToolTip,vTag )
+	End function
+	
+	
+	' XTabStrip::AddIdentified - Процедура добавления "закладки" с заданным 
+	' идентификатором 
+	' Параметры:
+	'	[in] sID		- строка с идентификатором добавляемой закладки
+	'	[in] sLabel 	- строка с наименованием закладки;
+	'	[in] sToolTip	- текст всплывающей подсказки закладки (tooltip);
+	'	[in] vTag		- вариант, определяющий ассоциированные пользовательские
+	'					данные; может быть задан как объект;
+	' Результат: индекс добавленной закладки
+	Function xTab_AddIdentified( sID,sLabel,sToolTip,vTag )
+		Dim nIndex		' результирующий индекс добавленной "закладки"
+		Dim divTab		' HTML-объект "закладки" (IHTMLDOMElement)
+		
+		' Предварительно "зачищаем" результат выполнения 
+		xTab_AddIdentified = Null 
+		' ...форматируем параметры:
+		if IsNull(sID) or IsEmpty(sID) then sID = ""
+		sID = Trim( CStr(sID) )
+		sLabel = Trim( CStr( sLabel ) )
+		sToolTip = Trim( CStr( sToolTip ) )
+		' ...если идентификатор не задан, то формируем по-умолчанию:
+		if Not( Len(sID)>0 ) then sID = "XTAB_" & CStr(g_nTabsCounter+1)
+		' ...и проверяем параметры: идентификатор не доджен быть числом:
+		if IsNumeric(sID) then 
+			Err.Raise _
+				vbObjectError,"XTabStrip::AddIdentified", _
+				ERR_INVALIDARG&" sID - идентификатором не может быть числом или его строковым представлением"
+		end if
+		' ...существование DIV-объекта c аналогичным идентификатором запрещено:
+		if Not inPlace.all.item(sID) Is Nothing then
+			Err.Raise _
+				vbObjectError,"XTabStrip::AddIdentified", _
+				ERR_INVALIDARG&" sID - объект с заданным идентификатором """ &sID& """ уже существует"
+		end if
+		
+		' Закладка добавляется "в конец":
+		nIndex = g_nTabsQnt
+		g_nTabsCounter = g_nTabsCounter+1
+		' Корректирум размерность массивов и запоминаем значения:
+		ReDim Preserve g_arrTabIDs(g_nTabsQnt)		: g_arrTabIDs(nIndex) = sID ' CStr(g_nTabsCounter)
+		ReDim Preserve g_arrTabNames(g_nTabsQnt)	: g_arrTabNames(nIndex) = sLabel
+		ReDim Preserve g_arrTabToolTips(g_nTabsQnt)	: g_arrTabToolTips(nIndex) = sToolTip
+		ReDim Preserve g_arrTabTags(g_nTabsQnt)
+		' ..."запомнить" тег не так просто: это может быть объектная ссылка
+		if IsObject(vTag) then
+			Set g_arrTabTags(nIndex) = vTag
+		else
+			g_arrTabTags(nIndex) = vTag
+		end if
+		
+		' Создаем и форматируем соотв. образом функциональный элемент - "закладку"
+		Set divTab = document.createElement("DIV")
+		if divTab is Nothing then
+			Err.Raise vbObjectError,"XTabStrip::Add","Ошибка создания HTML-элемента"
+		end if
+		divTab.id = g_arrTabIDs(nIndex)
+		divTab.innerHTML = "<NOBR>"& Replace(sLabel,vbCr,"<WBR/>") &"</NOBR>"
+		if Len(sToolTip)>0 then divTab.title = sToolTip
+		divTab.className = gcs_XTAB_BASE & gcs_XTAB_TAB
+		
+		' ...включаем созданный элемент в TabStrip:
+		inPlace.appendChild divTab	
+		' ...назначаем обработчики события нажатия клавиши:
+		divTab.attachEvent "onclick",getRef("OnTabSwitch")
+		
+		' Для всех закладок выполняется принудительная установка определенных
+		' стилей, минимально необходимых для корретного отображения (возможного
+		' как результат задания чего-то особенного в CSS):
+		ModifyTabStyle divTab
+		
+		' Если задан режим автоматического рассчета высоты - выполняем:
+		if g_bIsAutoHeighting then xTab_AutoHeight
+		' Внутренняя коррекция ширины элементов...
+		divPageBorder.style.width = 2*divBack.offsetWidth
+		xTab_Resize
+		divBack_OnResize
+		
+		g_nTabsQnt = g_nTabsQnt+1
+		prop_Cnt.fireChange
+		xTab_AddIdentified = nIndex
+		
+		' Если это первая "закладка", автоматически активизируем ее, 
+		' блокировав при этом генерацию событий:
+		if nIndex=0 then ActivateTab nIndex,false
+		
+	End function
+	
+	
+
+	' XTabStrip::RemoveTab - Процедура удаления "закладки" с указанным индексом
+	' Параметры: [in] nIndex - индекс удаляемой закладки
+	' Результат: кол-во оставшихся закладок
+	Function xTab_Remove( nIndex )
+		Dim oDiv ' HTML-объект удаляемой закладки
+
+		xTab_Remove = Null
+		' ...проверяем корректность заданного индекса
+		nIndex = GetCheckedTabIdx(nIndex)
+		if IsNull(nIndex) Or nIndex<0 then 
+			Err.Raise vbObjectError,"XTabStrip::RemoveTab",ERR_INVALIDARG&" nIndex"
+		end if
+		' ...если удаляемая закладка - активная, снимаем выделение, 
+		' при этом события НЕ ГЕНЕРИРУЮТСЯ:
+		if g_nActiveTabIndex=nIndex then ActivateTab -1,false
+		
+		' Получаем HTML-объект удаляемой закладки...
+		Set oDiv = inPlace.all.item( g_arrTabIDs(nIndex) )
+		if oDiv is Nothing then Err.Raise vbObjectError,"XTabStrip::SetTabToolTip","Ошибка получения элемента с индексом #"&nIndex
+		' ...и удаляем её...		
+		Set oDiv = oDiv.removeNode(true)
+		' ...соответственно корректируем массивы:
+		g_arrTabIDs = RemoveArrItem( g_arrTabIDs,nIndex )
+		g_arrTabNames = RemoveArrItem( g_arrTabNames,nIndex )
+		g_arrTabToolTips = RemoveArrItem( g_arrTabToolTips,nIndex )
+		g_arrTabTags = RemoveArrItem( g_arrTabTags,nIndex )
+		' и кол-во отображаемых закладок
+		g_nTabsQnt = g_nTabsQnt-1
+		
+		' Внутренняя коррекция ширины элементов...
+		divPageBorder.style.width = 2*divBack.offsetWidth
+		xTab_Resize
+		divBack_OnResize
+		
+		xTab_Remove = g_nTabsQnt
+	End function
+	
+	
+	' XTabStrip::GetTabLabel - Метод получения строки наименования "закладки", 
+	'	заданной индексом.
+	' Параметры: [in] nIndex - индекс закладки
+	' Результат: строка с наименованием
+	Function xTab_get_TabLabel( nIndex )
+		xTab_get_TabLabel = Null	
+		nIndex = GetCheckedTabIdx(nIndex)
+		if IsNull(nIndex) Or nIndex<0 then 
+			Err.Raise vbObjectError,"XTabStrip::GetTabLabel",ERR_INVALIDARG&" nIndex"
+		end if
+		xTab_get_TabLabel = g_arrTabNames( nIndex )
+	End function
+	' XTabStrip::SetTabLabel - Метод изменения строки наименования "закладки", 
+	'	заданной индексом.
+	' Параметры:	[in] nIndex - индекс закладки 
+	'				[in] sLabel - строка с наименованием 
+	Sub xTab_put_TabLabel( nIndex,sLabel )
+		Dim oDiv	' HTML-объект, соотв. указанной закладке
+		sLabel = Trim( CStr(sLabel) )
+		nIndex = GetCheckedTabIdx(nIndex)
+		if IsNull(nIndex) Or nIndex<0 then 
+			Err.Raise vbObjectError,"XTabStrip::SetTabLabel",ERR_INVALIDARG&" nIndex"
+		end if
+		g_arrTabNames( nIndex ) = sLabel
+		
+		Set oDiv = inPlace.all.item( g_arrTabIDs(nIndex) )
+		if oDiv is Nothing then Err.Raise vbObjectError,"XTabStrip::SetTabLabel","Ошибка получения элемента с индексом #"&nIndex
+		oDiv.innerText = sLabel
+	End sub
+	
+	
+	' XTabStrip::GetTabToolTip - Метод получения текста подсказки для 
+	'	"закладки", заданной индексом
+	' Параметры: [in] nIndex - индекс закладки 
+	' Результат: строка с текстом подсказки
+	Function xTab_get_TabToolTip( nIndex )
+		xTab_get_TabToolTip = Null	
+		nIndex = GetCheckedTabIdx(nIndex)
+		if IsNull(nIndex) Or nIndex<0 then 
+			Err.Raise vbObjectError,"XTabStrip::GetTabToolTip",ERR_INVALIDARG&" nIndex"
+		end if
+		xTab_get_TabToolTip = g_arrTabToolTips( nIndex )
+	End function
+	' XTabStrip::SetTabToolTip - Метод изменения текста подсказки для 
+	'	"закладки", заданной индексом	
+	' Параметры:	[in] nIndex - индекс закладки 
+	'				[in] sToolTip - строка с текстом подсказки
+	Sub xTab_put_TabToolTip( nIndex,sToolTip )
+		Dim oDiv	' HTML-объект, соотв. указанной закладке
+		sToolTip = Trim( CStr(sToolTip) )
+		nIndex = GetCheckedTabIdx(nIndex)
+		if IsNull(nIndex) Or nIndex<0 then 
+			Err.Raise vbObjectError,"XTabStrip::SetTabToolTip",ERR_INVALIDARG&" nIndex"
+		end if
+		g_arrTabToolTips( nIndex ) = sToolTip
+		
+		Set oDiv = inPlace.all.item( g_arrTabIDs(nIndex) )
+		if oDiv is Nothing then Err.Raise vbObjectError,"XTabStrip::SetTabToolTip","Ошибка получения элемента с индексом #"&nIndex
+		oDiv.title = sToolTip
+	End sub
+	
+	' XTabStrip::GetTabTag - Метод получения варианта с пользовательскими 
+	'	данными, ассоциированных с закаладкой, заданной индексом.
+	' Параметры: [in] nIndex - индекс закладки 
+	' Результат: вариант с пользовательскими данными
+	Function xTab_get_TabTag( nIndex )
+		xTab_get_TabTag = Null
+		nIndex = GetCheckedTabIdx(nIndex)
+		if IsNull(nIndex) Or nIndex<0 then 
+			Err.Raise vbObjectError,"XTabStrip::GetTabTag",ERR_INVALIDARG&" nIndex"
+		end if
+				
+		if IsObject(g_arrTabTags(nIndex)) then
+			Set xTab_get_TabTag = g_arrTabTags(nIndex)
+		else
+			xTab_get_TabTag = g_arrTabTags(nIndex)
+		end if
+	End function
+	' XTabStrip::SetTabTag - Метод изменения варианта с пользовательскими 
+	'	данными, ассоциированных с закаладкой, заданной индексом.
+	' Параметры:	[in] nIndex - индекс закладки;
+	'				[in] vTag	- вариант с пользовательскими данными
+	Sub xTab_put_TabTag( nIndex,vTag )
+		nIndex = GetCheckedTabIdx(nIndex)
+		if IsNull(nIndex) Or nIndex<0 then 
+			Err.Raise vbObjectError,"XTabStrip::SetTabTag",ERR_INVALIDARG&" nIndex"
+		end if
+		if IsObject(vTag) then
+			Set g_arrTabTags( nIndex ) = vTag
+		else
+			g_arrTabTags( nIndex ) = vTag
+		end if
+	End sub
+	
+	
+	' XTabStrip::AutoHeight - Функция автоматической коррекции высоты 
+	' отображаемого элемента управления. Возвращает установленную высоту 
+	' элемента управления в пикселах. 
+	' ВНИМАНИЕ! При вызове метода для компоненты, рассположенной в скрытой
+	' части HTML-документа (например, при использовании стиля display:none)
+	' процесс расчета высоты может завершиться полученем некорректного 
+	' значения!
+	Function xTab_AutoHeight()
+		Dim sExDisplay	' стиль отображения компоненты на момент вызова
+		Dim sExWidth	' ширина, задаваемая стилем э.у., на момент вызова
+		Dim	nHeight		' рассчетная высота 
+		xTab_AutoHeight = Null
+
+		' Временно сменяем стиль отображения компоненты, запоминая его, 
+		' а так же заданную стилем ширину элемента управления:
+		sExDisplay = LCase(element.currentStyle.display)
+		sExWidth = element.currentStyle.width
+		if Not( Px2Num(sExWidth)>0 Or InStr(sExWidth,"%")>0 ) then element.style.width = "100%"
+		element.style.display = "block"
+		
+		' Определяем высоту внутренних элементов компоненты:
+		nHeight = divBack.offsetHeight
+		element.style.height = CStr(nHeight)&"px"
+
+		' Внутренняя коррекция ширины элементов...
+		divPageBorder.style.width = 2*divBack.offsetWidth
+		xTab_Resize
+		divBack_OnResize
+		
+		' ..восстанавливаем стили
+		element.style.display = sExDisplay
+		element.style.width = sExWidth
+		
+		xTab_AutoHeight = nHeight
+	End function
+	
+	
+	' XTabStrip::HideTab - Функция управления режимом отображения закладки,
+	' заданной индексом. Возвращает значение, соотв. предыдущему режиму.
+	' Параметры:
+	'	[in] nIndex		- индекс закладки
+	'	[in] bIsHideTab	- режим отображения (True="скрыть")
+	' Результат: лог.значение, соотв. предыдущему режиму
+	Function xTab_HideTab( nIndex,bIsHideTab )
+		Dim oDiv		' HTML-объект, соотв. указанной закладке
+		Dim bIsHidden	' предыдущий режим отображения
+		
+		xTab_HideTab = Null
+		nIndex = GetCheckedTabIdx(nIndex)
+		if IsNull(nIndex) Or nIndex<0 then 
+			Err.Raise vbObjectError,"XTabStrip::HideTab",ERR_INVALIDARG&" nIndex"
+		end if
+		if LCase(TypeName(bIsHideTab))<>"boolean" then 
+			Err.Raise vbObjectError,"XTabStrip::HideTab",ERR_INVALIDARG&" bIsHideTab"
+		end if
+	
+		' ...если закладка "прячется", и при этом она активная -
+		' снимаем выделение, при этом события ГЕНЕРИРУЮТСЯ:
+		if g_nActiveTabIndex=CLng(nIndex) then ActivateTab -1,true
+		' ...если индекс активной закладки не изменился - значит 
+		' в процессе обработки событий снятие "выделения" было 
+		' запрещено; скрываем "активную" закладку!!!
+
+		' Определяем соответствующий закладке DIV-элемент:
+		Set oDiv = inPlace.all.item( g_arrTabIDs(nIndex) )
+		if oDiv is Nothing then Err.Raise vbObjectError,"XTabStrip::HideTab","Ошибка получения элемента с индексом #"&nIndex
+		
+		' Получаем текущий режим:
+		bIsHidden = IsDispayingNone( oDiv )
+		' Устанавливаем заданный режим отображения:
+		if bIsHideTab then
+			oDiv.style.display = "none"
+		else
+			oDiv.style.display = "inline"
+		end if
+		
+		' Если задан режим автоматического рассчета высоты - выполняем:
+		if g_bIsAutoHeighting then xTab_AutoHeight
+		' Внутренняя коррекция ширины элементов...
+		divPageBorder.style.width = 2*divBack.offsetWidth
+		xTab_Resize
+		divBack_OnResize
+		
+		xTab_HideTab = bIsHidden
+	End function
+
+
+	' XTabStrip::IsTabHide - Функция, возвращающая текущий режим отображения 
+	' закладки, заданной индексом. Дополняет метод HideTab.
+	' Парамеиры:
+	'	[in] nIndex		- индекс закладки
+	' Результат: лог.значение, соотв. текущему режиму (True="скрыто")
+	Function xTab_IsTabHidden( nIndex )
+		Dim oDiv		' HTML-объект, соотв. указанной закладке
+		
+		xTab_IsTabHidden = Null
+		nIndex = GetCheckedTabIdx(nIndex)
+		if IsNull(nIndex) Or nIndex<0 then 
+			Err.Raise vbObjectError,"XTabStrip::IsTabHidden",ERR_INVALIDARG&" nIndex"
+		end if
+	
+		' Определяем соответствующий закладке DIV-элемент:
+		Set oDiv = inPlace.all.item( g_arrTabIDs(nIndex) )
+		if oDiv is Nothing then Err.Raise vbObjectError,"XTabStrip::HideTab","Ошибка получения элемента с индексом #"&nIndex
+		
+		' Получаем текущий режим:
+		xTab_IsTabHidden = IsDispayingNone( oDiv )
+	End function
+			
+
+	' XTabStrip::GetTabID - Возвращает идентификатор закладки с заданным индексом
+	' Параметры:
+	'	[in] nIndex		- индекс закладки
+	' Результат: строка с идентификатором закладки
+	Function xTab_GetTabID( nIndex )
+		xTab_GetTabID = Null
+		' Проверяем корректность параметра...
+		nIndex = GetCheckedTabIdx(nIndex)
+		if IsNull(nIndex) Or nIndex<0 then 
+			Err.Raise vbObjectError,"XTabStrip::GetTabID",ERR_INVALIDARG&" nIndex"
+		End if
+		' ...возвращаем идентификатор закладки
+		xTab_GetTabID = g_arrTabIDs(nIndex)
+	End function
+	
+	
+	' XTabStrip::IsTabExist - Проверяет существование закладки с заданным 
+	' идентификатором или индексом
+	' Параметры:
+	'	[in] nIndex	- Вариант, идентифицирующий закладку. Может быть задан как 
+	'		число - в этом случае компонента считает заданное значение 
+	'		идентификатором, ила как строка. В этом случае заданное значение 
+	'		расматривается как идентифкатор закладки.
+	' Результат: логический признак, соответствующий факту существования указанной 
+	'	закладки: значение True - если указанная закладка присутствует, и False - 
+	'	в противном случае (включая случай некорректной идентификации).
+	Function xTab_IsTabExist( vTab )
+	    Dim nTabIndex
+		xTab_IsTabExist = False
+		nTabIndex = GetCheckedTabIdx( vTab )
+		xTab_IsTabExist = Not IsNull(nTabIndex) And nTabIndex<>-1
+	End function
+	
+	
+	'...........................................................................
+	' МЕТОДЫ ГЕНЕРАЦИИ СОБЫТИЙ
+	
+	' Метод генерации события OnSwitch( nPrevTabIndex ) - переключение закладок
+	' Параметры: [in] nPrevTabIndex - индекс "закладки", выбранной активной до  
+	' 	переключения;
+	' ВНИМАНИЕ! Параметр события передается как значение атрибута reason 
+	'	встроенного объекта event
+	Sub Fire_OnSwitch( nPrevTabIndex )
+		Dim oEvent	' экземпляр объекта "события", event
+		Set oEvent = createEventObject()
+		oEvent.reason = nPrevTabIndex
+		xTab_event_OnSwitch.fire oEvent
+	End sub
+	
+	' Функиця генерации события OnBeforeSwitch( nPlaneTabIndex ) - предварительное
+	' уведомление о переключении "закладки", генерируемого ДО физического 
+	' переключения. 
+	' При ОТМЕНЕ данного события (event.returnValue = false) функиця возвращает 
+	' соотв. логическое False, иначе - True.
+	'
+	' Параметры: [in] nPlanTabIndex - индекс "закладки", выбранной для последующей 
+	'	активизации;
+	' ВНИМАНИЕ! Параметр события передается как значение атрибута reason 
+	'	встроенного объекта event;
+	Function Fire_OnBeforeSwitch( nPlaneTabIndex )
+		Dim oEvent	' экземпляр объекта "события", event
+		Fire_OnBeforeSwitch = false
+		
+		Set oEvent = createEventObject()
+		oEvent.reason = nPlaneTabIndex
+		oEvent.returnValue = True
+		
+		xTab_event_OnBeforeSwitch.fire oEvent
+		Fire_OnBeforeSwitch = CBool(oEvent.returnValue)
+	End function
+	
+	
+	
+	'***************************************************************************
+	' ---==- ПРОЦЕДУРЫ ОБСЛУЖИВАНИЯ СКРОЛЛИНГА -==---
+
+	' Внутренний обработчик события изменения размера "базы" линейки закладок;
+	' Выполняется для обеспечения автоматического отображения кнопок 
+	' "скроллирования" линейки закладок. Эти кнопки должны отображаться в том
+	' случае, если суммарная ширина линейки закладок превыает текущую ширину 
+	' клиентской области компоненты.
+	Sub divBack_OnResize()
+		Dim nBackW	' Рассчетная ширина клиентской области
+		Dim nShift	' Рассчетное "смещение" линейки закладки влево
+		
+		nBackW = TBS_WIDTH()
+		
+		' Анализ необходимости отображения конпок скроллинга -
+		' см. комментарии к обработчику:
+		if ( nBackW <= inPlace.scrollWidth ) then
+			divScrollPane.style.display = "block"
+		else
+			divScrollPane.style.display = "none"
+		end if
+		            
+		' Если в процессе изменения ширины поля (а оно изменяется и при 
+		' изменении размерности окна приложения) правая граница линейки 
+		' отображается полностью, то необходимо сдвигать ее, "вытягивая"
+		' скрытую левую часть линейки закладок:
+		' ...анализ имеет смысл, если левая часть скрыта
+		if inPlace.offsetLeft<0 then
+			' ...рассчитаем смещение линейки влево...
+			nShift = nBackW - inPlace.scrollWidth 
+			' ...оно должно быть как минимум отрицательным:
+			if nShift>0 then nShift = 0
+			' ...и если рассчетный сдвиг меньше (в абсолбтной величине)
+			' текущего положения линейки - корректируем ее положение:
+			if inPlace.offsetLeft < nShift then inPlace.style.left = nShift
+		end if
+	End sub
+	
+	'...........................................................................
+	' Обработчик события нажатия кнопки скроллинга линейки закладок вправо
+	Sub btnRight_OnClick()
+		' Смещение выполняется только при условии, что правый край линейки
+		' закладок скрыт - сумма смещения и ширины линейки больше ширины
+		' доступной клиентской области:
+		if inPlace.offsetLeft+inPlace.offsetWidth >= TBS_WIDTH() then
+			inPlace.style.left = inPlace.offsetLeft - SCROLL_WIDTH
+		end if
+	End sub
+	
+	'...........................................................................
+	' Обработчик события нажатия кнопки скроллинга линейки закладок влево
+	Sub btnLeft_OnClick()
+		' Смещение выполняется только при условии, что левый край линейки
+		' закладок скрыт - смещение влево меньше нуля:
+		if inPlace.offsetLeft<0 then 
+			inPlace.style.left = inPlace.offsetLeft + SCROLL_WIDTH
+			' Если в результате смещения левый край попадает "внутрь" 
+			' клиентской области (смещение больше нуля) - корректируем:
+			if inPlace.offsetLeft>0 then inPlace.style.left = 0
+		end if
+	End sub
+	
+	'...........................................................................
+	' Внутренняя функция получения текущей ширины клиентской области компоненты
+	Function TBS_WIDTH( )
+		TBS_WIDTH = _
+			divBack.clientWidth _
+			- Px2Num(divBack.currentStyle.paddingLeft) _
+			- Px2Num(divBack.currentStyle.paddingRight)
+			'- divScrollPane.clientWidth - возможное расширение
+	End function
+	
+	
+	'***************************************************************************
+	' ---==- ВНУТРЕННИЕ СЛУЖЕБНЫЕ ПРОЦЕДУРЫ -==---
+	
+	' Предварительная инициализация
+	Sub InnerInitialize()
+		g_nTabsQnt = 0
+		g_nTabsCounter = 0
+		g_arrTabIDs = Array()
+		g_arrTabNames = Array()
+		g_arrTabToolTips = Array()
+		g_arrTabTags = Array()
+		g_nActiveTabIndex = -1
+		
+		g_bIsEnabled = True
+		g_sCssSuffix = ""
+		g_bIsAutoHeighting = true
+		g_bIsSolidPageBorder = false
+		g_bIsCSFixed = false
+		
+		element.style.overflow = "hidden"
+	End sub
+	
+	' Внутри HTML-я компоненты заперщены выделения:	
+	Sub bodyTabStrip_OnSelectStart()
+		window.event.returnValue = false
+		window.event.cancelBubble = true
+	End sub 
+	
+	'...........................................................................
+	' Внутренее событие "переключения" закладок - отслеживаем клики по соотв.
+	' функциональным элементм:
+	Sub OnTabSwitch()
+		Dim oElement ' HTML-элемент
+		Dim sID		 ' идентификатор элемента
+		Dim nI		 ' итератор цикла
+
+		' Если компонента заблокирована, то переключение блокируется:
+		if Not g_bIsEnabled then exit sub
+		
+		' ...определим DIV, в рамках которого был сделан клик:
+		Set oElement = window.event.srcElement
+		while UCase(oElement.tagName)<>"DIV" And Not (InStr(oElement.className,gcs_XTAB_TAB)>0) And Not (oElement.parentElement Is Nothing)
+			Set oElement = oElement.parentElement
+		wend
+		' ...определяем идентификатр закладки:
+		sID = Trim( CStr(oElement.id) )
+		for nI=0 to UBound(g_arrTabIDs) 
+			if StrComp(g_arrTabIDs(nI),sID)=0 then exit for
+		next
+		if nI>UBound(g_arrTabIDs) then exit sub
+		sID = CLng(nI)
+
+		' ...выполянем переключение:
+		if sID<>g_nActiveTabIndex then ActivateTab sID,true
+		
+	End sub
+	
+	'...........................................................................
+	' Функиця активизации "закладки" с индексом nActiveTabIndex. 
+	' Параметры:
+	'	[in] nActiveTabIndex	- индекс целевой "закладки"
+	'	[in] bIsFireEvent		- флаг генерации событий
+	' Возвращает bool - переключились или нет...
+	Function ActivateTab( nActiveTabIndex,bIsFireEvent )
+		Dim nPrevActive	' индекс "предыдущей" активной закладки
+		Dim divTab		' HTML-объект целевой "закладки"
+		ActivateTab = false
+		
+		if Not IsGoodIdx(nActiveTabIndex) then 
+			Err.Raise vbObjectError,"(pr.) XTabStrip::ActivateTab",ERR_INVALIDARG&" nActiveTabIndex"
+		end if
+		
+		nPrevActive = g_nActiveTabIndex
+		
+		' Гененрирум событие OnBeforeSwitch: при отмене выходим;
+		if bIsFireEvent then
+			if Not Fire_OnBeforeSwitch(nActiveTabIndex) then exit function
+		end if
+		' Отключаем предыдущую "активную", если таковая была:
+		if nPrevActive>=0 then
+			' Снимаем стили у предыдущей "активной"...
+			Set divTab = inPlace.all.item( g_arrTabIDs(nPrevActive) )
+			
+			if divTab is Nothing then Err.Raise vbObjectError,"(act.) XTabStrip::ActivateTab","Ошибка получения объекта закладки"
+			divTab.className = gcs_XTAB_BASE & gcs_XTAB_TAB
+			ModifyTabStyle divTab
+		end if
+		
+		g_nActiveTabIndex = nActiveTabIndex
+		
+		' Активизируем указанную закладку (если таковая задана):
+		if nActiveTabIndex>=0 then
+			Set divTab = inPlace.all.item( g_arrTabIDs(nActiveTabIndex) )
+			
+			if divTab is Nothing then Err.Raise vbObjectError,"CROC.XTabStrip","Некорректный индекс"
+			divTab.className = gcs_XTAB_BASE & gcs_XTAB_TAB & gcs_XTAB_SELECTED
+			ModifyTabStyle divTab
+			' ...учитываем режим SolidPageBorder:
+			if Not g_bIsSolidPageBorder then divTab.style.zIndex = "9"
+		end if
+		' Событие о выделении - OnSwitch:
+		if bIsFireEvent then Fire_OnSwitch(nPrevActive)
+		
+		prop_ATb.fireChange
+		prop_ATbID.fireChange
+	End function
+	
+	'...........................................................................
+	' Метод принудительной установки определеных стилевых атрибутов, необходимых
+	' для обеспечения корректного отображения компоненты:
+	' Параметры: [in] divTab - HTML-элемент "закладки"
+	Sub ModifyTabStyle( divTab )
+		with divTab.style
+			.position = "relative"
+			.overflow = "visible"
+			.display = "inline"
+			.top = 0
+			.left = 0
+			.zIndex = "1"
+			.borderBottomWidth = 0
+			.marginTop = 0
+			if IsNull(NormAttrVal(divTab.currentStyle.cursor)) then .cursor = "default"
+		end with
+		
+		Dim nMR	' размерность правого отступа, style.marginRight
+		nMR = -1
+		if Not IsNull( NormAttrVal( divTab.currentStyle.marginRight ) ) then
+			nMR = Px2Num(divTab.currentStyle.marginRight)
+		end if
+		if (nMR<0) And Not IsNull( NormAttrVal(divTab.currentStyle.borderRightWidth ) ) then
+			nMR = Px2Num(divTab.currentStyle.borderRightWidth)
+		end if
+		if (nMR<0) then nMR = 2
+		divTab.style.marginRight = nMR&"px"
+	End sub
+	
+	'...........................................................................
+	' ВНУТРЕННИЕ УТИЛИТЫ
+	
+	' Преобразование заданого параметра идентификации закладки - варианта с 
+	' индексом или идентификатором - в корректный индекс закладки. 
+	' Функция выполняет проверку корректности. В случае некорректного значения 
+	' функция возврвщает NULL; при корректном значении - индекс идентифицируемой 
+	' закладки
+	Function GetCheckedTabIdx( vTabIdx )
+		Dim nI	' итератор цикла
+		GetCheckedTabIdx = Null
+		
+		' ...предварительная проверка корректности:
+		if IsNull(vTabIdx) or IsEmpty(vTabIdx) then exit function
+		vTabIdx = Trim(CStr(vTabIdx))
+		if Not Len(vTabIdx)>0 then exit function
+		
+		' ...определяем тип идентификации: если vTabId - число, то считаем 
+		' его индексом; иначе - строковым идентификатором закладки. Для
+		' каждого случая выполняем независимую проверку корректности:
+		if IsNumeric(vTabIdx) then
+			' vTabIdx - индекс закладки, проверяем: если заданный индекс 
+			' корректен, то определяем его как результат функции:
+			if IsGoodIdx(vTabIdx) then GetCheckedTabIdx = CLng(vTabIdx)
+		else
+			' vTabIdx - идентификатор закладки, проверяем: если заданный
+			' идентификатор определен, то задаем индекс соответствующей
+			' закладки как результат функции:
+			for nI=0 to UBound(g_arrTabIDs)
+				if StrComp(g_arrTabIDs(nI),vTabIdx)=0 then exit for
+			next
+			if Not( nI>UBound(g_arrTabIDs) ) then GetCheckedTabIdx = CLng(nI)
+		end if
+	End function
+
+	' Проверка корректности заданного индекса "закладки"
+	Function IsGoodIdx( nIndex )
+		IsGoodIdx = false
+		if Not IsObject(nIndex) then
+			if IsNumeric(nIndex) then
+				nIndex = Clng(nIndex)
+				if Not (-1>nIndex Or nIndex>=g_nTabsQnt) then 
+					IsGoodIdx = true
+				end if
+			end if
+		end if
+	End function
+	
+	' Нормализация значения стилевого атрибута: тримминг значения, перевод
+	' в нижний регистр; для пустых и "auto" значений возвращает Null
+	Function NormAttrVal( ByVal vAttrVal )
+		NormAttrVal = Null
+		if IsNull(vAttrVal) then exit function
+		vAttrVal = LCase(Trim(CStr( vAttrVal )))
+		if Not Len(vAttrVal)>0 Or vAttrVal="auto" then vAttrVal=Null
+		NormAttrVal = vAttrVal
+	End function
+	
+	' Перевод "пиксельной" записи вида "NNpx" соответствующе целое число
+	Function Px2Num( sVal )
+		Dim nPos	' позиция подстроки "px" в строке sVal
+		Dim sNum	' выделенная подсторока без "px"
+		Px2Num = 0
+		nPos = InStr(LCase(sVal),"px")
+		if nPos>0 then 
+			sNum = Trim( Left( sVal,nPos-1 ) )
+		else
+			sNum = sVal
+		end if
+		if IsNumeric(sNum) then Px2Num = CLng(sNum)
+	End function
+	
+	' Получение признака "стилевой видимости" для заданного HTML-элемента:
+	' проверка, задан ли для указанного элемента стилевое правило 
+	' display:none; Параметры:
+	'	[in] oObj	- HTML-объект
+	' Результат: True, если отображение элемента "запрещено"
+	Function IsDispayingNone( oObj )
+		IsDispayingNone = False
+		if IsObject(oObj) then
+			IsDispayingNone = CBool( LCase(Cstr(oObj.currentStyle.display))="none" )
+		end if
+	End function
+	
+	' Функция удаления элемента массива arrSrc, с последующим изменением 
+	' его размера. Параметры:
+	'	[in] arrSrc - исходный массив
+	'	[in] nItem  - индекс удаляемого элемента
+	' Результат: измененный массив
+	Function RemoveArrItem( arrSrc,nItem )
+		Dim nSize	' Размер измененного массива
+		Dim nI		' Итератор цикла
+		
+		' Проверка параметров:
+		if ( nItem<LBound(arrSrc) Or nItem>UBound(arrSrc) ) then 
+			Err.Raise vbObjectError,"RemoveArrItem(...)",ERR_INVALIDARG&" nItem"
+		end if
+		' Определяем размерность измененного массива:
+		nSize = UBound(arrSrc)-LBound(arrSrc)
+		' ...работаем с массивом, только если он будет непустым
+		' (иначе просто возвращаем пустой массив):
+		if nSize>0 then
+			nSize = nSize - 1
+			for nI=nItem to nSize
+				if IsObject( arrSrc(nI+1) ) then 
+					Set arrSrc(nI) = arrSrc(nI+1)
+				else
+					arrSrc(nI) = arrSrc(nI+1)
+				end if
+			next
+		end if
+		ReDim Preserve arrSrc(nSize)
+		RemoveArrItem = arrSrc
+	End function
+
+	'***************************************************************************
+</SCRIPT>
+</HEAD>
+
+<BODY ID="bodyTabStrip" SCROLL=NO>
+<TABLE ID="tab" CELLPADDING="0" CELLSPACING="0" STYLE="width:100%;"><TR>
+
+	<TD ID="tdBackPane" STYLE="position:relative; width:100%; overflow-x:hidden;">
+		<DIV ID="divBack" CLASS="xTab-base xTab-back" STYLE="position:relative; overflow:hidden; z-index:0; width:1;">
+			<NOBR ID="inPlace" STYLE="position:relative; overflow:hidden; z-index:0;">
+				<DIV ID="divPageBorder" 
+					STYLE="position:absolute; display:inline; overflow:hidden;"
+					STYLE="left:expression( -1*Px2Num(divBack.currentStyle.paddingLeft)-Px2Num(inPlace.offsetLeft) ); "
+					STYLE="top:expression(inPlace.offsetHeight-Px2Num(this.currentStyle.borderTopWidth)); "
+					STYLE="width:expression(2*divBack.clientWidth); "
+					STYLE="height:expression(this.currentStyle.borderTopWidth); "
+					STYLE="z-index:5; "
+				>&nbsp;</DIV>
+			</NOBR>
+			
+		</DIV>
+	</TD>
+
+</TR></TABLE>
+
+	<DIV ID="divScrollPane" 
+		STYLE="position:absolute; overflow:visible; z-index:9; width:1; "
+		STYLE="left:expression(tdBackPane.clientWidth-this.clientWidth); "
+		STYLE="top:expression(tdBackPane.clientHeight-this.clientHeight-Px2Num(divPageBorder.currentStyle.borderTopWidth)); "
+		STYLE="background:transparent;">
+	<NOBR>
+		<BUTTON ID="btnLeft" CLASS="xTab-base xTab-scroll" 
+			STYLE="font-family:Webdings;"
+			STYLE="height:expression(divBack.clientHeight-Px2Num(divBack.currentStyle.paddingTop)-Px2Num(divPageBorder.currentStyle.borderTopWidth));"
+		>&#051;</BUTTON>
+		<BUTTON ID="btnRight" CLASS="xTab-base xTab-scroll" 
+			STYLE="font-family:Webdings;"
+			STYLE="height:expression(divBack.clientHeight-Px2Num(divBack.currentStyle.paddingTop)-Px2Num(divPageBorder.currentStyle.borderTopWidth));"
+		>&#052;</BUTTON>
+	</NOBR>
+	</DIV>
+
+</BODY>
+<!-- 
+******************************************************************************** 
+-->
+
+

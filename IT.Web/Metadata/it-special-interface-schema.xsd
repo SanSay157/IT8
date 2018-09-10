@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" 
+	xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0"
+	xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0"
+	targetNamespace="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" 
+	elementFormDefault="qualified" 
+	attributeFormDefault="qualified" 
+	version="1.0" id="it-special-interface-schema"
+>
+	<xsd:import namespace="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" schemaLocation="x-net-interface-schema.xsd"/>
+  	<xsd:import namespace="http://www.croc.ru/Schemas/XmlFramework/Data/1.0" schemaLocation="x-net-data-schema.xsd" />
+	<xsd:attribute name="menu-data-provider" type="xsd:string"/>
+	<xsd:attribute name="menu-factory" type="xsd:string"/>
+	<xsd:attribute name="load-provider" type="xsd:string"/>
+	<xsd:attribute name="provider" type="xsd:string"/>
+	<xsd:attribute name="descriptior" type="xsd:string"/>
+	<xsd:attribute name="executor" type="xsd:string"/>
+	
+	<xsd:element name="empty-tree-menu">
+		<xsd:annotation>
+			<xsd:documentation>Меню для случая, когда на корневом уровне дерева нет элементов</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="i:menu" minOccurs="0"/>
+			</xsd:sequence>
+			<xsd:attribute name="data-provider" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="default-level-menu">
+		<xsd:annotation>
+			<xsd:documentation></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="i:menu" minOccurs="0"/>
+			</xsd:sequence>
+			<xsd:attribute name="data-provider" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>     		
+	<xsd:element name="level-menu">
+		<xsd:annotation>
+			<xsd:documentation></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="i:menu" minOccurs="0"/>
+			</xsd:sequence>
+			<xsd:attribute name="data-provider" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>     		
+	<xsd:element name="params">
+		<xsd:annotation>
+			<xsd:documentation></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="param" minOccurs="0" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:documentation></xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:simpleContent>
+							<xsd:extension base="xsd:string">
+								<xsd:attribute name="n" type="xsd:NMTOKEN"/>
+								<xsd:attribute name="vt" type="ds:tVarType" use="optional">
+									<xsd:annotation>
+										<xsd:documentation></xsd:documentation>
+									</xsd:annotation>
+								</xsd:attribute>
+							</xsd:extension>
+						</xsd:simpleContent>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

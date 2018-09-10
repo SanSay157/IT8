@@ -1,0 +1,398 @@
+<%@ Master 
+	Language="C#"
+	ClassName="Croc.XmlFramework.Web.XDefaultMaster"
+%>
+<%@ Implements 
+	Interface="Croc.XmlFramework.Web.IXMasterPageControl" 
+%>
+
+<script runat="server" enableviewstate="false">
+
+	/// <summary>
+	/// Управление видимостью элементов мастер-страницы
+	/// </summary>
+	/// <remarks>
+	/// Реализация метода IXMasterPageControl.HideControl()
+	/// </remarks>
+	/// <param name="component">Элемент мастер-страницы</param>
+	public void HideControl(XMasterPageComponent component)
+	{
+		switch (component)
+		{
+			case XMasterPageComponent.GoBack: cmdGoBack.Visible = false; break;
+			case XMasterPageComponent.GoHome: cmdGoHome.Visible = false; break;
+
+            case XMasterPageComponent.ActivityList: toolBtnActivityList.Visible = false; break;
+            case XMasterPageComponent.Administration: toolBtnAdministration.Visible = false; break;
+            case XMasterPageComponent.CompanyStructure: toolBtnOrgStructure.Visible = false; break;
+            case XMasterPageComponent.Default: toolBtnHome.Visible = false; break;
+            case XMasterPageComponent.DKPTree: toolBtnActivityList.Visible = false; break;
+            case XMasterPageComponent.IncidentList: toolBtnIncidentList.Visible = false; break;
+            case XMasterPageComponent.IncidentSearching: toolBtnFindIncident.Visible = false; break;
+            case XMasterPageComponent.TimeLoss: toolBtnTimeLossSearchingList.Visible = false; break;
+            case XMasterPageComponent.TMSDefault: toolBtnTMS.Visible = false; break;
+            case XMasterPageComponent.TMSList: toolBtnTMSTenderList.Visible = false; break;
+            case XMasterPageComponent.Reports: toolBtnReports.Visible = false; break;
+            case XMasterPageComponent.CurrentTaskList: toolBtnCurrentTasks.Visible = false; break;    
+		}
+	}
+
+	/// <summary>
+	/// Инициализация адреса перехода для кнопок типа "Назад", "Домой", "Помощь" и т.п.
+	/// </summary>
+	/// <remarks>
+	/// Реализация метода IXMasterPageControl.SetControlUrl()
+	/// </remarks>
+	/// <param name="component">Элемент мастер-страницы</param>
+	/// <param name="sUrl">URL</param>
+	public void SetControlUrl(XMasterPageComponent component, string sUrl)
+	{
+		switch (component)
+		{
+			case XMasterPageComponent.GoBack: cmdGoBack.NavigateUrl = sUrl; break;
+			case XMasterPageComponent.GoHome: cmdGoHome.NavigateUrl = sUrl; break;
+            case XMasterPageComponent.ActivityList: toolBtnActivityList.Attributes["NAVIGATIONREF"] = sUrl; break;
+            case XMasterPageComponent.Administration: toolBtnAdministration.Attributes["NAVIGATIONREF"] = sUrl; break;
+            case XMasterPageComponent.CompanyStructure: toolBtnOrgStructure.Attributes["NAVIGATIONREF"] = sUrl; break;
+            case XMasterPageComponent.Default: toolBtnHome.Attributes["NAVIGATIONREF"] = sUrl; break;
+            case XMasterPageComponent.DKPTree: toolBtnActivityTree.Attributes["NAVIGATIONREF"] = sUrl; break;
+            case XMasterPageComponent.IncidentList: toolBtnIncidentList.Attributes["NAVIGATIONREF"] = sUrl; break;
+            case XMasterPageComponent.IncidentSearching: toolBtnIncidentList.Attributes["NAVIGATIONREF"] = sUrl; break;
+            case XMasterPageComponent.TimeLoss: toolBtnTimeLossSearchingList.Attributes["NAVIGATIONREF"] = sUrl; break;
+            case XMasterPageComponent.TMSDefault: toolBtnTMS.Attributes["NAVIGATIONREF"] = sUrl; break;
+            case XMasterPageComponent.TMSList: toolBtnTMSTenderList.Attributes["NAVIGATIONREF"] = sUrl; break;
+            case XMasterPageComponent.Reports: toolBtnReports.Attributes["NAVIGATIONREF"] = sUrl; break;
+            case XMasterPageComponent.CurrentTaskList: toolBtnCurrentTasks.Attributes["NAVIGATIONREF"] = sUrl; break;    
+		}
+	}
+	
+	/// <summary>
+	/// Инициализация страницы в состояние "В доступе отказано"
+	/// </summary>
+	public void SetAccessDenied()
+	{
+		xPaneAccessDenied.Visible = true;
+		xPaneAccessDenied.Style["display"] = "block";
+		xPaneMain.Visible = false;
+	}
+
+    /// <summary>
+    /// Метод осуществляет управление видимостью компонентов master-страницы.
+    /// </summary>
+    /// <param name="component">Элемент master\-страницы (значение
+    ///                         перечисления <see cref="Croc.XmlFramework.Web.XMasterPageComponent" text="XMasterPageComponent" />).</param>
+    public void SetControlVisiblity(XMasterPageComponent component, bool bVisible)
+    {
+        switch (component)
+        {
+            case XMasterPageComponent.ActivityList: toolBtnActivityList.Visible = bVisible; break;
+            case XMasterPageComponent.Administration: toolBtnAdministration.Visible = bVisible; break;
+            case XMasterPageComponent.CompanyStructure: toolBtnOrgStructure.Visible = bVisible; break;
+            case XMasterPageComponent.Default: toolBtnHome.Visible = bVisible; break;
+            case XMasterPageComponent.DKPTree: toolBtnActivityTree.Visible = bVisible; break;
+            case XMasterPageComponent.IncidentList: toolBtnIncidentList.Visible = bVisible; break;
+            case XMasterPageComponent.IncidentSearching: toolBtnFindIncident.Visible = bVisible; break;
+            case XMasterPageComponent.TimeLoss: toolBtnTimeLossSearchingList.Visible = bVisible; break;
+            case XMasterPageComponent.TMSDefault: toolBtnTMS.Visible = bVisible; break;
+            case XMasterPageComponent.TMSList: toolBtnTMSTenderList.Visible = bVisible; break;
+            case XMasterPageComponent.Reports: toolBtnReports.Visible = bVisible; break;
+            case XMasterPageComponent.CurrentTaskList: toolBtnCurrentTasks.Visible = bVisible; break;
+        }
+    }
+    /// <summary>
+    /// Метод осуществляет установку дополнительных аттрибутов  компонентов master-страницы.
+    /// </summary>
+    public void SetAdditionalAttribute(XMasterPageComponent component, string sAtrributeName, string sAtrributeValue)
+    {
+        switch (component)
+        {
+            case XMasterPageComponent.ActivityList: toolBtnActivityList.Attributes[sAtrributeName] = sAtrributeValue; break;
+            case XMasterPageComponent.Administration: toolBtnAdministration.Attributes[sAtrributeName] = sAtrributeValue; break;
+            case XMasterPageComponent.CompanyStructure: toolBtnOrgStructure.Attributes[sAtrributeName] = sAtrributeValue; break;
+            case XMasterPageComponent.Default: toolBtnHome.Attributes[sAtrributeName] = sAtrributeValue; break;
+            case XMasterPageComponent.DKPTree: toolBtnActivityTree.Attributes[sAtrributeName] = sAtrributeValue; break;
+            case XMasterPageComponent.IncidentList: toolBtnIncidentList.Attributes[sAtrributeName] = sAtrributeValue; break;
+            case XMasterPageComponent.IncidentSearching: toolBtnIncidentList.Attributes[sAtrributeName] = sAtrributeValue; break;
+            case XMasterPageComponent.TimeLoss: toolBtnTimeLossSearchingList.Attributes[sAtrributeName] = sAtrributeValue; break;
+            case XMasterPageComponent.TMSDefault: toolBtnTMS.Attributes[sAtrributeName] = sAtrributeValue; break;
+            case XMasterPageComponent.TMSList: toolBtnTMSTenderList.Attributes[sAtrributeName] = sAtrributeValue; break;
+            case XMasterPageComponent.Reports: toolBtnReports.Attributes[sAtrributeName] = sAtrributeValue; break;
+            case XMasterPageComponent.CurrentTaskList: toolBtnCurrentTasks.Attributes[sAtrributeName] = sAtrributeValue; break;
+        }
+    }
+</script>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server" enableviewstate="false">
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1251" />
+	<title>Система Учета Тендеров - Стартовая страница</title>
+	<link id="Link1" rel="SHORTCUT ICON" href="Icons/xu-application-icon.ico" runat="server" />
+	<link id="Link2" href="x.css" rel="STYLESHEET" type="text/css" runat="server" />
+	<link id="Link3" href="it-styles.css" rel="STYLESHEET" type="text/css" runat="server" />
+	<!-- Стиль гиперссылок -->
+	<STYLE>
+		IMG { border-width: 0; }
+		.tms-main-pane {
+			color: #333;
+			background-color: #fff; 
+			padding: 0px;
+			margin: 0px;
+		}
+		.tms-footer-pane {
+			font-family: Verdana, Arial Cyr, Helvetica;
+			font: bold 9px;
+			color: #dd6600;
+			text-align: center;
+			background-color: #fff; 
+			border: #ff9033 solid 1px; 
+			border-width: 1px 0px 0px 0px;
+			padding: 2px 0px 5px 0px;
+		}
+		.tms-footer-pane A {
+			text-decoration: none;
+			color: #ff8800;
+		}
+		.tms-footer-pane A:hover {
+			text-decoration: underline;
+			color: #ff8800;
+		}
+		.tms-nav-title {
+			font-family: Georgia, Arial Cyr, Helvetica;
+			font: italic bold 18px;
+			color: #cc5500; /*#ee8800; */
+			border: #ff9033 solid 1px; 
+			border-width: 0px 0px 1px 0px;
+			padding: 10px 0px 0px 10px;
+		}
+		.tms-nav-item {
+			padding: 3px 0px 0px 10px; 
+			font-family: Verdana;
+			font-size: 12px;
+			font-weight: bold;
+		}
+		.tms-nav-item A {
+			display: block;
+			position: relative;
+			width: 100%;
+			padding: 3px 2px 4px 5px;
+			text-decoration: none;
+			color: #dd6600;
+		}
+		.tms-nav-item A:hover {
+			text-decoration: none;
+			color: #ffffee;
+			background-color: #ee8800;
+			border: #cc6600 outset 1px; 
+			border-width: 0px 1px 1px 0px;
+			padding: 3px 1px 3px 5px;
+		}
+	</STYLE>
+	
+</head>
+<body id="Body1" runat="server" enableviewstate="false" scroll="no">
+	<form id="XDefaultForm" runat="server" enableviewstate="false">
+		<table id="xLayoutGrid" runat="server" class="x-page-layoutgrid">
+			<tr id="Tr1" runat="server">
+				<td id="xPaneHeader" runat="server" class="x-pane-header">
+					<table id="Table1" runat="server" class="x-header x-bar-caption" width="100%" height="100%">
+						<tr>
+							<td class="x-header-nav" nowrap>
+								<asp:HyperLink ID="cmdGoHome" runat="server" CssClass="x-button-nav" ImageUrl="Images/x-go-home.gif">На главную страницу</asp:HyperLink>
+								<asp:HyperLink ID="cmdGoBack" runat="server" CssClass="x-button-nav" ImageUrl="Images/x-go-back.gif">Вернуться на предыдущую страницу</asp:HyperLink>
+							</td>
+							<TD ID="xNavigatonBar_Left" CLASS="x-bar-nav x-list-bar-nav it-navigation-bar">
+					            <TABLE CELLPADDING="0" CELLSPACING="0">
+						            <TR ID="trNavigationBar" STYLE="behavior:url(x-NavigationBar.htc);">
+	
+            					         <TD ID="tdNavPlace_toolBtnCurrentTasks" STYLE="padding:1px; padding-right:15px;">
+			            			        <IMG
+						            	    ID="toolBtnCurrentTasks"
+						    	            SRC="Images/NavigationBar/toolBtn-Home-On.gif"
+						                 	BASEIMAGE="Images/NavigationBar/toolBtn-Home"
+							                NAVIGATIONBAR="trNavigationBar"
+							                NAVIGATIONREF="x-list.aspx?OT=Incident&METANAME=CurrentTaskList"
+							                STYLE="cursor: hand; behavior:url(x-Tooltip.htc); "
+							                TOOLTIPHTML="<DIV CLASS='Header'>Домашняя страница</DIV>Список текущих (активных) задач сотрудника"
+							                STYLESHEET="it-styles-tips.css" 
+							                runat="server"
+							                visible="false"
+						                />
+					                    </TD>
+					
+					                    <TD ID="tdNavPlace_toolBtnActivityTree" STYLE="padding:1px; ">
+						                    <IMG
+							                    ID="toolBtnActivityTree"
+							                    SRC="Images/NavigationBar/toolBtn-ActivityTree-Off.gif"
+							                    BASEIMAGE="Images/NavigationBar/toolBtn-ActivityTree"
+							                    NAVIGATIONBAR="trNavigationBar"
+							                    NAVIGATIONREF="x-tree.aspx?METANAME=Main"
+							                    STYLE="cursor: hand; behavior:url(x-Tooltip.htc); "
+							                    TOOLTIPHTML="<DIV CLASS='Header'>Клиенты и проекты</DIV>Представление всех проектов Компании в разрезе организаций - Клиентов; для каждого проекта отображаются соответствующие инциденты" STYLESHEET="it-styles-tips.css" 
+            						            runat="server"
+							                    visible="false"
+            						        />
+			            		        </TD>
+			            		        
+					                    <TD ID="tdNavPlace_toolBtnActivityList" STYLE="padding:1px; ">
+						                    <IMG
+							                    ID="toolBtnActivityList"
+						    	                SRC="Images/NavigationBar/toolBtn-ProjectsList-Off.gif"
+							                    BASEIMAGE="Images/NavigationBar/toolBtn-ProjectsList"
+						    	                NAVIGATIONBAR="trNavigationBar"
+							                    NAVIGATIONREF="x-list.aspx?OT=Folder&METANAME=ProjectsList"
+							                    STYLE="cursor: hand; behavior:url(x-Tooltip.htc); "
+							                    TOOLTIPHTML="<DIV CLASS='Header'>Список проектов</DIV>Отображение проектов,  удовлетворяющих указанным условиям(фильтру)" STYLESHEET="it-styles-tips.css" 
+							                    runat="server"
+							                    visible="false"
+						                    />
+					                    </TD>
+					
+				        	            <TD ID="tdNavPlace_toolBtnIncidentList" STYLE="padding:1px; ">
+					        	            <IMG
+							                    ID="toolBtnIncidentList"
+						    	                SRC="Images/NavigationBar/toolBtn-IncidentList-Off.gif"
+						       	                BASEIMAGE="Images/NavigationBar/toolBtn-IncidentList"
+							                    NAVIGATIONBAR="trNavigationBar"
+							                    NAVIGATIONREF="x-list.aspx?OT=Incident&METANAME=IncidentSearchingList"
+							                    STYLE="cursor: hand; behavior:url(x-Tooltip.htc); "
+							                    TOOLTIPHTML="<DIV CLASS='Header'>Список инцидентов</DIV>Отображение набора инцидентов, удовлетворяющих указанным условиям (фильтру)" STYLESHEET="it-styles-tips.css" 
+						                        runat="server"
+							                    visible="false"
+						                    />
+					                    </TD>
+					
+					                    <TD ID="tdNavPlace_toolBtnTimeLossSearchingList" STYLE="padding:1px; ">
+					        	            <IMG
+					        		            ID="toolBtnTimeLossSearchingList"
+					        		            SRC="Images/NavigationBar/toolBtn-Timing-Off.gif"
+					        		            BASEIMAGE="Images/NavigationBar/toolBtn-Timing"
+					        		            NAVIGATIONBAR="trNavigationBar"
+						        	            NAVIGATIONREF="x-list.aspx?OT=TimeLoss&METANAME=TimeLossSearchingListAdm"
+						        	            STYLE="cursor: hand; behavior:url(x-Tooltip.htc); "
+						        	            TOOLTIPHTML="<DIV CLASS='Header'>Списанное время</DIV>Отображение списаний сотрудника, удовлетворяющих указанным условиям(фильтру)" STYLESHEET="it-styles-tips.css"
+						        	            runat="server"
+							                    visible="false" 
+						                />
+					                    </TD>
+					
+					                    <TD ID="tdNavPlace_toolBtnReports" STYLE="padding:1px; " >
+						                    <IMG
+							                    ID="toolBtnReports"
+							                    SRC="Images/NavigationBar/toolBtn-Reports-Off.gif"
+							                    BASEIMAGE="Images/NavigationBar/toolBtn-Reports"
+							                    NAVIGATIONBAR="trNavigationBar"
+							                    NAVIGATIONREF="it-reports.aspx?Metaname=nav-menu-reports"
+							                    STYLE="cursor: hand; behavior:url(x-Tooltip.htc); "
+							                    TOOLTIPHTML="<DIV CLASS='Header'>Списки и отчеты</DIV>Списки и отчеты системы" STYLESHEET="it-styles-tips.css" 
+							                    runat="server"
+							                    visible="false"
+						                    />
+					                    </TD>
+					
+					                    <TD ID="tdNavPlace_toolBtnOrgStructure" STYLE="padding:1px; ">
+					        	            <IMG
+					        		            ID="toolBtnOrgStructure"
+						        	            SRC="Images/NavigationBar/toolBtn-OrgStructure-Off.gif"
+						        	            BASEIMAGE="Images/NavigationBar/toolBtn-OrgStructure"
+						        	            NAVIGATIONBAR="trNavigationBar"
+							                    NAVIGATIONREF="x-tree.aspx?METANAME=Company"
+							                    STYLE="cursor: hand; behavior:url(x-Tooltip.htc); "
+							                    TOOLTIPHTML="<DIV CLASS='Header'>Структура Компаний</DIV>Представление структуры компаний в виде иерархии (Организация - подразделение - сотрудник)" STYLESHEET="it-styles-tips.css" 
+							                    runat="server"
+							                    visible="false"
+						                    />
+					                    </TD>
+					
+					                    <TD ID="tdNavPlace_toolBtnFindIncident" STYLE="padding:1px; padding-left:15px; ">
+						                    <IMG
+						        	            ID="toolBtnFindIncident"
+						        	            SRC="Images/NavigationBar/toolBtn-Find-Off.gif"
+						        	            BASEIMAGE="Images/NavigationBar/toolBtn-Find"
+					        		            NAVIGATIONBAR="trNavigationBar"
+				           			            NAVIGATIONREF="CODE:OpenProjectFinder"
+				        			            STYLE="cursor: hand; behavior:url(x-Tooltip.htc); "
+			        				            TOOLTIPHTML="<DIV CLASS='Header'>Поиск проекта</DIV>Поиск проекта по коду в дереве ''Клиенты и проекты''; отображение карточки / редактора найденного проекта" STYLESHEET="it-styles-tips.css"
+			        				            runat="server"
+							                    visible="false" 
+					        	            />
+					                        </TD>
+					
+					                    <TD ID="tdNavPlace_toolBtnHome" STYLE="padding:1px; ">
+						                    <IMG
+						        	        ID="toolBtnHome"
+						        	        SRC="Images/NavigationBar/toolBtn-UserInfo-Off.gif"
+							                BASEIMAGE="Images/NavigationBar/toolBtn-UserInfo"
+							                NAVIGATIONBAR="trNavigationBar"
+						        	        NAVIGATIONREF="default.aspx"
+						        	        STYLE="cursor: hand; behavior:url(x-Tooltip.htc); "
+						        	        TOOLTIPHTML="<DIV CLASS='Header'>Данные и настройки пользователя</DIV>Представление информации о текущих настройках пользователя в системе; вызов интерфейса изменения персональных настроек" STYLESHEET="it-styles-tips.css" 
+                                            runat="server"
+							                visible="false"						                
+   						                />
+					                    </TD>
+					
+					                    <TD ID="tdNavPlace_toolBtnTMS" STYLE="padding:1px; padding-left: 15px; ">
+					        	            <IMG
+						        	            ID="toolBtnTMS"
+						        	            SRC="Images/NavigationBar/toolBtn-TMS-Off.gif"
+						        	            BASEIMAGE="Images/NavigationBar/toolBtn-TMS"
+						        	            NAVIGATIONBAR="trNavigationBar"
+						        	            NAVIGATIONREF="default-tms.aspx"
+							                    STYLE="cursor: hand; behavior:url(x-Tooltip.htc); "
+							                    TOOLTIPHTML="<DIV CLASS='Header'>Система Учета Тендеров</DIV>Стартовая страница Системы Учета Тендеров (СУТ)" STYLESHEET="it-styles-tips.css" 
+							                    SELECTED="true"
+							                    runat="server"
+							                    visible="false"
+						                    />
+					                    </TD>
+					
+					                    <TD ID="tdNavPlace_toolBtnTMSTenderList" STYLE="padding:1px; ">
+						                    <IMG
+						        	            ID="toolBtnTMSTenderList"
+						        	            SRC="Images/NavigationBar/toolBtn-TenderList-Off.gif"
+						        	            BASEIMAGE="Images/NavigationBar/toolBtn-TenderList"
+						        	            NAVIGATIONBAR="trNavigationBar"
+						        	            NAVIGATIONREF="x-list.aspx?OT=Tender&METANAME=TendersList"
+						        	            STYLE="cursor: hand; behavior:url(x-Tooltip.htc); "
+						        	            TOOLTIPHTML="<DIV CLASS='Header'>Список тендеров (СУТ)</DIV>Список тендеров (конкурсов), зарегистрированных в СУТ" STYLESHEET="it-styles-tips.css" 
+						                        runat="server"
+							                    visible="false"
+						                />
+					                    </TD>
+					
+					                    <TD ID="tdNavPlace_toolBtnAdministration" STYLE="padding:1px; padding-left: 15px; ">
+					        	            <IMG
+					        		            ID="toolBtnAdministration"
+					        		            SRC="Images/NavigationBar/toolBtn-Administration-Off.gif"
+				        			            BASEIMAGE="Images/NavigationBar/toolBtn-Administration"
+				        			            NAVIGATIONBAR="trNavigationBar"
+				        			            NAVIGATIONREF="it-reports.aspx?Metaname=nav-menu-admin"
+				        			            STYLE="cursor: hand; behavior:url(x-Tooltip.htc); "
+				        			            TOOLTIPHTML="<DIV CLASS='Header'>Администрирование системы</DIV>Содержит справочники системы;доступ к настройкам системы" STYLESHEET="it-styles-tips.css" 
+				        		                runat="server"
+							                    visible="false"
+				        		            />
+				        	            </TD>
+					    	        </TR>
+					            </TABLE>
+					        </TD>
+							<td ID="Caption" class="x-bar-title x-list-bar-title" style="position:absolute; top:38px; left:43px; font: normal italic 28px;" runat="server"><%= Page.Title %></td>
+                            <td ID="SpecialCaption" class="x-header-special-title" runat="server">&nbsp;</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td id="xPaneMain" runat="server" class="x-pane-main">
+					<asp:ContentPlaceHolder ID="ContentPlaceHolder" runat="server">
+						Зона размещения содержимого страницы
+					</asp:ContentPlaceHolder>
+				</td>
+			</tr>
+			<tr id="xPaneAccessDenied" style="display:none;" runat="server">
+				<td class="x-pane-main-warning">Нет доступа...</td>
+			</tr>
+		</table>
+	</form>
+</body>
+</html>

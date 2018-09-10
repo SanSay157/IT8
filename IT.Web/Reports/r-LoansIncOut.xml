@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="windows-1251" ?> 
+<r:report
+	r:t="Детализация приходов и расходов по займам"
+	r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll"
+	r:class="Croc.IncidentTracker.ReportService.Reports.r_LoansIncOut" 
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+	<!-- Подключение клиентского скрипта -->
+	<r:common>
+		<r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+	</r:common>
+	
+	<!-- Параметры отчета -->
+	<r:params>
+    <r:param r:n="Type" r:vt="i4" r:t="Тип(Приходы=1, Расходы=2)"  r:required="true" />
+    <r:param r:n="PrjGroup" r:vt="uuid" r:t="Группа проектов"  r:required="true" />
+    <r:param r:n="DateIntervalID" r:vt="uuid" r:t="Интервал дат"  r:required="true" />
+    <r:param r:n="Sum" r:vt="string" r:t="Сумма"  r:required="true" />
+    <r:param r:n="IsSeparate" r:vt="boolean" r:t="Разделители разрядов"  r:required="true" />
+  </r:params>
+	<r:data-sources>
+    <r:config-data-source r:n="DateIntervalDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.DateIntervalDS" r:section=""/>
+    <r:config-data-source r:n="LoansIncomesDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.LoansIncomesDS" r:section=""/>
+    <r:config-data-source r:n="LoansOutcomesDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.LoansOutcomesDS" r:section=""/>
+  </r:data-sources>
+</r:report>

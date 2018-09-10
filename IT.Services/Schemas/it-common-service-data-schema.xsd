@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+********************************************************************************
+	Система оперативного управления проектами - Incident Tracker
+	ЗАО КРОК инкорпорейтед, 2005
+********************************************************************************
+	Определение формата XML-данных, возвращаемых в результате вызвов методов
+	общего Web-сервиса системы (CommonService)
+-->
+<xsd:schema 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns="http://www.croc.ru/Schemas/IncidentTracker/WebServices/CommonServiceData/1.0" 
+	targetNamespace="http://www.croc.ru/Schemas/IncidentTracker/WebServices/CommonServiceData/1.0" 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	version="1.0" 
+	id="it-common-service-data-schema"	
+>
+	<!-- 
+
+	-->
+	<xsd:complexType name="tConstantValue">
+		<xsd:all>
+			<xsd:element name="constant" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="value" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="at-date" type="xsd:date" minOccurs="1" maxOccurs="1"/>
+		</xsd:all>
+	</xsd:complexType>
+	<!--
+
+		Определение общего способа идентификации объектов
+		Комплексный тип, задает идентифкацию объекта, через атрибуты interal-id 
+		и external-id
+	-->
+	<xsd:complexType name="tObjectIdentification">
+		<xsd:attribute name="internal-id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>Внутренний идентификатор объекта в системе Incident Tracker</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="external-id" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>Идентификатор объекта во внешней системе (в общем случае - во внешней системе ведения нормативной справочной информации - НСИ)</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<!--
+		
+	-->
+	<xsd:complexType name="tEmployeeRef">
+		<xsd:complexContent>
+			<xsd:extension base="tObjectIdentification">
+				<xsd:sequence>
+					<xsd:element name="full-name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!--
+
+	-->
+	<xsd:complexType name="tOrganizationBase">
+		<xsd:annotation>
+			<xsd:documentation>Определение общих атрибутов и элементов, используемых для предоставления данных по организации</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="tObjectIdentification">
+				<xsd:sequence>
+					<xsd:element name="short-name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="full-name" type="xsd:string"/>
+					<xsd:element name="account-manager" type="tEmployeeRef"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!--
+
+	-->
+	<xsd:complexType name="tOrganizationsList">
+		<xsd:sequence>
+			<xsd:element name="organization" type="tOrganizationBase" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="tOrganizationInfo">
+		<xsd:complexContent>
+			<xsd:extension base="tOrganizationBase">
+				<xsd:sequence>
+					<xsd:element name="comment" type="xsd:string"/>
+				</xsd:sequence>
+				<xsd:attribute name="is-it-owner" type="xsd:boolean"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!--
+
+	-->
+	<xsd:complexType name="tDepartmentBase">
+		<xsd:annotation>
+			<xsd:documentation>Определение общих атрибутов и элементов, используемых для предоставления данных о подразделени организации</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="tObjectIdentification">
+				<xsd:sequence>
+					<xsd:element name="short-name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="full-name"  type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="director" type="tEmployeeRef" minOccurs="0" maxOccurs="1"/>
+					<xsd:element name="higher-department" type="tObjectIdentification" minOccurs="0" maxOccurs="1"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!--
+
+	-->
+	<xsd:complexType name="tDepartmentsList">
+		<xsd:sequence>
+			<xsd:element name="department" type="tDepartmentBase"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--
+
+	-->
+	<xsd:complexType name="tDepartmentInfo">
+		<xsd:complexContent>
+			<xsd:extension base="tDepartmentBase">
+				<xsd:sequence>
+					<xsd:element name="comment" type="xsd:string"/>
+				</xsd:sequence>
+				<xsd:attribute name="is-it-accountable" type="xsd:boolean" use="required"/>
+				<xsd:attribute name="has-it-subdivision" type="xsd:boolean" use="required"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!--
+
+	-->
+	<xsd:complexType name="tEmployeesList">
+		<xsd:annotation>
+			<xsd:documentation></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="employee" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:complexContent>
+						<xsd:extension base="tEmployeeRef">
+							<xsd:sequence>
+								<xsd:element name="login" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+								<xsd:element name="department-member" type="tObjectIdentification" minOccurs="0" maxOccurs="1"/>
+							</xsd:sequence>
+						</xsd:extension>
+					</xsd:complexContent>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--
+
+	-->
+	<xsd:complexType name="tEmployeeInfo">
+		<xsd:annotation>
+			<xsd:documentation></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="tObjectIdentification">
+				<xsd:sequence>
+					<xsd:element name="first-name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="middle-name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="last-name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="login" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="begin-work" type="xsd:date" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="end-work" type="xsd:date" minOccurs="0" maxOccurs="1"/>
+					<xsd:element name="phones" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="phones-add" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="e-mail" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="mobile-phone" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="post-address" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="pager-phone" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="pager-number" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="department-member" type="tObjectIdentification"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!--
+
+	-->
+	<xsd:complexType name="tDirectionBase">
+		<xsd:annotation>
+			<xsd:documentation></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="tObjectIdentification">
+				<xsd:sequence>
+					<xsd:element name="name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!--
+	
+	-->
+	<xsd:complexType name="tDirectionsList">
+		<xsd:sequence>
+			<xsd:choice>
+				<xsd:element name="direction" type="tDirectionBase" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element name="apply-department" minOccurs="0" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:complexContent>
+							<xsd:extension base="tDepartmentBase">
+								<xsd:sequence>
+									<xsd:element name="apply-direction" type="tDirectionBase" minOccurs="0" maxOccurs="unbounded"/>
+								</xsd:sequence>
+							</xsd:extension>
+						</xsd:complexContent>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--
+
+	-->
+	<xsd:element name="constant-value" type="tConstantValue"/>
+	<xsd:element name="organizations-list" type="tOrganizationsList"/>
+	<xsd:element name="organization-info" type="tOrganizationInfo"/>
+	<xsd:element name="departments-list" type="tDepartmentsList"/>
+	<xsd:element name="department-info" type="tDepartmentInfo"/>
+	<xsd:element name="employees-list" type="tEmployeesList"/>
+	<xsd:element name="employee-info" type="tEmployeeInfo"/>
+	<xsd:element name="directions-list" type="tDirectionsList"/>
+	
+	<!--
+		ВРЕМЕННОЕ ОПРЕДЕЛЕНИЕ
+		(для выполнения проверки по схеме для XML-документа с примерами всех форматов данных)
+	-->
+	<xsd:element name="example-data">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="constant-value" type="tConstantValue"/>
+				<xsd:element name="organizations-list" type="tOrganizationsList"/>
+				<xsd:element name="organization-info" type="tOrganizationInfo"/>
+				<xsd:element name="departments-list" type="tDepartmentsList"/>
+				<xsd:element name="department-info" type="tDepartmentInfo"/>
+				<xsd:element name="employees-list" type="tEmployeesList"/>
+				<xsd:element name="employee-info" type="tEmployeeInfo"/>
+				<xsd:element name="directions-list" type="tDirectionsList" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

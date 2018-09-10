@@ -1,0 +1,2356 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Croc.IncidentTracker.Commands.Interop</name>
+    </assembly>
+    <members>
+        <member name="T:Croc.XmlFramework.Extension.Commands.XXGetTreeNodeDragRequest">
+            <summary>
+            Объект, представляющий данные запроса на выполнение операции получения
+            XML-описания опреации переноса для узла иерархии <b>GetTreeNodeDrag</b> (см. реализацию
+            операции XGetTreeNodeDragCommand).
+            </summary>                                            
+        </member>
+        <member name="F:Croc.XmlFramework.Extension.Commands.XXGetTreeNodeDragRequest.DEF_COMMAND_NAME">
+            <summary>
+            Наименование операции в перечне операций по умолчанию.
+            </summary>
+        </member>
+        <member name="M:Croc.XmlFramework.Extension.Commands.XXGetTreeNodeDragRequest.#ctor">
+            <summary>
+            Конструктор по умолчанию, инициализирует свойство MetaName />
+            значением null, свойство Path />
+            \- экземпляром объекта XTreePath />,
+            представляющим пустой &quot;путь&quot;. 
+            </summary>                                                                                                                           
+        </member>
+        <member name="M:Croc.XmlFramework.Extension.Commands.XXGetTreeNodeDragRequest.#ctor(System.String)">
+            <summary>
+            Параметризированный конструктор.
+            </summary>
+            <param name="metaName">Строка (System.String) с наименованием
+                                   определения структуры иерархии в метаданных;
+                                   инициализирует значение свойства MetaName.
+                                   Задание значения параметра обязательно; задание
+                                   null или пустой строки недопустимо \- в этом
+                                   случае будет сгенерировано исключение ArgumentNullException
+                                   или ArgumentException
+                                   соответственно. </param>
+            <exception cref="T:System.ArgumentException">Если в качестве значения
+                                                параметра <b><i>metaName</i></b>
+                                                задана пустая строка. </exception>
+            <exception cref="T:System.ArgumentNullException">Если параметр <b><i>metaName</i></b>
+                                                    задан в null. </exception>                                                                          
+        </member>
+        <member name="M:Croc.XmlFramework.Extension.Commands.XXGetTreeNodeDragRequest.#ctor(System.String,Croc.XmlFramework.Commands.XTreePath)">
+            <summary>
+            Параметризированный конструктор.
+            </summary>
+            <param name="metaName">Строка (System.String) с наименованием
+                                   определения структуры иерархии в метаданных;
+                                   инициализирует значение свойства MetaName.
+                                   Задание значения параметра обязательно; задание
+                                   null или пустой строки недопустимо \- в этом
+                                   случае будет сгенерировано исключение ArgumentNullException
+                                   или ArgumentException
+                                   соответственно. </param>
+            <param name="treePath">Экземпляр объекта XTreePath,
+                                   задающий "путь" для узла в иерархии,
+                                   для которого требуется получить описание меню;
+                                   инициализирует значение свойства Path.<para></para>Если
+                                   заданный объект XTreePath
+                                   описывает пустой путь (т.е. "длина"
+                                   пути Length
+                                   нулевая) \- то операция выполняет получение
+                                   данных для пустой иерархии (определяемое
+                                   элементом <b>i\:empty\-tree\-menu</b>). </param>
+            <exception cref="T:System.ArgumentException">Если в качестве значения
+                                                параметра <b><i>metaName</i></b>
+                                                задана пустая строка. </exception>
+            <exception cref="T:System.ArgumentNullException">Если параметр <b><i>metaName</i></b>
+                                                    задан в null. </exception>                                                                                   
+        </member>
+        <member name="M:Croc.XmlFramework.Extension.Commands.XXGetTreeNodeDragRequest.Validate">
+            <summary>
+            Метод проверки данных запроса. 
+            Вызывается Ядром перед передачей объекта в прикладной код.
+            </summary>
+            <remarks>
+            Метод проверяет, чтобы наименование описания структуры иерархии в 
+            метаданных было задано (явно или в результате разбора XML-запроса).
+            </remarks>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.IdentificationMethod">
+            <summary>
+            Методы идентификации пользователей Системы, при получении данных 
+            о списаниях пользователей за период.
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.IdentificationMethod.ByTrackerEmployeeID">
+            <summary>
+            Идентификация по внутреннему GUID-идентификатору записи пользователя в IT;
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.IdentificationMethod.ByEmail">
+            <summary>
+            Идентификация по адресу электронной почты;
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.IdentificationMethod.ByLogin">
+            <summary>
+            Идентификация по логину (так, как он задан в записи пользователя в IT);
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetEmployeesExpensesRequest">
+            <summary>
+            Запрос операции получения данных о суммарных списаниях пользователей 
+            Системы в заданный период времени
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetEmployeesExpensesRequest.DEF_COMMAND_NAME">
+            <summary>
+            Наименование операции в перечне операций по умолчанию
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetEmployeesExpensesRequest.#ctor">
+            <summary>
+            Конструктор по умолчанию, для корректной (де)сериализации
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetEmployeesExpensesRequest.IdentificationMethod">
+            <summary>
+            Метод идентификации сотрудников, для которых получаются данные;
+            определяет формат идентификаторов, заданных в списке EmployeesIDsList.
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetEmployeesExpensesRequest.EmployeesIDsList">
+            <summary>
+            Строка со списком идентификаторов сотрудников, для которых получаются
+            данные о списаниях. Формат идентификаторов определяется в соответствии
+            с используемым методом идентификации, см. IdentificationMethod.
+            Идентификаторы в списке перечисляются через запятую. 
+            Значение параметра обязательно, не может быть пустой строкой.
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetEmployeesExpensesRequest.ExceptDepartmentIDsList">
+            <summary>
+            Строка со списком идентификаторов подразделений (Department.ObjectID),
+            сотрудники которых не списывают время в Системе. NB: подчиненные 
+            подразделения должны выключаться в список независимо. Идентификаторы 
+            в списке перечисляются через запятую.
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetEmployeesExpensesRequest.PeriodBegin">
+            <summary>
+            Дата начала отчетного периода.
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetEmployeesExpensesRequest.PeriodEnd">
+            <summary>
+            Дата окончания отчетного периода.
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetEmployeesExpensesRequest.Validate">
+            <summary>
+            Проверяет корректность заполнения данных запроса
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.UserSubscriptionForEventClassRequest">
+            <summary>
+            Реквест для управления подпиской текущего пользователя
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.EmployeeLocatorInCompanyTreeRequest">
+            <summary>
+            Запрос на поиск сотрудника в Дереве "Структура компаний"
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.EmployeeLocatorInCompanyTreeRequest.LastName">
+            <summary>
+            Фамилия
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.EmployeeLocatorInCompanyTreeRequest.IgnoredObjects">
+            <summary>
+            Массив идентификаторов игнорируемых сотрудников
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.EmployeeLocatorInCompanyTreeRequest.AllowArchive">
+            <summary>
+            Учитывать архивных сотрудников
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.UserNavigationInfo">
+            <summary>
+            Данные, необходимые для построения навигационной панели, соответствующей
+            текущим настройкам пользователя
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.UserNavigationInfo.CURRENT_NAVIGATION_INFO">
+            <summary>
+            Константная строка, может быть использована в качестве ключа 
+            при сохранении UserNavigationInfo в коллекции переменных сессии
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.UserNavigationInfo.m_bUseOwnStartPage">
+            <summary>
+            Признак использования "собственной" стартовой страницы (отлчной
+            от "домашней") - при старте сессии система выполнит автоматический
+            redirect на заданную страницу (какую именно - определяет значение
+            в m_enOwnStartPage)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.UserNavigationInfo.m_enOwnStartPage">
+            <summary>
+            Указание "собственной" стартовой старницы
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.UserNavigationInfo.m_UsedNavigationItems">
+            <summary>
+            Коллекция навигационных элементов, доступных текущему пользователю
+            Ключ - идентификатор элемента (см. NavigationItem.ItemID), значение 
+            URL страницы / операции, привязанной к данному навигационному 
+            элементу (м.б. задан как String.Empty - в этом случае используется
+            URL, заданный в NavigationItem)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.UserNavigationInfo.m_bDoShowExpensesPanel">
+            <summary>
+            Признак отображения панели с данными по затратам пользователя
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.UserNavigationInfo.m_nExpensesPanelAutoUpdateDelay">
+            <summary>
+            Период автообновления данных в панели отображения затрат
+            Значение 0 указывает на то, что автообновление отключено
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.UserNavigationInfo.#ctor">
+            <summary>
+            Конструктор по умолчанию
+            Требуется для корректной XML-де-сериализации
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.UserNavigationInfo.StartPage2NavItemID(Croc.IncidentTracker.StartPages)">
+            <summary>
+            Служебный метод получения соответствующего идентификатора навигационного 
+            элемента для заданного значения типа StartPages
+            </summary>
+            <param name="enStartPage"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.UserNavigationInfo.UsedNavigationItems">
+            <summary>
+            Коллекция навигационных элементов, доступных текущему пользователю
+            Ключ - идентификатор элемента (см. NavigationItem.ItemID), значение 
+            URL страницы / операции, привязанной к данному навигационному 
+            элементу (м.б. задан как String.Empty - в этом случае используется
+            URL, заданный в NavigationItem)
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.UserNavigationInfo.UseOwnStartPage">
+            <summary>
+            Признак использования "собственной" стартовой страницы (отлчной
+            от "домашней") - при старте сессии система выполнит автоматический
+            redirect на заданную страницу (какую именно - определяет значение
+            в OwnStartPage)
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.UserNavigationInfo.OwnStartPage">
+            <summary>
+            Указание "собственной" стартовой старницы
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.UserNavigationInfo.ShowExpensesPanel">
+            <summary>
+            Признак отображения панели с данными по затратам пользователя
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.UserNavigationInfo.ExpensesPanelAutoUpdateDelay">
+            <summary>
+            Период автообновления данных в панели отображения затрат
+            Значение 0 указывает на то, что автообновление отключено
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.IncidentLocatorInTreeRequest">
+            <summary>
+            Класс запроса для команды IncidentLocatorInTreeCommand
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.IncidentLocatorInTreeRequest.IncidentOID">
+            <summary>
+            Идентификатор инцидента
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.IncidentLocatorInTreeRequest.IncidentNumber">
+            <summary>
+            Номер инцидента
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.IncidentLocatorInTreeRequest.Validate">
+            <summary>
+            Проверка параметров команды
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetKassBallanceRequest">
+            <summary>
+            Класс запроса для команды GetKassBallance
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetKassBallanceResponse.sKassBallance">
+            <summary>
+            Балланс ДС в кассе, приведенный к строке
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetObjectByExKeyRequest">
+            <summary>
+            Запрос операции получения данных ds-объекта, заданного значениями 
+            своих реквизитов
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest">
+            <summary>
+            Запрос на выполнение операции получения идентификатора ds-объекта, 
+            заданного значениями своих реквизитов
+            <seealso cref="T:Croc.IncidentTracker.Commands.GetObjectIdByExKeyResponse"/>
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest.DEF_COMMAND_NAME">
+            <summary>
+            Наименование операции в перечне операций по умолчанию
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest.ERR_AMBIGUOUS_PARAMS">
+            <summary>
+            Текст описания ошибки некорректного задания параметров
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest.m_sTypeName">
+            <summary>
+            Наименование ds-типа, для которого формируется запрос на получение 
+            идентификатора экземпляра объекта; заданиче значения исключает 
+            использование значения m_sDataSourceName
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest.m_sDataSourceName">
+            <summary>
+            Наименование источника данных, при выполнении которого ожидается 
+            получение идентификатора экземпляра объекта; заданиче значения 
+            исключает использование значения m_sTypeName 
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest.m_paramsCollection">
+            <summary>
+            Коллекция значений именованных параметров
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest.#ctor">
+            <summary>
+            Конструктор по умолчанию, для корректной (де)сериализации
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest.Validate">
+            <summary>
+            Проверяет корректность заполнения данных запроса
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest.TypeName">
+            <summary>
+            Наименование ds-типа, для которого формируется запрос на получение 
+            идентификатора экземпляра объекта; заданиче значения исключает 
+            использование значения DataSourceName
+            </summary>
+            <exception cref="T:System.ArgumentException">
+            При попытке в качестве значения свойства пустой строки</exception>
+            <exception cref="T:System.ArgumentNullException">
+            При попытке значения свойства в null</exception>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest.DataSourceName">
+            <summary>
+            Наименование источника данных, при выполнении которого ожидается 
+            получение идентификатора экземпляра объекта; заданиче значения 
+            исключает использование значения sTypeName 
+            </summary>
+            <exception cref="T:System.ArgumentNullException">
+            При попытке значения свойства в null</exception>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest.Params">
+            <summary>
+            Коллекция значений именованных параметров 
+            </summary>
+            <remarks>
+            При задании null свойство устанавливается в значение, соответствующее
+            "пустой" коллекции значений параметров
+            </remarks>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetObjectByExKeyRequest.DEF_COMMAND_NAME">
+            <summary>
+            Наименование операции в перечне операций по умолчанию
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectByExKeyRequest.#ctor">
+            <summary>
+            Конструктор по умолчанию, для корректной (де)сериализации
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectByExKeyRequest.#ctor(System.String,Croc.XmlFramework.Commands.XParamsCollection)">
+            <summary>
+            Параметризированный конструктор
+            </summary>
+            <param name="sTypeName">Наименование ds-типа</param>
+            <param name="paramsCollection">
+            Коллекция параметров, задающих значения свойств, по которым 
+            определяется загружаемый экземпляр ds-объекта
+            </param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectByExKeyRequest.Validate">
+            <summary>
+            Проверяет корректность заполнения данных запроса
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.ExpensesCompleteness">
+            <summary>
+            Перечисление, задающее "цвет", соответствующий полноте списаний для 
+            контроллируемого периода; Здесь "цвет" - некая градация кол-ва 
+            несписанного времени: если несписано много, то"цвет" красный, если 
+            не очень - то синий; если списано все - то "зеленый". Разделение на 
+            градации достаточно условно и определяется для каждого периода кодом
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.ExpensesCompleteness.RedZone">
+            <summary>
+            красный - списаний крайне недостаточно
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.ExpensesCompleteness.BlueZone">
+            <summary>
+            синий - неполное количество списаний 
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.ExpensesCompleteness.GreenZone">
+            <summary>
+            зеленый - полное количество списаний
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.DurationInfo">
+            <summary>
+            Представление продолжительности заданного периода
+            Экземпляр описывает продолжиьтельность через количество минут, а так же
+            числом полных дней / часов / минут. Реализует логику для получения 
+            строкового представления периода с соответствующими подписями (например,
+            "2 дня 5 часов 41 минута")
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.DurationInfo.DEF_ERR_NULL_VALUE">
+            <summary>
+            Константный текст сообщения об ошибке
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.DurationInfo.m_nFullDuration">
+            <summary>
+            Продолжительность периода, в минутах (т.к. минимальное дробление 
+            при строковом представлении дается в минутах)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.DurationInfo.m_nWorkDayDuration">
+            <summary>
+            Продолжительность рабочего дня: днем может считаться рабочий день 
+            (т.е. 8/10 часов), а может полные сутки - 24 часа - ЗНАЧЕНИЕ ПО 
+            УМОЛЧАНИЮ; Значение задается в минутах, и в общем случае может 
+            различаться для каждого сотрудника
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.DurationInfo.m_nDays">
+            <summary>
+            Полное количество дней в заданном периоде; данное значение зависит от 
+            "продолжительности рабочего дня": днем может считаться рабочий день 
+            (т.е. 8/10 часов), а может полные сутки - 24 часа; 
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.DurationInfo.m_nHours">
+            <summary>
+            Полное количество часов в заданном периоде, за вычитом часов, 
+            составляющих полные дни (т.е. вошедших в m_nDays); т.к. определение
+            кол-ва дней в заданном периоде зависит от "продолжительности рабочего 
+            дня", то и остаток в часах так же зависит
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.DurationInfo.m_nMinutes">
+            <summary>
+            Кол-во минут в заданном периоде, оставшихся при вычите полного числа 
+            дней (m_nDays) и часов (m_nHours)
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.DurationInfo.convertDuration">
+            <summary>
+            Внутренний метод, пересчитывающий значения внутренних перемнных класса в
+            зависимости от значений продолжительности периода (m_nFullDuration)
+            и "продолжительности рабочего дня" (m_nWorkDayDuration)
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.DurationInfo.getLabelString(System.Int32,System.String,System.String,System.String)">
+            <summary>
+            Выбор подписи для указанного целочисленного значения
+            </summary>
+            <param name="nValue">Значение </param>
+            <param name="sSingleNominativ">Подпись, в ед. числе, именительный падеж (nominativus)</param>
+            <param name="sSingleGenitiv">Подпись, в ед. числе, родительный падеж (genitivus)</param>
+            <param name="sPluralGenitiv">Подпись во множ. числе, родительный падеж (genitivus)</param>
+            <returns>Строка с подписью</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.DurationInfo.#ctor">
+            <summary>
+            Конструктор по умолчанию
+            Необходим для корректной де-сериализации
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.DurationInfo.Duration">
+            <summary>
+            Продолжительность периода, в минутах (т.к. минимальное дробление 
+            при строковом представлении дается в минутах). При изменении значения
+            свойства АВТОМАТИЧЕСКИ изменяются значения свойств Days, Hours, 
+            Minutes, DaysString, HoursString, MinutesString и DurationString
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.DurationInfo.WorkDayDuration">
+            <summary>
+            Продолжительность рабочего дня: днем может считаться рабочий день 
+            (т.е. 8/10 часов), а может полные сутки - 24 часа - ЗНАЧЕНИЕ ПО 
+            УМОЛЧАНИЮ; Значение задается в минутах, и в общем случае может 
+            различаться для каждого сотрудника. 
+            При изменении значения свойства АВТОМАТИЧЕСКИ изменяются значения 
+            свойств Days, Hours, Minutes, DaysString, HoursString, MinutesString
+            и DurationString.
+            Задаваеме значение должно быть больше 0 и меньше или равно 24*60.
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.DurationInfo.Days">
+            <summary>
+            Полное количество дней в заданном периоде; данное значение зависит от 
+            "продолжительности рабочего дня": днем может считаться рабочий день 
+            (т.е. 8/10 часов), а может полные сутки - 24 часа; 
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.DurationInfo.Hours">
+            <summary>
+            Полное количество часов в заданном периоде, за вычитом часов, 
+            составляющих полные дни (т.е. вошедших в Days); т.к. определение
+            кол-ва дней в заданном периоде зависит от "продолжительности рабочего 
+            дня", то и остаток в часах так же зависит
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.DurationInfo.Minutes">
+            <summary>
+            Кол-во минут в заданном периоде, оставшихся при вычите полного числа 
+            дней (Days) и часов (Hours)
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.DurationInfo.DaysLabel">
+            <summary>
+            Подпись для строкового представления полного количество дней, вида 
+            "NNN дней"; Если кол-во продолжительность исходного периода меньше 
+            дня, свойство возвращает пустую строку
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.DurationInfo.HoursLabel">
+            <summary>
+            Подпись для строкового представление полного количества часов, за 
+            вычетом полного кол-ва дней, вида "NNN часов"; если продолжительность 
+            исходного периода меньше часа, свойство возвращает пустую строку
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.DurationInfo.MinutesLabel">
+            <summary>
+            Подпись для строкового представление количества минут, за вычетом 
+            полного кол-ва часов и дней, вида "NNN минут"; продолжительность 
+            исходного периода не содержит "остатка" в минутах (тоько ровное 
+            кол-во дней / часов), свойство возвращает пустую строку
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.DurationInfo.DurationString">
+            <summary>
+            Возвращает строковое представление ВСЕГО периода. 
+            Если период нулевой - возвращает пустую строку
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.PeriodExpensesInfo">
+            <summary>
+            Данные по затратам (по списаниям) для одного периода (в целом 
+            рассматриваются три периода - <seealso cref="T:Croc.IncidentTracker.Commands.GetExpensesDataResponse"/>)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.PeriodExpensesInfo.PeriodStartDate">
+            <summary>
+            Начальная дата периода (включительно)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.PeriodExpensesInfo.PerionEndDate">
+            <summary>
+            Конечная дата периода (включительно); Для периода в один день значение
+            не задается (null)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.PeriodExpensesInfo.IsOneDayPeriod">
+            <summary>
+            Признак задания периода продолжительностью в один день; для одного дня 
+            сама дата задается как значение свойства PeriodStartDate
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.PeriodExpensesInfo.PeriodName">
+            <summary>
+            Наименование периода - или наименование календарного месяца или "Сегодня"
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.PeriodExpensesInfo.ExpectedExpense">
+            <summary>
+            Ожидаемое (требуемое) количество списаний для рассматриваемого периода
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.PeriodExpensesInfo.RealExpense">
+            <summary>
+            Реальное количество списаний для рассматриваемого периода
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.PeriodExpensesInfo.RemainsExpense">
+            <summary>
+            Остаток списаний для рассматриваемого периода
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.PeriodExpensesInfo.Completeness">
+            <summary>
+            "Цвет", соответствующий полноте списаний для контроллируемого периода
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetExpensesDataResponse">
+            <summary>
+            Результат операции получения данных, отображаемых на панели контроля списаний
+            (обслуживается HTC-компонентой it-TimingPanel.htc)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetExpensesDataResponse.EmployeeID">
+            <summary>
+            Идентификатор сотрудника (НЕ пользователя!) для которого 
+            были получены все данные по затратам:
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetExpensesDataResponse.PreviousMonth">
+            <summary>
+            Информация о списании на предыдущий месяц
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetExpensesDataResponse.CurrentMonth">
+            <summary>
+            Информация о списании на текущий месяц
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetExpensesDataResponse.CurrentDay">
+            <summary>
+            Информация о списании на текущий день
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.DeleteObjectByExKeyRequest">
+            <summary>
+            Запрос операции удаления данных ds-объекта, заданного значениями 
+            своих реквизитов
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.DeleteObjectByExKeyRequest.DEF_COMMAND_NAME">
+            <summary>
+            Наименование операции в перечне операций по умолчанию
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.DeleteObjectByExKeyRequest.TreatNotExistsObjectAsDeleted">
+            <summary>
+            Логический флаг, управляющий интерпретацией отсутствия объекта.
+            </summary>
+            <remarks>
+            Определяет реакцию операции в том случае, если объект, заданный как 
+            удаляемый, не найден:
+            	-- если значение false - операция генерирует исключение;
+            	-- если значение true - операция успешно завершается, но в 
+            	результате выполнения в кол-ве удаленных объектов указывается 
+            	ноль (см. <see cref="T:Croc.XmlFramework.Commands.XDeleteObjectResponse"/>)
+            </remarks>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.DeleteObjectByExKeyRequest.#ctor">
+            <summary>
+            Конструктор по умолчанию, для корректной (де)сериализации
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.DeleteObjectByExKeyRequest.#ctor(System.String,Croc.XmlFramework.Commands.XParamsCollection)">
+            <summary>
+            Параметризированный конструктор
+            </summary>
+            <param name="sTypeName">Наименование ds-типа</param>
+            <param name="paramsCollection">
+            Коллекция параметров, задающих значения свойств, по которым 
+            определяется удаляемый экземпляр ds-объекта
+            </param>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.DeleteObjectByExKeyRequest.Validate">
+            <summary>
+            Проверяет корректность заполнения данных запроса
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.NavigationItemIDs">
+            <summary>
+            Перечисление идентификаторов возможных навигационных элементов систем
+            Incident Tracker и Системы Учета Тендеров
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.NavigationItemIDs.IT_HomePage">
+            <summary>
+            "Домашняя" страница системы Incident Tracker 
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.NavigationItemIDs.IT_CustomerActivityTree">
+            <summary>
+            Иерархия "Клиенты и Проекты" (ДКП)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.NavigationItemIDs.IT_ActivityList">
+            <summary>
+            Список Проектов (c поиском)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.NavigationItemIDs.IT_CurrentTasks">
+            <summary>
+            Список "Мои инциденты" (текущие задачи)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.NavigationItemIDs.IT_IncidentList">
+            <summary>
+            Список инцидентов (поиск инцидентов)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.NavigationItemIDs.IT_TimeLossSearchingList">
+            <summary>
+            Список "Списания времени"
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.NavigationItemIDs.IT_Reports">
+            <summary>
+            Страница "Отчеты" (меню вызова всех отчетов, представленных в системах)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.NavigationItemIDs.IT_OrgStructure">
+            <summary>
+            Иерархия организационной структуры (Организации, подразделения, сотрудники)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.NavigationItemIDs.IT_FindIncident">
+            <summary>
+            Вызов инструмента поиска заданного инцидента
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.NavigationItemIDs.TMS_HomePage">
+            <summary>
+            "Домашняя" страница Системы Учета Тендеров (СУТ)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.NavigationItemIDs.TMS_TenderList">
+            <summary>
+            Список тендеров (СУТ)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.NavigationItemIDs.IT_Administation">
+            <summary>
+            Страница административных интерфейсов (все объекты системы и пр.)
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetCurrentUserNavInfoResponse.#ctor">
+            <summary>
+            Конструктор по умолчанию
+            Используется для корректной XML-де-сериализации
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.ActivityAnalysDepth">
+            Глубина анализа активностей
+        </member>
+        <member name="F:Croc.IncidentTracker.ActivityAnalysDepth.OnlyCurrentActivity">
+            только выбранная активность
+        </member>
+        <member name="F:Croc.IncidentTracker.ActivityAnalysDepth.FirstStageSubActivities">
+            подчиненные активности 1 уровня
+        </member>
+        <member name="F:Croc.IncidentTracker.ActivityAnalysDepth.AllStagesSubActivities">
+            подчиненные активности всех уровней
+        </member>
+        <member name="T:Croc.IncidentTracker.ActivityDetalizationLevel">
+            Уровень детализации активностей
+        </member>
+        <member name="F:Croc.IncidentTracker.ActivityDetalizationLevel.SubProject">
+            до подпроекта 1 уровня
+        </member>
+        <member name="F:Croc.IncidentTracker.ActivityDetalizationLevel.ProjectManager">
+            до менеджера проекта
+        </member>
+        <member name="F:Croc.IncidentTracker.ActivityDetalizationLevel.ProjectCode">
+            до кода проекта
+        </member>
+        <member name="T:Croc.IncidentTracker.ActivitySelection">
+            Выборка активностей
+        </member>
+        <member name="F:Croc.IncidentTracker.ActivitySelection.HaveExpenses">
+            с затратами за период
+        </member>
+        <member name="F:Croc.IncidentTracker.ActivitySelection.WaitingForClose">
+            переведенные в ожидание закрытия
+        </member>
+        <member name="F:Croc.IncidentTracker.ActivitySelection.Closed">
+            закрытые за период
+        </member>
+        <member name="T:Croc.IncidentTracker.AnalysDirection">
+            Направление анализа
+        </member>
+        <member name="F:Croc.IncidentTracker.AnalysDirection.LastYearExpenses">
+            за прошедший период
+        </member>
+        <member name="F:Croc.IncidentTracker.AnalysDirection.OpenedIncidents">
+            открытые инциденты
+        </member>
+        <member name="T:Croc.IncidentTracker.BranchFilterType">
+            Тип фильтрации по отраслям
+        </member>
+        <member name="F:Croc.IncidentTracker.BranchFilterType.AnyBranches">
+            Любые отрасли
+        </member>
+        <member name="F:Croc.IncidentTracker.BranchFilterType.AllSelected">
+            Все указанные
+        </member>
+        <member name="F:Croc.IncidentTracker.BranchFilterType.AnySelected">
+            Хотя бы одна из указанных
+        </member>
+        <member name="T:Croc.IncidentTracker.DateDetalization">
+            Детализация по датам
+        </member>
+        <member name="F:Croc.IncidentTracker.DateDetalization.NoDate">
+            без дат (только сводные данные)
+        </member>
+        <member name="F:Croc.IncidentTracker.DateDetalization.ExpencesDate">
+            даты с затратами (все колонки, имеющие данные)
+        </member>
+        <member name="F:Croc.IncidentTracker.DateDetalization.AllDate">
+            все даты (все колонки отчета)
+        </member>
+        <member name="T:Croc.IncidentTracker.DepartmentAnalysDepth">
+            Глубина анализа подразделений
+        </member>
+        <member name="F:Croc.IncidentTracker.DepartmentAnalysDepth.OnlySelected">
+            только выбранное подразделение
+        </member>
+        <member name="F:Croc.IncidentTracker.DepartmentAnalysDepth.FirstSubLevel">
+            подчиненные подразделения 1 уровня
+        </member>
+        <member name="F:Croc.IncidentTracker.DepartmentAnalysDepth.AllSubLevels">
+            подчиненные подразделения всех уровней
+        </member>
+        <member name="T:Croc.IncidentTracker.DepartmentDetalization">
+            Детализация отчета «Затраты в разрезе Департаментов»» 
+        </member>
+        <member name="F:Croc.IncidentTracker.DepartmentDetalization.WithoutDetalization">
+            Без детализации
+        </member>
+        <member name="F:Croc.IncidentTracker.DepartmentDetalization.ByDepartment">
+            По департаментам
+        </member>
+        <member name="T:Croc.IncidentTracker.DepartmentType">
+            Тип подразделения
+        </member>
+        <member name="F:Croc.IncidentTracker.DepartmentType.CostsCenter">
+            Центр затрат
+        </member>
+        <member name="F:Croc.IncidentTracker.DepartmentType.ProfitCenter">
+            Центр прибыли
+        </member>
+        <member name="F:Croc.IncidentTracker.DepartmentType.Direction">
+            Отдел
+        </member>
+        <member name="T:Croc.IncidentTracker.DKPTreeModes">
+            Режимы дерева ДКП
+        </member>
+        <member name="F:Croc.IncidentTracker.DKPTreeModes.Organizations">
+            Организации
+        </member>
+        <member name="F:Croc.IncidentTracker.DKPTreeModes.Activities">
+            Активности
+        </member>
+        <member name="T:Croc.IncidentTracker.DocumentationType">
+            Тип документации
+        </member>
+        <member name="F:Croc.IncidentTracker.DocumentationType.Paid">
+            Платная
+        </member>
+        <member name="F:Croc.IncidentTracker.DocumentationType.Free">
+            Бесплатная
+        </member>
+        <member name="T:Croc.IncidentTracker.EmployeeHistoryEvents">
+            Тип события сотрудника
+        </member>
+        <member name="F:Croc.IncidentTracker.EmployeeHistoryEvents.WorkBeginDay">
+            Выход на работу
+        </member>
+        <member name="F:Croc.IncidentTracker.EmployeeHistoryEvents.WorkEndDay">
+            Окончание работы
+        </member>
+        <member name="F:Croc.IncidentTracker.EmployeeHistoryEvents.TemporaryDisability">
+            Временно нетрудоспособен
+        </member>
+        <member name="F:Croc.IncidentTracker.EmployeeHistoryEvents.ChangeRate">
+            Изменение нормы рабочего времени
+        </member>
+        <member name="F:Croc.IncidentTracker.EmployeeHistoryEvents.ChangeSecurity">
+            Изменение параметров безопасности
+        </member>
+        <member name="T:Croc.IncidentTracker.EventClass">
+            Класс события
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_01">
+            Создание инцидента
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_02">
+            Изменение состояние инцидента
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_03">
+            Удаление инцидента
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_04">
+            Создание описания нового задания по инциденту
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_05">
+            Изменение роли исполнителя в задании по инциденту
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_06">
+            Удаление задания по инциденту
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_07">
+            Изменение наименования, описания или описания решения инцидента
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_08">
+            Изменение приоритета или крайнего срока инцидента
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_09">
+            Перенос инцидента в другую активность - экспорт
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_10">
+            Перенос инцидента в другую активность - импорт
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_11">
+            Добавление участника проектной команды
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_12">
+            Удаление участника проектной команды
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_13">
+            Снятие роли для участника проектной команды
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_14">
+            Добавление роли для участника проектной команды
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_15">
+            Удаление организации
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_16">
+            Снятие Директора Клиента (организации)
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_17">
+            Задание Директора Клиента (организации)
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_18">
+            Изменение наименования проектной активности (папки)
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_19">
+            Изменение внешнего ID проектной активности (папки)
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_20">
+            Изменение блокировки списаний по проектной активности (папки)
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_21">
+            Удаление корневой проектной активности (папки)
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_22">
+            Удаление некорневой проектной активности (папки)
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_23">
+            Создание корневой проектной активности (папки)
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_24">
+            Создание некорневой проектной активности (папки)
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_25">
+            Изменение Клиента у проектной активности - экспорт
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_26">
+            Изменение Клиента у проектной активности - импорт
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_27">
+            Перенос проектной активности в другую папку - экспорт
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_28">
+            Перенос проектной активности в другую папку - импорт
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_29">
+            Изменение состояния у проектной активности
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_30">
+            Изменение типа активности у проектной активности
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_31">
+            Перенос организации - экспорт
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_32">
+            Перенос организации - импорт
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_33">
+            Изменение наименования или сокращённого наименования организации
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_34">
+            Создание организации
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_65">
+            Нарушение плана занятости сотрудником
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_35">
+            Изменение запланированного времени
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_36">
+            Изменение оставшегося времени
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_37">
+            Установка (изменение) общесистемной блокировки списаний
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_38">
+            Создание временной организации
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_39">
+            Замена временного описания организации постоянным
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_40">
+            Создание нового тендера
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_41">
+            Создание участия в лоте
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_42">
+            Модификация участника в лоте
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_43">
+            Удаление участника в лоте
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_44">
+            Изменение директора тендера - снятие
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_45">
+            Изменение директора тендера - назначение
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_46">
+            Удаление тендера
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_47">
+            Изменение состояния лота
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_48">
+            Превышение запланированного времени по инциденту
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_63">
+            Изменение плана занятости сотрудника
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_49">
+            Приближение крайнего срока инцидента
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_50">
+            Истечение крайнего срока инцидента
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_51">
+            Создание нового лота
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_64">
+            Превышение плановой занятости сотрудника на проектах
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_52">
+            Изменение лота
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_53">
+            Удаление лота
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_54">
+            Изменение описание тендера
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_55">
+            Измененме состояния тендера
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_56">
+            Добавления сотрудника в список лиц, принимающих участие в подготовке тендера
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_57">
+            Исключение сотрудника из списока лиц, принимающих участие в подготовке тендера
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_58">
+            Добавление направления у проектной активности (папки)
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_59">
+            Удаление направления у проектной активности (папки)
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_60">
+            Изменение доли затрат направления у проектной активности
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_61">
+            Изменение нормы рабочего времени сотрудника
+        </member>
+        <member name="F:Croc.IncidentTracker.EventClass.EVENT_TYPE_62">
+            Переход проектной активности в состояние "Ожидание закрытия"
+        </member>
+        <member name="T:Croc.IncidentTracker.ExpencesType">
+            Вид трудозатрат
+        </member>
+        <member name="F:Croc.IncidentTracker.ExpencesType.Incidents">
+            затраты на инциденты
+        </member>
+        <member name="F:Croc.IncidentTracker.ExpencesType.Discarding">
+            списания
+        </member>
+        <member name="F:Croc.IncidentTracker.ExpencesType.Both">
+            затраты на инциденты и списания
+        </member>
+        <member name="T:Croc.IncidentTracker.ExpenseDetalization">
+            Детализация затрат
+        </member>
+        <member name="F:Croc.IncidentTracker.ExpenseDetalization.ByExpences">
+            по затратам
+        </member>
+        <member name="F:Croc.IncidentTracker.ExpenseDetalization.ByIncident">
+            по инцидентам
+        </member>
+        <member name="F:Croc.IncidentTracker.ExpenseDetalization.BySubActivity">
+            по активностям нижнего уровня
+        </member>
+        <member name="T:Croc.IncidentTracker.FilterReportEmploymentPlannedSortType">
+            Тип сортировки в отчете "Плановая занятость сотрудников"
+        </member>
+        <member name="F:Croc.IncidentTracker.FilterReportEmploymentPlannedSortType.WithoutSpecification">
+            Без детализации
+        </member>
+        <member name="F:Croc.IncidentTracker.FilterReportEmploymentPlannedSortType.Period">
+            По периодам
+        </member>
+        <member name="F:Croc.IncidentTracker.FilterReportEmploymentPlannedSortType.Period_Project">
+            По периодам и проектам
+        </member>
+        <member name="T:Croc.IncidentTracker.FolderHistoryEvents">
+            Тип события папки
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderHistoryEvents.WaitingToClose">
+            Ожидание закрытия
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderHistoryEvents.Closing">
+            Закрытие
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderHistoryEvents.Opening">
+            Открытие
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderHistoryEvents.Frozing">
+            Замороживание
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderHistoryEvents.UpgradeFromPilot">
+            Переход из пилотной стадии
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderHistoryEvents.BlockDateChanging">
+            Изменение даты блокирования списаний
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderHistoryEvents.LinkToFollowing">
+            Установление связи с порожденной активностью
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderHistoryEvents.UnlinkToFollowing">
+            Разрыв связи с порожденной активностью
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderHistoryEvents.Creating">
+            Создание
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderHistoryEvents.DirectionInfoChanging">
+            Изменение данных по направлениям
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderHistoryEvents.IsLockedSetToTrue">
+            Блокировка списаний на папку
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderHistoryEvents.IsLockedSetToFalse">
+            Разрешение списаний на папку
+        </member>
+        <member name="T:Croc.IncidentTracker.FolderPrivileges">
+            Привилегии для папки
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderPrivileges.ManageIncidents">
+            Управление инцидентами
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderPrivileges.ManageIncidentParticipants">
+            Управление составом участников инцидента
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderPrivileges.EditIncidentTimeSpent">
+            Управление чужими списаниями
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderPrivileges.ChangeFolder">
+            Редактирование реквизитов проектов
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderPrivileges.ManageCatalog">
+            Управление каталогами
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderPrivileges.SpentTimeByProject">
+            Создание списания на проект
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderPrivileges.ManageTeam">
+            Управление проектной командой
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderPrivileges.CloseFolder">
+            Закрытие активности
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderPrivileges.TimeLossOnUnspecifiedDirection">
+            Разрешение списания на папку с неоднозначным определением направления
+        </member>
+        <member name="T:Croc.IncidentTracker.FolderStates">
+            Состояние папки
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderStates.Open">
+            Открыто
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderStates.WaitingToClose">
+            Ожидание закрытия
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderStates.Closed">
+            Закрыто
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderStates.Frozen">
+            Заморожено
+        </member>
+        <member name="T:Croc.IncidentTracker.FolderStatesFlags">
+            Состояние папки flags
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderStatesFlags.Open">
+            Открыто
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderStatesFlags.WaitingToClose">
+            Ожидание закрытия
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderStatesFlags.Closed">
+            Закрыто
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderStatesFlags.Frozen">
+            Заморожено
+        </member>
+        <member name="T:Croc.IncidentTracker.FolderTypeEnum">
+            Тип папки enum
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderTypeEnum.Project">
+            Проект
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderTypeEnum.Tender">
+            Тендер
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderTypeEnum.Presale">
+            Пресейл
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderTypeEnum.Directory">
+            Каталог
+        </member>
+        <member name="T:Croc.IncidentTracker.FolderTypeFlags">
+            Тип папки flags
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderTypeFlags.Project">
+            Проект
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderTypeFlags.Tender">
+            Тендер
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderTypeFlags.Presale">
+            Пресейл
+        </member>
+        <member name="F:Croc.IncidentTracker.FolderTypeFlags.Directory">
+            Каталог
+        </member>
+        <member name="T:Croc.IncidentTracker.GuaranteeType">
+            Тип банковской гарантии
+        </member>
+        <member name="F:Croc.IncidentTracker.GuaranteeType.Present">
+            Есть
+        </member>
+        <member name="F:Croc.IncidentTracker.GuaranteeType.Absent">
+            Нет
+        </member>
+        <member name="T:Croc.IncidentTracker.IncidentFinderBehavior">
+            Поведение IncidentFinder
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentFinderBehavior.OpenView">
+            Открыть просмотр
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentFinderBehavior.OpenEditor">
+            Открыть редактор
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentFinderBehavior.OpenInTree">
+            Открыть в дереве
+        </member>
+        <member name="T:Croc.IncidentTracker.IncidentPriority">
+            Приоритет инцидента
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentPriority.HIGH">
+            Высокий
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentPriority.NORMAL">
+            Средний
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentPriority.LOW">
+            Низкий
+        </member>
+        <member name="T:Croc.IncidentTracker.IncidentStateCat">
+            Категория состояния инцидента
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentStateCat.Open">
+            В работе
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentStateCat.OnCheck">
+            На проверке
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentStateCat.Finished">
+            Работа окончена
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentStateCat.Frozen">
+            Заморожен
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentStateCat.Declined">
+            Отклонен
+        </member>
+        <member name="T:Croc.IncidentTracker.IncidentStateCategoryFlags">
+            Категория состояния
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentStateCategoryFlags.Open">
+            В работе
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentStateCategoryFlags.OnCheck">
+            На проверке
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentStateCategoryFlags.Finished">
+            Работа окончена
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentStateCategoryFlags.Frozen">
+            Заморожен
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentStateCategoryFlags.Declined">
+            Отклонен
+        </member>
+        <member name="T:Croc.IncidentTracker.IncidentStateDetalization">
+            Детализация состояний инцидента
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentStateDetalization.AllStates">
+            по всем состояниям
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentStateDetalization.OpenAndClosedStates">
+            по открытию и закрытию
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentStateDetalization.OffDetalizationOpenStatesOnly">
+            без детализации (только открытые)
+        </member>
+        <member name="T:Croc.IncidentTracker.IncidentViewModes">
+            Режимы отображения инцидентов
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentViewModes.All">
+            Все инциденты
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentViewModes.Open">
+            Открытые
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentViewModes.NotClosed">
+            Не закрытые
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentViewModes.Closed">
+            Закрытые
+        </member>
+        <member name="F:Croc.IncidentTracker.IncidentViewModes.Mine">
+            Мои инциденты
+        </member>
+        <member name="T:Croc.IncidentTracker.InfoSourceOrigin">
+            Происхождение источника информации
+        </member>
+        <member name="F:Croc.IncidentTracker.InfoSourceOrigin.Outside">
+            Внешний
+        </member>
+        <member name="F:Croc.IncidentTracker.InfoSourceOrigin.Inside">
+            Внутренний
+        </member>
+        <member name="F:Croc.IncidentTracker.InfoSourceOrigin.ByEmployee">
+            Сотрудники компании
+        </member>
+        <member name="T:Croc.IncidentTracker.IPROP_TYPE">
+            Тип свойства инцидента
+        </member>
+        <member name="F:Croc.IncidentTracker.IPROP_TYPE.IPROP_TYPE_LONG">
+            Целое число
+        </member>
+        <member name="F:Croc.IncidentTracker.IPROP_TYPE.IPROP_TYPE_DOUBLE">
+            Число с плавающей точкой
+        </member>
+        <member name="F:Croc.IncidentTracker.IPROP_TYPE.IPROP_TYPE_DATE">
+            Дата
+        </member>
+        <member name="F:Croc.IncidentTracker.IPROP_TYPE.IPROP_TYPE_TIME">
+            Время
+        </member>
+        <member name="F:Croc.IncidentTracker.IPROP_TYPE.IPROP_TYPE_DATEANDTIME">
+            Дата и время
+        </member>
+        <member name="F:Croc.IncidentTracker.IPROP_TYPE.IPROP_TYPE_BOOLEAN">
+            Логический признак
+        </member>
+        <member name="F:Croc.IncidentTracker.IPROP_TYPE.IPROP_TYPE_STRING">
+            Строка (до 4000 символов)
+        </member>
+        <member name="F:Croc.IncidentTracker.IPROP_TYPE.IPROP_TYPE_TEXT">
+            Текст (более 4000 символов)
+        </member>
+        <member name="F:Croc.IncidentTracker.IPROP_TYPE.IPROP_TYPE_PICTURE">
+            Изображение
+        </member>
+        <member name="F:Croc.IncidentTracker.IPROP_TYPE.IPROP_TYPE_FILE">
+            Файл
+        </member>
+        <member name="T:Croc.IncidentTracker.LossDetalization">
+            Детализация списаний сотрудников
+        </member>
+        <member name="F:Croc.IncidentTracker.LossDetalization.ByLosses">
+            по отдельным списаниям
+        </member>
+        <member name="F:Croc.IncidentTracker.LossDetalization.ByDates">
+            по датам
+        </member>
+        <member name="T:Croc.IncidentTracker.LotsAndParticipantsSortType">
+            Тип сортировки лотов и участников
+        </member>
+        <member name="F:Croc.IncidentTracker.LotsAndParticipantsSortType.Random">
+            Произвольно
+        </member>
+        <member name="F:Croc.IncidentTracker.LotsAndParticipantsSortType.ByTenderName">
+            По наименованию конкурса
+        </member>
+        <member name="F:Croc.IncidentTracker.LotsAndParticipantsSortType.ByCustomerName">
+            По наименованию заказчика
+        </member>
+        <member name="F:Croc.IncidentTracker.LotsAndParticipantsSortType.ByResultAnnounceDate">
+            По дате проведения
+        </member>
+        <member name="T:Croc.IncidentTracker.LotState">
+            Состояние лота
+        </member>
+        <member name="F:Croc.IncidentTracker.LotState.DocumentGetting">
+            Получение документов
+        </member>
+        <member name="F:Croc.IncidentTracker.LotState.DecisionMaking">
+            Принятие решения
+        </member>
+        <member name="F:Croc.IncidentTracker.LotState.Participating">
+            Участие
+        </member>
+        <member name="F:Croc.IncidentTracker.LotState.ParticipateRejection">
+            Отказ от участия
+        </member>
+        <member name="F:Croc.IncidentTracker.LotState.UnderConsideration">
+            Рассмотрение предложения
+        </member>
+        <member name="F:Croc.IncidentTracker.LotState.WasGain">
+            Выигран
+        </member>
+        <member name="F:Croc.IncidentTracker.LotState.WasLoss">
+            Проигран
+        </member>
+        <member name="F:Croc.IncidentTracker.LotState.WasAbolish">
+            Отменен
+        </member>
+        <member name="F:Croc.IncidentTracker.LotState.StateContract">
+            Заключение госконтракта
+        </member>
+        <member name="T:Croc.IncidentTracker.Participations">
+            Тип участия
+        </member>
+        <member name="F:Croc.IncidentTracker.Participations.Participant">
+            Участник
+        </member>
+        <member name="F:Croc.IncidentTracker.Participations.Competitor">
+            Конкурент
+        </member>
+        <member name="F:Croc.IncidentTracker.Participations.CompetitorHelper">
+            Конкурент-помогающий
+        </member>
+        <member name="F:Croc.IncidentTracker.Participations.CompetitorDebtor">
+            Конкурент-должник
+        </member>
+        <member name="T:Croc.IncidentTracker.PeriodType">
+            Период времени
+        </member>
+        <member name="F:Croc.IncidentTracker.PeriodType.DateInterval">
+            Интервал дат
+        </member>
+        <member name="F:Croc.IncidentTracker.PeriodType.CurrentWeek">
+            На текущую неделю
+        </member>
+        <member name="F:Croc.IncidentTracker.PeriodType.CurrentMonth">
+            На текущий месяц
+        </member>
+        <member name="F:Croc.IncidentTracker.PeriodType.PreviousMonth">
+            На предыдущий месяц
+        </member>
+        <member name="F:Croc.IncidentTracker.PeriodType.SelectedQuarter">
+            На заданный квартал
+        </member>
+        <member name="T:Croc.IncidentTracker.PresentationModes">
+            Формат отображения ссылки
+        </member>
+        <member name="F:Croc.IncidentTracker.PresentationModes.DisplayDescr">
+            Отображать наименование
+        </member>
+        <member name="F:Croc.IncidentTracker.PresentationModes.DisplayData">
+            Отображать данные
+        </member>
+        <member name="T:Croc.IncidentTracker.Quarter">
+            Квартал
+        </member>
+        <member name="F:Croc.IncidentTracker.Quarter.First">
+            1-й
+        </member>
+        <member name="F:Croc.IncidentTracker.Quarter.Second">
+            2-й
+        </member>
+        <member name="F:Croc.IncidentTracker.Quarter.Third">
+            3-й
+        </member>
+        <member name="F:Croc.IncidentTracker.Quarter.Fourth">
+            4-й
+        </member>
+        <member name="T:Croc.IncidentTracker.RepDepartmentExpensesStructure_AnalysisDepth">
+            Объем анализируемых данных отчета "Структура затрат подразделений"
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_AnalysisDepth.OnlySelected">
+            Только указанные подразделения / организации
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_AnalysisDepth.FirstLevelDepends">
+            Включать данные непосредственно подчиненных подразделений
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_AnalysisDepth.AllLevelDepends">
+            Включать данные всех подчиненных подразделений
+        </member>
+        <member name="T:Croc.IncidentTracker.RepDepartmentExpensesStructure_DataFormat">
+            Форма представления данных отчета "Структура затрат подразделений"
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_DataFormat.TimeAndPercent">
+            Время и проценты
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_DataFormat.OnlyTime">
+            Только время
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_DataFormat.OnlyPercent">
+            Только проценты
+        </member>
+        <member name="T:Croc.IncidentTracker.RepDepartmentExpensesStructure_OptColsFlags">
+            Отображаемые колонки отчета "Структура затрат подразделений"
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_OptColsFlags.ShowPeriodRate">
+            Норма рабочего времени
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_OptColsFlags.ShowPeriodDisbalance">
+            Дисбаланс
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_OptColsFlags.ShowUtilization">
+            Коэффициент утилизации
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_OptColsFlags.ShowCauseDetailization">
+            Причины списания
+        </member>
+        <member name="T:Croc.IncidentTracker.RepDepartmentExpensesStructure_ReportForm">
+            Форма отчета "Структура затрат подразделений"
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_ReportForm.ByDepartment">
+            Суммарные данные подразделений
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_ReportForm.ByEmployee">
+            Данные по каждому сотруднику подразделения
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_ReportForm.ByEmployeeWithTasksDetali">
+            Данные по каждому сотруднику, с данными по заданиям
+        </member>
+        <member name="T:Croc.IncidentTracker.RepDepartmentExpensesStructure_SortingMode">
+            Сортировка в отчете "Структура затрат подразделений"
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_SortingMode.ByName">
+            По подразделению / сотруднику
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_SortingMode.ByExpenses">
+            По трудозатратам
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_SortingMode.ByDisbalance">
+            По значению дисбаланса
+        </member>
+        <member name="F:Croc.IncidentTracker.RepDepartmentExpensesStructure_SortingMode.ByUtilization">
+            По значению коэффициента утилизации
+        </member>
+        <member name="T:Croc.IncidentTracker.ReportActivityListSortType">
+            Тип сортировки в отчете "Список активностей"
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportActivityListSortType.Random">
+            Произвольно
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportActivityListSortType.ByName">
+            По наименованию
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportActivityListSortType.ByCode">
+            По коду
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportActivityListSortType.ByNavisionID">
+            По идентификатору для Navision
+        </member>
+        <member name="T:Croc.IncidentTracker.ReportDepartmentCostSort">
+            Сортировка отчета "Затраты в разрезе Департаментов"
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportDepartmentCostSort.DepartmentSort">
+            По департаментам
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportDepartmentCostSort.CostSort">
+            По затратам
+        </member>
+        <member name="T:Croc.IncidentTracker.ReportEmployeesBusynessInProjectsSortType">
+            Тип сортировки в отчете "Занятость сотрудников в проектах"
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportEmployeesBusynessInProjectsSortType.Random">
+            произвольно
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportEmployeesBusynessInProjectsSortType.ByCustomer">
+            по аккаунту
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportEmployeesBusynessInProjectsSortType.ByFolder">
+            по активности
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportEmployeesBusynessInProjectsSortType.ByExpense">
+            по трудозатратам
+        </member>
+        <member name="T:Croc.IncidentTracker.ReportExpensesByDirectionsSortType">
+            Тип сортировки в отчете "Затраты в разрезе направлений"
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportExpensesByDirectionsSortType.ByDirection">
+            По направлению
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportExpensesByDirectionsSortType.ByExpenses">
+            По сумме затрат
+        </member>
+        <member name="T:Croc.IncidentTracker.ReportLastExpenseDatesSortType">
+            Тип сортировки в отчете "Даты последнего учета затрат сотрудниками"
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportLastExpenseDatesSortType.Random">
+            произвольно
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportLastExpenseDatesSortType.ByEmployee">
+            по сотруднику
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportLastExpenseDatesSortType.ByDateTime">
+            по дате и времени
+        </member>
+        <member name="T:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType">
+            Тип сортировки в отчете "Список инцидентов и затрат проекта"
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.Random">
+            Произвольно
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.ByIncident">
+            По инциденту/списанию
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.BySolution">
+            По решению
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.ByState">
+            По состоянию
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.ByPriority">
+            По приоритету
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.ByDeadLine">
+            По дате крайнего срока
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.ByInputDate">
+            По дате открытия
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.ByLastChange">
+            По дате последней смены состояния
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.ByLastSpent">
+            По дате последней затраты времени
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.ByRole">
+            По роли
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.ByEmployee">
+            По сотруднику
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.ByPlannedTime">
+            По запланированному времени
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.BySpentTime">
+            По общим трудозатратам
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectIncidentsAndExpensesSortType.ByLeftTime">
+            По оставшемуся времени
+        </member>
+        <member name="T:Croc.IncidentTracker.ReportProjectParticipantsAndExpensesSortType">
+            Тип сортировки в отчете "Список участников и затрат проекта"
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectParticipantsAndExpensesSortType.Random">
+            Произвольно
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectParticipantsAndExpensesSortType.ByEmployee">
+            По сотруднику
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectParticipantsAndExpensesSortType.ByTasksDone">
+            По выполненным заданиям
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectParticipantsAndExpensesSortType.ByTasksLeft">
+            По оставшимся заданиям
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectParticipantsAndExpensesSortType.ByLostTime">
+            По списанному времени
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectParticipantsAndExpensesSortType.BySpentTime">
+            По затраченному времени
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectParticipantsAndExpensesSortType.ByPlannedTime">
+            По запланированному времени
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectParticipantsAndExpensesSortType.BySummaryTime">
+            По общим трудозатратам
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportProjectParticipantsAndExpensesSortType.ByLeftTime">
+            По оставшемуся времени
+        </member>
+        <member name="T:Croc.IncidentTracker.ReportTimeLossesSortType">
+            Тип сортировки в отчете "Списание времени сотрудниками"
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportTimeLossesSortType.Random">
+            произвольно
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportTimeLossesSortType.ByCause">
+            по причине списания
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportTimeLossesSortType.ByEmployee">
+            по сотруднику
+        </member>
+        <member name="F:Croc.IncidentTracker.ReportTimeLossesSortType.ByLossFixed">
+            по дате списания
+        </member>
+        <member name="T:Croc.IncidentTracker.SectionByActivity">
+            Секционирование по активностям
+        </member>
+        <member name="F:Croc.IncidentTracker.SectionByActivity.NoSection">
+            без секционирования
+        </member>
+        <member name="F:Croc.IncidentTracker.SectionByActivity.Stage1Section">
+            по подчиненным активностям 1 уровня
+        </member>
+        <member name="F:Croc.IncidentTracker.SectionByActivity.AllStagesSection">
+            по подчиненным активностям всех уровней
+        </member>
+        <member name="T:Croc.IncidentTracker.SectioningByActivity">
+            Секционирование по активностям 1
+        </member>
+        <member name="F:Croc.IncidentTracker.SectioningByActivity.NoSectioning">
+            без секционирования
+        </member>
+        <member name="F:Croc.IncidentTracker.SectioningByActivity.SectioningByTopLevelActivity">
+            по активностям верхнего уровня
+        </member>
+        <member name="T:Croc.IncidentTracker.ServiceSystemType">
+            Тип системы обслуживания
+        </member>
+        <member name="F:Croc.IncidentTracker.ServiceSystemType.URL">
+            Ссылка URL
+        </member>
+        <member name="F:Croc.IncidentTracker.ServiceSystemType.FileLink">
+            Ссылка на файл
+        </member>
+        <member name="F:Croc.IncidentTracker.ServiceSystemType.DirectoryLink">
+            Ссылка на папку
+        </member>
+        <member name="F:Croc.IncidentTracker.ServiceSystemType.DocumentumFileLink">
+            Ссылка на файл в Documentum
+        </member>
+        <member name="F:Croc.IncidentTracker.ServiceSystemType.DocumentumDirectoryLink">
+            Ссылка на папку в Documentum
+        </member>
+        <member name="T:Croc.IncidentTracker.ShowedAttrs">
+            Отображаемые атрибуты
+        </member>
+        <member name="F:Croc.IncidentTracker.ShowedAttrs.Priority">
+            Приоритет
+        </member>
+        <member name="T:Croc.IncidentTracker.SortDirections">
+            Направления сортировки
+        </member>
+        <member name="F:Croc.IncidentTracker.SortDirections.ASC">
+            По возрастанию
+        </member>
+        <member name="F:Croc.IncidentTracker.SortDirections.DESC">
+            По убыванию
+        </member>
+        <member name="F:Croc.IncidentTracker.SortDirections.Ignore">
+            Игнорировать
+        </member>
+        <member name="T:Croc.IncidentTracker.SortExpences">
+            Сортировка затрат сотрудников
+        </member>
+        <member name="F:Croc.IncidentTracker.SortExpences.NoSort">
+            произвольно
+        </member>
+        <member name="F:Croc.IncidentTracker.SortExpences.ByEmployee">
+            по сотруднику
+        </member>
+        <member name="F:Croc.IncidentTracker.SortExpences.ByNorm">
+            по норме
+        </member>
+        <member name="T:Croc.IncidentTracker.SortIncidentExpenses">
+            Сортировка инцидентов и затрат
+        </member>
+        <member name="F:Croc.IncidentTracker.SortIncidentExpenses.ByDateTime">
+            по дате и времени
+        </member>
+        <member name="F:Croc.IncidentTracker.SortIncidentExpenses.ByLossReason">
+            по причине списания
+        </member>
+        <member name="F:Croc.IncidentTracker.SortIncidentExpenses.BySpentTime">
+            по затраченному времени
+        </member>
+        <member name="T:Croc.IncidentTracker.SortOrder">
+            Порядок сортировки
+        </member>
+        <member name="F:Croc.IncidentTracker.SortOrder.Asc">
+            По возрастанию
+        </member>
+        <member name="F:Croc.IncidentTracker.SortOrder.Desc">
+            По убыванию
+        </member>
+        <member name="T:Croc.IncidentTracker.StartPages">
+            Стартовые страницы
+        </member>
+        <member name="F:Croc.IncidentTracker.StartPages.CurrentTaskList">
+            Список текущих задач (Мои инциденты)
+        </member>
+        <member name="F:Croc.IncidentTracker.StartPages.DKP">
+            Иерархия Клиентов и проектов
+        </member>
+        <member name="F:Croc.IncidentTracker.StartPages.Reports">
+            Отчеты
+        </member>
+        <member name="F:Croc.IncidentTracker.StartPages.TMS">
+            Стартовая страница Системы учета тендеров
+        </member>
+        <member name="F:Croc.IncidentTracker.StartPages.TenderList">
+            Список тендеров
+        </member>
+        <member name="T:Croc.IncidentTracker.StdObjectPrivileges">
+            Стандартные объектные привилегии
+        </member>
+        <member name="F:Croc.IncidentTracker.StdObjectPrivileges.Create">
+            Создание
+        </member>
+        <member name="F:Croc.IncidentTracker.StdObjectPrivileges.Edit">
+            Редактирование
+        </member>
+        <member name="F:Croc.IncidentTracker.StdObjectPrivileges.Delete">
+            Удаление
+        </member>
+        <member name="F:Croc.IncidentTracker.StdObjectPrivileges.Read">
+            Чтение
+        </member>
+        <member name="T:Croc.IncidentTracker.SystemPrivileges">
+            Системные привилегии
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.SetUpIncidentWorkflow">
+            Настройка workflow инцидентов
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.SetUpGlobalBlockPeriod">
+            Установка глобального периода блокирования списаний
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.ManageUsers">
+            Управление пользователями
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.ManageTimeLoss">
+            Управление чужими списаниями
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.TempOrganizationManagment">
+            Управление временным описанием организации
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.OrganizationManagement">
+            Управление организациями
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.ManageRefObjects">
+            Управление справочниками
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.AccessIntoTMS">
+            Доступ к Системе учета тендеров
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.MoveFoldersAndIncidents">
+            Перенос папок и инцидентов
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.ViewAllOrganizations">
+            Просмотр всех Организаций
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.ChangeTempOrgOnConst">
+            Замена временного описания Организации постоянным
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.DecidingManInTMS">
+            Принимающий решение в СУТ
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.ManageRefObjectsInTMS">
+            Управление справочниками СУТ
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.CloseAnyFolder">
+            Закрытие активностей
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.ManageDirectorAccount">
+            Управление ролью Директор Аккаунта
+        </member>
+        <member name="F:Croc.IncidentTracker.SystemPrivileges.ManageProjectTeam">
+            Управление проектной командой
+        </member>
+        <member name="T:Croc.IncidentTracker.TenderSortType">
+            Тип сортировки в отчете Тендеры
+        </member>
+        <member name="F:Croc.IncidentTracker.TenderSortType.Random">
+            Произвольно
+        </member>
+        <member name="F:Croc.IncidentTracker.TenderSortType.ByTenderName">
+            По наименованию конкурса
+        </member>
+        <member name="F:Croc.IncidentTracker.TenderSortType.ByCustomerName">
+            По наименованию заказчика
+        </member>
+        <member name="F:Croc.IncidentTracker.TenderSortType.ByDocFeedingDate">
+            По дате подачи документов
+        </member>
+        <member name="T:Croc.IncidentTracker.TimeLossCauseTypes">
+            Тип причины списания
+        </member>
+        <member name="F:Croc.IncidentTracker.TimeLossCauseTypes.MustApplicableToFolder">
+            Требует применение к папке
+        </member>
+        <member name="F:Croc.IncidentTracker.TimeLossCauseTypes.NotApplicableToFolder">
+            Не может быть применена к папке
+        </member>
+        <member name="F:Croc.IncidentTracker.TimeLossCauseTypes.ApplicableToFolder">
+            Может быть применена к папке
+        </member>
+        <member name="T:Croc.IncidentTracker.TimeMeasureUnits">
+            Единицы измерения времени
+        </member>
+        <member name="F:Croc.IncidentTracker.TimeMeasureUnits.Days">
+            Дни, часы, минуты
+        </member>
+        <member name="F:Croc.IncidentTracker.TimeMeasureUnits.Hours">
+            Часы
+        </member>
+        <member name="T:Croc.IncidentTracker.UserRoleInProjectFlags">
+            Тип роли пользователя в папке
+        </member>
+        <member name="F:Croc.IncidentTracker.UserRoleInProjectFlags.ProjectManager">
+            Менеджер проекта
+        </member>
+        <member name="F:Croc.IncidentTracker.UserRoleInProjectFlags.ProjectAdministrator">
+            Администратор проекта
+        </member>
+        <member name="F:Croc.IncidentTracker.UserRoleInProjectFlags.ClientDirector">
+            Директор клиента
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetCurrentUserClientProfileResponse">
+            <summary>
+            Запрос для команды GetCurrentUserClientProfile - 
+            получениe профиля текущего пользователя для Web-клиента
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetCurrentUserClientProfileResponse.WorkdayDuration">
+            <summary>
+            Количество часов в рабочих сутках
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetCurrentUserClientProfileResponse.SystemUserID">
+            <summary>
+            Идентификатор текущего пользователя приложения
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetCurrentUserClientProfileResponse.EmployeeID">
+            <summary>
+            Идентификатор текущего сотрудника
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.DKPLocatorResponse">
+            <summary>
+            Класс ответа для команд FolderLocatorInTreeCommand и IncidentLocatorInTreeCommand
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.DKPLocatorResponse.Path">
+            <summary>
+            Строка пути в дереве "Клиенты и проекты" до заданного объекта в формате ActiveX CROC.IXTreeView
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.DKPLocatorResponse.ObjectID">
+            <summary>
+            Идентификатор искомого объекта (полезен, если поиск производится не по идентификатору)
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.UpdateActivityStateRequest">
+            <summary>
+            Запрос команды изменения состояния активности
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.UpdateActivityStateRequest.Activity">
+            <summary>
+            Идентификатор активности
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.UpdateActivityStateRequest.NewState">
+            <summary>
+            Новое состояние
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.UpdateActivityStateRequest.Description">
+            <summary>
+            Описание
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.UpdateActivityStateRequest.Initiator">
+            <summary>
+            Идентификатор сотрудника, инициатора изменения
+            </summary>
+            <remarks>
+            Guid.Empty - значение не задано
+            </remarks>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.XObjectRightsDescr">
+            <summary>
+            Структура описывающая права текущего пользователя над объектом (в том числе новым)
+            для передачи на сторону клиента
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.XObjectRightsDescr.ReadOnlyProps">
+            <summary>
+            Массив свойств, недоступных для изменения клиенту
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.XObjectRightsDescr.DenyDelete">
+            <summary>
+            Запрет удаления объекта
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.XObjectRightsDescr.DenyChange">
+            <summary>
+            Запрет изменения объекта
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.XObjectRightsDescr.DenyCreate">
+            <summary>
+            Запрет создания (только для новых объектов)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetObjectsRightsExResponse.ObjectsRights">
+            <summary>
+            Права запрошенных объектов (в т.ч. новых)
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectsRightsExResponse.#ctor">
+            <summary>
+            ctor for XmlSerializer
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectsRightsExResponse.#ctor(Croc.IncidentTracker.Commands.XObjectRightsDescr[])">
+            <summary>
+            Инициализирующий конструктов
+            </summary>
+            <param name="rights"></param>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetObjectIdByExKeyResponse">
+            <summary>
+            Результат выполнения операции получения идентификатора ds-объекта, 
+            заданного значениями своих реквизитов
+            <seealso cref="T:Croc.IncidentTracker.Commands.GetObjectIdByExKeyRequest"/>
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetObjectIdByExKeyResponse.m_uidObjectID">
+            <summary>
+            Результирующее значение - идентификатор ds-объекта
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectIdByExKeyResponse.#ctor">
+            <summary>
+            Конструктор по умолчанию, для корректной (де)сериализации
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.GetObjectIdByExKeyResponse.#ctor(System.Guid)">
+            <summary>
+            Параметризированный конструктор
+            </summary>
+            <param name="uidObjectID">Результирующее значение</param>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.GetObjectIdByExKeyResponse.ObjectID">
+            <summary>
+            Результирующее значение - идентификатор ds-объекта
+            Если объект не найден, значений свойства устанавливается в Guid.Empty
+            </summary>
+        </member>
+        <member name="T:Croc.XmlFramework.Extension.Commands.XXGetNodeDragResponse">
+            <summary>
+            Объект, представляющий данные результата выполнения операции получения 
+            XML-описания операции переноса для узла иерархии <b>GetTreeNodeDrag</b> 
+            (см. реализацию операции XGetTreeNodeDragCommand).
+            </summary>
+        </member>
+        <member name="F:Croc.XmlFramework.Extension.Commands.XXGetNodeDragResponse.m_xmlNodeDrag">
+            <summary>
+            XML-описание меню. 
+            </summary>
+        </member>
+        <member name="M:Croc.XmlFramework.Extension.Commands.XXGetNodeDragResponse.#ctor">
+            <summary>
+            Конструктор по умолчанию, инициализирует свойство 
+            XmlNodeDrag значением null.
+            </summary>
+        </member>
+        <member name="M:Croc.XmlFramework.Extension.Commands.XXGetNodeDragResponse.#ctor(System.Xml.XmlElement)">
+            <summary>
+            Параметризированный конструктор.
+            </summary>
+            <param name="xmlNodeDrag">
+            Элемент документа XML (System.Xml.XmlElement), представляющий 
+            XML-описание операции переноса для узла иерархии.
+            </param>
+        </member>
+        <member name="P:Croc.XmlFramework.Extension.Commands.XXGetNodeDragResponse.XmlNodeDrag">
+            <summary>
+            Элемент документа XML (System.Xml.XmlElement), представляющий 
+            XML-описание меню иерархии, получаемое операцией <b>GetTreeNodeDrag</b> 
+            (см. реализацию операции XGetTreeNodeDragCommand) в соответствии с заданными параметрами запроса. 
+            <para/>
+            Значение null, задаваемое для свойства, интерпретируется как 
+            XML-описание «пустого» меню.
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetMailMsgInfoRequest.ObjectID">
+            <summary>
+            Идентификатор объекта (Инцидента/Папки)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetMailMsgInfoRequest.ObjectType">
+            <summary>
+            Наименование типа объекта
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetMailMsgInfoRequest.EmployeeIDs">
+            <summary>
+            Список идентификаторов сотрудников, которым будет посылаться письмо
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetMailMsgInfoResponse.To">
+            <summary>
+            Список email'ов сотрудников из массива EmployeeIDs запроса
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetMailMsgInfoResponse.Subject">
+            <summary>
+            Тема письма
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetMailMsgInfoResponse.FolderPath">
+            <summary>
+            Строка пути папки
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetMailMsgInfoResponse.ProjectLinks">
+            <summary>
+            Список URL'ов операций над папкой
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetMailMsgInfoResponse.IncidentLinks">
+            <summary>
+            Список URL'ов операций над инцидентом (может быть не задан, если ObjectType запроса равно "Folder")
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.FolderLocatorInTreeRequest">
+            <summary>
+            Класс запроса для команды FolderLocatorInTreeCommand
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.FolderLocatorInTreeRequest.FolderOID">
+            <summary>
+            Идентификатор искомой папки
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.TreeLocatorResponse">
+            <summary>
+            Ответ команд поиска объектов в дереве
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.TreeLocatorResponse.TreePath">
+            <summary>
+            Путь в дереве от искомого объекта до корня в формате CROC.XTreeView
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.TreeLocatorResponse.ObjectID">
+            <summary>
+            Идентификатор найденного объекта. Если объект не найден, то Guid.Empty
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.TreeLocatorResponse.More">
+            <summary>
+            Признак, что в БД есть еще объекты удовлетворяющиее условиям поиска
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.TreeLocatorResponse.#ctor">
+            <summary>
+            Обязательный конструктор для десериализации
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Commands.TreeLocatorResponse.#ctor(System.String,System.Guid,System.Boolean)">
+            <summary>
+            ctor
+            </summary>
+            <param name="sTreePath">Путь в дереве</param>
+            <param name="oid">Идентификатор найденного объекта</param>
+            <param name="bMore">Признак, что в БД есть еще объекты удовлетворяющиее условиям поиска</param>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.EmployeeExpenseInfo">
+            <summary>
+            Данные списания одного пользователя системы Incident Tracker за некоторый 
+            заданный период времени (границы периода задаются вне класса).
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.EmployeeExpenseInfo.EmployeeID">
+            <summary>
+            Идентификатор пользователя системы Incident Tracker.
+            Форма(т) значения зависит от метода идентификации пользователя, 
+            заданного при получении информации о списаниях пользователей.
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.EmployeeExpenseInfo.RateExpense">
+            <summary>
+            "Норма" времени, требуемая к списанию: сумма времени, которую 
+            пользователь ДОЛЖЕН списать в указанный период. Учитваются рабочие, 
+            выходные и праздничные дни, дата выхода на работу / дата увольнения. 
+            Время приводится в минутах.
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.EmployeeExpenseInfo.RealExpense">
+            <summary>
+            Количество времени, реально списанного пользователем в Системе в 
+            заданный период. Время приводится в минутах.
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetEmployeesExpensesResponse">
+            <summary>
+            Результат операции получения данных о суммарных списаниях пользователей 
+            Системы в заданный период времени.
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetEmployeesExpensesResponse.PeriodBegin">
+            <summary>
+            Дата начала отчетного периода, для которого были получены данные 
+            (из исходного запроса)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetEmployeesExpensesResponse.PeriodEnd">
+            <summary>
+            Дата окончания отчетного периода, для которого были получены данные 
+            (из исходного запроса)
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.GetEmployeesExpensesResponse.Expenses">
+            <summary>
+            Массив данных списаний
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.MoveFolderRequest">
+            <summary>
+            Запрос для команды "MoveObject"
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.MoveFolderRequest.ObjectsID">
+            <summary>
+            Массив идентификаторов переносимых папок
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.MoveFolderRequest.NewParent">
+            <summary>
+            Сссылка на родительскую папку или Guid.Empty для переноса в корень
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.MoveFolderRequest.NewCustomer">
+            <summary>
+            Ссылка на организацию-клиента
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.MoveFolderRequest.NewActivityType">
+            <summary>
+            Ссылка на тип проектных затрат
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetFilterTendersInfoRequest">
+            <summary>
+            Запрос для команды получения данных для фильтра списка тендеров
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.GetFilterTendersInfoRequest.SelectedTenderID">
+            <summary>
+            Идентификатор выбранного тендера
+            </summary>
+            <remarks>Равен Guid.Empty, если тендер не указан</remarks>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.GetFilterTendersInfoResponse">
+            <summary>
+            Ответ для команды получения данных для фильтра списка тендеров
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.GetFilterTendersInfoResponse.OrganizationID">
+            <summary>
+            Идентификатор компании
+            </summary>
+        </member>
+        <member name="P:Croc.IncidentTracker.Commands.GetFilterTendersInfoResponse.DocFeedingDate">
+            <summary>
+            Дата подачи документов выбранного тендера
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.CheckDatagramRequest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Croc.IncidentTracker.Commands.MoveObjectsRequest">
+            <summary>
+            Запрос команды переноса объектов
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.MoveObjectsRequest.SelectedObjectType">
+            <summary>
+            Наименование типа переносимого объекта
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.MoveObjectsRequest.SelectedObjectsID">
+            <summary>
+            Массив идентификаторов переносимых объектов
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.MoveObjectsRequest.NewParent">
+            <summary>
+            Идентификатор нового родителя или Guid.Empty при переносе на корень
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.MoveObjectsRequest.ParentPropName">
+            <summary>
+            наименование свойства - ссылка на родительский объект
+            </summary>
+        </member>
+        <member name="F:Croc.IncidentTracker.Commands.MoveObjectsRequest.SubTreeSelectorPropName">
+            <summary>
+            Наименование свойства - ссылка на владельца "рощи" - для секционированной конфигурации иерархии,
+            т.е. когда тип SelectedObjectType разделен на подмножества, 
+            в которых все объекты имеют одинаковое значение свойства SubTreeSelectorPropName.
+            Нумерация L/R-индексов осуществляется в пределах этих подмножеств.
+            </summary>
+        </member>
+    </members>
+</doc>

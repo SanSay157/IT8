@@ -1,0 +1,131 @@
+<!-- 
+********************************************************************************
+ CROC.Behaviors :: XMenuHtml
+ Компонента, реализующая HTML-меню на основе MenuClass
+ Реализация - Viewlink Element Behaviors (см. MSDN, Web Development, Behaviors)
+********************************************************************************
+-->
+<PUBLIC:COMPONENT 
+	tagName="XMenuHtml"
+	NAME="XMenuHtml"
+	lightWeight="false"
+	literalContent="false"
+	supportsEditMode="false"
+	URN="http://www.croc.ru/XmlFramework/Behaviors/XMenuHtml"
+>
+	<META HTTP-EQUIV="MSThemeCompatible" CONTENT="yes">
+	<PUBLIC:DEFAULTS
+		canHaveHTML = "true"
+		viewLinkContent = "true"
+		viewInheritStyle = "false"
+		tabStop = "false" 
+		viewMasterTab = "true"
+		contentEditable  = "false"
+	/>
+
+	<!-- СВОЙСТВА КОМПОНЕНТЫ -->
+	<!-- Возвращает текущий HTML меню -->
+	<PUBLIC:PROPERTY NAME="HTML" GET="get_HTML"
+	/>
+
+	<!-- МЕТОДЫ КОМПОНЕНТЫ -->
+	<!-- Устанавливает текст состояния -->
+	<PUBLIC:METHOD NAME="SetStatus"/>
+
+	<!-- Запускает рендеренг меню в HTML с помощью XSLT-шаблона -->
+	<PUBLIC:METHOD NAME="Render"/>
+</PUBLIC:COMPONENT>
+<!-- 
+********************************************************************************
+ HTML-реализация компоненты
+********************************************************************************
+-->
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1251">
+<LINK href="x.css" rel="STYLESHEET" type="text/css">
+<LINK href="x-tree-menu.css" rel="STYLESHEET" type="text/css">
+<SCRIPT LANGUAGE="VBScript" TYPE="text/vbscript">
+Option Explicit
+Dim m_oMenu			' As MenuClass
+Dim m_oSender		' As Object
+
+'================================================================
+' Устанавливает текст состояния
+'	[in] sMsg - текст сообщения
+Sub SetStatus(sMsg)
+	MenuDIV.innerHTML = sMsg
+End Sub
+
+
+'================================================================
+' Запускает рендеренг меню в HTML с помощью XSLT-шаблона
+'	[in] oSender - ссылка на произвольный объект, передаваемая в execution-handler'ы
+'	[in] oMenu As MenuClass - отображаемое меню. Должно быть инициализировано
+'	[in] oMenuXSL As XMLDOMDocument Xslt-стильшита
+Sub Render(oSender, oMenu, oMenuXSL)
+	Dim oTemplate	' XslTemplate
+	Dim oProcessor	' XslProcessor
+		
+	Set m_oSender = oSender
+	Set m_oMenu = oMenu
+
+	' подготовим меню
+	oMenu.PrepareMenu oSender
+		
+	' получим объект IXSLTTemplate
+	Set oTemplate = CreateObject( "MSXml2.XslTemplate.3.0")
+	oTemplate.stylesheet = oMenuXSL
+	Set oProcessor = oTemplate.createProcessor
+	' добавим параметр в xsl-шаблон - имя процедуры, вызываемой при клике на пункте меню
+	oProcessor.addParameter "handler-proc-name", "OnMenuActionHandler"
+	On Error Resume Next
+	oProcessor.input = oMenu.XmlMenu
+	If Err Then
+		MenuDIV.innerHTML = "<b>Ошибка при передаче процессору Xsl входного документа: </b><p>" & vbNewLine & Err.Description
+		Err.Clear
+		Exit Sub
+	End If
+	' Передаем процессору объект доступа к текущему объекту
+	oProcessor.addObject Me, "urn:menu-object-access"
+	If Not oSender Is Nothing Then
+		oProcessor.addObject oSender, "urn:sender-object-access"
+	End If
+	If Err Then
+		MenuDIV.innerHTML = "<b>Ошибка при передаче процессору Xsl объектов: </b><p>" & vbNewLine & Err.Description
+		Err.Clear
+		Exit Sub
+	End If
+		
+	' отрендерим меню
+	oProcessor.transform
+	If Err Then
+		MenuDIV.innerHTML = "<b>Ошибка преобразования xml-меню xsl-шаблоном: </b><p>" & vbNewLine & Err.Description
+		Err.Clear
+		Exit Sub
+	End If
+	MenuDIV.innerHTML = oProcessor.output 
+End Sub
+
+
+'==============================================================================
+' Обработчик клика пункта меню, установленный в xslt-шаблоне как обработчик onClick
+'	[in] sItemName - наименование (@n) menu-item'a
+Sub OnMenuActionHandler(sItemName)
+	m_oMenu.RunExecutionHandlers m_oSender, sItemName
+End Sub
+
+
+'==============================================================================
+' Возвращает текущий HTML меню
+Function get_HTML
+	Set get_HTML = MenuDIV
+End Function
+
+</SCRIPT>
+</HEAD>
+<!-- margin-bottom:-4px; - обход бага, иначе появляется скроллер -->
+<body style="padding:0;margin:0 0 -4px 0;" scroll="no">
+	<div id="MenuDIV" style="PADDING: 0px 0px 0px 0px; DISPLAY: block; MARGIN: 0px; OVERFLOW: auto; WIDTH: 100%; HEIGHT: 100%">
+		<div class="x-pane x-pane-main-message x-tree-pane x-tree-pane-main-message">Загрузка...</div>
+	</div>
+</body>

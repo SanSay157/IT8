@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<!--
+      Временные объекты для реализации селективности иконок виртуальных уровней иерархии 
+  -->
+	<ds:type n="IncDocs" d="Приходные документы" tp="temporary">
+		<ds:prop n="tmp" d="Description" vt="boolean" cp="scalar" maybenull="1" />
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="AllSigned">Folder-Directory-Open-Complete.ico</i:icon>
+			<i:icon selector="NotSigned">Folder-Directory-Open-OnCheck.ico</i:icon>
+			<i:icon selector="NotSignedOutdated">Folder-Directory-Open-InWork.ico</i:icon>
+		</i:icons>
+	</ds:type>
+	<ds:type n="OutDocs" d="Расходные документы" tp="temporary">
+		<ds:prop n="tmp" d="Description" vt="boolean" cp="scalar" maybenull="1" />
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="AllSigned">Folder-Directory-Open-Complete.ico</i:icon>
+			<i:icon selector="NotSigned">Folder-Directory-Open-OnCheck.ico</i:icon>
+			<i:icon selector="NotSignedOutdated">Folder-Directory-Open-InWork.ico</i:icon>
+		</i:icons>
+	</ds:type>
+	<ds:type n="Outcomes" d="Расходы" tp="temporary">
+		<ds:prop n="tmp" d="Description" vt="boolean" cp="scalar" maybenull="1" />
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="AllPaid">Folder-Directory-Open-Complete.ico</i:icon>
+			<i:icon selector="NotPaid">Folder-Directory-Open-OnCheck.ico</i:icon>
+			<i:icon selector="NotPaidOutdated">Folder-Directory-Open-InWork.ico</i:icon>
+		</i:icons>
+	</ds:type>
+	<ds:type n="AOs" d="Авансовые отчеты" tp="temporary">
+		<ds:prop n="tmp" d="Description" vt="boolean" cp="scalar" maybenull="1" />
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="OverLimit">TenderLotState-StateContract.ico</i:icon>
+			<i:icon selector="NotExceedLimit">Folder-Tender-Open-OnCheck.ico</i:icon>
+		</i:icons>
+	</ds:type>
+</ds:metadata>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<ds:type n="FilterProtocol" d="Фильтр протокола" tp="temporary">
+		<ds:prop n="Data" d="Данные" vt="string" cp="scalar" maybenull="1">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="DateFrom" d="C" vt="dateTime" cp="scalar" maybenull="1" />
+		<ds:prop n="DateTo" d="По" vt="dateTime" cp="scalar" maybenull="1" />
+		<ds:prop n="Object" d="Сущность" vt="i4" cp="scalar" maybenull="1" enum="OBJ_TYPE">
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Договор">0</i:const-value>
+				<i:const-value n="Расходный договор">1</i:const-value>
+				<i:const-value n="Займ">2</i:const-value>
+				<i:const-value n="Расходный документ">3</i:const-value>
+				<i:const-value n="Приходный документ">4</i:const-value>
+				<i:const-value n="Расход">5</i:const-value>
+				<i:const-value n="Приход">6</i:const-value>
+				<i:const-value n="Общий расходный документ">7</i:const-value>
+				<i:const-value n="Общий расход">8</i:const-value>
+				<i:const-value n="Общий приход">9</i:const-value>
+				<i:const-value n="Бюджетный расход">10</i:const-value>
+				<i:const-value n="Движение ДС в кассе">30</i:const-value>
+				<i:const-value n="Передача ДС">31</i:const-value>
+				<i:const-value n="АО">32</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Action" d="Действие" vt="i2" cp="scalar" maybenull="1" enum="ACTION_TYPE">
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Создание">0</i:const-value>
+				<i:const-value n="Измененние">1</i:const-value>
+				<i:const-value n="Удаление">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Initiator" d="Инициатор" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>it_FormatName(item.LastName, item.FirstName, item.PhoneExt)</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="OID" d="ID" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<i:editor n="Editor" t="Параметры фильтрации" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page t="Параметры">p-Filter-Protocol.xsl</i:page>
+			<i:menu ref="std-filter-editor-menu" />
+		</i:editor>
+	</ds:type>
+</ds:metadata>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<r:report
+	r:t="Норма рабочего времени"
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:it="http://www.croc.ru/Schemas/IncidentTracker/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/IncidentTracker/ReportService Croc.IncidentTracker.ReportService.xsd http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+	<r:common>
+		<r:style-class r:n="TABLE_CELL">border="1pt solid" border-color="#50729C" text-align="left" font-size="11px" font-weight="bold" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="DATE">border="1pt solid" border-color="#50729C" text-align="center" font-size="11px" font-weight="bold" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+	</r:common>
+
+	<!-- Параметры отчета -->
+	<r:params>
+		<r:param r:n="ShowRestrictions" r:vt="boolean" r:default="1" />
+		<r:param r:n="PassRedundant" r:vt="boolean" r:default="1" />
+		<r:param r:n="PassDisabled" r:vt="boolean" r:default="1" />
+		<r:param r:n="Organization" r:vt="uuid" />
+		<r:param r:n="Department" r:vt="uuid" />
+	</r:params>
+
+	<r:data-sources>
+		<r:storage-data-source r:n="Main">
+			<r:cmd r:type="sp">rep_EmployeesRate</r:cmd>
+			<r:cmd-params>
+				<r:cmd-param r:n="ExcludeArchive" r:report-param="PassRedundant" />
+				<r:cmd-param r:n="ExcludeTempDisability" r:report-param="PassDisabled" />
+				<r:cmd-param r:n="OrganizationID" r:report-param="Organization" r:may-be-null="true" />
+				<r:cmd-param r:n="DepartmentID" r:report-param="Department" r:may-be-null="true" />
+			</r:cmd-params>
+		</r:storage-data-source>
+		<!-- Источник данных для заголовка -->
+		<r:storage-data-source r:n="Header">
+			<r:cmd r:type="text">
+				<![CDATA[
+				SELECT
+					ISNULL(dbo.GetEmployeesString(CAST(@OrganizationID AS VARCHAR(36)), CAST(@DepartmentID AS VARCHAR(36)), null), '(все сотрудники)') AS Employees	
+					
+			]]>
+			</r:cmd>
+			<r:cmd-params>
+				<r:cmd-param r:n="OrganizationID" r:report-param="Organization" r:may-be-null="true" />
+				<r:cmd-param r:n="DepartmentID" r:report-param="Department" r:may-be-null="true" />
+			</r:cmd-params>
+		</r:storage-data-source>
+	</r:data-sources>
+
+	<r:layouts>
+		<r:header-layout r:n="Header" r:use-data-sources="Header">
+			<r:fragment r:value="&lt;fo:block&gt;Норма рабочего времени сотрудников&lt;/fo:block&gt;" r:encoding="xml" />
+			<r:fragment r:value="&lt;fo:block /&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:block font-size='14px'&gt;Параметры отчета:&lt;/fo:block&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table color='#FFFFFF' text-align='left' font-size='12px' font-family='MS Sans-serif'&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-column/&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-column/&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-body&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<!-- Сотрудники -->
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Сотрудники:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;{#Employees}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<!-- Исключить уволенных сотрудников -->
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Исключить уволенных сотрудников:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;да&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0 || (int){@PassRedundant}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;нет&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0 || (int){@PassRedundant}!=0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<!-- Исключить временно нетрудоспособных сотрудников -->
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Исключить временно нетрудоспособных сотрудников:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;да&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0 || (int){@PassDisabled}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;нет&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0 || (int){@PassDisabled}!=0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+
+			<!-- Виды трудозатрат -->
+			<!-- Закрываем таблицу -->
+			<r:fragment r:value="&lt;/fo:table-body&gt;&lt;/fo:table&gt;" r:encoding="xml" r:hide-if="(int){@ShowRestrictions}==0" />
+		</r:header-layout>
+
+		<r:table-layout
+			r:n="Main"
+			r:data-source-name="Main"
+		>
+			<r:var r:n="EmpFullName" r:vt="string">
+				<r:macros>{#FullName}</r:macros>
+			</r:var>
+			<r:col r:t="№ п/п" r:counter-start="1" r:rowspan-by="FullName" r:counter-increment="1" />
+			<r:col r:t="Подразделение" r:data="{#DepName}" r:rowspan-by="FullName" r:style-class="TABLE_CELL">
+			</r:col>
+			<r:col r:t="Сотрудник" 
+				   r:data="{#FullName}"
+				   r:rowspan-by="FullName"
+					r:style-class="TABLE_CELL"
+				   >
+			</r:col>
+			<r:col r:t="Временная нетрудоспособность" r:data="{#Rem}" r:rowspan-by="Rem;FullName" r:style-class="TABLE_CELL" r:hide-if="PassDisabled" />
+			<r:col r:t="Дата" r:data="{#Date}" r:style-class="DATE">
+				<r:formatters>
+					<r:date-time-evaluator r:format="dd.MM.yyyy" />
+				</r:formatters>
+			</r:col>
+			<r:col r:t="Норма рабочего времени" r:data="{#Rate}" r:style-class="DATE">
+			</r:col>
+			<r:col r:t="Комментарий" r:data="{#Comment}" r:style-class="TABLE_CELL"/>
+			<r:grouping>
+				<r:group-by r:n="DepName"  r:bound-presentation="none" />
+				<r:group-by r:n="FullName" r:bound-presentation="none" />
+				<r:group-by r:n="Rem" r:bound-presentation="none" />
+				<r:group-by r:n="Date" r:bound-presentation="none" />
+			</r:grouping>
+		</r:table-layout>
+	</r:layouts>
+</r:report>
+

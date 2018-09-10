@@ -1,0 +1,146 @@
+<HTML>
+<HEAD>
+<TITLE>Найти проект</TITLE>
+<LINK href="x.css" rel="STYLESHEET" type="text/css">
+<META HTTP-EQUIV="Content-Type" content="text/html; charset=windows-1251">
+<!-- Стандартные клиентские методы -->
+<SCRIPT Language="VBScript" type="text/vbscript" SRC="vbs/x-utils.vbs"></SCRIPT>
+<SCRIPT language="VBScript">
+
+' Результаты поиска открывать в
+const SRCH_TREE = 0	' в дереве
+const SRCH_EDIT = 1 ' в редакторе
+const SRCH_VIEW = 2 ' в просмотре
+const SRCH_LIST = 3 ' в списке
+
+Dim g_bReady		' признак полной готовности
+
+g_bEnabled = false
+
+' Свойство IsReady (R/O)
+'	= true в случае полной готовности, false иначе
+function IsReady()
+	IsReady = g_bReady = True
+end function
+
+
+' Метод Init
+sub Window_OnLoad()
+	' ждём прогрузки всех страниц фильтра
+	X_WaitForTrue "Init2" , "IsFiltersReady()"
+end sub
+
+' инициализация фильров - фаза 2
+Sub Init2()
+	' загрузка сохраненного состояния фильтра
+	txtIncidentNumber.select()
+	g_bReady = true
+	trackSearchValue
+End Sub
+
+
+' Проверка готовности подгружаемых страниц фильтра
+Function IsFiltersReady()
+	IsFiltersReady = false
+	' проверим готовность документа
+	If Not X_IsDocumentReady(null) Then Exit Function
+	IsFiltersReady = true
+End Function
+
+
+'Вызывается при нажатии на кнопку "OK"
+Sub OnOK_Click
+	Dim oRB			' одна из RadioButton
+	Dim nOpenMode	' режим открытия найденного инц-та
+
+	If Not IsReady() Then Exit Sub
+	' Ищем в коллекции вариантов открытия выбранный и берем его значение
+	For Each oRB In rbOpenType
+		If oRB.checked Then
+			nOpenMode = oRB.value
+			Exit For
+		End If
+	Next
+
+	X_SetDialogWindowReturnValue txtIncidentNumber.value & chr(11) & nOpenMode
+	window.close
+End Sub
+
+
+'Вызывается при нажатии клавиши
+Sub OnBody_KeyDown
+	Const ENTER_KEY_CODE = 13
+	Const ESC_KEY_CODE = 27
+	
+	'Если нажали Enter
+	If window.event.keyCode = ENTER_KEY_CODE then
+		OnOK_Click
+	ElseIf window.event.keyCode = ESC_KEY_CODE then
+		window.close
+	End If
+End Sub
+
+
+' Отслеживает текст для поиска и настраивает остальные контролы формы
+Sub trackSearchValue()
+	' Если ничего не введено в "названии инцидента"
+	' то запрещаем кнопку "Найти"
+	If 0 < len( txtIncidentNumber.value ) Then
+		bOk.disabled = False
+	Else 
+		bOk.disabled = True
+	End If
+End Sub
+
+</SCRIPT>
+</HEAD>
+<BODY CLASS="x-dialog-body" language="VBS" onkeydown="OnBody_KeyDown">
+<TABLE BORDER="0" CELLSPACING="5" WIDTH="100%" height="100%" STYLE="table-layout:fixed">
+	
+		<TR>
+			<TD>Номер проекта</TD>
+			<TD>
+				<div id="third" style="width: 100px; padding-top: 8px">
+					<INPUT CLASS="x-dialog-string-field" id="txtIncidentNumber" onKeyUp="trackSearchValue" onmouseleave="trackSearchValue"/>
+				</div>
+			</TD>
+		</TR>
+	
+		<TR>
+			<TD align="right">
+				<input name="rbOpenType" type="radio" value="OPENINTREE" id="rbOT0" checked/>
+			</TD>
+			<TD>
+				<label CLASS="x-filter-flag-text" for="rbOT0">открыть в дереве</label>
+			</TD>
+		</TR>
+		<TR>
+			<TD align="right">
+				<input name="rbOpenType" type="radio" value="OPENINEDITOR" id="rbOT1"/>
+			</TD>
+			<TD>
+				<label CLASS="x-filter-flag-text" for="rbOT1">открыть редактор</label>
+			</TD>
+		</TR>
+		<TR>
+			<TD align="right">
+				<input name="rbOpenType" type="radio" value="OPENVIEW" id="rbOT2" 
+                    disabled="disabled"/>
+			</TD>
+			<TD>
+				<label CLASS="x-filter-flag-text" for="rbOT2">открыть просмотр</label>
+			</TD>
+		</TR>
+		<TR>
+			<TD colspan="2" align="right" CLASS="x-bar-control-place x-editor-bar-control-place">
+				<BUTTON CLASS="x-button-wide" language="VBS" onclick="OnOK_Click" id="bOK">Найти</BUTTON>&nbsp;
+				<BUTTON CLASS="x-button-wide" language="VBS" onclick="close">Отменить</BUTTON>&nbsp;
+			</TD>
+		</TR>
+</TABLE>
+</BODY>
+	<!-- Компонента CROC.XClinetService : базовые сервисы -->
+	<OBJECT ID="XService" CLASSID="CLSID:31A948DA-9A04-4A95-8138-3B62E9AB92FC" STYLE="display:none" VIEWASTEXT>
+		<PARAM NAME="AppIconURL" VALUE="icons/xu-application-icon.ico"/>		
+	</OBJECT>
+</HTML>

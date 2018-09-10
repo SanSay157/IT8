@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<ds:type n="FilterReportFinplan" d="Фильтр отчета &quot;Финансовый план&quot;" tp="temporary">
+		<ds:prop n="Group" d="Группа проектов" vt="object" ot="PrjGroup" cp="scalar">
+			<i:object-dropdown empty-value-text="(Укажите группу проектов)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="DateRatio" d="Масштаб" vt="object" ot="DateRatio" cp="scalar">
+			<i:object-dropdown empty-value-text="(Укажите масштаб времени)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="IsPrjData" d="Данные по каждому проекту" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="IsLoanData" d="Данные по каждому займу" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="IsSeparate" d="Разделители разрядов" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+	</ds:type>
+	<ds:type n="FilterReportProjectsProfit" d="Фильтр отчета &quot;Проектная прибыль&quot;" tp="temporary">
+		<ds:prop n="Group" d="Группа проектов" vt="object" ot="PrjGroup" cp="scalar">
+			<i:object-dropdown empty-value-text="(Укажите группу проектов)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+	</ds:type>
+	<ds:type n="PrjGroup" d="Группа проектов" tp="persistent">
+		<ds:prop n="Name" d="Название" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Owner" d="Владелец" vt="object" ot="Organization" cp="scalar">
+			<i:object-dropdown use-list="OwnerSelector" empty-value-text="(Укажите владельца)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Contracts" d="Договоры" vt="object" ot="Contract" cp="array">
+			<i:elements-list off-create="1" off-delete="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Код проекта" width="130">item.Project.ExternalID</i:column>
+				<i:column t="Проект" width="600">item.Project.Name</i:column>
+				<i:column t="Дата" width="150" vt="date">item.Date</i:column>
+				<i:column t="Сумма" width="200">it_FormatCurr(item.Sum)</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Rem" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Archive" d="В архиве" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:index n="IDX_PRJGROUP_NAME_UNIQUE" unique="1">
+			<ds:prop-ref n="Name" />
+		</ds:index>
+		<i:editor n="editor" width="1000" height="900" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-format-value.vbs</i:client-script>
+			<i:page n="Main" t=" ">p-PrjGroup.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Группа проектов" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+          dbo.GetOrgNameByID(t.Owner) AS 'Owner', 
+          dbo.GetBoolString(t.Archive) AS 'ArchiveStr',
+					t.[Rem]
+				FROM [dbo].[PrjGroup] t
+				WHERE_CLAUSE
+        ORDER BY Name
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Название" width="300" />
+			<i:column t="Владелец" width="200" />
+			<i:column t="В архиве" width="100" />
+			<i:column t="Примечание" width="300" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="DateRatio" d="Масштаб" tp="persistent">
+		<ds:prop n="Name" d="Название" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Intervals" d="Интервалы" vt="object" ot="DateInterval" cp="link" built-on="Ratio">
+			<i:elements-list off-select="1" off-unlink="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Название" width="200">item.Name</i:column>
+				<i:column t="Дата с" width="200" vt="date">item.DateFrom</i:column>
+				<i:column t="Дата по" width="200" vt="date">item.DateTo</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Archive" d="В архиве" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:index n="IDX_DATERATIO_NAME_UNIQUE" unique="1">
+			<ds:prop-ref n="Name" />
+		</ds:index>
+		<i:editor n="editor" default-for-editing="1" default-for-creation="1" width="500" height="650" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page n="Main" t=" ">p-DateRatio.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Масштаб" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					dbo.GetBoolString(t.[Archive])
+				FROM [dbo].[DateRatio] t
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Название" width="400" />
+			<i:column t="В архиве" width="150" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="DateInterval" d="Интервал" tp="persistent">
+		<ds:prop n="Name" d="Название" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="DateFrom" d="Дата с" vt="date" cp="scalar" />
+		<ds:prop n="DateTo" d="Дата по" vt="date" cp="scalar" />
+		<ds:prop n="Ratio" d="Масштаб" vt="object" ot="DateRatio" cp="scalar" delete-cascade="1">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:index n="IDX_DATEINTERVAL_NAME_UNIQUE" unique="1">
+			<ds:prop-ref n="Name" />
+		</ds:index>
+		<i:editor n="editor" default-for-editing="1" default-for-creation="1" width="400" height="250" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Интервал" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[DateFrom],
+					t.[DateTo]
+				FROM [dbo].[DateInterval] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Название" width="100" />
+			<i:column t="Дата с" vt="date" width="100" />
+			<i:column t="Дата по" vt="date" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="FilterReportBDR" d="Фильтр отчета &quot;Бюджет доходов и расходов&quot;" tp="temporary">
+		<ds:prop n="InContract" d="Договор" vt="object" ot="Contract" cp="scalar">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Project.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Extended" d="Расширенный" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+	</ds:type>
+	<ds:type n="FilterReportProjectBudget" d="Фильтр отчета &quot;Бюджет проекта&quot;" tp="temporary">
+		<ds:prop n="InContract" d="Приходный договор" vt="object" ot="Contract" cp="scalar">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Project.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Extended" d="Расширенный" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+	</ds:type>
+	<ds:type n="FilterReportBDDS" d="Фильтр отчета &quot;Бюджет Движения Денежных Средств" tp="temporary">
+		<ds:prop n="DateRatio" d="Масштаб" vt="object" ot="DateRatio" cp="scalar">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="InContract" d="Приходный договор" vt="object" ot="Contract" cp="scalar">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Project.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="IsSeparate" d="Разделять разряды" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+	</ds:type>
+	<i:report t="Финансовый план-факт" n="FinPlan" width="650" height="330" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportFinplan" />
+	</i:report>
+	<i:report t="Бюджет Доходов и Расходов по проекту" n="ProjectBDR" width="700" height="230" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportBDR" />
+	</i:report>
+	<i:report t="Плановый Бюджет проекта" n="ProjectBudget" width="700" height="230" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportProjectBudget" />
+	</i:report>
+	<i:report t="Бюджет Движения Денежных Средств по проекту" n="ProjectBDDS" width="700" height="400" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportBDDS" />
+	</i:report>
+</ds:metadata>

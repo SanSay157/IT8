@@ -1,0 +1,26 @@
+/* 
+	Incident Tracker 6
+	Интерфейс настройки подписки на рассылку
+	ОПРЕДЕЛЕНИЕ СПЕЦИАЛЬНЫХ СТИЛЕЙ ДЛЯ X-TREE, ВЫЗЫВАЕМОМ В ДАЛОГЕ
+*/
+
+/*	Задается для таблицы раскладки в пенели заголовка; 
+	определяет раскладку элементов загловка и навигации (см. далее) */
+.x-bar-caption {
+	/*width: 100%;
+	overflow-x: hidden;
+	overflow-y: visible;
+	background: url('Images/x-caption.jpg') repeat-x center right;
+	background-color: #369;
+	border: #F7AF00 groove 3px; 
+	border-width: 0px 0px 3px 0px;
+	padding: 0px;
+	border: red solid 3px;*/
+	
+} 
+.x-tree-bar-title {
+	/*position: relative;
+	width: 100%; 
+	overflow-x: hidden;
+	overflow-y: visible;*/
+}

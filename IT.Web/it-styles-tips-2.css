@@ -1,0 +1,46 @@
+/******************************************************************************
+    IT-TYPS-STYLES.CSS - СТИЛЕВЫЕ ОПРЕДЕЛЕНИЯ ДЛЯ Inciden Tracker
+    Стилевая страница, применяемая для форматирования отображения подсказок
+    (см. x-ToolTip.htc)
+ ******************************************************************************/
+ 
+/* Правила, применяемые ко всем элементам */
+body, td, input, select, button, textarea {
+	font-family: Verdana, Helvetica;
+	font-weight: normal;
+	font-size: 10px;
+	color: #331;
+}
+
+/* Стилевые классы, назначемые стилевой компонентой x-ToolTip.htc: */
+/* ... для элемента BODY */
+.x-tooltip-body {}
+/* ... для элемента DIV, содержащего текст подсказки */
+.x-tooltip-main-pane {
+	height: 1px;
+	padding: 10px 5px 5px 5px;
+	background-color: #ffffe1;
+	filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr='#FFFEFEAE',EndColorStr='#FFFFFFFF')
+}
+
+
+/* Стилевые классы, используемые в HTML-форматировании текстов подсказок */
+/* ... заголовок подсказки */
+.Header {
+	font-weight: bold;
+	font-size: 11px;
+	color: #741;
+	margin: 0px 0px 2px -15px;
+	padding: 0px 0px 3px 0px; 
+	border: #996 solid 1px; 
+	border-width: 0px 0px 1px 0px;
+}
+/* ... выделение предупреждения в тексте подсказки */
+.Em {
+	font-weight: bold;
+	font-style: normal;
+	color: #e33;
+	background-color: #fdd;
+	border: #fcc solid 1px;
+	padding: 0px 2px 1px 2px;
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="windows-1251" ?> 
+<r:report
+	r:t="Финансовый план-факт"
+	r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll"
+	r:class="Croc.IncidentTracker.ReportService.Reports.r_FinPlan" 
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+	<!-- Подключение клиентского скрипта -->
+	<r:common>
+		<r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+	</r:common>
+	
+	<!-- Параметры отчета -->
+	<r:params>
+		<r:param r:n="Group" r:vt="uuid" r:t="Группа проектов"  r:required="true" />
+    <r:param r:n="DateRatio" r:vt="uuid" r:t="Масштаб"  r:required="true" />
+    <r:param r:n="IsPrjData" r:vt="boolean" r:t="Данные по проктам"  r:required="true" />
+    <r:param r:n="IsLoanData" r:vt="boolean" r:t="Данные по займам"  r:required="true" />
+    <r:param r:n="IsSeparate" r:vt="boolean" r:t="Разделители разрядов"  r:required="true" />
+  </r:params>
+	<r:data-sources>
+    <r:config-data-source r:n="GenSumOutDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.GenSumOutDS" r:section=""/>
+    <r:config-data-source r:n="IntervalSaldoDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.IntervalSaldoDS" r:section=""/>
+    <r:config-data-source r:n="PrjGroupDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.PrjGroupDS" r:section=""/>
+    <r:config-data-source r:n="PrjGroupPreFinDataDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.PrjGroupPreFinDataDS" r:section=""/>
+    <r:config-data-source r:n="PrjGroupAfterFinDataDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.PrjGroupAfterFinDataDS" r:section=""/>
+    <r:config-data-source r:n="PrjGroupAllFinDataDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.PrjGroupAllFinDataDS" r:section=""/>
+    <r:config-data-source r:n="PrjGroupFinDataDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.PrjGroupFinDataDS" r:section=""/>
+    <r:config-data-source r:n="ProjectsPreFinDataDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectsPreFinDataDS" r:section=""/>
+    <r:config-data-source r:n="ProjectsAfterFinDataDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectsAfterFinDataDS" r:section=""/>
+    <r:config-data-source r:n="ProjectsAllFinDataDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectsAllFinDataDS" r:section=""/>
+    <r:config-data-source r:n="ProjectsFinDataDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectsFinDataDS" r:section=""/>
+    <r:config-data-source r:n="PrjGroupSumFinDataDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.PrjGroupSumFinDataDS" r:section=""/> 
+    <r:config-data-source r:n="ProjectsSumFinDataDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectsSumFinDataDS" r:section=""/>
+  </r:data-sources>
+</r:report>

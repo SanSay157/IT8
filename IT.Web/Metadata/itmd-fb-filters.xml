@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<ds:type n="FilterOutcomesList" d="Фильтр списка расходов" tp="temporary">
+		<ds:prop n="Type" d="Тип" vt="object" ot="OutType" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OutTypeIsProjectSelector" empty-value-text="(Укажите тип)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="DateFrom" d="Дата с" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="DateTo" d="Дата по" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="PrjCode" d="Код проекта" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="ContrYear" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Owner" d="Владелец" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OwnerSelector" empty-value-text="(Укажите владельца)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<i:editor n="Editor" t="Параметры фильтрации" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Параметры">p-Filter-Outcomes.xsl</i:page>
+			<i:menu ref="std-filter-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="FilterIncomesList" d="Фильтр списка приходов" tp="temporary">
+		<ds:prop n="DateFrom" d="Дата с" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="DateTo" d="Дата по" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Type" d="Тип" vt="object" ot="IncType" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="IncTypeSelector" empty-value-text="(Укажите тип)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="PrjCode" d="Код проекта" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="ContrYear" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Owner" d="Владелец" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OwnerSelector" empty-value-text="(Укажите владельца)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<i:editor n="Editor" t="Параметры фильтрации" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Параметры">p-Filter-Incomes.xsl</i:page>
+			<i:menu ref="std-filter-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="FilterContractsList" d="Фильтр списка Договоров" tp="temporary">
+		<ds:prop n="Owner" d="Владелец" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OwnerSelector" empty-value-text="(Укажите владельца)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="ContrYear" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="DateFrom" d="Дата с" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="DateTo" d="Дата по" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="PrjCode" d="Код проекта" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="ContrNum" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<i:editor n="Editor" t="Параметры фильтрации" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Параметры">p-Filter-Contracts.xsl</i:page>
+			<i:menu ref="std-filter-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="FilterOutContractsList" d="Фильтр списка Расходных договоров" tp="temporary">
+		<ds:prop n="Org" d="Контрагент" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-presentation off-create="1" off-edit="1" off-delete="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+			<i:list-selector n="SupplierSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="InContrOwner" d="Владелец приходного договора" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OwnerSelector" empty-value-text="(Укажите владельца)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="InContrYear" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="DateFrom" d="Дата с" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="DateTo" d="Дата по" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="PrjCode" d="Код проекта" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="OutContrNum" d="Номер расходного договора" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="ContrNum" d="Номер приходного договора" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<i:editor n="Editor" t="Параметры фильтрации" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Параметры">p-Filter-OutContracts.xsl</i:page>
+			<i:menu ref="std-filter-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="FilterOutDocsList" d="Фильтр списка Расходных документов" tp="temporary">
+		<ds:prop n="Org" d="Контрагент" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-presentation off-create="1" off-edit="1" off-delete="1" use-list-selector="SupplierSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="ContrYear" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Type" d="Тип" vt="object" ot="DocType" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="DocTypeSelector" empty-value-text="(Укажите тип)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="DateFrom" d="Дата с" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="DateTo" d="Дата по" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="PrjCode" d="Код проекта" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="OutContrNum" d="Номер расходного договора" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<i:editor n="Editor" t="Параметры фильтрации" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Параметры">p-Filter-OutDocs.xsl</i:page>
+			<i:menu ref="std-filter-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="FilterIncDocsList" d="Фильтр спсика Приходных документов" tp="temporary">
+		<ds:prop n="Customer" d="Заказчик" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-presentation off-create="1" off-edit="1" off-delete="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="ContrYear" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Type" d="Тип" vt="object" ot="DocType" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="DocTypeSelector" empty-value-text="(Укажите тип)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="DateFrom" d="Дата с" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="DateTo" d="Дата по" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="PrjCode" d="Код проекта" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<i:editor n="Editor" t="Параметры фильтрации" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Параметры">p-Filter-IncDocs.xsl</i:page>
+			<i:menu ref="std-filter-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="FilterGenIncomesList" d="Фильтр спсиска общих приходов" tp="temporary">
+		<ds:prop n="Year" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Owner" d="Владелец" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OwnerSelector" empty-value-text="(Укажите владельца)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="DateFrom" d="Дата с" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="DateTo" d="Дата по" vt="date" cp="scalar" maybenull="1" />
+		<i:editor n="Editor" t="Параметры фильтрации" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Параметры">p-Filter-GenIncomes.xsl</i:page>
+			<i:menu ref="std-filter-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="FilterGenOutcomesList" d="Фильтр списка общих расходов" tp="temporary">
+		<ds:prop n="Year" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Type" d="Тип" vt="object" ot="OutType" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OutTypeGeneralSelector" empty-value-text="(Укажите тип)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Code" d="Код" vt="object" ot="OutCode" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OutCode" empty-value-text="(Укажите код)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="DateFrom" d="Дата с" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Owner" d="Владелец" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OwnerSelector" empty-value-text="(Укажите владельца)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="DateTo" d="Дата по" vt="date" cp="scalar" maybenull="1" />
+		<i:editor n="Editor" t="Параметры фильтрации" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Параметры">p-Filter-GenOutcomes.xsl</i:page>
+			<i:menu ref="std-filter-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="FilterGenOutDocsList" d="Фильтр спсиска общих расходных документов" tp="temporary">
+		<ds:prop n="Year" d="Отчетный год" vt="object" ot="ContractYear" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="ContractYearSelector" empty-value-text="(Укажите год)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Type" d="Тип документа" vt="object" ot="DocType" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="DocTypeSelector" empty-value-text="(Укажите тип документа)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Owner" d="Владелец" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OwnerSelector" empty-value-text="(Укажите владельца)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="DateFrom" d="Дата с" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="DateTo" d="Дата по" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="OutType" d="Тип расхода" vt="object" ot="OutType" cp="scalar" maybenull="1">
+			<i:object-dropdown use-list="OutTypeGeneralSelector" empty-value-text="(Укажите тип затрат)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<i:editor n="Editor" t="Параметры фильтрации" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Параметры">p-Filter-GenOutDocs.xsl</i:page>
+			<i:menu ref="std-filter-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="FilterBudgetOutList" d="Фильтр списка &quot;Статьи бюджета&quot;" tp="temporary">
+		<ds:prop n="Contract" d="Приходный договор" vt="object" ot="Contract" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Project.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+	</ds:type>
+</ds:metadata>

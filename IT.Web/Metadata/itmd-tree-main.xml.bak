@@ -1,0 +1,1330 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<!--
+		=======================================================================
+		Иерахия Клиенты, Проекты, Инциденты
+		ВНИМАНИЕ: кастомная команда загрузки данных и меню иерерахии.
+	-->
+	<i:objects-tree n="Main" t="Клиенты и Проекты" allow-drag-drop="1" it-i:provider="Croc.IncidentTracker.Trees.TreePageWithAccessCheckInfoProvider,Croc.IncidentTracker.Commands" it-i:menu-data-provider="Croc.IncidentTracker.Trees.DKPTreeMenuLoadProvider,Croc.IncidentTracker.Commands" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0">
+		<!-- Меню для узлов ирерархии всех уровней -->
+		<it-i:default-level-menu it-i:data-provider="Croc.IncidentTracker.Trees.TreeDefaultMenuProvider,Croc.IncidentTracker.Commands" />
+		<i:client-script>x-create-outlook-letter.vbs</i:client-script>
+		<i:client-script>s-tree-DKP.vbs</i:client-script>
+		<i:client-script>tms-tools.vbs</i:client-script>
+		<i:client-script>xx-tree-drag-drop-md-manager.vbs</i:client-script>
+		<i:client-script>xx-tree-drag-drop-dispatcher.vbs</i:client-script>
+		<i:client-script>xx-tree-drag-drop-tree.vbs</i:client-script>
+		<i:client-script>xx-tree-drag-drop-menu-tree.vbs</i:client-script>
+		<i:client-script>xx-tree-drag-drop-utils.vbs</i:client-script>
+		<i:filter-as-editor ot="FilterDKP" metaname="EditorInFilter" height="60" />
+		<i:tree-struct ref="DKPTree" />
+	</i:objects-tree>
+	<!--
+  Имеет несколько режимов отображения
+  1. Режим отображения проектов, папок их подчиненных узлов
+  2. Режим отображения организаций и их подчиненных узлов
+  -->
+	<i:tree-struct n="DKPTree" it-i:executor="Croc.IncidentTracker.Trees.DKPTreeStructExecutor, Croc.IncidentTracker.Commands" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<!-- Сначала опишем уровни для режима "Организации" -->
+		<!-- Организации-владельцы -->
+		<!-- Подразумевается, что на этом уровне выводится (одна?) организация-владелец системы -->
+		<i:tree-level ot="HomeOrganization" alias="o">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+          SELECT 
+            @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+            @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+            @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END
+            
+          CREATE TABLE #tResult (ObjectID UNIQUEIDENTIFIER, TITLE VARCHAR(256), IS_LEAF INT) 
+          IF NOT('00000000-0000-0000-0000-000000000000' != @@OBJECT_ID)
+          BEGIN
+            INSERT INTO #tResult (ObjectID, TITLE, IS_LEAF)
+            EXEC dbo.[GetDKPTreeOrganizationLevel]
+              NULL, 
+              Null, 
+              @CurrentEmployeeID, 
+              @ShowOrgWithoutActivities, 
+              @ActivityState, 
+              @FolderState,
+              @OnlyOwnActivity, 
+              @OrganizationName, 
+              @FolderName, 
+              NULL, 
+              @ActivityTypes, 
+              @ViewAllOrganizations, 
+              @DirectionsPacked,
+              1
+            IF NOT EXISTS (SELECT TOP 1 NULL FROM #tResult)
+            INSERT INTO #tResult (ObjectID, TITLE, IS_LEAF)
+            EXEC dbo.[GetDKPTreeOrganizationLevel]
+              NULL, 
+              Null, 
+              @CurrentEmployeeID, 
+              0, 
+              @ActivityState, 
+              @FolderState,
+              @OnlyOwnActivity, 
+              @OrganizationName, 
+              @FolderName, 
+              NULL, 
+              @ActivityTypes, 
+              @ViewAllOrganizations, 
+              @DirectionsPacked,
+              0
+          END
+          IF '00000000-0000-0000-0000-000000000000' != @@OBJECT_ID OR EXISTS (SELECT TOP 1 NULL FROM #tResult)
+            SELECT
+              o.ObjectID,
+              o.Name AS TITLE,
+              0 AS IS_LEAF
+            FROM
+              Organization o
+            WHERE
+              o.Home = 1 AND SEARCH_CONDITIONS
+              OR o.ObjectID = @@OBJECT_ID
+            ORDER BY
+              o.Name
+          DROP TABLE #tResult
+				  ]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization,Croc.IncidentTracker.Commands" />
+					<ds:param n="CurrentEmployeeID" vt="uuid" />
+					<ds:param n="ActivityState" vt="i2" />
+					<ds:param n="ShowOrgWithoutActivities" vt="boolean" />
+					<ds:param n="OnlyOwnActivity" vt="boolean" />
+					<ds:param n="ActivityTypes" vt="i2" />
+					<ds:param n="FolderState" vt="i2" />
+					<ds:param n="OrganizationName" vt="string" use-wildcard="conditional-on-end" />
+					<ds:param n="FolderName" vt="string" use-wildcard="conditional-on-end" />
+					<ds:param n="ViewAllOrganizations" vt="boolean" />
+					<!-- Данный параметр обрабатывается в Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization -->
+					<ds:param n="Directions" vt="uuid" array="1">
+						<ds:param-selector op="in">DirectionsPacked</ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<!-- Под организацией-владельцем активности группируются по видам активностей, далее по клиентам -->
+			<!-- Виды активностей под родной Организацией, не применимые в отношении клиентов -->
+			<i:tree-level ot="ActivityTypeInternal" alias="at">
+				<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+					<ds:cmd-text>
+            <![CDATA[
+            SELECT 
+              @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+              @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+              @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END,
+              @RequestedOID = CASE @RequestedOID WHEN '00000000-0000-0000-0000-000000000000' THEN NULL ELSE @RequestedOID END 
+            
+            CREATE TABLE #tResult (ObjectID UNIQUEIDENTIFIER, TITLE VARCHAR(256), IS_LEAF INT) 
+            INSERT INTO #tResult (ObjectID, TITLE, IS_LEAF)
+            EXEC dbo.[GetDKPTreeActivityTypeLevel]
+              @RequestedOID, 
+              NULL, 
+              @CurrentEmployeeID,
+              @ActivityState, 
+              @FolderState,
+              @OnlyOwnActivity, 
+              @OrganizationName, 
+              @FolderName, 
+              @@ParentID(1), 
+              @ActivityTypes, 
+              @ViewAllOrganizations, 
+              @DirectionsPacked,
+              0
+            
+            SELECT
+              at.ObjectID, 
+							at.Name AS TITLE,
+              1 AS IS_LEAF
+						FROM 
+							ActivityType at WITH (NOLOCK)
+						WHERE 
+						  at.Parent IS NULL 
+              AND at.AccountRelated = 0 -- признак вида активности, не применимого к клиентам
+              AND NOT EXISTS (SELECT TOP 1 NULL FROM #tResult t WHERE t.ObjectID = at.ObjectID)
+            UNION
+            SELECT
+              ObjectID, TITLE, IS_LEAF
+            FROM
+              #tResult
+            ORDER BY
+              TITLE
+              
+            DROP TABLE #tResult
+					  ]]>
+          </ds:cmd-text>
+					<ds:params>
+						<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization,Croc.IncidentTracker.Commands" />
+						<ds:param n="RequestedOID" vt="uuid" />
+						<ds:param n="CurrentEmployeeID" vt="uuid" />
+						<ds:param n="ShowOrgWithoutActivities" vt="boolean" />
+						<ds:param n="ActivityState" vt="i2" />
+						<ds:param n="OnlyOwnActivity" vt="boolean" />
+						<ds:param n="ActivityTypes" vt="i2" />
+						<ds:param n="FolderState" vt="i2" />
+						<ds:param n="OrganizationName" vt="string" use-wildcard="conditional-on-end" />
+						<ds:param n="FolderName" vt="string" use-wildcard="conditional-on-end" />
+						<ds:param n="ViewAllOrganizations" vt="boolean" />
+						<!-- Данный параметр обрабатывается в Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization -->
+						<ds:param n="Directions" vt="uuid" array="1">
+							<ds:param-selector op="in">DirectionsPacked</ds:param-selector>
+						</ds:param>
+					</ds:params>
+				</ds:data-source>
+				<!-- Виды активностей под родной Организацией, не применимые в отношении клиентов -->
+				<i:tree-level ot="ActivityTypeInternal" alias="at" recursive="1">
+					<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+						<ds:cmd-text>
+              <![CDATA[
+              SELECT 
+                @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+                @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+                @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END,
+                @RequestedOID = CASE @RequestedOID WHEN '00000000-0000-0000-0000-000000000000' THEN NULL ELSE @RequestedOID END
+              
+              CREATE TABLE #tResult (ObjectID UNIQUEIDENTIFIER, TITLE VARCHAR(256), IS_LEAF INT) 
+              INSERT INTO #tResult (ObjectID, TITLE, IS_LEAF)
+              EXEC dbo.[GetDKPTreeActivityTypeLevel]
+                @RequestedOID, 
+                @@ParentID(1), 
+                @CurrentEmployeeID,
+                @ActivityState, 
+                @FolderState,
+                @OnlyOwnActivity, 
+                @OrganizationName, 
+                @FolderName, 
+                @@ParentIDByType(HomeOrganization), 
+                @ActivityTypes, 
+                @ViewAllOrganizations, 
+                @DirectionsPacked,
+                0
+              
+              SELECT
+                at@@RC.ObjectID, 
+							  at@@RC.Name AS TITLE,
+                1 AS IS_LEAF
+						  FROM 
+							  ActivityType at@@RC WITH (NOLOCK)
+						  WHERE 
+							  @@RecursiveExp(at@@RC.Parent) 
+                AND at@@RC.AccountRelated = 0 -- признак вида активности, не применомиго к клиентам
+                AND NOT EXISTS (SELECT TOP 1 NULL FROM #tResult t WHERE t.ObjectID = at@@RC.ObjectID)
+              UNION
+              SELECT
+                ObjectID, TITLE, IS_LEAF
+              FROM
+                #tResult
+              ORDER BY
+                TITLE
+                
+              DROP TABLE #tResult
+					    ]]>
+            </ds:cmd-text>
+						<ds:params>
+							<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization,Croc.IncidentTracker.Commands" />
+							<ds:param n="RequestedOID" vt="uuid" />
+							<ds:param n="CurrentEmployeeID" vt="uuid" />
+							<ds:param n="ShowOrgWithoutActivities" vt="boolean" />
+							<ds:param n="ActivityState" vt="i2" />
+							<ds:param n="OnlyOwnActivity" vt="boolean" />
+							<ds:param n="ActivityTypes" vt="i2" />
+							<ds:param n="FolderState" vt="i2" />
+							<ds:param n="OrganizationName" vt="string" use-wildcard="conditional-on-end" />
+							<ds:param n="FolderName" vt="string" use-wildcard="conditional-on-end" />
+							<ds:param n="ViewAllOrganizations" vt="boolean" />
+							<!-- Данный параметр обрабатывается в Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization -->
+							<ds:param n="Directions" vt="uuid" array="1">
+								<ds:param-selector op="in">DirectionsPacked</ds:param-selector>
+							</ds:param>
+						</ds:params>
+					</ds:data-source>
+					<!-- Проекты и папки -->
+					<i:tree-level ref="FolderUnderActivityTypeUnderOrganization" with-params="ActivityType_TypeName=ActivityTypeInternal;Organization_TypeName=HomeOrganization" />
+				</i:tree-level>
+				<!-- Проекты и папки -->
+				<i:tree-level ref="FolderUnderActivityTypeUnderOrganization" with-params="ActivityType_TypeName=ActivityTypeInternal;Organization_TypeName=HomeOrganization" />
+			</i:tree-level>
+			<!-- Виды активностей под родной Организацией, применимые в отношении клиентов -->
+			<i:tree-level ot="ActivityTypeExternal" alias="at">
+				<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+					<ds:cmd-text>
+            <![CDATA[
+            SELECT 
+              @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+              @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+              @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END,
+              @RequestedOID = CASE @RequestedOID WHEN '00000000-0000-0000-0000-000000000000' THEN NULL ELSE @RequestedOID END
+            
+            CREATE TABLE #tResult (ObjectID UNIQUEIDENTIFIER, TITLE VARCHAR(256), IS_LEAF INT) 
+            INSERT INTO #tResult (ObjectID, TITLE, IS_LEAF)
+            EXEC dbo.[GetDKPTreeActivityTypeLevel]
+              @RequestedOID, 
+              NULL, 
+              @CurrentEmployeeID,
+              @ActivityState, 
+              @FolderState,
+              @OnlyOwnActivity, 
+              @OrganizationName, 
+              @FolderName, 
+              NULL, 
+              @ActivityTypes, 
+              @ViewAllOrganizations, 
+              @DirectionsPacked,
+              1
+            
+            SELECT
+              at.ObjectID, 
+							at.Name AS TITLE,
+              1 AS IS_LEAF
+						FROM 
+							ActivityType at WITH (NOLOCK)
+						WHERE 
+						  at.Parent IS NULL 
+              AND at.AccountRelated = 1 -- признак вида активности, применимого к клиентам
+              AND NOT EXISTS (SELECT TOP 1 NULL FROM #tResult t WHERE t.ObjectID = at.ObjectID)
+            UNION
+            SELECT
+              ObjectID, TITLE, IS_LEAF
+            FROM
+              #tResult
+            ORDER BY
+              TITLE
+              
+            DROP TABLE #tResult
+					  ]]>
+          </ds:cmd-text>
+					<ds:params>
+						<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization,Croc.IncidentTracker.Commands" />
+						<ds:param n="RequestedOID" vt="uuid" />
+						<ds:param n="CurrentEmployeeID" vt="uuid" />
+						<ds:param n="ShowOrgWithoutActivities" vt="boolean" />
+						<ds:param n="ActivityState" vt="i2" />
+						<ds:param n="OnlyOwnActivity" vt="boolean" />
+						<ds:param n="ActivityTypes" vt="i2" />
+						<ds:param n="FolderState" vt="i2" />
+						<ds:param n="OrganizationName" vt="string" use-wildcard="conditional-on-end" />
+						<ds:param n="FolderName" vt="string" use-wildcard="conditional-on-end" />
+						<ds:param n="ViewAllOrganizations" vt="boolean" />
+						<!-- Данный параметр обрабатывается в Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization -->
+						<ds:param n="Directions" vt="uuid" array="1">
+							<ds:param-selector op="in">DirectionsPacked</ds:param-selector>
+						</ds:param>
+					</ds:params>
+				</ds:data-source>
+				<!-- Виды активностей под родной Организацией, применимые в отношении клиентов -->
+				<i:tree-level ot="ActivityTypeExternal" alias="at" recursive="1">
+					<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+						<ds:cmd-text>
+              <![CDATA[
+              SELECT 
+                @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+                @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+                @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END,
+                @RequestedOID = CASE @RequestedOID WHEN '00000000-0000-0000-0000-000000000000' THEN NULL ELSE @RequestedOID END
+              
+              CREATE TABLE #tResult (ObjectID UNIQUEIDENTIFIER, TITLE VARCHAR(256), IS_LEAF INT) 
+              INSERT INTO #tResult (ObjectID, TITLE, IS_LEAF)
+              EXEC dbo.[GetDKPTreeActivityTypeLevel]
+                @RequestedOID, 
+                @@ParentID(1), 
+                @CurrentEmployeeID,
+                @ActivityState, 
+                @FolderState,
+                @OnlyOwnActivity, 
+                @OrganizationName, 
+                @FolderName, 
+                NULL, 
+                @ActivityTypes, 
+                @ViewAllOrganizations, 
+                @DirectionsPacked,
+                1
+              
+              SELECT
+                at@@RC.ObjectID, 
+							  at@@RC.Name AS TITLE,
+                1 AS IS_LEAF
+						  FROM 
+							  ActivityType at@@RC WITH (NOLOCK)
+						  WHERE 
+							  @@RecursiveExp(at@@RC.Parent) 
+                AND at@@RC.AccountRelated = 1 -- признак вида активности, применимого к клиентам
+                AND NOT EXISTS (SELECT TOP 1 NULL FROM #tResult t WHERE t.ObjectID = at@@RC.ObjectID)
+              UNION
+              SELECT
+                ObjectID, TITLE, IS_LEAF
+              FROM
+                #tResult
+              ORDER BY
+                TITLE
+                
+              DROP TABLE #tResult
+					    ]]>
+            </ds:cmd-text>
+						<ds:params>
+							<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization,Croc.IncidentTracker.Commands" />
+							<ds:param n="RequestedOID" vt="uuid" />
+							<ds:param n="CurrentEmployeeID" vt="uuid" />
+							<ds:param n="ShowOrgWithoutActivities" vt="boolean" />
+							<ds:param n="ActivityState" vt="i2" />
+							<ds:param n="OnlyOwnActivity" vt="boolean" />
+							<ds:param n="ActivityTypes" vt="i2" />
+							<ds:param n="FolderState" vt="i2" />
+							<ds:param n="OrganizationName" vt="string" use-wildcard="conditional-on-end" />
+							<ds:param n="FolderName" vt="string" use-wildcard="conditional-on-end" />
+							<ds:param n="ViewAllOrganizations" vt="boolean" />
+							<!-- Данный параметр обрабатывается в Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization -->
+							<ds:param n="Directions" vt="uuid" array="1">
+								<ds:param-selector op="in">DirectionsPacked</ds:param-selector>
+							</ds:param>
+						</ds:params>
+					</ds:data-source>
+					<!-- Организации под видом активности в отношении клиента 1-ый уровень рекурсии -->
+					<i:tree-level ot="Organization" alias="o">
+						<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+							<ds:cmd-text>
+                <![CDATA[
+              SELECT 
+                @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+                @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+                @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END,
+                @RequestedOID = CASE @RequestedOID WHEN '00000000-0000-0000-0000-000000000000' THEN NULL ELSE @RequestedOID END
+                
+    					CREATE TABLE #tResult (ObjectID UNIQUEIDENTIFIER, TITLE VARCHAR(256), IS_LEAF INT) 
+              INSERT INTO #tResult (ObjectID, TITLE, IS_LEAF)
+              EXEC dbo.[GetDKPTreeOrganizationLevel]
+                @RequestedOID, 
+                Null, 
+                @CurrentEmployeeID, 
+                0, 
+                @ActivityState,
+                @FolderState,
+                @OnlyOwnActivity, 
+                @OrganizationName, 
+                @FolderName, 
+                @@ParentID(1), 
+                @ActivityTypes, 
+                @ViewAllOrganizations, 
+                @DirectionsPacked,
+                0
+                
+              SELECT * FROM #tResult
+              DELETE #tResult
+              ]]>
+              </ds:cmd-text>
+							<ds:params>
+								<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization,Croc.IncidentTracker.Commands" />
+								<ds:param n="RequestedOID" vt="uuid" />
+								<ds:param n="CurrentEmployeeID" vt="uuid" />
+								<ds:param n="ShowOrgWithoutActivities" vt="boolean" />
+								<ds:param n="ActivityState" vt="i2" />
+								<ds:param n="FolderState" vt="i2" />
+								<ds:param n="OnlyOwnActivity" vt="boolean" />
+								<ds:param n="ActivityTypes" vt="i2" />
+								<ds:param n="OrganizationName" vt="string" use-wildcard="conditional-on-end" />
+								<ds:param n="FolderName" vt="string" use-wildcard="conditional-on-end" />
+								<ds:param n="ViewAllOrganizations" vt="boolean" />
+								<!-- Данный параметр обрабатывается в Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization -->
+								<ds:param n="Directions" vt="uuid" array="1">
+									<ds:param-selector op="in">DirectionsPacked</ds:param-selector>
+								</ds:param>
+							</ds:params>
+						</ds:data-source>
+						<!-- Организации под видом активности в отношении клиента N-ый уровень -->
+						<i:tree-level ot="Organization" alias="o" recursive="1">
+							<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+								<ds:cmd-text>
+                  <![CDATA[
+                  SELECT 
+                    @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+                    @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+                    @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END,
+                    @RequestedOID = CASE @RequestedOID WHEN '00000000-0000-0000-0000-000000000000' THEN NULL ELSE @RequestedOID END
+                    
+					        CREATE TABLE #tResult (ObjectID UNIQUEIDENTIFIER, TITLE VARCHAR(256), IS_LEAF INT) 
+                  INSERT INTO #tResult (ObjectID, TITLE, IS_LEAF)
+                  EXEC dbo.[GetDKPTreeOrganizationLevel] 
+                    @RequestedOID, 
+                    @@ParentID(1), 
+                    @CurrentEmployeeID, 
+                    0, 
+                    @ActivityState,
+                    @FolderState,
+                    @OnlyOwnActivity, 
+                    @OrganizationName, 
+                    @FolderName, 
+                    @@ParentIDByType(ActivityTypeExternal), 
+                    @ActivityTypes, 
+                    @ViewAllOrganizations, 
+                    @DirectionsPacked,
+                    0
+                  
+                  SELECT * FROM #tResult
+                  DELETE #tResult
+                  ]]>
+                </ds:cmd-text>
+								<ds:params>
+									<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization,Croc.IncidentTracker.Commands" />
+									<ds:param n="RequestedOID" vt="uuid" />
+									<ds:param n="CurrentEmployeeID" vt="uuid" />
+									<ds:param n="ShowOrgWithoutActivities" vt="boolean" />
+									<ds:param n="ActivityState" vt="i2" />
+									<ds:param n="FolderState" vt="i2" />
+									<ds:param n="OnlyOwnActivity" vt="boolean" />
+									<ds:param n="ActivityTypes" vt="i2" />
+									<ds:param n="OrganizationName" vt="string" use-wildcard="conditional-on-end" />
+									<ds:param n="FolderName" vt="string" use-wildcard="conditional-on-end" />
+									<ds:param n="ViewAllOrganizations" vt="boolean" />
+									<!-- Данный параметр обрабатывается в Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization -->
+									<ds:param n="Directions" vt="uuid" array="1">
+										<ds:param-selector op="in">DirectionsPacked</ds:param-selector>
+									</ds:param>
+								</ds:params>
+							</ds:data-source>
+							<!-- Проекты и папки -->
+							<i:tree-level ref="FolderUnderActivityTypeUnderOrganization" with-params="ActivityType_TypeName=ActivityTypeExternal;Organization_TypeName=Organization" />
+						</i:tree-level>
+						<!-- Проекты и папки -->
+						<i:tree-level ref="FolderUnderActivityTypeUnderOrganization" with-params="ActivityType_TypeName=ActivityTypeExternal;Organization_TypeName=Organization" />
+					</i:tree-level>
+				</i:tree-level>
+				<!-- Организации под видом активности в отношении клиента 1-ый уровень рекурсии -->
+				<i:tree-level ot="Organization" alias="o">
+					<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+						<ds:cmd-text>
+              <![CDATA[
+              SELECT 
+                @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+                @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+                @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END,
+                @RequestedOID = CASE @RequestedOID WHEN '00000000-0000-0000-0000-000000000000' THEN NULL ELSE @RequestedOID END
+                
+    					CREATE TABLE #tResult (ObjectID UNIQUEIDENTIFIER, TITLE VARCHAR(256), IS_LEAF INT) 
+              INSERT INTO #tResult (ObjectID, TITLE, IS_LEAF)
+              EXEC dbo.[GetDKPTreeOrganizationLevel]
+                @RequestedOID, 
+                Null, 
+                @CurrentEmployeeID, 
+                0, 
+                @ActivityState,
+                @FolderState,
+                @OnlyOwnActivity, 
+                @OrganizationName, 
+                @FolderName, 
+                @@ParentID(1), 
+                @ActivityTypes, 
+                @ViewAllOrganizations, 
+                @DirectionsPacked,
+                0
+                
+              SELECT * FROM #tResult
+              DELETE #tResult
+              ]]>
+            </ds:cmd-text>
+						<ds:params>
+							<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization,Croc.IncidentTracker.Commands" />
+							<ds:param n="RequestedOID" vt="uuid" />
+							<ds:param n="CurrentEmployeeID" vt="uuid" />
+							<ds:param n="ShowOrgWithoutActivities" vt="boolean" />
+							<ds:param n="ActivityState" vt="i2" />
+							<ds:param n="FolderState" vt="i2" />
+							<ds:param n="OnlyOwnActivity" vt="boolean" />
+							<ds:param n="ActivityTypes" vt="i2" />
+							<ds:param n="OrganizationName" vt="string" use-wildcard="conditional-on-end" />
+							<ds:param n="FolderName" vt="string" use-wildcard="conditional-on-end" />
+							<ds:param n="ViewAllOrganizations" vt="boolean" />
+							<!-- Данный параметр обрабатывается в Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization -->
+							<ds:param n="Directions" vt="uuid" array="1">
+								<ds:param-selector op="in">DirectionsPacked</ds:param-selector>
+							</ds:param>
+						</ds:params>
+					</ds:data-source>
+					<!-- Проекты и папки -->
+					<i:tree-level ref="FolderUnderActivityTypeUnderOrganization" with-params="ActivityType_TypeName=ActivityTypeExternal;Organization_TypeName=Organization" />
+				</i:tree-level>
+			</i:tree-level>
+		</i:tree-level>
+		<!-- Организации-клиенты -->
+		<i:tree-level ot="Organization" alias="o">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+          SELECT 
+            @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+            @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+            @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END,
+            @RequestedOID = CASE @RequestedOID WHEN '00000000-0000-0000-0000-000000000000' THEN NULL ELSE @RequestedOID END
+            
+					CREATE TABLE #tResult (ObjectID UNIQUEIDENTIFIER, TITLE VARCHAR(256), IS_LEAF INT) 
+          INSERT INTO #tResult (ObjectID, TITLE, IS_LEAF)
+          EXEC dbo.[GetDKPTreeOrganizationLevel] 
+            @RequestedOID, 
+            NULL, 
+            @CurrentEmployeeID, 
+            @ShowOrgWithoutActivities, 
+            @ActivityState,
+            @FolderState,
+            @OnlyOwnActivity, 
+            @OrganizationName, 
+            @FolderName, 
+            NULL, 
+            @ActivityTypes, 
+            @ViewAllOrganizations, 
+            @DirectionsPacked,
+            0
+            
+          SELECT * FROM #tResult
+          DROP TABLE #tResult
+          ]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization,Croc.IncidentTracker.Commands" />
+					<ds:param n="RequestedOID" vt="uuid" />
+					<ds:param n="CurrentEmployeeID" vt="uuid" />
+					<!-- Отображать организации без активностей - по умолчанию нет -->
+					<ds:param n="ShowOrgWithoutActivities" vt="boolean" />
+					<ds:param n="ActivityState" vt="i2" />
+					<ds:param n="FolderState" vt="i2" />
+					<ds:param n="OnlyOwnActivity" vt="boolean" />
+					<ds:param n="OrganizationName" vt="string" use-wildcard="conditional-on-end" />
+					<ds:param n="FolderName" vt="string" use-wildcard="conditional-on-end" />
+					<ds:param n="ActivityTypes" vt="i2" />
+					<ds:param n="ViewAllOrganizations" vt="boolean" />
+					<!-- Данный параметр обрабатывается в Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization -->
+					<ds:param n="Directions" vt="uuid" array="1">
+						<ds:param-selector op="in">DirectionsPacked</ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:tree-level ref="ActivityTypeUnderOrganization" />
+		</i:tree-level>
+		<!-- Далее опишем уровни для режима "Проекты" -->
+		<!-- Проекты и папки -->
+		<i:tree-level ot="Folder" alias="f" ie:node-drag="FolderDragDropOperation" it-i:executor="Croc.IncidentTracker.Trees.DKPTreeFolderLevelExecutor,Croc.IncidentTracker.Commands" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+          SELECT 
+            @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+            @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+            @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END,
+            @RequestedOID = CASE @RequestedOID WHEN '00000000-0000-0000-0000-000000000000' THEN NULL ELSE @RequestedOID END
+            
+          CREATE TABLE #tResult (ObjectID UNIQUEIDENTIFIER, IS_LEAF INT) 
+          INSERT INTO #tResult (ObjectID, IS_LEAF)
+          EXEC dbo.[GetDKPTreeTopFolderLevel]
+            @RequestedOID, 
+            @CurrentEmployeeID, 
+            @ActivityState, 
+            @FolderState,
+            @OnlyOwnActivity, 
+            @OrganizationName, 
+            @FolderName, 
+            NULL,
+            NULL, 
+            @ActivityTypes, 
+            @ViewAllOrganizations, 
+            @DirectionsPacked,
+            @IncidentViewMode
+          
+					SELECT 
+						f.ObjectID, 
+						dbo.GetFolderNameWithProjectCode(f.ObjectID) AS TITLE,
+						0 as IS_LEAF,
+						dbo.GetFolderIconSelector(f.Type, f.State, f.IncidentsInWork, f.IncidentsOnCheck) AS ICON_SELECTOR,
+						f.Customer AS OrganizationID,
+						f.ActivityType,
+						f.Type AS FolderType,
+						f.Parent AS ParentFolderID
+					FROM 
+						viewFolder f (NOLOCK)
+						JOIN #tResult t ON
+              f.ObjectID = t.ObjectID
+          WHERE [dbo].[CP_Folders](f.ObjectID, @CurrentEmployeeID) = 1
+          ORDER BY
+            f.Name
+              
+          DROP TABLE #tResult
+				  ]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization,Croc.IncidentTracker.Commands" />
+					<ds:param n="ActivityTypes" vt="i4" />
+					<ds:param n="RequestedOID" vt="uuid" />
+					<ds:param n="CurrentEmployeeID" vt="uuid" />
+					<ds:param n="ActivityState" vt="i2" />
+					<ds:param n="FolderState" vt="i2" />
+					<!-- Только свои активности -->
+					<ds:param n="OnlyOwnActivity" vt="boolean" />
+					<ds:param n="FolderName" vt="string" use-wildcard="conditional-on-end" />
+					<ds:param n="OrganizationName" vt="string" use-wildcard="conditional-on-end" />
+					<ds:param n="ViewAllOrganizations" vt="boolean" />
+					<ds:param n="Directions" vt="uuid" array="1">
+						<ds:param-selector op="in">DirectionsPacked</ds:param-selector>
+					</ds:param>
+					<ds:param n="IncidentViewMode" vt="i2" />
+				</ds:params>
+			</ds:data-source>
+			<i:tree-level ref="FolderUnderFolder" />
+			<i:tree-level ref="TeamUnderProject" />
+			<i:tree-level ref="ContractUnderProject" />
+			<i:tree-level ref="IncidentUnderProject" />
+		</i:tree-level>
+	</i:tree-struct>
+	<!-- Виды активностей под Организацией-клиентом -->
+	<i:tree-level n="ActivityTypeUnderOrganization" ot="ActivityType" alias="at" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+        SELECT 
+          @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+          @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+          @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END,
+          @RequestedOID = CASE @RequestedOID WHEN '00000000-0000-0000-0000-000000000000' THEN NULL ELSE @RequestedOID END
+        
+        EXEC dbo.[GetDKPTreeActivityTypeLevel]
+          @RequestedOID, 
+          NULL, 
+          @CurrentEmployeeID,
+          @ActivityState, 
+          @FolderState,
+          @OnlyOwnActivity, 
+          @OrganizationName, 
+          @FolderName, 
+          @@ParentID(1), 
+          @ActivityTypes, 
+          @ViewAllOrganizations, 
+          @DirectionsPacked,
+          1
+			  ]]>
+      </ds:cmd-text>
+			<ds:params>
+				<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization,Croc.IncidentTracker.Commands" />
+				<ds:param n="RequestedOID" vt="uuid" />
+				<ds:param n="CurrentEmployeeID" vt="uuid" />
+				<!-- Отображать организации без активностей - по умолчанию нет -->
+				<ds:param n="ShowOrgWithoutActivities" vt="boolean" />
+				<ds:param n="ActivityState" vt="i2" />
+				<ds:param n="FolderState" vt="i2" />
+				<ds:param n="OnlyOwnActivity" vt="boolean" />
+				<ds:param n="OrganizationName" vt="string" use-wildcard="conditional-on-end" />
+				<ds:param n="FolderName" vt="string" use-wildcard="conditional-on-end" />
+				<ds:param n="ActivityTypes" vt="i2" />
+				<ds:param n="ViewAllOrganizations" vt="boolean" />
+				<!-- Данный параметр обрабатывается в Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization -->
+				<ds:param n="Directions" vt="uuid" array="1">
+					<ds:param-selector op="in">DirectionsPacked</ds:param-selector>
+				</ds:param>
+			</ds:params>
+		</ds:data-source>
+		<i:tree-level n="ActivityTypeUnderOrganization" ot="ActivityType" alias="at" recursive="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+        SELECT 
+          @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+          @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+          @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END,
+          @RequestedOID = CASE @RequestedOID WHEN '00000000-0000-0000-0000-000000000000' THEN NULL ELSE @RequestedOID END
+        
+        EXEC dbo.[GetDKPTreeActivityTypeLevel]
+          @RequestedOID, 
+          @@ParentID(1), 
+          @CurrentEmployeeID,
+          @ActivityState, 
+          @FolderState,
+          @OnlyOwnActivity, 
+          @OrganizationName, 
+          @FolderName, 
+          @@ParentIDByType(Organization), 
+          @ActivityTypes, 
+          @ViewAllOrganizations, 
+          @DirectionsPacked,
+          1
+			  ]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization,Croc.IncidentTracker.Commands" />
+					<ds:param n="RequestedOID" vt="uuid" />
+					<ds:param n="CurrentEmployeeID" vt="uuid" />
+					<!-- Отображать организации без активностей - по умолчанию нет -->
+					<ds:param n="ShowOrgWithoutActivities" vt="boolean" />
+					<ds:param n="ActivityState" vt="i2" />
+					<ds:param n="FolderState" vt="i2" />
+					<ds:param n="OnlyOwnActivity" vt="boolean" />
+					<ds:param n="OrganizationName" vt="string" use-wildcard="conditional-on-end" />
+					<ds:param n="FolderName" vt="string" use-wildcard="conditional-on-end" />
+					<ds:param n="ActivityTypes" vt="i2" />
+					<ds:param n="ViewAllOrganizations" vt="boolean" />
+					<!-- Данный параметр обрабатывается в Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization -->
+					<ds:param n="Directions" vt="uuid" array="1">
+						<ds:param-selector op="in">DirectionsPacked</ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:tree-level ref="FolderUnderActivityTypeUnderOrganization" with-params="ActivityType_TypeName=ActivityType;Organization_TypeName=Organization" />
+		</i:tree-level>
+		<i:tree-level ref="FolderUnderActivityTypeUnderOrganization" with-params="ActivityType_TypeName=ActivityType;Organization_TypeName=Organization" />
+	</i:tree-level>
+	<!-- Проекты под видом активности под Организацией -->
+	<i:tree-level n="FolderUnderActivityTypeUnderOrganization" ot="Folder" alias="f" ie:node-drag="FolderDragDropOperation" it-i:executor="Croc.IncidentTracker.Trees.DKPTreeFolderLevelExecutor,Croc.IncidentTracker.Commands" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+          SELECT 
+            @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+            @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+            @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END,
+            @RequestedOID = CASE @RequestedOID WHEN '00000000-0000-0000-0000-000000000000' THEN NULL ELSE @RequestedOID END
+            
+          CREATE TABLE #tResult (ObjectID UNIQUEIDENTIFIER, IS_LEAF INT) 
+          INSERT INTO #tResult (ObjectID, IS_LEAF)
+          EXEC dbo.[GetDKPTreeTopFolderLevel]
+            @RequestedOID, 
+            @CurrentEmployeeID, 
+            @ActivityState, 
+            @FolderState,
+            @OnlyOwnActivity, 
+            @OrganizationName, 
+            @FolderName, 
+						@@ParentIDByType(%Organization_TypeName%),
+            @@ParentIDByType(%ActivityType_TypeName%),
+            @ActivityTypes, 
+            @ViewAllOrganizations, 
+            @DirectionsPacked,
+            @IncidentViewMode
+          
+					SELECT 
+						f.ObjectID, 
+						dbo.GetFolderNameWithProjectCode(f.ObjectID) AS TITLE, 
+						0 as IS_LEAF,
+						dbo.GetFolderIconSelector(f.Type, f.State, f.IncidentsInWork, f.IncidentsOnCheck) AS ICON_SELECTOR,
+						f.Customer AS OrganizationID,
+						f.ActivityType,
+						f.Type AS FolderType,
+						f.Parent AS ParentFolderID
+					FROM 
+						viewFolder f (NOLOCK)
+						JOIN #tResult t ON
+              f.ObjectID = t.ObjectID
+          ORDER BY
+            f.Name
+              
+          DROP TABLE #tResult
+				  ]]>
+      </ds:cmd-text>
+			<ds:params>
+				<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Organization,Croc.IncidentTracker.Commands" />
+				<ds:param n="ActivityTypes" vt="i4" />
+				<ds:param n="RequestedOID" vt="uuid" />
+				<ds:param n="CurrentEmployeeID" vt="uuid" />
+				<ds:param n="ActivityState" vt="i2" />
+				<ds:param n="FolderState" vt="i2" />
+				<!-- Только свои активности -->
+				<ds:param n="OnlyOwnActivity" vt="boolean" />
+				<ds:param n="FolderName" vt="string" use-wildcard="conditional-on-end" />
+				<ds:param n="OrganizationName" vt="string" use-wildcard="conditional-on-end" />
+				<ds:param n="ViewAllOrganizations" vt="boolean" />
+				<ds:param n="Directions" vt="uuid" array="1">
+					<ds:param-selector op="in">DirectionsPacked</ds:param-selector>
+				</ds:param>
+				<ds:param n="IncidentViewMode" vt="i2" />
+			</ds:params>
+		</ds:data-source>
+		<i:tree-level ref="FolderUnderFolder" />
+		<i:tree-level ref="TeamUnderProject" />
+		<i:tree-level ref="ContractUnderProject" />
+		<i:tree-level ref="IncidentUnderProject" />
+	</i:tree-level>
+	<!-- Папки под папкой (рекурсивно) под Видом активности -->
+	<i:tree-level n="FolderUnderFolder" ot="Folder" alias="f" recursive="1" ie:node-drag="FolderDragDropOperation" it-i:executor="Croc.IncidentTracker.Trees.DKPTreeFolderLevelExecutor,Croc.IncidentTracker.Commands" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension">
+		<!---
+			В качестве селектора иконки используется: {Тип: 1,2,3}-{Состояние:1,2,3,4}-{1 или 0: 1-есть открытые инциденты, 0 - нет открытых инцидентов}
+		-->
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+          SELECT 
+            @ActivityState = CASE @ActivityState WHEN 0 THEN NULL ELSE @ActivityState END,
+            @FolderState = CASE @FolderState WHEN 0 THEN NULL ELSE @FolderState END,
+            @ActivityTypes = CASE @ActivityTypes WHEN 0 THEN NULL ELSE @ActivityTypes END,
+            @RequestedOID = CASE @RequestedOID WHEN '00000000-0000-0000-0000-000000000000' THEN NULL ELSE @RequestedOID END
+            
+          CREATE TABLE #tResult (ObjectID UNIQUEIDENTIFIER, IS_LEAF INT) 
+          INSERT INTO #tResult (ObjectID, IS_LEAF)
+          EXEC dbo.[GetDKPTreeFolderLevel]
+            @RequestedOID, 
+            @@ParentID(1),
+            @CurrentEmployeeID, 
+            @ActivityState, 
+            @FolderState,
+            @ActivityTypes, 
+            @IncidentViewMode
+          
+					SELECT 
+						f@@RC.ObjectID, 
+						f@@RC.Name #TITLE_ADDON# AS TITLE, 
+						f@@RC.Name, 
+						0 as IS_LEAF,
+						#ICON_SELECTOR# AS ICON_SELECTOR,
+						f@@RC.Customer AS OrganizationID,
+						f@@RC.ActivityType,
+						f@@RC.Type AS FolderType,
+						f@@RC.Parent AS ParentFolderID
+					FROM 
+						viewFolder f@@RC (NOLOCK)
+						JOIN #tResult t ON
+              f@@RC.ObjectID = t.ObjectID
+          ORDER BY
+            f@@RC.Name
+              
+          DROP TABLE #tResult
+			  ]]>
+      </ds:cmd-text>
+			<ds:params>
+				<ds:params-processor class-name="Croc.IncidentTracker.DataSources.DKPParamsProcessor_Folder,Croc.IncidentTracker.Commands" />
+				<ds:param n="ActivityTypes" vt="i4" />
+				<ds:param n="RequestedOID" vt="uuid" />
+				<ds:param n="CurrentEmployeeID" vt="uuid" />
+				<ds:param n="ActivityState" vt="i2" />
+				<ds:param n="FolderState" vt="i2" />
+				<ds:param n="IncidentViewMode" vt="i2" />
+				<ds:param n="ShowWorkProgress" vt="boolean">
+					<ds:switch macro="#ICON_SELECTOR#" explicit="1">
+						<ds:param-selector op="is-null">dbo.GetFolderIconSelector(f@@RC.Type, f@@RC.State, f@@RC.IncidentsInWork, f@@RC.IncidentsOnCheck)</ds:param-selector>
+						<ds:param-selector value="1" op="equal">dbo.GetFolderIconSelector(f@@RC.Type, f@@RC.State, f@@RC.IncidentsInWork, f@@RC.IncidentsOnCheck)</ds:param-selector>
+						<ds:param-selector value="0" op="equal">cast(f@@RC.Type as varchar(5)) + '-' + cast(f@@RC.State as varchar(5))</ds:param-selector>
+					</ds:switch>
+					<ds:switch macro="#TITLE_ADDON#" explicit="1">
+						<ds:param-selector value="1" op="equal"><![CDATA[ + CASE WHEN f@@RC.IncidentsInWork + f@@RC.IncidentsOnCheck > 0 THEN ' [' + cast(f@@RC.IncidentsInWork as varchar(10))+ '/' + cast((f@@RC.IncidentsInWork + f@@RC.IncidentsOnCheck) as varchar(10)) + ']' ELSE '' END]]></ds:param-selector>
+						<ds:param-selector value="0" op="equal" />
+					</ds:switch>
+				</ds:param>
+			</ds:params>
+		</ds:data-source>
+		<i:tree-level ref="TeamUnderProject" />
+		<i:tree-level ref="IncidentUnderProject" />
+	</i:tree-level>
+	<!-- Люди под проектами: для всех узлов, кроме Папка -->
+	<i:tree-level n="TeamUnderProject" ot="Stuff" virtual="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+				SELECT 
+					NULL AS ObjectID,
+					'Проектная команда' AS TITLE,
+					0 AS IS_LEAF,
+					cast(@@ParentID(1) as uniqueidentifier) AS FolderID
+				WHERE 
+					EXISTS ( SELECT 1 FROM ProjectParticipant WITH (NOLOCK) WHERE Folder = @@ParentID(1) )
+			]]>
+      </ds:cmd-text>
+		</ds:data-source>
+		<!-- роли под проектом -->
+		<i:tree-level ot="UserRoleInProject" alias="r" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT DISTINCT
+						r.ObjectID, 
+						r.Name AS TITLE,
+						@@ISLEAF,
+						pp.Folder AS FolderID
+					FROM
+						ProjectParticipant pp WITH (NOLOCK)
+						JOIN ProjectParticipant_Roles pp_r WITH (NOLOCK) ON pp.ObjectID = pp_r.ObjectID
+						JOIN UserRoleInProject r WITH (NOLOCK) ON pp_r.Value = r.ObjectID
+					WHERE 
+						(pp.Folder = @@ParentID(2) AND SEARCH_CONDITIONS)
+						OR 
+						(r.ObjectID = @@OBJECT_ID)
+				]]>
+        </ds:cmd-text>
+				<ds:order-by>r.Name</ds:order-by>
+			</ds:data-source>
+			<!-- сотрудники под проектной ролью -->
+			<i:tree-level ot="ProjectParticipant" alias="pp">
+				<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+					<ds:cmd-text>
+            <![CDATA[
+						SELECT 
+							pp.ObjectID, 
+							emp.LastName + ' ' + emp.FirstName AS TITLE, 
+							@@ISLEAF,
+							pp.Folder FolderID,
+							pp.Employee EmployeeID,
+							CASE 
+								WHEN NOT IsNull( emp.WorkEndDate, '99990101') > getdate() THEN 1 
+								WHEN NOT emp.TemporaryDisability = 0 THEN 2
+								ELSE 0 
+							END AS ICON_SELECTOR
+						FROM
+							dbo.[Employee] emp WITH (NOLOCK)
+							JOIN dbo.ProjectParticipant pp WITH (NOLOCK) ON pp.Employee = emp.ObjectID
+								JOIN dbo.ProjectParticipant_Roles pp_r WITH (NOLOCK) ON pp.ObjectID = pp_r.ObjectID
+						WHERE 
+							(pp_r.Value = @@ParentID(1) AND pp.Folder = @@ParentID(3) AND SEARCH_CONDITIONS)
+							OR 
+							(pp.ObjectID = @@OBJECT_ID)
+					]]>
+          </ds:cmd-text>
+					<ds:order-by>emp.LastName</ds:order-by>
+				</ds:data-source>
+				<i:tree-level ref="IncidentUnderProjectParticipant" />
+			</i:tree-level>
+		</i:tree-level>
+		<!-- Виртуальный узел "Все участники" под проектами -->
+		<i:tree-level n="AllParticipantFolderUnderProject" ot="Stuff" virtual="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT 
+						NULL AS ObjectID,
+						'Все участники' AS TITLE,
+						@@ISLEAF,
+						cast(@@ParentID(1) as uniqueidentifier) AS FolderID
+					WHERE 
+						(SELECT @@ISLEAF) = 0
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<!-- Сотрудники под проектами -->
+			<i:tree-level ot="ProjectParticipant" alias="pp" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+					<ds:cmd-text>
+            <![CDATA[
+						SELECT 
+							pp.ObjectID,
+							emp.LastName + ' ' + emp.FirstName AS TITLE, 
+							@@ISLEAF,
+							pp.Folder FolderID,
+							pp.Employee EmployeeID,
+							CASE 
+								WHEN NOT IsNull( emp.WorkEndDate, '99990101') > getdate() THEN 1 
+								WHEN NOT emp.TemporaryDisability = 0 THEN 2
+								ELSE 0
+							END AS ICON_SELECTOR
+						FROM
+							dbo.Employee emp WITH (NOLOCK)
+							JOIN dbo.ProjectParticipant pp WITH (NOLOCK) ON pp.Employee = emp.ObjectID
+						WHERE 
+							(pp.Folder = @@ParentID(3) AND SEARCH_CONDITIONS)
+							OR 
+							(pp.ObjectID = @@OBJECT_ID)
+					]]>
+          </ds:cmd-text>
+					<ds:order-by>emp.LastName</ds:order-by>
+				</ds:data-source>
+				<i:tree-level ref="IncidentUnderProjectParticipant" />
+			</i:tree-level>
+		</i:tree-level>
+	</i:tree-level>
+	<!-- Инциденты под проектом -->
+	<i:tree-level n="IncidentUnderProject" ot="Incident" alias="i" ie:node-drag="IncidentDragDropOperation" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+				SELECT 
+					i.ObjectID, 
+					cast(i.Number as varchar) + ' - ' + i.Name As TITLE, 
+					#ISLEAF_COND# AS IS_LEAF,
+					State AS ICON_SELECTOR,
+					i.Folder AS FolderID
+				FROM
+					Incident i WITH (NOLOCK)
+					JOIN IncidentState s WITH (NOLOCK) ON i.State = s.ObjectID
+				WHERE 
+					(i.Folder = @@ParentID(1) AND SEARCH_CONDITIONS)
+					OR 
+					(i.ObjectID = @@OBJECT_ID)
+			]]>
+      </ds:cmd-text>
+			<ds:order-by param-selector="IncidentSortMode" />
+			<ds:params>
+				<ds:param n="CurrentEmployeeID" vt="uuid" />
+				<ds:param n="ShowTasks" vt="boolean">
+					<ds:switch macro="#ISLEAF_COND#">
+						<ds:param-selector value="1" op="equal">
+              <![CDATA[
+							CASE 
+								WHEN EXISTS (
+									SELECT 1 FROM dbo.[Task] WITH (NOLOCK) WHERE Incident = i.ObjectID
+								) THEN 0 
+								ELSE 1 
+							END
+							]]>
+            </ds:param-selector>
+						<ds:param-selector value="1" op="not-equal">1</ds:param-selector>
+					</ds:switch>
+				</ds:param>
+				<ds:param n="IncidentViewMode" vt="i2">
+					<!-- Открытые -->
+					<ds:param-selector op="equal" value="2">s.Category = 1</ds:param-selector>
+					<!-- Не закрытые -->
+					<ds:param-selector op="equal" value="3">s.Category IN (1,2)</ds:param-selector>
+					<!-- закрытые -->
+					<ds:param-selector op="equal" value="4">s.Category IN (3,4,5)</ds:param-selector>
+					<!-- мои инциденты -->
+					<ds:param-selector op="equal" value="5">
+            <![CDATA[EXISTS (
+							SELECT 1 FROM dbo.Task t WITH (NOLOCK)
+							WHERE t.Incident = i.ObjectID AND t.Worker = :CurrentEmployeeID)
+						]]>
+          </ds:param-selector>
+				</ds:param>
+				<ds:param n="IncidentSortMode" vt="string">
+					<ds:string-builder input-delimiter=":" output-delimiter=", ">
+						<!-- По умолчанию как было в IT5 -->
+						<ds:param-selector op="is-null">s.Category, i.Priority, i.Number</ds:param-selector>
+						<ds:param-selector op="equal" value="Number+">i.Number ASC</ds:param-selector>
+						<ds:param-selector op="equal" value="Number-">i.Number DESC</ds:param-selector>
+						<ds:param-selector op="equal" value="Number">i.Number</ds:param-selector>
+						<ds:param-selector op="equal" value="Name+">i.Name ASC</ds:param-selector>
+						<ds:param-selector op="equal" value="Name-">i.Name DESC</ds:param-selector>
+						<ds:param-selector op="equal" value="Name">i.Name</ds:param-selector>
+						<ds:param-selector op="equal" value="Priority+">i.Priority ASC</ds:param-selector>
+						<ds:param-selector op="equal" value="Priority-">i.Priority DESC</ds:param-selector>
+						<ds:param-selector op="equal" value="Priority">i.Priority</ds:param-selector>
+						<ds:param-selector op="equal" value="Category+">s.Category ASC</ds:param-selector>
+						<ds:param-selector op="equal" value="Category-">s.Category DESC</ds:param-selector>
+						<ds:param-selector op="equal" value="Category">s.Category</ds:param-selector>
+					</ds:string-builder>
+				</ds:param>
+			</ds:params>
+		</ds:data-source>
+		<i:tree-level ref="TaskUnderIncident" />
+	</i:tree-level>
+	<!-- Инциденты под Участником проекта 
+		Выводятся инденты участника проекта, нходящиеся в состояниях из которых есть переход для роли, в которой участник участвует в инциденте
+		Родитель 1: ProjectParticipant
+		Родитель 2: "Проектная команда" (virtual)
+		Родитель 3: Проект
+	-->
+	<i:tree-level n="IncidentUnderProjectParticipant" ot="Incident" alias="i" ie:node-drag="IncidentDragDropOperation" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+				SELECT 
+					i.ObjectID, 
+					cast(i.Number as varchar) + ' - ' + i.Name As TITLE, 
+					@@ISLEAF,
+					State AS ICON_SELECTOR,
+					i.Folder AS FolderID
+				FROM
+					ProjectParticipant pp WITH (NOLOCK)
+					JOIN Task t WITH (NOLOCK) ON t.Worker = pp.Employee
+						JOIN Incident i WITH (NOLOCK) ON t.Incident = i.ObjectID AND i.Folder = @@ParentID(3)
+					JOIN UserRoleInIncident ur WITH (NOLOCK) ON t.Role = ur.ObjectID
+				WHERE 
+					(pp.ObjectID = @@ParentID(1) AND EXISTS(SELECT 1 FROM Transition WITH (NOLOCK) WHERE Role=ur.ObjectID AND [From]=i.State) AND SEARCH_CONDITIONS)
+					OR 
+					(i.ObjectID = @@OBJECT_ID)
+			]]>
+      </ds:cmd-text>
+			<ds:order-by>i.Number</ds:order-by>
+		</ds:data-source>
+		<i:tree-level ref="TaskUnderIncident" />
+	</i:tree-level>
+	<!-- Задания под инцидентом -->
+	<i:tree-level n="TaskUnderIncident" ot="Task" alias="t" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+			<ds:cmd-text>
+        <![CDATA[
+				SELECT 
+					t.ObjectID, 
+					r.Name + ' - ' + emp.LastName + ' ' + emp.FirstName As TITLE, 
+					@@ISLEAF
+				FROM
+					Task t WITH (NOLOCK)
+					JOIN Employee emp WITH (NOLOCK) ON t.Worker = emp.ObjectID
+					JOIN UserRoleInIncident r WITH (NOLOCK) ON t.Role = r.ObjectID
+				WHERE 
+					(t.Incident = @@ParentID(1) AND SEARCH_CONDITIONS)
+					OR 
+					(t.ObjectID = @@OBJECT_ID)
+			]]>
+      </ds:cmd-text>
+			<ds:order-by>r.Name</ds:order-by>
+		</ds:data-source>
+	</i:tree-level>
+	<ie:node-drag n="FolderDragDropOperation" xsi:type="ie:tNodeDragWithMenu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension">
+		<ie:before-node-drag-handler mode="add">FolderCanDragHandler</ie:before-node-drag-handler>
+		<ie:before-node-drag-handler mode="add">XXNodeDragStatusOnBeforeNodeDrag</ie:before-node-drag-handler>
+		<ie:node-drag-handler mode="add">XXNodeDragStatusOnNodeDrag</ie:node-drag-handler>
+		<ie:node-drag-over-handler mode="add">XXNodeDragMenuCanDropHandler</ie:node-drag-over-handler>
+		<ie:node-drag-over-handler mode="add">FolderCanDropHandler</ie:node-drag-over-handler>
+		<ie:after-node-drag-over-handler mode="add">XXNodeDragStatusOnAfterNodeDragOver</ie:after-node-drag-over-handler>
+		<ie:node-drag-drop-handler mode="replace">XXNodeDragMenuExecuteDropHandler</ie:node-drag-drop-handler>
+		<ie:node-drag-drop-handler mode="add">XXNodeDragStatusOnNodeDragDrop</ie:node-drag-drop-handler>
+		<ie:node-drag-canceled-handler mode="add">XXNodeDragStatusOnNodeDragCanceled</ie:node-drag-canceled-handler>
+		<ie:node-drag-menu>
+			<i:menu xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:visibility-handler mode="replace">FolderDragDropMenuVisibilityHandler</i:visibility-handler>
+				<i:execution-handler mode="replace">FolderDragDropMenuExecutionHandler</i:execution-handler>
+				<i:menu-item action="DoMove" t="Переместить в папку">
+					<i:params>
+						<i:param n="ParentPropName">Parent</i:param>
+						<i:param n="RefreshFlags">TRM_NONE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoMove" t="Переместить в организацию">
+					<i:params>
+						<i:param n="ParentPropName">Customer</i:param>
+						<i:param n="RefreshFlags">TRM_NONE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoMove" t="Переместить в вид активности">
+					<i:params>
+						<i:param n="ParentPropName">ActivityType</i:param>
+						<i:param n="RefreshFlags">TRM_NONE</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoCancel" t="Отменить" />
+			</i:menu>
+		</ie:node-drag-menu>
+	</ie:node-drag>
+	<ie:node-drag n="IncidentDragDropOperation" xsi:type="ie:tNodeDragWithMenu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension">
+		<ie:before-node-drag-handler mode="add">IncidentCanDragHandler</ie:before-node-drag-handler>
+		<ie:before-node-drag-handler mode="add">XXNodeDragStatusOnBeforeNodeDrag</ie:before-node-drag-handler>
+		<ie:node-drag-handler mode="add">XXNodeDragStatusOnNodeDrag</ie:node-drag-handler>
+		<ie:node-drag-over-handler mode="add">XXNodeDragMenuCanDropHandler</ie:node-drag-over-handler>
+		<ie:node-drag-over-handler mode="add">IncidentCanDropHandler</ie:node-drag-over-handler>
+		<ie:after-node-drag-over-handler mode="add">XXNodeDragStatusOnAfterNodeDragOver</ie:after-node-drag-over-handler>
+		<ie:node-drag-drop-handler mode="replace">XXNodeDragMenuExecuteDropHandler</ie:node-drag-drop-handler>
+		<ie:node-drag-drop-handler mode="add">XXNodeDragStatusOnNodeDragDrop</ie:node-drag-drop-handler>
+		<ie:node-drag-canceled-handler mode="add">XXNodeDragStatusOnNodeDragCanceled</ie:node-drag-canceled-handler>
+		<ie:node-drag-menu>
+			<i:menu xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:execution-handler mode="replace">IncidentDragDropMenuExecutionHandler</i:execution-handler>
+				<i:menu-item action="DoMove" t="Переместить в папку">
+					<i:params>
+						<i:param n="ParentPropName">Folder</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoCancel" t="Отменить" />
+			</i:menu>
+		</ie:node-drag-menu>
+	</ie:node-drag>
+	<!--
+		=======================================================================
+		Селектор для выбора папки при переносе инцидента
+	-->
+	<i:objects-tree-selector n="FolderSelectorForIncidentMove" t="Выберите папку" selectable-node-types="Folder" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:tree-struct>
+			<i:tree-level ot="Folder" alias="f">
+				<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+					<ds:cmd-text>
+            <![CDATA[
+						SELECT 
+							f.ObjectID, 
+							f.Name, 
+							f.Name + ' [' + cast(f.IncidentsInWork as varchar(10))+ '/' + cast((f.IncidentsInWork + f.IncidentsOnCheck) as varchar(10)) + ']' As TITLE, 
+							0 AS IS_LEAF,
+							dbo.GetFolderIconSelector(f.Type, f.State, f.IncidentsInWork, f.IncidentsOnCheck) AS ICON_SELECTOR
+						FROM viewFolder f WITH (NOLOCK)
+						WHERE f.ObjectID =
+							(
+								SELECT TOP 1 f.ObjectID 
+								FROM Folder f_s WITH (NOLOCK)
+									JOIN Folder f WITH (NOLOCK) ON f.LIndex <= f_s.LIndex AND f.RIndex >= f_s.RIndex AND f_s.Customer = f.Customer AND f.Type <> 16
+								WHERE f_s.ObjectID = (SELECT Folder FROM Incident WITH (NOLOCK) WHERE ObjectID = @IncidentID)
+								ORDER BY f.LRLevel DESC
+							)
+					]]>
+          </ds:cmd-text>
+					<ds:params>
+						<ds:param n="IncidentID" vt="uuid" required="1" />
+					</ds:params>
+				</ds:data-source>
+				<i:tree-level ot="Folder" alias="f" recursive="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+					<!---
+						В качестве селектора иконки используется: {Тип: 1,2,3}-{Состояние:1,2,3,4}-{1 или 0: 1-есть открытые инциденты, 0 - нет открытых инцидентов}
+					-->
+					<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+						<ds:cmd-text>
+              <![CDATA[
+							SELECT 
+								f@@RC.ObjectID, 
+								f@@RC.Name + ' [' + cast(f@@RC.IncidentsInWork as varchar(10))+ '/' + cast((f@@RC.IncidentsInWork + f@@RC.IncidentsOnCheck) as varchar(10)) + ']' As TITLE, 
+								f@@RC.Name,
+								@@ISLEAF,
+								dbo.GetFolderIconSelector(f@@RC.Type, f@@RC.State, f@@RC.IncidentsInWork, f@@RC.IncidentsOnCheck) AS ICON_SELECTOR
+							FROM
+								dbo.viewFolder f@@RC WITH (NOLOCK)
+							WHERE 
+								(@@RecursiveExp(f@@RC.Parent) AND SEARCH_CONDITIONS)
+								OR 
+								(f@@RC.ObjectID = @@OBJECT_ID)
+						]]>
+            </ds:cmd-text>
+						<ds:order-by>Name</ds:order-by>
+					</ds:data-source>
+				</i:tree-level>
+			</i:tree-level>
+		</i:tree-struct>
+	</i:objects-tree-selector>
+	<i:tree-struct n="FoldersStructForCopyFolderStructure" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:tree-level alias="v" n="CopyFolderStructure_RootFolder" ot="VirtualFolder">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+            SELECT 
+              v.ObjectID,
+              v.Name 
+                  + ' [' 
+                    + CAST(v.IncidentsInWork AS VARCHAR(10))+ '/' + CAST((v.IncidentsInWork + v.IncidentsOnCheck) AS VARCHAR(10)) 
+                  + ']' AS TITLE,
+              @@ISLEAF,
+							dbo.GetFolderIconSelector(v.Type, v.State, v.IncidentsInWork, v.IncidentsOnCheck) AS ICON_SELECTOR
+            FROM
+              viewFolder v
+            WHERE
+              v.ObjectID = @Folder
+            ]]>
+        </ds:cmd-text>
+				<ds:order-by>TITLE</ds:order-by>
+				<ds:params>
+					<ds:param n="Folder" vt="uuid" required="1" />
+				</ds:params>
+			</ds:data-source>
+			<i:tree-level alias="f" n="CopyFolderStructure_Folders" ot="Folder" recursive="1">
+				<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+					<ds:cmd-text>
+            <![CDATA[
+              SELECT
+                f@@RC.ObjectID,
+                f@@RC.Name 
+                  + ' [' 
+                    + CAST(f@@RC.IncidentsInWork AS VARCHAR(10))+ '/' + CAST((f@@RC.IncidentsInWork + f@@RC.IncidentsOnCheck) AS VARCHAR(10)) 
+                  + ']' AS TITLE, 
+                f@@RC.Name,
+                f@@RC.IsLocked,
+                f@@RC.DefaultIncidentType,
+                f@@RC.Description,
+								@@ISLEAF,
+								dbo.GetFolderIconSelector(f@@RC.Type, f@@RC.State, f@@RC.IncidentsInWork, f@@RC.IncidentsOnCheck) AS ICON_SELECTOR
+              FROM
+                viewFolder f@@RC
+              WHERE
+                f@@RC.Parent = @@ParentID(1)
+                AND f@@RC.Type = 16
+              ]]>
+          </ds:cmd-text>
+					<ds:order-by>TITLE</ds:order-by>
+				</ds:data-source>
+			</i:tree-level>
+		</i:tree-level>
+	</i:tree-struct>
+	<i:menu n="FolderSelectorForCopyFolderStructureMenu" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:visibility-handler>FolderSelectorForCopyFolderStructureMenuVisibilityHandler</i:visibility-handler>
+		<i:execution-handler>FolderSelectorForCopyFolderStructureMenuExecutionHandler</i:execution-handler>
+		<i:menu-item action="DoExpandSubTree" t="Развернуть поддерево" />
+		<i:menu-item action="DoSelectSubTree" t="Выделить поддерево" />
+		<i:menu-item action="DoCancel" t="Отменить" />
+	</i:menu>
+	<i:objects-tree-selector n="FoldersSelectorForCopyFolderStructure" t="Выберите папки для переноса" selectable-node-types="Folder" selection-mode="anynodes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:tree-struct ref="FoldersStructForCopyFolderStructure" />
+	</i:objects-tree-selector>
+</ds:metadata>

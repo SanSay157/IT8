@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<!--
+		НАВИГАЦИОННОЕ МЕНЮ "СПИСКИ И ОТЧЕТЫ" 
+	-->
+	<i:menu n="nav-menu-reports" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:caption>Списки и отчеты</i:caption>
+		<!-- ЛЕВАЯ ПОЛОВИНА -->
+		<i:menu-section>
+			<i:menu-section>
+				<i:caption>Проектные финансы</i:caption>
+				<i:menu-item action="DoOpenList" t="Приходные договора">
+					<i:caption>
+            <![CDATA[
+						Список всех приходных договоров
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">Contract</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Расходные договора">
+					<i:caption>
+            <![CDATA[
+						Список всех расходных договоров
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">OutContract</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Приходные документы">
+					<i:caption>
+            <![CDATA[
+						Список всех приходных проектных документов
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">IncDoc</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Расходные документы">
+					<i:caption>
+            <![CDATA[
+						Список всех расходных проектных документов
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">OutDoc</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Приходы">
+					<i:caption>
+            <![CDATA[
+						Список всех проектных приходов
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">Income</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Расходы">
+					<i:caption>
+            <![CDATA[
+						Список всех проектных расходов
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">Outcome</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+			<i:menu-section>
+				<i:caption>Общие финансы</i:caption>
+				<i:menu-item action="DoOpenList" t="Общие расходные документы">
+					<i:caption>
+            <![CDATA[
+						Список всех общих (не проектных) расходных документов
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">GenOutDoc</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Общие расходы">
+					<i:caption>
+            <![CDATA[
+						Список всех общих (не проектных) расходов
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">GenOutcome</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Займы">
+					<i:caption>
+            <![CDATA[
+						Список всех займов
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">Loan</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+			<i:menu-section>
+				<i:caption>Касса</i:caption>
+				<i:menu-item action="DoOpenList" t="Движения ДС в кассе">
+					<i:caption>
+            <![CDATA[
+						Список всех движений денежных средств в кассе
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">KassTrans</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="АО">
+					<i:caption>
+            <![CDATA[
+						Список всех авансовых отчетов
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">AO</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Передачи ДС между сотрудниками">
+					<i:caption>
+            <![CDATA[
+						Список всех передач денежных средств между сотрудниками
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">EmpMoneyMove</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+		</i:menu-section>
+		<!-- ПРАВАЯ ПОЛОВИНА -->
+		<i:menu-section>
+			<i:menu-section>
+				<i:caption>Отчеты по кассе</i:caption>
+				<i:menu-item action="DoOpenReport" t="Сальдо ДС по сотрудникам">
+					<i:caption>
+            <![CDATA[
+						Отображает сальдо денежных средств по всем сотрудникам группы команий.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="Icon"><![CDATA[Images/it-thumbnail-report.gif]]></i:param>
+						<i:param n="ReportDefinition">AllEmpSaldoDS</i:param>
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+			<i:menu-section>
+				<i:caption>Финансовые отчеты</i:caption>
+				<i:menu-item action="DoOpenReport" t="Финансовый план-факт">
+					<i:caption>
+            <![CDATA[
+						Показывает план-факт приходов-расходов по компаниям и проектам.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="Icon"><![CDATA[Images/it-thumbnail-report.gif]]></i:param>
+						<i:param n="ReportDefinition">FinPlan</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenReport" t="Бюджет Доходов и Расходов проекта">
+					<i:caption>
+            <![CDATA[
+						Отчет Бюджет Доходов и Расходов по выбранному проекту.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="Icon"><![CDATA[Images/it-thumbnail-report.gif]]></i:param>
+						<i:param n="ReportDefinition">ProjectBDR</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenReport" t="Плановый Бюджет Доходов и Расходов проекта">
+					<i:caption>
+            <![CDATA[
+						Отчет Плановый Бюджет Доходов и Расходов по выбранному проекту.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="Icon"><![CDATA[Images/it-thumbnail-report.gif]]></i:param>
+						<i:param n="ReportDefinition">ProjectBudget</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenReport" t="Бюджет Движения Денежных Средств по проекту">
+					<i:caption>
+            <![CDATA[
+						Отчет Бюджет Движения Денежных Средств по выбранному проекту.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="Icon"><![CDATA[Images/it-thumbnail-report.gif]]></i:param>
+						<i:param n="ReportDefinition">ProjectBDDS</i:param>
+					</i:params>
+				</i:menu-item>
+				<!--
+        <i:menu-item action="DoView" t="Бюджет Доходов и Расходов проекта (Расширенный)">
+          <i:caption>
+            <![CDATA[
+						Отчет Бюджет Доходов и Расходов по выбранному проекту (Расширенный).
+					]]>
+          </i:caption>
+          <i:params>
+            <i:param n="Icon"><![CDATA[Images/it-thumbnail-report.gif]]></i:param>
+            <i:param n="ReportURL">x-get-report.aspx?name=r-ProjectBDR.xml&amp;Extended=1</i:param>
+          </i:params>
+        </i:menu-item>
+			  -->
+			</i:menu-section>
+		</i:menu-section>
+	</i:menu>
+	<!-- 
+		НАВИГАЦИОННОЕ МЕНЮ - АДМИНИСТРИРОВАНИЕ 
+	-->
+	<i:menu n="nav-menu-admin" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:caption>Администрирование</i:caption>
+		<!-- ЛЕВАЯ ПОЛОВИНА -->
+		<i:menu-section>
+			<!-- L1	-->
+			<i:menu-section>
+				<i:caption>Общие справочники</i:caption>
+				<!-- -->
+				<i:menu-item action="DoOpenList" t="Организации">
+					<i:caption>
+            <![CDATA[
+						Список всех организаций, описанных в системе. Общий справочник; 
+						используется как в IT, так и в СУТ.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">Organization</i:param>
+						<i:param n="Metaname">AdminOrganizations</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<!-- -->
+				<i:menu-item action="DoOpenList" t="Сотрудники">
+					<i:caption>
+            <![CDATA[
+						Список всех сотрудников, описанных в системе.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">Employee</i:param>
+						<i:param n="Metaname" />
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<!-- -->
+				<i:menu-item action="DoOpenTree" t="Структура Компаний">
+					<i:caption>
+            <![CDATA[
+						Иерархический справочник, определяющий структурное деление 
+						компаний, сотрудники которых описаны в системе.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="Metaname">Company</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<!-- -->
+				<i:menu-item action="DoOpenList" t="Направления">
+					<i:caption>
+            <![CDATA[
+						Направления деятельности группы компаний
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">Direction</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<!-- -->
+				<i:menu-item action="DoOpenList" t="Должности">
+					<i:caption>
+            <![CDATA[
+						Должности сотрудников группы компаний
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">Position</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<!-- -->
+				<i:menu-item action="DoOpenTree" t="Типы проектных затрат">
+					<i:caption>
+            <![CDATA[
+						<B>Типы проектных затрат</B>. Внутренний справочник, определяющий 
+						структуру разделения всех затрат, зарегистрированных в системе.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="Metaname">ActivityTypes</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+			<!-- L2 -->
+			<i:menu-section>
+				<i:caption>Общее управление списаниями</i:caption>
+				<!-- -->
+				<i:menu-item action="DoOpenList" t="Причины списаний">
+					<i:caption><![CDATA[ ]]></i:caption>
+					<i:params>
+						<i:param n="ObjectType">TimeLossCause</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<!-- -->
+				<i:menu-item action="DoOpenList" t="Календарь исключений в рабочей неделе">
+					<i:caption><![CDATA[ ]]></i:caption>
+					<i:params>
+						<i:param n="ObjectType">WorkCalendarExceptions</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<!-- -->
+				<i:menu-item action="DoOpenList" t="Настройка глобального периода блокирования списаний">
+					<i:caption><![CDATA[ ]]></i:caption>
+					<i:params>
+						<i:param n="ObjectType">TimeSpentBlockPeriod</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+			<!-- L3 -->
+			<i:menu-section>
+				<i:caption>Безопасность</i:caption>
+				<i:menu-item action="DoOpenList" t="Системные роли">
+					<i:caption><![CDATA[ ]]></i:caption>
+					<i:params>
+						<i:param n="ObjectType">SystemRole</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Роли пользователей в папках">
+					<i:caption>
+            <![CDATA[
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">UserRoleInProject</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+			<i:menu-section>
+				<i:caption>Протокол</i:caption>
+				<i:menu-item action="DoOpenList" t="Протокол">
+					<i:caption><![CDATA[ ]]></i:caption>
+					<i:params>
+						<i:param n="ObjectType">Protocol</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+		</i:menu-section>
+		<!-- ПРАВАЯ ПОЛОВИНА -->
+		<i:menu-section>
+			<!-- R1 -->
+			<i:menu-section>
+				<i:caption>Финансовые справочники</i:caption>
+				<i:menu-item action="DoOpenList" t="Отчетные годы">
+					<i:caption>
+            <![CDATA[
+						Отчетные года к которым привязаны Договора и общие расходы.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">ContractYear</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Типы приходов">
+					<i:caption>
+            <![CDATA[
+						Допустимые типы приходов денежных средств.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">IncType</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Типы расходов">
+					<i:caption>
+            <![CDATA[
+						Допустимые типы расходов денежных средств.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">OutType</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Коды расходов">
+					<i:caption>
+            <![CDATA[
+						Коды расходов денежных средств.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">OutCode</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Типы документов">
+					<i:caption>
+            <![CDATA[
+						Типы документов приходов и расходов.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">DocType</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Назначения АО">
+					<i:caption>
+            <![CDATA[
+						Назначение АО.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">AOReason</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Комиссия">
+					<i:caption>
+            <![CDATA[
+						Комиссия сервисной компании.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">Commettie</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Группы проектов">
+					<i:caption>
+            <![CDATA[
+						Группы проектов.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">PrjGroup</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Временные масштабы">
+					<i:caption>
+            <![CDATA[
+						Группы проектов.
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="ObjectType">DateRatio</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+			<!-- R2 -->
+			<i:menu-section>
+				<i:caption>Настройка инцидентов</i:caption>
+				<i:menu-item action="DoOpenTree" t="Настройка workflow инцидентов">
+					<i:caption>
+            <![CDATA[
+						Иерархия с типами инцидентов, состояниями, переходами 
+						и ролями пользователей в инцидентах
+					]]>
+          </i:caption>
+					<i:params>
+						<i:param n="Metaname">IncidentWorkflowManager</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+			<!-- R3 -->
+			<i:menu-section>
+				<i:caption>Настойки системы рассылки оповещений</i:caption>
+				<i:menu-item action="DoOpenList" t="Типы событий">
+					<i:params>
+						<i:param n="ObjectType">EventType</i:param>
+						<i:param n="ShowTooltip" />
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Подписка групп рассылки на события">
+					<i:params>
+						<i:param n="ObjectType">EventSubscription</i:param>
+						<i:param n="Metaname">GROUPS</i:param>
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+			<!-- R4 -->
+			<i:menu-section>
+				<i:caption>Справочники Системы Учета Тендеров (СУТ)</i:caption>
+				<i:menu-item action="DoOpenList" t="Причины проигрыша">
+					<i:params>
+						<i:param n="ObjectType">LossReason</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Отрасли">
+					<i:params>
+						<i:param n="ObjectType">Branch</i:param>
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+		</i:menu-section>
+	</i:menu>
+	<!-- 
+		НАВИГАЦИОННОЕ МЕНЮ - КОЛЛЕКЦИЯ ИНСТРУМЕНТОВ 
+	-->
+	<i:menu n="nav-menu-gk" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:caption>Коллекция инструментов</i:caption>
+		<!-- ЛЕВАЯ ПОЛОВИНА -->
+		<i:menu-section>
+			<i:menu-section>
+				<i:caption>Справочники</i:caption>
+				<i:menu-item action="DoOpenList" t="Бридж">
+					<i:params>
+						<i:param n="ObjectType">gkBridge</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Датчик">
+					<i:params>
+						<i:param n="ObjectType">gkPickup</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Категория">
+					<i:params>
+						<i:param n="ObjectType">gkCategory</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Крепление грифа">
+					<i:params>
+						<i:param n="ObjectType">gkNeckJoint</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Материал">
+					<i:params>
+						<i:param n="ObjectType">gkMaterial</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Мензура">
+					<i:params>
+						<i:param n="ObjectType">gkScale</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Модель">
+					<i:params>
+						<i:param n="ObjectType">gkModel</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Постоянный источник">
+					<i:params>
+						<i:param n="ObjectType">gkStableSource</i:param>
+					</i:params>
+				</i:menu-item>
+				<i:menu-item action="DoOpenList" t="Производитель инструментов">
+					<i:params>
+						<i:param n="ObjectType">gkBrand</i:param>
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+		</i:menu-section>
+		<!-- ПРАВАЯ ПОЛОВИНА -->
+		<i:menu-section>
+			<!-- R1 -->
+			<i:menu-section>
+				<i:caption>Списки</i:caption>
+				<i:menu-item action="DoOpenList" t="Инструменты">
+					<i:params>
+						<i:param n="ObjectType">gkGuitar</i:param>
+					</i:params>
+				</i:menu-item>
+			</i:menu-section>
+			<i:menu-section>
+				<i:caption>Иерархии</i:caption>
+			</i:menu-section>
+			<i:menu-section>
+				<i:caption>Отчеты</i:caption>
+			</i:menu-section>
+		</i:menu-section>
+	</i:menu>
+</ds:metadata>

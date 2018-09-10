@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<example-data
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:dt="urn:schemas-microsoft-com:datatypes" 
+	xmlns="http://www.croc.ru/Schemas/IncidentTracker/WebServices/CommonServiceData/1.0"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/IncidentTracker/WebServices/CommonServiceData/1.0 it-common-service-data-schema.xsd"
+>
+	<!-- 
+
+		Пример значения константы системы Incident Tracker; 
+		результат вызова методов GetConstValue, GetCurrentConstValue 
+	-->
+	<constant-value>
+		<constant>SecuredExternalSystemBaseURL</constant>
+		<value>https://it.croc.ru/it/</value>
+		<at-date>2008-12-23</at-date>
+	</constant-value>
+	<!-- 
+
+		Пример данных списка организаций; 
+		результат вызова метода GetOrganizationsList 
+	-->
+	<organizations-list>
+		<organization internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+			<short-name>Специальная Компания</short-name>
+			<full-name>Специальная Компания, ЗАО</full-name>
+			<account-manager internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+				<full-name>Иванов Иван Иванович</full-name>
+			</account-manager>
+		</organization>
+	</organizations-list>
+	<!--
+
+		Пример детальных данных одной организации;
+		результат вызова метода GetOrganizationInfo
+	-->
+	<organization-info internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345" is-it-owner="false">
+		<short-name>Специальная Компания</short-name>
+		<full-name>Специальная Компания, ЗАО</full-name>
+		<account-manager internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+			<full-name>Иванов Иван Иванович</full-name>
+		</account-manager>
+		<comment>Специальная Компания работает на рынке с 1999 года</comment>
+	</organization-info>
+	<!-- 
+
+		Пример данных списка подразделений заданной организации;
+		результат вызова метода GetDepartmentsList, GetSubDepartmentsList
+	-->
+	<departments-list>
+		<department internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+			<short-name>ДИТ</short-name>
+			<full-name>Департамент Информационных Технологий</full-name>
+			<director internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+				<full-name>Владимиров Владимир Владимирович</full-name>
+			</director>
+			<!-- идентификаторы вышестоящего подразделения; если такового нет, элемент не задается -->
+			<higher-department internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345"/>
+		</department>
+	</departments-list>
+	<!-- 
+
+		Пример детальных данных одного подразделения;
+		результат вызова метода GetDepartmentInfo
+	-->
+	<department-info internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345" is-it-accountable="true" has-it-subdivision="true">
+		<short-name>ДИТ</short-name>
+		<full-name>Департамент Информационных Технологий</full-name>
+		<director internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+			<full-name>Владимиров Владимир Владимирович</full-name>
+		</director>
+		<!-- идентификаторы вышестоящего подразделения; если такового нет, элемент не задается -->
+		<higher-department internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345"/>
+		<comment>Комментарий: является как центром затрат, так и центром прибыли</comment>
+	</department-info>
+	<!--
+
+		Пример данных списка сотрудников заданного подразделения / организации;
+		результат вызова метода GetEmployeesList
+	-->
+	<employees-list>
+		<employee internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+			<full-name>Петров Петр Петрович</full-name>
+			<login>SC\PetrPetrov</login>
+			<department-member internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345"/>
+		</employee>
+	</employees-list>
+	<!-- 
+
+		Пример детальных данных одного сотрудника;
+		результат вызова метода GetEmployeeInfo
+	-->
+	<employee-info internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+		<first-name>Петр</first-name>
+		<middle-name>Петрович</middle-name>
+		<last-name>Петров</last-name>
+		<login>SC\PetrPetrov</login>
+		<begin-work>2000-01-01</begin-work>
+		<!-- Дата завершения работы в организации; если сотрудник еще работает, элемент пустой -->
+		<end-work>2005-06-01</end-work>
+		<phones>123-45-67</phones>
+		<phones-add>1234</phones-add>
+		<e-mail>PetrPetrov@sc.ru</e-mail>
+		<mobile-phone>8-916-1234567</mobile-phone>
+		<post-address>Москва, а/я 12345, до востребования</post-address>
+		<pager-phone>765-43-21</pager-phone>
+		<pager-number>1098</pager-number>
+		<department-member internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345"/>
+	</employee-info>
+	<!-- 
+
+		Пример данных списка описаний направлений деятельности;
+		результат вызова метода GetDirectionsList
+	-->
+	<directions-list>
+		<direction internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+			<name>Разработка заказного программного обеспечения</name>
+		</direction>
+		<direction internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+			<name>Консультации</name>
+		</direction>
+		<direction internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+			<name>Сопровождение покупного программного обеспечения</name>
+		</direction>
+	</directions-list>
+	<!--
+
+		Пример данных списка описаний направления деятельности, прменимых
+		в заданном подразделении (организации); 
+		результат вызова метода GetHandledDirectionsList
+	-->
+	<directions-list>
+		<apply-department internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+			<short-name>ДИТ</short-name>
+			<full-name>Департамент Информационных Технологий</full-name>
+			<director internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+				<full-name>Владимиров Владимир Владимирович</full-name>
+			</director>
+			<apply-direction internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+				<name>Разработка заказного программного обеспечения</name>
+			</apply-direction>
+			<apply-direction internal-id="12345678-90ab-cdef-1234-567890abcdf0" external-id="12345">
+				<name>Консультации</name>
+			</apply-direction>
+		</apply-department>
+	</directions-list>
+</example-data>

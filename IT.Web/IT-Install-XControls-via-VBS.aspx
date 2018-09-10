@@ -1,0 +1,3 @@
+<%@ Page Language="c#" validateRequest="false" AutoEventWireup="false" 
+%>document.Write  "<OB" & "JECT ID=""XService"" NAME=""XService"" CLASSID=""<%=Croc.XmlFramework.Web.XConst.CLSID_XSERVICE%>"" CODEBASE=""<%=Croc.XmlFramework.Web.XConst.CROC_XCONTROLS_CODEBASE_PATH%>"" TYPE=""application/x-oleobject"" HEIGHT=""1"" WIDTH=""1"" STYLE=""display:none;"" ><PAR" & "AM NAME=""AppIconURL"" VALUE=""icons/xu-application-icon.ico""/></OB" & "JECT>"
+document.Write  "<OB" & "JECT CLASSID=""<%=Croc.XmlFramework.Web.XConst.CLSID_MSXML%>"" CODEBASE=""<%=Croc.XmlFramework.Web.XConst.MSXML_CODEBASE_PATH%>"" TYPE=""application/x-oleobject"" HEIGHT=""1"" WIDTH=""1"" STYLE=""display:none;"" >" & "</OB" & "JECT>"

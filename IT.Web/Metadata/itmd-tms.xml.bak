@@ -1,0 +1,1230 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<ds:enum n="PARTICIPATIONS" d="Тип участия" vt="i2">
+		<ds:value n="PARTICIPANT" d="Участник">1</ds:value>
+		<ds:value n="COMPETITOR" d="Конкурент">2</ds:value>
+		<ds:value n="HELPER" d="Подигрывающий">3</ds:value>
+	</ds:enum>
+	<ds:enum n="LotState" d="Состояние лота" vt="i2">
+		<ds:value n="Participating" d="Участие">2</ds:value>
+		<ds:value n="ParticipateRejection" d="Отказ от участия">3</ds:value>
+		<ds:value n="UnderConsideration" d="Рассмотрение предложения">4</ds:value>
+		<ds:value n="WasGain" d="Выигран">5</ds:value>
+		<ds:value n="WasLoss" d="Проигран">6</ds:value>
+		<ds:value n="WasAbolish" d="Отменен">7</ds:value>
+	</ds:enum>
+	<ds:enum n="NDS_PRICE" d="Все цены" vt="i2">
+		<ds:value n="NO_NDS" d="без НДС">0</ds:value>
+		<ds:value n="NDS" d="c НДС">1</ds:value>
+	</ds:enum>
+	<ds:type n="Sum" d="Сумма" tp="persistent">
+		<ds:prop n="Currency" d="Валюта" vt="object" ot="Currency" cp="scalar">
+			<i:object-dropdown xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="SumValue" d="Сумма" vt="fixed" cp="scalar" />
+		<ds:prop n="ExchangeRate" d="Курс перевода" vt="r4" cp="scalar" maybenull="1" />
+		<i:editor t="Сумма" width="500" height="300" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Свойства">x-editor2.xsl?PROPLIST=SumValue;Currency;ExchangeRate&amp;DisableHR=1</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Сумма" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[SumValue],
+					t.[ExchangeRate]
+				FROM [dbo].[Sum] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Сумма" vt="fixed" width="100" />
+			<i:column t="Курс перевода" vt="r4" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="LotParticipant" d="Участник лота" defer-indexes="1" tp="persistent">
+		<ds:prop n="TenderParticipantPrice" d="Сумма" vt="object" ot="Sum" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.SumValue</i:value>
+				<i:prop-menu>
+					<i:menu ref="tms-object-sum" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Lot" d="Лот" vt="object" ot="Lot" cp="scalar" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Number</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Winner" d="Победитель" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="LossReason" d="Причина помощи" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+			<itds:auto-signature xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0">true</itds:auto-signature>
+		</ds:prop>
+		<ds:prop n="HelperContactInfo" d="Контактная информация" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+			<itds:auto-signature xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0">true</itds:auto-signature>
+		</ds:prop>
+		<ds:prop n="ParticipantOrganization" d="Участник лота" vt="object" ot="Organization" cp="scalar">
+			<i:object-presentation use-list-selector="TmsOrganizations" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>nvl(item.ShortName, item.Name)</i:value>
+				<i:prop-menu>
+					<i:menu ref="tms-organization-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+			<i:object-dropdown use-list="OwnTenderParticipants" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="ParticipationType" d="Тип участия" vt="i2" cp="scalar" enum="PARTICIPATIONS">
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Участник">1</i:const-value>
+				<i:const-value n="Конкурент">2</i:const-value>
+				<i:const-value n="Подигрывающий">3</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Guarantee" d="Банковская гарантия" vt="object" ot="Guarantee" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>TMS_GetGuaranteeString(item.GuaranteeSum.SumValue, item.GuaranteeSum.Currency.Code, item.ValidityPeriod, item.EndingDate, item.PortionValue)</i:value>
+				<i:prop-menu>
+					<i:menu>
+						<i:menu-item action="DoCreate" hotkey="VK_INS" t="Создать" />
+						<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать" />
+						<i:menu-item action="DoMarkDelete" hotkey="VK_DEL" t="Удалить" />
+					</i:menu>
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="SumTorg2" d="Сумма после 2й переторжки" vt="object" ot="Sum" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.SumValue</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="SumTorg1" d="Сумма после переторжки" vt="object" ot="Sum" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.SumValue</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Declined" d="Отклонен" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="SumTorg2AP" d="Сумма АП после 2й переторжки" vt="object" ot="Sum" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.SumValue</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="SumTorg1AP" d="Сумма АП после переторжки" vt="object" ot="Sum" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.SumValue</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="TenderParticipantPriceAP" d="Сумма АП" vt="object" ot="Sum" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.SumValue</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:index n="IDX_LOT_PARTICIPANT_UNIQUE" unique="1">
+			<ds:prop-ref n="Lot" />
+			<ds:prop-ref n="ParticipantOrganization" />
+			<ds:prop-ref n="ParticipationType" />
+		</ds:index>
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="Participant">Participation-Participant.ico</i:icon>
+			<i:icon selector="Competitor">Participation-Competitor.ico</i:icon>
+			<i:icon selector="CompetitorHelper">Participation-CompetitorHelper.ico</i:icon>
+			<i:icon selector="CompetitorDebtor">Participation-CompetitorDebtor.ico</i:icon>
+			<i:icon selector="Participant-Winner">Participation-Participant-Winner.ico</i:icon>
+			<i:icon selector="Competitor-Winner">Participation-Competitor-Winner.ico</i:icon>
+			<i:icon selector="CompetitorHelper-Winner">Participation-CompetitorHelper-Winner.ico</i:icon>
+			<i:icon selector="CompetitorDebtor-Winner">Participation-CompetitorDebtor-Winner.ico</i:icon>
+		</i:icons>
+		<i:editor t="Участник лота" save-cmd="SaveObjectWithSignature" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>tms-tools.vbs</i:client-script>
+			<i:client-script>tms-pe-object-sum.vbs</i:client-script>
+			<!--i:client-script>it-editor-security.vbs</i:client-script-->
+			<i:client-script>s-LotParticipant-editor.vbs</i:client-script>
+			<i:preload>Lot.Tender</i:preload>
+			<i:preload>ParticipantOrganization</i:preload>
+			<i:preload>TenderParticipantPrice</i:preload>
+			<i:page t="Основные свойства">p-LotParticipant-editor.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Участник лота" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[ParticipationType],
+					t.[Winner],
+					t.[LossReason],
+					t.[HelperContactInfo],
+					t.[Declined]
+				FROM [dbo].[LotParticipant] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Тип участия" vt="i2" width="100" />
+			<i:column t="Победитель" vt="boolean" width="100" />
+			<i:column t="Причина помощи" width="100" />
+			<i:column t="Контактная информация" width="100" />
+			<i:column t="Отклонен" vt="boolean" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="Tender" d="Тендер" tp="persistent">
+		<ds:prop n="DocGettingEmployee" d="Сотрудник, получивший документы Заказчика" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>TMS_GetEmployeeString(item.LastName, item.FirstName, item.MiddleName)</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Lots" d="Лоты" vt="object" ot="Lot" cp="link" built-on="Tender">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:icon-selector>GetLotTenderIconSelector( item.State, item.DocFeedingDate)</i:icon-selector>
+				<i:column t="Номер" width="150">item.Number</i:column>
+				<i:column t="Название" width="200">item.Name</i:column>
+				<i:column t="Компания" width="200">GetLotOwnParticipantOrganizationString( item() )</i:column>
+				<i:column t="Состояние" width="200">NameOf_LotState(item.State)</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:visibility-handler mode="replace">XPEObjectsElementsListClass_MenuVisibilityHandler</i:visibility-handler>
+						<i:menu-item action="DoCreate" hotkey="VK_INS" t="Создать" />
+						<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать" />
+						<i:menu-item action="DoMarkDelete" hotkey="VK_DEL" t="Удалить" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Number" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Name" d="Название" vt="string" cp="scalar">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="CustomerDocGettingDate" d="Дата получения документов от Заказчика" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="DocFeedingDate" d="Дата подачи документов" vt="dateTime" cp="scalar" maybenull="1" />
+		<ds:prop n="QualifyingRequirement" d="Квалификационные требования" vt="text" cp="scalar" maybenull="1" />
+		<ds:prop n="Discussion" d="Обсуждение" vt="text" cp="scalar" maybenull="1">
+			<itds:auto-signature xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0">true</itds:auto-signature>
+		</ds:prop>
+		<ds:prop n="Note" d="Примечание" vt="text" cp="scalar" maybenull="1">
+			<itds:auto-signature xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0">true</itds:auto-signature>
+		</ds:prop>
+		<ds:prop n="JuryContactName" d="Контактное лицо конкурсной комиссии" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="JuryContactPhone" d="Телефон контактного лица" vt="string" cp="scalar" maybenull="1">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="JuryContactEMail" d="Адрес электронной почты контактного лица" vt="string" cp="scalar" maybenull="1">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Director" d="Директор клиента" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>TMS_GetEmployeeString(item.LastName, item.FirstName, item.MiddleName)</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="TenderCustomer" d="Заказчик" vt="object" ot="Organization" cp="scalar">
+			<i:object-presentation off-create="1" off-delete="1" off-edit="1" use-list-selector="TmsOrganizations" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>nvl(item.ShortName, item.Name)</i:value>
+				<i:prop-menu>
+					<i:menu ref="tms-organization-presentation-for-editor" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Organizer" d="Организатор" vt="object" ot="Organization" cp="scalar">
+			<i:object-presentation off-create="1" off-delete="1" off-edit="1" use-list-selector="TmsOrganizations" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>nvl(item.ShortName, item.Name)</i:value>
+				<i:prop-menu>
+					<i:menu ref="tms-organization-presentation-for-editor" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="ExternalLinks" d="Внешние ссылки" vt="object" ot="ExternalLink" cp="link" built-on="Tender">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:icon-selector>item.LinkType.ServiceType</i:icon-selector>
+				<i:column t="Наименование" width="200">item.Name</i:column>
+				<i:column t="Значение ссылки" width="200">item.URI</i:column>
+				<i:column t="Описание" width="200">item.Description</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu ref="ExternalLinksElemensListMenu" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Folder" d="Тендер в Трекере" vt="object" ot="Folder" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu>
+						<i:visibility-handler mode="replace">XPEObjectPresentationClass_MenuVisibilityHandler</i:visibility-handler>
+						<i:visibility-handler mode="add">TMS_TenderFolderPresentation_MenuVisibilityHandler</i:visibility-handler>
+						<i:execution-handler mode="add">TMS_TenderFolderPresentation_MenuExecutionHandler</i:execution-handler>
+						<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать" />
+						<i:menu-item action="DoView" hotkey="VK_ENTER,VK_DBLCLICK" t="Просмотр">
+							<i:params>
+								<i:param n="ReportURL">x-get-report.aspx?name=r-Folder.xml&amp;ID=@@ObjectID</i:param>
+							</i:params>
+						</i:menu-item>
+						<i:menu-item action="DoFindInTree" t="Найти в дереве" separator-before="1" separator-after="1" />
+					</i:menu>
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Initiator" d="Инициатор" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.LastName</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="InputDate" d="Дата регистрации" vt="dateTime" cp="scalar">
+			<ds:def default-type="db">#CURRENT</ds:def>
+		</ds:prop>
+		<ds:prop n="DateTorg1" d="Дата переторжки" vt="dateTime" cp="scalar" maybenull="1" />
+		<ds:prop n="DateTorg2" d="Дата 2й переторжки" vt="dateTime" cp="scalar" maybenull="1" />
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="0">TenderLotState-DocsReceiving.ico</i:icon>
+			<i:icon selector="1">TenderLotState-Thinking.ico</i:icon>
+			<i:icon selector="1-NoDocsFeedDate">TenderLotState-Thinking-NoDocsFeedDate.ico</i:icon>
+			<i:icon selector="1-Expired">TenderLotState-Expired.ico</i:icon>
+			<i:icon selector="2">TenderLotState-Accept.ico</i:icon>
+			<i:icon selector="2-NoDocsFeedDate">TenderLotState-Accept-NoDocsFeedDate.ico</i:icon>
+			<i:icon selector="2-3days">TenderLotState-Accept-3days.ico</i:icon>
+			<i:icon selector="2-2days">TenderLotState-Accept-2days.ico</i:icon>
+			<i:icon selector="2-1day">TenderLotState-Accept-1day.ico</i:icon>
+			<i:icon selector="3">TenderLotState-Reject.ico</i:icon>
+			<i:icon selector="4">TenderLotState-Waiting.ico</i:icon>
+			<i:icon selector="5">TenderLotState-Winner.ico</i:icon>
+			<i:icon selector="6">TenderLotState-Loser.ico</i:icon>
+			<i:icon selector="7">TenderLotState-Canceled.ico</i:icon>
+			<i:icon selector="8">TenderLotState-StateContract.ico</i:icon>
+		</i:icons>
+		<i:editor t="Новый конкурс(лот)" default-for-creation="1" wizard-mode="undo-changes" save-cmd="SaveObjectWithSignature" height="600" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>tms-tools.vbs</i:client-script>
+			<i:client-script>tms-pe-object-sum.vbs</i:client-script>
+			<i:client-script>tms-date-calc.vbs</i:client-script>
+			<i:client-script>s-Lot-editor-share.vbs</i:client-script>
+			<i:client-script>s-Tender-editor-share.vbs</i:client-script>
+			<i:client-script>s-Tender-SingleLot-editor.vbs</i:client-script>
+			<i:client-script>s-ExternalLink.vbs</i:client-script>
+			<i:preload>TenderCustomer</i:preload>
+			<i:preload>Organizer</i:preload>
+			<i:preload>DocGettingEmployee</i:preload>
+			<i:preload>Director</i:preload>
+			<i:preload>Lots.LotParticipants.ParticipantOrganization</i:preload>
+			<i:preload>Lots.Manager</i:preload>
+			<i:page t="Основные реквизиты">p-Tender-editor-Main.xsl</i:page>
+			<i:page t="Участники" wizard-mode="get-data">p-Lot-editor-Participants.xsl</i:page>
+			<i:page t="Финансы / Участие департаментов" wizard-mode="get-data">p-Lot-editor-Finances.xsl</i:page>
+			<i:page t="Результаты" off-cache="1" wizard-mode="get-data">p-Lot-editor-Results.xsl</i:page>
+			<i:page t="Внешние ссылки" wizard-mode="get-data">p-Tender-editor-ExternalLinks.xsl</i:page>
+			<i:page t="Дополнительно" wizard-mode="get-data">p-Tender-editor-Additional.xsl</i:page>
+			<i:menu ref="std-wizard-menu" />
+		</i:editor>
+		<i:editor t="Конкурс(лот)" default-for-editing="1" save-cmd="SaveObjectWithSignature" height="600" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>tms-tools.vbs</i:client-script>
+			<i:client-script>tms-pe-object-sum.vbs</i:client-script>
+			<i:client-script>tms-date-calc.vbs</i:client-script>
+			<i:client-script>s-Lot-editor-share.vbs</i:client-script>
+			<i:client-script>s-Tender-editor-share.vbs</i:client-script>
+			<i:client-script>s-Tender-SingleLot-editor.vbs</i:client-script>
+			<i:client-script>s-ExternalLink.vbs</i:client-script>
+			<i:preload>TenderCustomer</i:preload>
+			<i:preload>Organizer</i:preload>
+			<i:preload>DocGettingEmployee</i:preload>
+			<i:preload>Director</i:preload>
+			<i:preload>Lots.LotParticipants.ParticipantOrganization</i:preload>
+			<i:preload>Lots.Manager</i:preload>
+			<i:page t="Основные реквизиты">p-Tender-editor-Main.xsl</i:page>
+			<i:page t="Участники">p-Lot-editor-Participants.xsl</i:page>
+			<i:page t="Финансы / Участие департаментов">p-Lot-editor-Finances.xsl</i:page>
+			<i:page t="Результаты">p-Lot-editor-Results.xsl</i:page>
+			<i:page t="Внешние ссылки">p-Tender-editor-ExternalLinks.xsl</i:page>
+			<i:page t="Дополнительно">p-Tender-editor-Additional.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list n="TendersList" t="Тендеры" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-TendersList.vbs</i:client-script>
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.ObjectID,
+					t.Name,
+          t.DocFeedingDate,
+          t.DateTorg1,
+          t.DateTorg2,
+          dbo.NameOf_LotState(l.State),
+					ISNULL(c.ShortName, c.Name),
+          ISNULL(o.ShortName, o.Name),
+          dbo.GetTenderExecutorsFromMarketing(t.ObjectID),
+          [dbo].[GetTenderManagers](t.ObjectID),			
+					dbo.GetLotTenderIconSelector(l.State, t.DocFeedingDate, getdate()) AS ICON_SELECTOR
+				FROM dbo.Tender t
+					INNER JOIN dbo.Lot AS l WITH(NOLOCK) ON l.Tender = t.ObjectID
+          LEFT JOIN dbo.Organization AS c WITH(NOLOCK) ON c.ObjectID = t.TenderCustomer
+					LEFT JOIN dbo.Organization AS o WITH(NOLOCK) ON o.ObjectID = t.Organizer
+				WHERE
+					(	
+						( :Company IS NULL ) OR
+						( :Company IS NOT NULL AND EXISTS (
+								SELECT 1 
+								FROM dbo.Lot l WITH(NOLOCK) JOIN dbo.LotParticipant lP WITH(NOLOCK) ON lP.Lot = l.ObjectID
+								WHERE lP.ParticipantOrganization = :Company AND l.Tender = t.ObjectID )
+						) 
+					) 
+					AND SEARCH_CONDITIONS
+          ORDER BY t.DocFeedingDate DESC
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="CustomerName" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							( c.ShortName LIKE :CustomerName OR c.Name LIKE :CustomerName )
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="OrganizerName" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							ISNULL(o.ShortName, o.Name) LIKE :OrganizerName 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="TenderName" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							t.Name LIKE :TenderName
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="TenderState" vt="i2">
+						<ds:param-selector op="not-is-null"><![CDATA[ l.State = :TenderState ]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="DocFeedingBegin" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[ 
+							t.DocFeedingDate >= dbo.DATETRIM(:DocFeedingBegin) 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DocFeedingEnd" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							t.DocFeedingDate < DATEADD(d, 1, dbo.DATETRIM(:DocFeedingEnd))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Company" vt="uuid" />
+					<ds:param n="Competitor" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  EXISTS
+						  (
+							  SELECT 1
+							  FROM dbo.Lot AS l WITH(NOLOCK)
+								  INNER JOIN dbo.LotParticipant AS p WITH(NOLOCK) ON p.Lot = l.ObjectID
+							  WHERE l.Tender = t.ObjectID
+								  AND p.ParticipationType <> 1
+								  AND p.ParticipantOrganization = :Competitor
+						  )
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterTendersList" height="120" />
+			<i:list-menu>
+				<i:menu>
+					<i:visibility-handler mode="add">TendersList_MenuVisibilityHandler</i:visibility-handler>
+					<i:menu-item action="DoView" t="Карточка тендера - все данные\tCtrl+F3" hotkey="CTRL+VK_F3">
+						<i:params>
+							<i:param n="ReportURL">x-get-report.aspx?name=r-Tender.xml&amp;TenderID=@@ObjectID&amp;ViewType=0</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoView" t="Карточка тендера - для заказчика" separator-after="1">
+						<i:params>
+							<i:param n="ReportURL">x-get-report.aspx?name=r-Tender.xml&amp;TenderID=@@ObjectID&amp;ViewType=1</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoEdit" n="EditAsSingleLot" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать" />
+					<i:menu-item action="DoCreate" hotkey="VK_INS" t="Создать" />
+					<i:menu-item-separ horizontal-line="1" />
+					<i:menu-item action="DoDelete" hotkey="VK_DEL" t="Удалить\tDel" />
+					<i:menu-item-separ horizontal-line="1" />
+					<i:menu-section t="Выгрузить данные списка...">
+						<i:menu-item action="DoReport" t="Как отчет" />
+						<i:menu-item action="DoExcelExport" t="Как документ Excel" />
+					</i:menu-section>
+					<!--i:menu-item-separ horizontal-line="1" /-->
+					<i:menu-item action="DoRefresh" t="Обновить" />
+					<i:menu-item action="DoResetFilter" t="Очистить фильтр" />
+				</i:menu>
+			</i:list-menu>
+			<i:column t="Название" width="500" />
+			<i:column t="Подача документов" vt="date" width="150" />
+			<i:column t="Переторжка" vt="date" width="150" />
+			<i:column t="2я переторжка" vt="date" width="150" />
+			<i:column t="Состояние" width="300" />
+			<i:column t="Заказчик" width="300" />
+			<i:column t="Организатор" width="250" />
+			<i:column t="Исполнитель" width="200" />
+			<i:column t="Менеджеры" width="200" />
+			<!-- Служебный столбец для определения однолотовых тендеров -->
+			<i:column t="Однолотовый тендер" n="IsSingleLot" width="0" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="Currency" d="Валюта" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Code" d="Код валюты" vt="string" cp="scalar">
+			<ds:max>32</ds:max>
+		</ds:prop>
+		<i:objects-list t="Валюта" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" off-icons="1">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Code],
+					t.[Name]
+				FROM [dbo].[Currency] t
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+				<ds:order-by>t.[Code]</ds:order-by>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Код валюты" width="100" />
+			<i:column t="Наименование" width="300" />
+		</i:objects-list>
+		<i:editor t="Валюта" width="500" height="300" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Свойства">x-editor2.xsl?PROPLIST=Code;Name&amp;DisableHR=1</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="Lot" d="Лот" tp="persistent">
+		<ds:prop n="CustomerBudget" d="Бюджет, определенный заказчиком" vt="object" ot="Sum" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.SumValue</i:value>
+				<i:prop-menu>
+					<i:menu ref="tms-object-sum" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Guarantee" d="Банковская гарантия" vt="object" ot="Guarantee" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>TMS_GetGuaranteeString(item.GuaranteeSum.SumValue, item.GuaranteeSum.Currency.Code, item.ValidityPeriod, item.EndingDate, item.PortionValue)</i:value>
+				<i:prop-menu>
+					<i:menu>
+						<i:menu-item action="DoCreate" hotkey="VK_INS" t="Создать" />
+						<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать" />
+						<i:menu-item action="DoMarkDelete" hotkey="VK_DEL" t="Удалить" />
+					</i:menu>
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="LossReason" d="Причина проигрыша" vt="object" ot="LossReason" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Tender" d="Тендер" vt="object" ot="Tender" cp="scalar" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Number</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="OpeningAttendants" d="Присутствовал на вскрытии документов" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>TMS_GetEmployeeString(item.LastName, item.FirstName, item.MiddleName)</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Manager" d="Менеджер" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>TMS_GetEmployeeString(item.LastName, item.FirstName, item.MiddleName)</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Number" d="Номер" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="LotParticipants" d="Участники" vt="object" ot="LotParticipant" cp="link" built-on="Lot">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:icon-selector>TMS_GetLotParticipantSelector(item.ParticipationType, item.Winner)</i:icon-selector>
+				<i:column t="Тип участия" width="150">NameOf_Participations(item.ParticipationType)</i:column>
+				<i:column t="Название организации" width="250">nvl(item.ParticipantOrganization.ShortName, item.ParticipantOrganization.Name)</i:column>
+				<i:column t="Отклонен" width="250" align="center">iif(item.Declined, "Отклонен", "")</i:column>
+				<i:column t="Сумма предложения" width="220">TMS_GetSumString(item.TenderParticipantPrice.SumValue, item.TenderParticipantPrice.Currency.Code, item.TenderParticipantPrice.ExchangeRate)</i:column>
+				<i:column t="Сумма 1й переторжки" width="220">TMS_GetSumString(item.SumTorg1.SumValue, item.SumTorg1.Currency.Code, item.SumTorg1.ExchangeRate)</i:column>
+				<i:column t="Сумма 2й переторжки" width="220">TMS_GetSumString(item.SumTorg2.SumValue, item.SumTorg2.Currency.Code, item.SumTorg2.ExchangeRate)</i:column>
+				<i:column t="Сумма АП" width="220">TMS_GetSumString(item.TenderParticipantPriceAP.SumValue, item.TenderParticipantPriceAP.Currency.Code, item.TenderParticipantPriceAP.ExchangeRate)</i:column>
+				<i:column t="Сумма АП 1й переторжки" width="220">TMS_GetSumString(item.SumTorg1AP.SumValue, item.SumTorg1AP.Currency.Code, item.SumTorg1AP.ExchangeRate)</i:column>
+				<i:column t="Сумма АП 2й переторжки" width="220">TMS_GetSumString(item.SumTorg2AP.SumValue, item.SumTorg2AP.Currency.Code, item.SumTorg2AP.ExchangeRate)</i:column>
+				<i:column t="Итоговый статус" width="220">TMS_GetWinnerString(item.Lot.State, item.Winner)</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:visibility-handler>LotParticipants_MenuVisibilityHandler</i:visibility-handler>
+						<i:menu-item action="DoCreate" hotkey="VK_INS" t="Создать" />
+						<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать" />
+						<i:menu-item action="DoMarkDelete" hotkey="VK_DEL" t="Удалить" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Name" d="Название" vt="string" cp="scalar">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="State" d="Состояние" vt="i2" cp="scalar" enum="LotState">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Участие">2</i:const-value>
+				<i:const-value n="Отказ от участия">3</i:const-value>
+				<i:const-value n="Рассмотрение предложения">4</i:const-value>
+				<i:const-value n="Выигран">5</i:const-value>
+				<i:const-value n="Проигран">6</i:const-value>
+				<i:const-value n="Отменен">7</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Note" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+			<itds:auto-signature xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0">true</itds:auto-signature>
+		</ds:prop>
+		<ds:prop n="MgrDocsGettingDate" d="Дата получения документов" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="MgrIsAcquaint" d="Менеджер ознакомился" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="ResultNote" d="Комментарии по результатам рассмотрения" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+			<itds:auto-signature xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0">true</itds:auto-signature>
+		</ds:prop>
+		<ds:prop n="ParticipantDepartments" d="Участвующие подразделения" vt="object" ot="DepartmentParticipation" cp="link" built-on="Lot">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Подразделение" width="350">nvl(item.Department.Code, item.Department.Name)</i:column>
+				<i:column t="Исполнитель" width="450">TMS_GetEmployeeString(item.Executor.LastName, item.Executor.FirstName, item.Executor.MiddleName)</i:column>
+				<i:column t="Ознакомился" width="150">TMS_GetAcquaintedDateString(item.ExecutorIsAcquaint, item.DocsGettingDate)</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:visibility-handler>LotParticipants_MenuVisibilityHandler</i:visibility-handler>
+						<i:menu-item action="DoCreate" hotkey="VK_INS" t="Создать" />
+						<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать" />
+						<i:menu-item action="DoMarkDelete" hotkey="VK_DEL" t="Удалить" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="ExternalLinks" d="Внешние ссылки" vt="object" ot="ExternalLink" cp="link" built-on="Lot">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:icon-selector>item.LinkType.ServiceType</i:icon-selector>
+				<i:column t="Наименование" width="200">item.Name</i:column>
+				<i:column t="Значение ссылки" width="200">item.URI</i:column>
+				<i:column t="Описание" width="200">item.Description</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu ref="ExternalLinksElemensListMenu" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="NDS" d="Все цены" vt="i2" cp="scalar" enum="NDS_PRICE">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="без НДС">0</i:const-value>
+				<i:const-value n="c НДС">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="0">TenderLotState-DocsReceiving.ico</i:icon>
+			<i:icon selector="1">TenderLotState-Thinking.ico</i:icon>
+			<i:icon selector="1-NoDocsFeedDate">TenderLotState-Thinking-NoDocsFeedDate.ico</i:icon>
+			<i:icon selector="1-Expired">TenderLotState-Expired.ico</i:icon>
+			<i:icon selector="2">TenderLotState-Accept.ico</i:icon>
+			<i:icon selector="2-NoDocsFeedDate">TenderLotState-Accept-NoDocsFeedDate.ico</i:icon>
+			<i:icon selector="2-3days">TenderLotState-Accept-3days.ico</i:icon>
+			<i:icon selector="2-2days">TenderLotState-Accept-2days.ico</i:icon>
+			<i:icon selector="2-1day">TenderLotState-Accept-1day.ico</i:icon>
+			<i:icon selector="3">TenderLotState-Reject.ico</i:icon>
+			<i:icon selector="4">TenderLotState-Waiting.ico</i:icon>
+			<i:icon selector="5">TenderLotState-Winner.ico</i:icon>
+			<i:icon selector="6">TenderLotState-Loser.ico</i:icon>
+			<i:icon selector="7">TenderLotState-Canceled.ico</i:icon>
+			<i:icon selector="8">TenderLotState-StateContract.ico</i:icon>
+		</i:icons>
+		<i:objects-list n="LotsList" t="Лоты" off-rownumbers="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-LotsList.vbs</i:client-script>
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+          L.ObjectID,
+          L.Name,
+ 					T.DocFeedingDate,
+          T.DateTorg1,
+          T.DateTorg2,
+          dbo.NameOf_LotState( #LotStateExpr# ),
+          ISNULL(O.ShortName, O.Name),
+          ISNULL(Org.ShortName, Org.Name),
+          dbo.GetTenderExecutorsFromMarketing(T.ObjectID),
+					dbo.GetLotTenderIconSelector( #LotStateExpr#, T.DocFeedingDate, GETDATE() ) AS ICON_SELECTOR
+				FROM 
+					dbo.Lot AS L WITH(NOLOCK)
+					INNER JOIN dbo.Tender AS T WITH(NOLOCK) ON T.ObjectID = L.Tender
+					LEFT JOIN dbo.Organization AS O WITH(NOLOCK) ON O.ObjectID = T.TenderCustomer
+          LEFT JOIN dbo.Organization AS Org WITH(NOLOCK) ON Org.ObjectID = T.Organizer
+					LEFT JOIN (
+						/* Подзапрос на проверку итогового состояния "своей" 
+							компании как выигравшей конкурс по данному лоту: */
+						SELECT lP.Lot, lP.Winner
+						FROM dbo.LotParticipant lP WITH(NOLOCK)
+						WHERE 
+							( @Company IS NULL AND lP.ParticipantOrganization IS NULL ) OR
+							( @Company IS NOT NULL AND lP.ParticipantOrganization = @Company )
+					) lP ON lP.Lot = L.ObjectID
+				WHERE
+					(	
+						( :Company IS NULL ) OR
+						( :Company IS NOT NULL AND EXISTS (
+								SELECT 1
+								FROM dbo.LotParticipant AS lP WITH(NOLOCK)
+								WHERE lP.Lot = L.ObjectID AND lP.ParticipantOrganization = :Company )
+						) 
+					) 
+					AND SEARCH_CONDITIONS
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="CustomerName" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							(O.ShortName LIKE :CustomerName OR O.Name LIKE :CustomerName)
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="OrganizerName" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							(Org.ShortName LIKE :OrganizerName OR Org.Name LIKE :OrganizerName)
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="LotName" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							(L.Name LIKE :LotName)
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="TenderName" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							T.Name LIKE :TenderName 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="State" vt="i2">
+						<ds:param-selector op="not-is-null"><![CDATA[ #LotStateExpr# = :State ]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="DocFeedingBegin" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							T.DocFeedingDate >= dbo.DATETRIM(:DocFeedingBegin)
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DocFeedingEnd" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							T.DocFeedingDate < DATEADD(d, 1, dbo.DATETRIM(:DocFeedingEnd))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Director" vt="uuid">
+						<ds:param-selector op="not-is-null"><![CDATA[ T.Director = :Director ]]></ds:param-selector>
+					</ds:param>
+					<!-- 
+						Условие на компанию определено непосредственно в запросе; 
+						здесь НЕ ИСПОЛЬЗУЕТСЯ param-selector, т.к. идентификатор компании
+						используется в запросе помимо WHERE-условия, как операнд функции
+						GetTenderState.	-->
+					<ds:param n="Company" vt="uuid" />
+					<!-- 
+						На основании значения параметра формируется макроподстановка
+						с выражением, определяющим способ получения состояния лота.
+						NB! Сформированная макроподстановка используется также в условии 
+						параметра State! -->
+					<ds:param n="IsStrictStateCalc" vt="boolean" required="1">
+						<ds:switch macro="#LotStateExpr#" explicit="1">
+							<ds:param-selector op="equal" value="0">
+                <![CDATA[
+								L.State
+							]]>
+              </ds:param-selector>
+							<ds:param-selector op="not-equal" value="0">
+                <![CDATA[
+								(CASE 
+									/* Если "нашей" в конкурсе нет - берем состояние конкурсе */
+									WHEN lP.Lot IS NULL THEN L.State 
+									ELSE 
+										CASE 
+											/* Иначе - если состояние лота "Выигран" или "Проигран", то 
+												проверяем итоговый статус "нашей" компании: */
+											WHEN L.State IN (5, 6) THEN 
+												CASE 
+													/* Если "наша" компания - победитель, то состяние - "Выигран" (5) */
+													WHEN lP.Winner<>0 THEN 5
+													/* иначе - "Проигран" (6) */
+													ELSE 6 
+												END
+											/* Иначе - берем состояние конкурса */
+											ELSE L.State 
+										END
+								END )
+							]]>
+              </ds:param-selector>
+						</ds:switch>
+					</ds:param>
+					<!-- -->
+					<ds:param n="CustomerBranch" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						EXISTS
+						(
+							SELECT 1
+							FROM dbo.Organization_Branch AS OB WITH(NOLOCK)
+							WHERE OB.ObjectID = O.ObjectID AND OB.Value = :CustomerBranch
+						)
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DocumentationType" vt="i2">
+						<ds:param-selector op="equal" value="1">
+              <![CDATA[ 
+							(S2.SumValue > 0)
+						]]>
+            </ds:param-selector>
+						<ds:param-selector op="equal" value="2">
+              <![CDATA[ 
+							(S2.SumValue = 0 OR S2.SumValue IS NULL)
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="LotManager" vt="uuid">
+						<ds:param-selector op="not-is-null"><![CDATA[L.Manager = :LotManager]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="NoLotManager" vt="boolean">
+						<ds:param-selector op="equal" value="1"><![CDATA[L.Manager IS NULL]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="GuaranteeType" vt="i2">
+						<ds:param-selector op="equal" value="1">
+              <![CDATA[
+							(S.SumValue > 0 OR G.PortionValue IS NOT NULL)
+						]]>
+            </ds:param-selector>
+						<ds:param-selector op="equal" value="2">
+              <![CDATA[
+							( (S.SumValue = 0 OR S.SumValue IS NULL) AND G.PortionValue IS NULL )
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Competitor" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						EXISTS
+						(
+							SELECT 1
+							FROM dbo.LotParticipant AS P WITH(NOLOCK)
+							WHERE P.Lot = L.ObjectID
+								AND P.ParticipationType <> 1
+								AND P.ParticipantOrganization = :Competitor
+						)
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="CompetitorType" vt="i2">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						EXISTS
+						(
+							SELECT 1
+							FROM dbo.LotParticipant AS P WITH(NOLOCK)
+							WHERE P.Lot = L.ObjectID AND P.ParticipationType = :CompetitorType
+						)
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterLotsList" height="140" />
+			<i:list-menu>
+				<i:menu xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+					<i:visibility-handler mode="replace">XList_MenuVisibilityHandler</i:visibility-handler>
+					<i:menu-item action="DoView" t="Просмотр\tCtrl+F3" hotkey="CTRL+VK_F3">
+						<i:params>
+							<i:param n="ReportURL">x-get-report.aspx?name=r-Lot.xml&amp;LotID=@@ObjectID</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoEdit" hotkey="VK_ENTER,VK_DBLCLICK" t="Редактировать" />
+					<i:menu-item-separ horizontal-line="1" />
+					<i:menu-section t="Выгрузить данные списка...">
+						<i:menu-item action="DoReport" t="Как отчет" />
+						<i:menu-item action="DoExcelExport" t="Как документ Excel" />
+					</i:menu-section>
+					<i:menu-item action="DoRefresh" t="Обновить" />
+					<i:menu-item action="DoResetFilter" t="Очистить фильтр" />
+				</i:menu>
+			</i:list-menu>
+			<i:column t="Название" width="700" />
+			<i:column t="Подача документов" vt="date" width="150" />
+			<i:column t="Переторжка" vt="date" width="150" />
+			<i:column t="2я переторжка" vt="date" width="150" />
+			<i:column t="Состояние" width="300" />
+			<i:column t="Заказчик" width="300" />
+			<i:column t="Организатор" width="250" />
+			<i:column t="Исполнитель" width="200" />
+		</i:objects-list>
+		<i:objects-list n="FolderLotSelector" t="Лоты" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					L.ObjectID,
+					L.Name,
+					T.Name,
+					ISNULL(O.ShortName, O.Name),
+					dbo.NameOf_LotState(L.State),
+					T.DocFeedingDate,
+					dbo.GetLotTenderIconSelector( L.State, T.DocFeedingDate, getdate() ) AS ICON_SELECTOR
+				FROM 
+					dbo.Lot AS L WITH(NOLOCK)
+					INNER JOIN dbo.Tender AS T WITH(NOLOCK) ON T.ObjectID = L.Tender
+					INNER JOIN dbo.Organization AS O WITH(NOLOCK) ON O.ObjectID = T.TenderCustomer
+				WHERE 
+					L.State IN (2, 5, 6, 7)
+					AND SEARCH_CONDITIONS
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="CustomerName" vt="string">
+						<ds:param-selector op="not-is-null"><![CDATA[(O.ShortName LIKE :CustomerName + '%' OR O.Name LIKE :CustomerName + '%')]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="LotName" vt="string">
+						<ds:param-selector op="not-is-null"><![CDATA[L.Name LIKE :LotName + '%']]></ds:param-selector>
+					</ds:param>
+					<ds:param n="TenderName" vt="string">
+						<ds:param-selector op="not-is-null"><![CDATA[T.Name LIKE :TenderName + '%']]></ds:param-selector>
+					</ds:param>
+					<ds:param n="State" vt="i2">
+						<ds:param-selector op="not-is-null"><![CDATA[L.State = :State]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="DocFeedingBegin" vt="dateTime">
+						<ds:param-selector op="not-is-null"><![CDATA[T.DocFeedingDate >= dbo.DATETRIM(:DocFeedingBegin)]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="DocFeedingEnd" vt="dateTime">
+						<ds:param-selector op="not-is-null"><![CDATA[T.DocFeedingDate < DATEADD(d, 1, dbo.DATETRIM(:DocFeedingEnd))]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="Director" vt="uuid">
+						<ds:param-selector op="not-is-null"><![CDATA[T.Director = :Director]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="Company" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						EXISTS
+						(
+							SELECT 1
+							FROM dbo.LotParticipant AS P WITH(NOLOCK)
+							WHERE P.Lot = L.ObjectID AND P.ParticipantOrganization = :Company
+						)
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterLotsList" metaname="FolderLotSelector" height="80" />
+			<i:column t="Название лота" width="200" />
+			<i:column t="Название тендера" width="200" />
+			<i:column t="Заказчик" width="200" />
+			<i:column t="Состояние" width="80" />
+			<i:column t="Подача документов" vt="date" width="80" />
+		</i:objects-list>
+		<i:editor n="LotEditor" t="Лот" default-for-editing="1" save-cmd="SaveObjectWithSignature" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>tms-tools.vbs</i:client-script>
+			<i:client-script>tms-pe-object-sum.vbs</i:client-script>
+			<i:client-script>tms-date-calc.vbs</i:client-script>
+			<i:client-script>s-Lot-editor-share.vbs</i:client-script>
+			<i:client-script>s-Lot-editor.vbs</i:client-script>
+			<i:client-script>it-pe-readonly.vbs</i:client-script>
+			<i:client-script>s-ExternalLink.vbs</i:client-script>
+			<i:preload>Tender.TenderCustomer</i:preload>
+			<i:preload>Tender.Organizer</i:preload>
+			<i:preload>Tender.DocGettingEmployee</i:preload>
+			<i:preload>Tender.Director</i:preload>
+			<i:preload>Tender.Lots.LotParticipants.ParticipantOrganization</i:preload>
+			<i:preload>LotParticipants.ParticipantOrganization</i:preload>
+			<i:preload>Manager</i:preload>
+			<i:page t="Информация о тендере">p-Lot-editor-TenderInfo.xsl</i:page>
+			<i:page t="Основные характеристики">p-Lot-editor-Main.xsl</i:page>
+			<i:page t="Участники">p-Lot-editor-Participants.xsl</i:page>
+			<i:page t="Финансы">p-Lot-editor-Finances.xsl</i:page>
+			<i:page t="Результаты">p-Lot-editor-Results.xsl</i:page>
+			<i:page t="Внешние ссылки">p-Lot-editor-ExternalLinks.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:editor n="LotWizard" t="Лот" default-for-creation="1" wizard-mode="undo-changes" save-cmd="SaveObjectWithSignature" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>tms-tools.vbs</i:client-script>
+			<i:client-script>tms-pe-object-sum.vbs</i:client-script>
+			<i:client-script>tms-date-calc.vbs</i:client-script>
+			<i:client-script>s-Lot-editor-share.vbs</i:client-script>
+			<i:client-script>s-Lot-editor.vbs</i:client-script>
+			<i:client-script>it-pe-readonly.vbs</i:client-script>
+			<i:client-script>s-ExternalLink.vbs</i:client-script>
+			<i:preload>Tender.TenderCustomer</i:preload>
+			<i:preload>Tender.Organizer</i:preload>
+			<i:preload>Tender.DocGettingEmployee</i:preload>
+			<i:preload>Tender.Director</i:preload>
+			<i:preload>Tender.Lots.LotParticipants.ParticipantOrganization</i:preload>
+			<i:preload>LotParticipants.ParticipantOrganization</i:preload>
+			<i:preload>Manager</i:preload>
+			<i:page t="Основные характеристики">p-Lot-editor-Main.xsl</i:page>
+			<i:page t="Участники">p-Lot-editor-Participants.xsl</i:page>
+			<i:page t="Финансы">p-Lot-editor-Finances.xsl</i:page>
+			<i:page t="Внешние ссылки">p-Lot-editor-ExternalLinks.xsl</i:page>
+			<i:menu ref="std-wizard-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="LossReason" d="Причины проигрыша" tp="persistent">
+		<ds:prop n="Name" d="Определение" vt="string" cp="scalar">
+			<ds:max>512</ds:max>
+		</ds:prop>
+		<ds:prop n="Note" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<i:objects-list t="Причины проигрыша" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" off-icons="1">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Note]
+				FROM [dbo].[LossReason] t
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+				<ds:order-by>t.[Name]</ds:order-by>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list-wo-filter" />
+			</i:list-menu>
+			<i:column t="Определение" width="300" />
+			<i:column t="Примечание" width="400" />
+		</i:objects-list>
+		<i:editor t="Причина проигрыша" width="500" height="300" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Свойства">x-editor2.xsl?PROPLIST=Name;Note&amp;DisableHR=1</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="DepartmentParticipation" d="Участие подразделения в подготовке предложения" tp="persistent">
+		<ds:prop n="Lot" d="Лот" vt="object" ot="Lot" cp="scalar" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Number</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Department" d="Подразделение - участник" vt="object" ot="Department" cp="scalar">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>nvl(item.Code, item.Name)</i:value>
+				<i:prop-menu>
+					<i:menu>
+						<i:menu-item action="DoSelectFromDb" t="Выбрать" />
+						<i:menu-item action="DoUnlink" t="Очистить" />
+					</i:menu>
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Executor" d="Исполнитель от подразделения" vt="object" ot="Employee" cp="scalar">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>TMS_GetEmployeeString(item.LastName, item.FirstName, item.MiddleName)</i:value>
+				<i:prop-menu>
+					<i:menu>
+						<i:menu-item action="DoSelectFromDb" t="Выбрать" />
+						<i:menu-item action="DoUnlink" t="Очистить" />
+					</i:menu>
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="DocsGettingDate" d="Дата получения документов" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="ExecutorIsAcquaint" d="Исполнитель ознакомился" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Note" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+			<itds:auto-signature xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0">true</itds:auto-signature>
+		</ds:prop>
+		<ds:prop n="WorkExtraCostPercent" d="Наценка на стоимость работ (%)" vt="r4" cp="scalar" maybenull="1" />
+		<ds:prop n="EquipmentExtraCostPercent" d="Наценка на стоимость оборудования (%)" vt="r4" cp="scalar" maybenull="1" />
+		<i:editor t="Участие подразделения" width="600" height="450" save-cmd="SaveObjectWithSignature" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>tms-tools.vbs</i:client-script>
+			<i:client-script>s-DepartmentParticipation-editor.vbs</i:client-script>
+			<i:preload>Department</i:preload>
+			<i:preload>Executor</i:preload>
+			<i:page t="Свойства">p-DepartmentParticipation-editor.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Участие подразделения в подготовке предложения" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[DocsGettingDate],
+					t.[ExecutorIsAcquaint],
+					t.[Note],
+					t.[WorkExtraCostPercent],
+					t.[EquipmentExtraCostPercent]
+				FROM [dbo].[DepartmentParticipation] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Дата получения документов" vt="date" width="100" />
+			<i:column t="Исполнитель ознакомился" vt="boolean" width="100" />
+			<i:column t="Примечание" width="100" />
+			<i:column t="Наценка на стоимость работ (%)" vt="r4" width="100" />
+			<i:column t="Наценка на стоимость оборудования (%)" vt="r4" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="Guarantee" d="Банковская гарантия" tp="persistent">
+		<ds:prop n="GuaranteeSum" d="Сумма банковской гарантии" vt="object" ot="Sum" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.SumValue</i:value>
+				<i:prop-menu>
+					<i:menu ref="tms-object-sum" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="ValidityPeriod" d="Срок действия" vt="i2" cp="scalar">
+			<ds:min>1</ds:min>
+		</ds:prop>
+		<ds:prop n="EndingDate" d="Дата окончания действия" vt="date" cp="scalar" />
+		<ds:prop n="Note" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+			<itds:auto-signature xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0">true</itds:auto-signature>
+		</ds:prop>
+		<ds:prop n="PortionValue" d="Доля банковской гарантии, %" vt="i4" cp="scalar" maybenull="1">
+			<ds:min>0</ds:min>
+			<ds:max>100</ds:max>
+		</ds:prop>
+		<ds:prop n="Lot" d="Лот" vt="object" ot="Lot" cp="link-scalar" built-on="Guarantee">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Number</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<i:editor t="Банковская гарантия" width="600" height="450" save-cmd="SaveObjectWithSignature" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>tms-pe-object-sum.vbs</i:client-script>
+			<i:client-script>tms-date-calc.vbs</i:client-script>
+			<i:client-script>s-Guarantee-editor.vbs</i:client-script>
+			<i:preload>GuaranteeSum</i:preload>
+			<i:preload>GuaranteeSum.Currency</i:preload>
+			<i:page t="Свойства">p-Guarantee-editor.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Банковская гарантия" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[ValidityPeriod],
+					t.[EndingDate],
+					t.[Note],
+					t.[PortionValue]
+				FROM [dbo].[Guarantee] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Срок действия" vt="i2" width="100" />
+			<i:column t="Дата окончания действия" vt="date" width="100" />
+			<i:column t="Примечание" width="100" />
+			<i:column t="Доля банковской гарантии, %" vt="i4" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<!-- Отчет "Лоты и участники конкурсов" -->
+	<i:report t="Лоты и участники конкурсов" n="LotsAndParticipants" width="600" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="ReportLotsAndParticipants" />
+	</i:report>
+	<!-- Отчет "Тендеры" -->
+	<i:report t="Тендеры" n="Tenders" width="600" height="650" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="ReportTenders" />
+	</i:report>
+	<!-- меню редактора скалярного объектного свойства типа "Сумма" -->
+	<i:menu n="tms-object-sum" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:menu-item action="DoEdit" t="Редактировать" />
+		<i:menu-item action="DoUnlink" t="Очистить" />
+		<i:menu-item-separ horizontal-line="1" />
+		<i:menu-item action="DoCreateCurrency" t="Новая валюта" />
+	</i:menu>
+	<!-- меню объектной ссылки на организацию -->
+	<i:menu n="tms-organization-presentation" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:menu-item action="DoSelectFromDb" t="Выбрать" />
+		<i:menu-item action="DoCreate" t="Создать">
+			<i:params>
+				<i:param n="Metaname">TmsWizard</i:param>
+			</i:params>
+		</i:menu-item>
+		<i:menu-item action="DoEdit" t="Редактировать" />
+		<i:menu-item action="DoUnlink" t="Очистить" />
+	</i:menu>
+	<!-- меню объектной ссылки на организацию -->
+	<i:menu n="tms-organization-presentation-for-editor" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:menu-item action="DoSelectFromDb" t="Выбрать" />
+	</i:menu>
+</ds:metadata>

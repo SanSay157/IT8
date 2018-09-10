@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<r:report
+	r:t="Бюджет Доходов и Расходов"
+	r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll"
+	r:class="Croc.IncidentTracker.ReportService.Reports.r_ProjectBDR"
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+  <!-- Подключение клиентского скрипта -->
+  <r:common>
+    <r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+  </r:common>
+  <r:params>
+    <r:param r:n="InContract" r:vt="uuid" r:t="Приходный договор"  r:required="true"/>
+    <r:param r:n="Extended" r:vt="boolean" r:t="Расширенный отчет"  r:required="false"/>
+  </r:params>
+  <r:data-sources>
+    <r:config-data-source r:n="ProjectOutcomesForBDRReportDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectOutcomesForBDRReportDS" r:section=""/>
+    <r:config-data-source r:n="ProjectIncomesForBDRReportDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectIncomesForBDRReportDS" r:section=""/>
+    <r:config-data-source r:n="ContractDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ContractDS" r:section=""/>
+  </r:data-sources>
+</r:report>

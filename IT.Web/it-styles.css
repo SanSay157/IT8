@@ -1,0 +1,896 @@
+/******************************************************************************
+    IT-STYLES.CSS - СТИЛЕВЫЕ ОПРЕДЕЛЕНИЯ ДЛЯ INCIDEN TRACKER
+ ******************************************************************************/
+ 
+/************************************************/
+/*      ---==- БАЗОВЫЕ ОПРЕДЕЛЕНИЯ -==---       */
+/************************************************/
+/* Общие стилевые определения, заданные для указанных HTML-элементов всех страниц */
+
+body, td, input, select, button, textarea {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: normal;
+	font-size: 11px;
+}
+body {
+	border: none;
+	margin: 0px;
+}
+body, button {
+	background-color: #d4d0c8;	
+}
+object {
+	background-color: #fff;
+	color: #013;
+}
+
+
+/* Общие определения стилей для анкеров (ссылок) */
+A { 
+	text-decoration: none; }
+A:hover {
+    text-decoration: underline;
+}
+
+/************************************************/
+/*     ---==- ОБЩИЕ СТИЛЕВЫЕ КЛАССЫ -==---      */
+/************************************************/
+/* НАБОРЫ СТИЛЕВЫХ КЛАССОВ, ЗАДАВАЕМЫЕ ДЛЯ ВСЕХ ПРЕДСТАВЛЕНИЙ 
+	Для каждого из представлений определяется набор правил, 
+	структурно аналогичный представленному; наименование правил
+	формируются как x-VIEW-RuleName, где VIEW - тип представления,
+	RuleName - наименование правила (в предствленном наборе все
+	правила определены как x-RuleName);
+	Типы представлений (см. определение правил далее):
+		- editor	- редактор
+		- list		- список
+		- tree		- иерархия
+		- tree-sel	- иерариия выбора
+		- homepage	- стандартная "стартовая" страница (x-default.aspx)
+*/
+
+
+/* задается для страницы (элемент BODY) */
+.x-page-body { overflow:hidden; }
+/* задается для таблицы раскладки (элемент TABLE) */
+.x-page-layoutgrid { width:100%; height:100%; }
+
+/* задаются для TD таблицы раскладки: */
+.x-pane {}
+/* Прикладная панель; для задания стиля конкретной панели используется 
+	правило .x-pane-custom#xPaneCustomNNN, где NNN - номер панели */
+.x-pane-custom {
+	display: none;
+}
+/* Панель заголовка (включая эдементы навигации) */
+.x-pane-header {
+	width:100%; 
+	overflow:visible; 
+}
+/* Панель размещения фильтра */
+.x-pane-filter {
+	width: 100%; 
+	border: #F7AF00 groove 3px; 
+	border-width: 0px 0px 3px 0px;
+}
+/* Панель размещения кнопок управления */
+.x-pane-control {
+	/*width: 100%;
+	padding: 3px;
+	text-align: right;
+	background: url('Images/x-footnote.jpg') repeat-x top right;
+	background-color: #369;
+	border: #F7AF00 outset 3px;
+	border-width: 3px 0px 0px 0px;*/
+}
+/* Основная панель: страницы редактора, сам список или иерархия */
+.x-pane-main {
+	width: 100%;
+	height: 100%;
+}
+/* Вспомогательная панель: текст, отображаемый вместо основной панели */
+.x-pane-main-message {
+	position: relative;
+	padding: 10px 5px 5px 5px; 
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font: bold 11px;
+	letter-spacing: 2px;
+	color: #80888F;
+}
+/*	Вспомогательная панель: предупреждение, отображаемое вместо основной панели */
+.x-pane-main-warning {}
+
+
+/*	Задается для таблицы раскладки в пенели заголовка; 
+	определяет раскладку элементов загловка и навигации (см. далее) */
+.x-bar-caption {
+	width: 100%;
+	height: 70px;
+	overflow-x: hidden;
+	overflow-y: visible;
+	background: url('Images/x-caption.jpg') repeat-x center right;
+	background-color: #369;
+	border: #F7AF00 groove 3px; 
+	border-width: 0px 0px 3px 0px;
+	padding: 0px;
+} 
+
+/* поле размещения группы элементов навигации (в панели заголовка, элемент TD) */
+.x-bar-nav {
+	text-align: left;
+	vertical-align: top;
+}
+.x-bar-nav#xNavigatonBar { 
+	/* width: 100%; */
+	overflow: visible;
+	text-align: left;
+	vertical-align: top;
+	padding: 5px;
+}
+.x-bar-nav#xNavigatonBar_Right { 
+	/* width: 1px; */
+	overflow: visible;
+	text-align: right;
+	vertical-align: middle;
+	padding: 5px; 
+}
+/* Еще одна специальная панель - монитор несписанного времени */
+.x-bar-nav#tdNavigatonBar_TimeSpentMonitor {
+	width: 190px;
+	height: 1px;
+	overflow: visible;
+	text-align: right;
+	vertical-align: middle;
+	padding: 5px; 
+}
+/* Еще одна специальная панель - монитор несписанного времени */
+.x-bar-nav-special {
+	width: 190px;
+	height: 1px;
+	overflow: visible;
+	text-align: right;
+	vertical-align: middle;
+	padding: 5px; 
+}
+/* поле размещения одного элемента навигации (анкера <А> с группой классов 
+	x-button и x-button-nav (в поле размещения группы, в панели заголовка, 
+	элемент TD) */
+.x-bar-nav-place { 
+	border: none; 
+	text-align: center;
+	vertical-align: middle;
+	padding: 4px 0px 3px 4px; 	
+}
+/* поле с надписью элемента навигации (элемент DIV) */
+.x-bar-nav-text { display: none; }
+/* элемент навигации (элемент IMG) */
+.x-bar-nav-control { border:none; border-width:0px; }
+
+/* элемент размещения представления/текста заголовка (элемент TD) */
+.x-bar-title {
+	width: 100%; 
+	overflow: visible;
+	font-family: Georgia, Times New Roman, Times;
+	font-weight: normal;
+	font-size: 25px;
+	color: #fff;
+	padding: 0px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=3 );
+}	
+
+/* элемент размещения дополнительного заголовка (применимость фильтра) */
+.x-bar-special-title {
+	font-family: Verdana;
+	font-weight: bold;
+	font-size: 10px;
+	text-align: right;
+	color: #ddd;
+	padding: 3px 10px 3px 3px; 
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=2 );
+}
+
+/* поле размещения группы управляющих кнопок (элемент TD) */
+.x-bar-control {} 
+/* поле размещения одной управляющей кнопки (элемент TD) */
+.x-bar-control-place {
+	padding: 5px 0px 5px 2px; 
+}
+
+/* КЛАССЫ КНОПОК */
+/*	...всех кнопок представления */
+.x-button {
+	display: inline-block;
+	overflow: visible;
+	font-weight: normal;
+	font-size: 11px;
+	border-width: 1px;
+	border-color: #fff;
+	padding: 1px 5px 2px 5px;
+}
+/*	...всех кнопок навигации (обычно - анкеры)
+	В Incident Tracker этот стиль используется только для кнопок панели инструментов; 
+	настройки стилей для этого класса отличаются от "стандартных" (заданных в x.css) 
+*/
+.x-button-nav {
+	padding: 0px;
+	margin: 1px;
+}
+/*	...всех кнопок управления */
+.x-button-control {
+	width: 80px;
+	overflow: visible;
+	padding: 1px 3px 2px 3px;
+	margin: 2px 2px 0px 2px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=1 );
+}
+
+
+/* СПЕЦИАЛЬНЫЙ КЛАСС, задаваемый для сервисных сообщений, отображаемых 
+	в процессе загрузки и инициализации элементов UI */
+.x-loading-msg {
+	position: relative; 
+	padding: 10px 5px 5px 5px; 
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font: bold 11px;
+	letter-spacing: 2px;
+	color: #80888F;
+}
+
+/************************************************/
+/*     ---==- XFW-СТАРТОВАЯ СТРАНИЦА -==---     */
+/************************************************/
+/* Классы, используемые в интерфейсе списка */
+
+.x-homepage-page-body {}
+.x-homepage-page-layoutgrid {}
+
+.x-homepage-pane {}
+.x-homepage-pane-custom {}
+
+.x-homepage-pane-header {}
+.x-homepage-pane-filter {}
+.x-homepage-pane-control {}
+.x-homepage-pane-main, .x-homepage-pane-main TD {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: normal;
+	font-size: 12px;
+	color: #135;
+	vertical-align: middle;
+}
+.x-homepage-pane-main A {
+	color: #468;
+	font-weight: bold;
+}
+
+.x-homepage-pane-main-message {}
+.x-homepage-pane-main-warning {}
+
+.x-homepage-bar-caption {}
+
+.x-homepage-bar-nav {} 
+.x-homepage-bar-nav#xNavigatonBar_Left { width: 100%; }
+.x-homepage-bar-nav#xNavigatonBar_Right { width: 1px;  overflow: visible; }
+
+.x-homepage-bar-nav-place {}
+.x-homepage-bar-nav-text {}
+.x-homepage-bar-nav-control {}
+
+.x-homepage-bar-title {
+	position: absolute;
+	width: 100%; 
+	overflow-x: hidden;
+	overflow-y: visible;
+	top: 38px;
+	left: 43px;
+}
+
+.x-homepage-bar-control {}
+.x-homepage-bar-control-place {}
+
+.x-homepage-button {}
+.x-homepage-button-nav {}
+.x-homepage-button-control {}
+
+
+
+/************************************************/
+/*           ---==- XFW-СПИСОК -==---           */
+/************************************************/
+/* Классы, используемые в интерфейсе списка */
+
+.x-list-page-body {}
+.x-list-page-layoutgrid {}
+
+.x-list-pane {}
+.x-list-pane-custom {}
+.x-list-pane-header {}
+.x-list-pane-filter {}
+.x-list-pane-control {}
+.x-list-pane-main {}
+.x-list-pane-main-message {}
+.x-list-pane-main-warning {}
+
+.x-list-bar-caption {}
+.x-list-bar-nav {}
+.x-list-bar-nav-place {}
+.x-list-bar-nav-text {}
+.x-list-bar-nav-control {}
+
+.x-list-bar-title {
+	position: absolute;
+	width: 100%; 
+	overflow-x: hidden;
+	overflow-y: visible;
+	top: 38px;
+	left: 43px;
+}
+.x-list-bar-special-title {}
+
+.x-list-bar-control {}
+.x-list-bar-control-place {}
+
+.x-list-button {}
+.x-list-button-nav {}
+.x-list-button-control {}
+
+
+
+/************************************************/
+/*       ---==- XFW-СПИСОК ВЫБОРА -==---        */
+/************************************************/
+/* Классы, используемые в интерфейсе списка выбора */
+
+.x-list-sel-page-body {}
+.x-list-sel-page-layoutgrid {}
+
+.x-list-sel-pane {}
+.x-list-sel-pane-custom {}
+
+.x-list-sel-pane-header {}
+.x-list-sel-pane-filter {}
+.x-list-sel-pane-control {}
+.x-list-sel-pane-main {}
+.x-list-sel-pane-main-message {}
+.x-list-sel-pane-main-warning {}
+
+.x-list-sel-bar-caption {
+	width: 100%;
+	height: auto;	
+	overflow-x: hidden;
+	overflow-y: visible;
+}
+
+/* Навигационные панели в заголовке */
+.x-list-sel-bar-nav {}
+.x-list-sel-bar-nav-place {}
+.x-list-sel-bar-nav-text {}
+.x-list-sel-bar-nav-control {}
+
+.x-list-sel-bar-title { 	
+	width: 100%;
+	height: auto;	
+	overflow-x: hidden;
+	overflow-y: visible;
+	font-family: Georgia, Times New Roman, Times;
+	font-weight: normal;
+	font-size: 23px;
+	color: #fff;
+	padding: 5px 5px 2px 5px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=3 );
+}
+
+.x-list-sel-bar-control {}
+.x-list-sel-bar-control-place {}
+
+.x-list-sel-button {}
+.x-list-sel-button-nav {}
+.x-list-sel-button-control {}
+
+
+
+/************************************************/
+/*          ---==- XFW-ИЕРАРХИЯ -==---          */
+/************************************************/
+/* Классы, используемые в интерфейсе ирерархии */
+
+.x-tree-page-body {}
+.x-tree-page-layoutgrid {}
+
+.x-tree-pane {}
+.x-tree-pane-custom {}
+
+.x-tree-pane-header {}
+.x-tree-pane-filter {}
+.x-tree-pane-control {}
+.x-tree-pane-main {}
+.x-tree-pane-main-message {}
+.x-tree-pane-main-warning {}
+
+.x-tree-bar-caption {}
+.x-tree-bar-nav {}
+.x-tree-bar-nav-place {}
+.x-tree-bar-nav-text {}
+.x-tree-bar-nav-control {}
+
+.x-tree-bar-title {
+	position: absolute;
+	width: 100%; 
+	overflow-x: hidden;
+	overflow-y: visible;
+	top: 38px;
+	left: 43px;
+}
+.x-tree-bar-special-title {}
+
+.x-tree-bar-control {}
+.x-tree-bar-control-place {}
+
+.x-tree-button {}
+.x-tree-button-nav {}
+.x-tree-button-control {}
+
+/* Стиль TD-ячейки, в которой размещен XTreeView */
+#TreeHolder	{ 
+	padding: 2px 0px 0px 2px; 
+	background-color: #fff;
+}
+
+
+
+/************************************************/
+/*      ---==- XFW-ИЕРАРХИЯ ВЫБОРА -==---       */
+/************************************************/
+/* Классы, используемые в интерфейсе ирерархии */
+
+.x-tree-sel-page-body {}
+.x-tree-sel-page-layoutgrid {}
+
+.x-tree-sel-pane {}
+.x-tree-sel-pane-custom {}
+
+.x-tree-sel-pane-header {}
+.x-tree-sel-pane-filter {}
+.x-tree-sel-pane-control {}
+.x-tree-sel-pane-main {}
+.x-tree-sel-pane-main-message {}
+.x-tree-sel-pane-main-warning {}
+
+.x-tree-sel-bar-caption {
+	width: 100%;
+	height: auto;	
+	overflow-x: hidden;
+	overflow-y: visible;
+}
+
+/* Навигационные панели в заголовке */
+.x-tree-sel-bar-nav {}
+.x-tree-sel-bar-nav-place {}
+.x-tree-sel-bar-nav-text {}
+.x-tree-sel-bar-nav-control {}
+
+.x-tree-sel-bar-title { 	
+	width: 100%;
+	height: auto;	
+	overflow-x: hidden;
+	overflow-y: visible;
+	font-family: Georgia, Times New Roman, Times;
+	font-weight: normal;
+	font-size: 23px;
+	color: #fff;
+	padding: 5px 5px 2px 5px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=3 );
+}
+
+.x-tree-sel-bar-control {}
+.x-tree-sel-bar-control-place {}
+
+.x-tree-sel-button {}
+.x-tree-sel-button-nav {}
+.x-tree-sel-button-control {}
+
+/* Стиль TD-ячейки, в которой размещен XTreeView */
+#TreeHolder	{ 
+	padding: 2px 0px 0px 2px; 
+	background-color: #fff;
+}
+
+
+/************************************************/
+/*          ---==- XFW-РЕДАКТОР -==---          */
+/************************************************/
+/* Классы, используемые в интерфейсе редактора */
+
+.x-editor-page-body { overflow:hidden; }
+.x-editor-page-layoutgrid {
+	margin: 0px;	/* задание !=0 портит отображение! */
+	padding: 0px;	/* задание !=0 портит отображение! */
+	border: none; 
+	border-width: 0px;
+}
+
+.x-editor-pane {}
+.x-editor-pane-custom {}
+.x-editor-pane-header {}
+.x-editor-pane-filter {}
+.x-editor-pane-control {}
+.x-editor-pane-main {}
+.x-editor-pane-main-message {}
+.x-editor-pane-main-warning {}
+.x-editor-pane-taber {}
+
+/* Для редактора - переопределяем высоту панели (все остальное - так же) */
+.x-editor-bar-caption {
+	width: 100%;
+	height: auto;	
+	overflow-x: hidden;
+	overflow-y: visible;
+} 
+
+.x-editor-bar-nav { display:none; }
+.x-editor-bar-nav-place {}
+.x-editor-bar-nav-text { display: none; }
+.x-editor-bar-nav-control { border:none; border-width:0px; }
+
+.x-editor-bar-title {
+	width: 100%;
+	height: auto;	
+	overflow-x: hidden;
+	overflow-y: visible;
+	font-family: Georgia, Times New Roman, Times;
+	font-weight: normal;
+	font-size: 23px;
+	color: #fff;
+	padding: 5px 5px 2px 5px;
+	/*
+		применение фильтра в текущей раскладке дает плохой эффект: текст 
+		"распирает" диалог; поэтому здесь фильтр закомментрован
+		
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=3 ); 
+	*/
+}
+.x-editor-bar-special-title {}
+	
+/* Специальная панель - размещение кнопок управления редактором */
+.x-editor-bar-control { text-align: right; }
+.x-editor-bar-control-place { padding: 5px 0px 5px 2px; }	
+
+.x-editor-button {
+	overflow: visible;
+	font-weight: normal;
+	font-size: 11px;
+	border-width: 1px;
+}
+.x-editor-button-nav {
+	width:auto; 
+	padding: 0px;
+}
+.x-editor-button-control {
+	position: relative;
+	width: 85px;
+	overflow: visible;
+	padding: 0px;
+	padding-bottom: 1px;
+	font-weight: normal;
+	font-size: 11px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=3 );
+}
+
+/* Специальный класс "подложки" страницы редактора */
+.x-editor-body	{ 
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	padding: 5px 3px 5px 3px;
+	color: #013;
+	background-color: #d4d0c8;
+	text-align: left;
+}
+
+/* Специальные классы вложенных таблиц страницы редактора */
+.x-editor-subtable {
+	border: #036 solid 1px;
+}
+.x-editor-subtable-red {
+	border: #036 solid 1px;
+	background-color: #ffe0e0;
+}
+.x-editor-subtable-green {
+	border: #036 solid 1px;
+	background-color: #e0ffe0;
+}
+.x-editor-subtable-blue {
+	border: #036 solid 1px;
+	background-color: #e0e0ff;
+}
+.x-editor-subtable-yellow {
+	border: #036 solid 1px;
+	background-color: #ffffe0;
+}
+
+/* Стилевые классы, назначаемые элементам управления на странице матсера-редактора */
+.x-editor-text { color: #037; font-weight: normal; }
+.x-editor-text-bold { color: #037; font-weight: bold; }
+.x-editor-impotant-text	{ color:#367; font-weight: bold; }
+.x-editor-hr { height: 1px; color:#89a; }
+.x-editor-hr-1 { height: 1px; color:#89a; }
+.x-editor-hr-2 { height: 1px; color:#89a; }
+.x-editor-hr-3 { height: 1px; color:#89a; }
+
+.x-editor-propcaption {}
+.x-editor-propcaption-multiline {}
+.x-editor-propcaption-notnull {}
+
+.x-editor-control { 
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: normal;
+	font-size: 11px;
+	background-color: #fff;
+	color: #013;
+	border: #036 solid 1;
+}
+.x-editor-control-notnull {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: normal;
+	font-size: 11px;
+	background-color: #e0efff;
+	color: #013;
+	border: #036 solid 1;
+}
+
+.x-editor-objects-list {}
+.x-editor-objects-buttons-pane { padding:3px 0px 0px 0px; }
+.x-editor-objects-opbutton {
+	position: relative; 
+	width: 30px; 
+	overflow-y: visible; 
+	padding: 0px 3px 1px 3px; 
+	border-width: 1px; }
+
+.x-editor-string-lookup-field {
+	border: #036 inset 1;
+}
+
+.x-editor-objectpresentation-text {}
+.x-editor-objectpresentation-button { 
+	position:relative; 
+	width:1px; overflow:visible; 
+	padding:0px 2px 2px 2px; 
+}
+
+.x-editor-dropdown { 
+	border: #036 inset 1;
+}
+.x-editor-dropdown-notnull { 	
+	border: #036 inset 1;
+	background-color: #e0efff;
+}
+
+.x-editor-const-selector {}
+.x-editor-numeric-field {}
+.x-editor-string-field {}
+.x-editor-text-field {}
+.x-editor-datetime-field {}
+.x-editor-filename-field {}
+.x-editor-filesize-field {}
+.x-editor-file-button {}
+
+.x-editor-image-button {}
+
+.x-editor-flags {}
+.x-editor-flags-disabled {
+	color: #789;
+}
+DIV.x-editor-flags LABEL {}
+
+/* спец. стилевой класс, задающий цвет фона / текста для заблокированных элементов */
+.x-editor-blocked {
+	background-color: #d4d0c8;
+	color: #789;
+}
+
+
+/************************************************/
+/*   ---==- XFW-ДИАЛОГ ОПЕРАЦИИ/ОТЧЕТА -==---   */
+/************************************************/
+/* Классы, используемые в интерфейсе "стандартных" диалоговых окон запуска операции / отчета */
+
+.x-common-dlg-page-body {}
+.x-common-dlg-page-layoutgrid {}
+
+.x-common-dlg-pane {}
+.x-common-dlg-pane-custom { width:100%; display:none;  }
+
+.x-common-dlg-pane-header {}
+.x-common-dlg-pane-filter {}
+.x-common-dlg-pane-control {}
+.x-common-dlg-pane-main {}
+.x-common-dlg-pane-main-message {}
+.x-common-dlg-pane-main-warning {}
+
+.x-common-dlg-bar-caption {
+	width: 100%;
+	height: auto;	
+	overflow-x: hidden;
+	overflow-y: visible;
+}
+
+.x-common-dlg-bar-nav { display: none; }
+.x-common-dlg-bar-nav-place { padding: 4px 0px 3px 4px; }
+.x-common-dlg-bar-nav-text { display: none; }
+.x-common-dlg-bar-nav-control {}
+
+.x-common-dlg-bar-title { 
+	width: 100%;
+	height: auto;	
+	overflow-x: hidden;
+	overflow-y: visible;
+	font-family: Georgia, Times New Roman, Times;
+	font-weight: normal;
+	font-size: 23px;
+	color: #fff;
+	padding: 5px 5px 2px 5px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=3 );
+}
+
+.x-common-dlg-bar-control {	text-align: right; }
+.x-common-dlg-bar-control-place { padding: 5px 0px 5px 2px;  }
+
+.x-common-dlg-button {}
+.x-common-dlg-button-nav {}
+.x-common-dlg-button-control {
+	position: relative;
+	width: 85px;
+	overflow: visible;
+	padding: 0px;
+	padding-bottom: 1px;
+	font-weight: normal;
+	font-size: 11px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=3 );
+}
+
+
+
+/************************************************/
+/*  ---==- XFW-ДИАЛОГ ВЫБОРА ИЗОБРАЖЕНИЯ-==---  */
+/************************************************/
+/* Классы, используемые в интерфейсе выбора изображения */
+
+.x-image-sel-page-body {}
+.x-image-sel-page-layoutgrid {}
+
+.x-image-sel-pane {}
+.x-image-sel-pane-custom {}
+
+.x-image-sel-pane-header {}
+.x-image-sel-pane-control {}
+.x-image-sel-pane-main {}
+.x-image-sel-pane-main-message {}
+.x-image-sel-pane-main-warning {}
+
+.x-image-sel-bar-caption {
+	width: 100%;
+	height: auto;	
+	overflow-x: hidden;
+	overflow-y: visible;
+}
+
+.x-image-sel-bar-nav { display: none; }
+.x-image-sel-bar-nav-place {}
+.x-image-sel-bar-nav-text {}
+.x-image-sel-bar-nav-control {}
+
+.x-image-sel-bar-title { 
+	width: 100%;
+	height: auto;	
+	overflow-x: hidden;
+	overflow-y: visible;
+	font-family: Georgia, Times New Roman, Times;
+	font-weight: normal;
+	font-size: 23px;
+	color: #fff;
+	padding: 5px 5px 2px 5px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=3 );
+}
+
+.x-image-sel-bar-control {}
+.x-image-sel-bar-control-place {}
+
+.x-image-sel-button {}
+.x-image-sel-button-nav {}
+.x-image-sel-button-control {}
+
+
+
+/************************************************/
+/*          ---==- XFW-XTabStrip -==---         */
+/************************************************/
+
+/* Базовый стилевой класс, назначается всем элементам TabStrip */
+.xTab-base-in-editor {
+    font-family: Verdana, Arial Cyr, Helvetica;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+/* Стилевой класс фонового задника TabStrip */
+.xTab-back-in-editor {
+	background-color: #b4b0af;
+	border: none;
+	padding: 0px;
+	padding-top: 4px;
+	padding-left: 4px;
+	padding-bottom: 0px;		
+}
+
+/* Стилевой класс "закладки" TabStrip */
+.xTab-tab-in-editor {
+	font-weight: normal;
+	color: #457;
+	background-color: #c4c0b8;
+	border-style: outset;
+	border-color: #e4e0dd;
+	border-width: 2px;
+	border-bottom-width: 0px;
+	border-top-color: #567;
+	border-top-width: 2px;
+	border-top-style: solid;
+	padding: 5px;
+	padding-top: 3px;
+	margin-right: 2px;
+	text-align: center;
+	width: 130px;
+	cursor: hand;
+}
+
+/* Стилевой класс, динамически назначаемый "активной" закладке */
+.xTab-selected-in-editor {
+	color: #2255aa;
+	background-color: #d4d0c8;
+	border-top-color: #2266aa;
+	border-top-width: 2px;
+	border-top-style: solid;
+	font-weight: bold;
+	cursor: default;
+}
+
+/* Стилевой класс бродюра между закладками и страницей */
+.xTab-pageborder-in-editor {
+	border-color: #eae8e0;
+	border-style: outset;
+	border-width: 2px;
+}
+
+
+/************************************************/
+/*          ---==- XFW-ФИЛЬТР -==---            */
+/************************************************/
+
+/* Стилевой класс "страницы" фильтра */
+.x-filter-page-body {
+	padding:0px; 
+	margin:2px;  
+	overflow:hidden; 
+	background-color: #d9ddda;
+}
+.x-filter-layoutgrid { width:100%; height:50%; }
+
+/* Стилевой класс элемента ввода текста */
+.x-filter-textfield {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: normal;
+	font-size: 11px;
+	background-color: #fff;
+	color: #013;
+	border: #fff inset 2px;
+}
+
+/* Стилевой класс элемента ввода даты/времени */
+.x-filter-datecontrol {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: normal;
+	font-size: 11px;
+	background-color: #fff;
+	color: #013;
+	border: #fff inset 2px;
+}

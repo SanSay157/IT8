@@ -1,0 +1,199 @@
+/******************************************************************************
+    X-TREE-MENU.CSS - —“»À≈¬¿ﬂ —“–¿Õ»÷¿ Ã≈Õﬁ »≈–¿–’»»
+ ******************************************************************************/
+
+/*************************************/
+/* ---==- ¡¿«Œ¬€≈ Œœ–≈ƒ≈À≈Õ»ﬂ -==--- */
+/*************************************/
+
+body, td, input, select, button, textarea {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: normal;
+	font-size: 11px;
+}
+
+body {
+	border: none;
+	margin: 0px;
+	background-color: #ccc8c0;
+}
+ 
+ 
+/*************************************/
+/*  ---==- XFW-Ã≈Õﬁ: “¿¡À»÷¿ -==---  */
+/*************************************/
+.x-tree-menu {
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+	background-color: transparent;
+    cursor: default;
+}
+DIV.x-tree-menu {
+	width: 100%;
+	height: 100%; 
+	padding: 0px;
+	margin: 0px;
+	background-color: #d4d0c8;
+	background: url('Images/menu-background.jpg') no-repeat bottom right;
+    cursor: default;
+}
+
+TD.x-tree-menu-header-shadow {}
+TD.x-tree-menu-section-header-shadow {}
+BR.x-tree-menu-separ-item {}
+
+
+/*************************************/
+/* ---==- XFW-Ã≈Õﬁ: «¿√ŒÀŒ¬Œ  -==--- */
+/*************************************/
+TD.x-tree-menu-header {
+	width: 100%;
+	font-family: Arial Cyr, Helvetica;;
+	font-weight: normal;
+	font-size: 18px;
+	background: url('Images/x-footnote.jpg') repeat-x 10% right;
+	background-color: #555555;
+	color: #fff5ef;
+	padding: 3px 5px 5px 5px; 
+	
+	border-style: inset;
+	border-width: 0px 0px 2px 0px;
+	border-color: #F7AF00;
+}
+
+
+/*************************************/
+/*  ---==- XFW-Ã≈Õﬁ: —≈ ÷»ﬂ -==---   */
+/*************************************/
+
+.x-menu-section-header {}
+
+TABLE.x-tree-menu-section-header-holder {
+	width: 100%;
+	background: url('Images/x-footnote.jpg') repeat-x 30% right;
+	background-color: #333333;
+	color: #fff5ef;
+	margin: 3px 0px 2px 0px;
+
+	border-style: outset;
+	border-width: 2px 0px 2px 0px;
+	border-color: #F7AF00;
+	border-bottom-style: inset;
+}
+
+
+TBODY.x-tree-menu-section-content-expanded	{ display: block; }
+TD.x-tree-menu-section-caption-expanded {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: bold;
+	font-size: 12px;
+	color: #fff5ef;
+	padding: 4px 3px 8px 0px;
+	cursor: hand;
+}
+TD.x-tree-menu-section-state-expanded {
+    background-image: url(images/x-arrowdown.gif);
+    background-repeat: no-repeat;
+    background-position: 4px 4px;
+    width: 24px;	/* ¯ËËÌ‡ Í‡ÚËÌÍË; Ó·ˇÁ‡ÚÂÎ¸Ì˚È ‡ÚË·., Ú.Í. Ò‡Ï TD ÔÛÒÚ */
+    height: 24px;	
+}
+
+
+TBODY.x-tree-menu-section-content-collapsed	{ display: none; }
+TD.x-tree-menu-section-caption-collapsed {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: bold;
+	font-size: 12px;
+	color: #efe5df;
+	padding: 4px 3px 8px 0px;
+	cursor: hand;
+}
+TD.x-tree-menu-section-state-collapsed {
+    background-image: url(images/x-arrowright.gif);
+    background-repeat: no-repeat;
+    background-position: 4px 4px;
+    width: 24px;	/* ¯ËËÌ‡ Í‡ÚËÌÍË; Ó·ˇÁ‡ÚÂÎ¸Ì˚È ‡ÚË·., Ú.Í. Ò‡Ï TD ÔÛÒÚ */
+    height: 24px;	
+}
+
+
+/*************************************/
+/*---==- XFW-Ã≈Õﬁ: œ”Õ “ Ã≈Õﬁ -==--- */
+/*************************************/
+
+A.x-tree-menu-item {
+	position: relative;
+	display: block;
+	width: 95%;
+	padding: 2px 2px 4px 6px;
+	margin: 2px 0px 0px 5px;
+	font-weight: bold;
+	cursor: hand;
+	color: #013;
+    text-decoration: none;
+}
+A.x-tree-menu-item:hover {
+	background-color: #FFDF80;
+	padding: 2px 2px 3px 6px;
+	border: #c2def9 outset 1px;
+	border-width: 0px 1px 1px 0px;
+}
+
+
+A.x-tree-menu-multi-item {
+	position: relative;
+	display: inline;
+	padding: 2px 2px 4px 6px;
+	margin: 2px 0px 0px 5px;
+	font-weight: bold;
+	cursor: hand;
+	color: #013;
+    text-decoration: none;
+}
+A.x-tree-menu-multi-item:hover {
+	background-color: #c2def9;
+	padding: 2px 2px 3px 6px;
+	border: #c2def9 outset 1px;
+	border-width: 0px 1px 1px 0px;
+}
+
+
+A.menu-mail-to
+{
+    COLOR: black;
+    TEXT-DECORATION: none
+}
+A.menu-mail-to:hover
+{
+    COLOR: black;
+    TEXT-DECORATION: underline
+}
+
+
+/*************************************/
+/*---==- XFW-Ã≈Õﬁ: »Õ‘Œ–Ã¿÷»ﬂ -==--- */
+/*************************************/
+
+TD.x-tree-menu-info-item-caption {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: normal;
+	font-size: 11px;
+	padding: 1px 2px 2px 5px;
+	color: #013;
+}
+
+TD.x-tree-menu-info-item-value {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: bold;
+	font-size: 11px;
+	padding: 1px 3px 2px 1px;
+	text-align: left;
+	color: #036;
+}
+TD.x-tree-menu-info-item-space {
+	display: block;
+	width: 5px
+}
+ 

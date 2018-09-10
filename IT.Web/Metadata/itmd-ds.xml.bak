@@ -1,0 +1,2105 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<!--
+	Получение ролей и привилегий текущего пользователя на папки/активности
+	-->
+	<ds:data-source n="HomePage-GetCurrentEmployeeFolderRolesAndPrivileges" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				f.ObjectID FolderID, 
+				dbo.GetFolderPath(f.ObjectID, 1) FolderPath, 
+				pp.[Privileges] | IsNull(r.[Privileges],0) [Privileges],
+				IsNull(r.[Name], '--- Не определенная ---') RoleName
+			FROM
+				dbo.ProjectParticipant pp WITH(NOLOCK)
+				INNER JOIN dbo.Folder f WITH(NOLOCK) ON pp.Folder = f.ObjectID
+				LEFT JOIN
+				(
+					dbo.ProjectParticipant_Roles rls WITH(NOLOCK)
+					JOIN dbo.UserRoleInProject r WITH(NOLOCK) ON r.ObjectID=rls.Value
+				) ON rls.ObjectID=pp.ObjectID
+			WHERE
+				pp.Employee = @CurrentEmployeeID
+			ORDER BY
+				f.Customer, FolderPath, FolderID, RoleName
+			]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="CurrentEmployeeID" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+	Получение информации о текущем пользователе
+	-->
+	<ds:data-source n="HomePage-GetCurrentEmployeeInfo" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT TOP 1
+				su.ObjectID SystemUserID,
+				emp.ObjectID EmployeeID,
+				emp.LastName + ' ' + emp.FirstName + IsNull(' ' + emp.MiddleName, '') FIO,
+				emp.EMail,
+				su.IsAdmin,
+				su.SystemPrivileges
+			FROM 
+				dbo.[SystemUser] su WITH(NOLOCK)
+				JOIN dbo.Employee emp WITH(NOLOCK) ON emp.[SystemUser]=su.ObjectID
+			WHERE
+				emp.ObjectID=@CurrentEmployeeID
+			]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="CurrentEmployeeID" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+	Получение информации о правах пользователя
+	-->
+	<ds:data-source n="GetCurrentEmployeePrivileges" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT TOP 1  
+					emp.ObjectID EmployeeID,
+					ISNULL(su.SystemPrivileges,0) | ISNULL(sr.Priviliges,0) Priviliges
+			FROM 
+				dbo.[SystemUser] su WITH(NOLOCK)
+				JOIN dbo.Employee emp WITH(NOLOCK) ON emp.[SystemUser]=su.ObjectID
+				LEFT JOIN dbo.SystemUser_SystemRoles  susr WITH(NOLOCK) ON su.[ObjectID] = susr.[ObjectID]
+				LEFT JOIN dbo.SystemRole sr WITH(NOLOCK)   ON susr.[Value] = sr.[ObjectID]
+			WHERE
+				emp.ObjectID=@CurrentEmployeeID
+			]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="CurrentEmployeeID" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+	Получение информации о занятости пользователя на проектах в заданный период по другим проектам
+	-->
+	<ds:data-source n="GetEmployeeEmployment" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+-- Для того, чтобы вычислить максимальную загруженность сотрудника на проектах, 
+-- придется просмотреть его загруженность на каждый день этого периода, иначе никак
+WITH cte AS (
+    SELECT epp.ObjectID, epp.[Percent] Per, epp.DateBegin, epp.DateEnd, cln.CalendarDate, pp.Folder  FROM
+        dbo.EmploymentParticipantProject epp (NOLOCK)
+        JOIN dbo.ProjectParticipant pp (NOLOCK) ON pp.ObjectID = epp.ProjectParticipant
+        JOIN 
+        (
+            SELECT CalendarDate 
+            FROM dbo.GetWorkdayCalendar(CONVERT(Datetime, @DateBegin, 126) ,CONVERT(Datetime, @DateEnd, 126))
+            WHERE IsWorkDay=1
+        ) cln ON cln.CalendarDate BETWEEN epp.DateBegin AND epp.DateEnd
+    WHERE
+        pp.Folder != @FolderID
+        AND
+        pp.Employee = @EmployeeID
+)
+SELECT
+IsNull((
+SELECT MAX(SumPer) FROM
+    ( SELECT SUM(Per) SumPer, CalendarDate FROM cte GROUP BY CalendarDate ) a
+),0) maxval,
+IsNull(CAST(
+(
+SELECT 
+       CONVERT(VARCHAR(10), DateBegin,104) + '-' + CONVERT(VARCHAR(10), DateEnd,104) 
+       + ' ' + RIGHT('   ' + CONVERT(VARCHAR(5), Per), 3) + '% - ' + fn [data()]
+FROM (
+    SELECT dbo.GetFolderPath(Folder,1) fn,  DateBegin, DateEnd, MAX(Per) Per
+    FROM cte
+    GROUP BY Folder, DateBegin, DateEnd
+) a
+ORDER BY DateBegin, DateEnd, fn, Per
+FOR XML PATH('e'), ROOT('a')
+) AS VARCHAR(MAX)),'<a/>') folders   		
+          ]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="EmployeeID" vt="uuid" />
+			<ds:param n="FolderID" vt="uuid" />
+			<ds:param n="DateBegin" vt="string" />
+			<ds:param n="DateEnd" vt="string" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+	Обеспечение обшего сервиса взаимодействия с внешними системами (CommonService)
+	ИНИЦИАЛИЗАЦИЯ СЕРВИСА
+	Получение списка идентификаторов подразделений, на основании заданного списка
+	"вышестоящих" подразделений: в результат включается каждый идентификатор 
+	подразделения из исходного списка, а так же идентификаторы всех его подчиненных.
+	-->
+	<ds:data-source n="CommonService-INIT-ExpandDepsIDsWithNested" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			BEGIN
+				DECLARE @dstList varchar(8000)
+			
+				SELECT @dstList = ISNULL(@dstList+',','') + CONVERT(varchar(36),dIn.ObjectID)
+				FROM
+					dbo.GetIDsListFromString( :SrcList ) src
+					JOIN dbo.Department dRoot WITH(NOLOCK) ON 
+						dRoot.ObjectID = CONVERT(uniqueidentifier,src.SrcID)
+					JOIN dbo.Department dIn WITH(NOLOCK) ON
+						dIn.Organization = dRoot.Organization AND
+						dIn.LIndex >= dRoot.LIndex AND dIn.RIndex <= dRoot.RIndex
+				ORDER BY 
+					dIn.LIndex
+			
+				SELECT @dstList 
+			END
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="SrcList" vt="string" required="1" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+	
+	Обеспечение обшего сервиса взаимодействия с внешними системами (CommonService)
+	Получение данных организаций, описываемых в справочнике "Организации" системы 
+	IT. Список включает так же данные по сотрудникам, исполняющих роль "Директора 
+	Клиента" (Account Manager).
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="CommonService-GetList-Organizations" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				org.[ObjectID] AS [.@internal-id],	
+				org.[ExternalRefID] AS [.@external-id],
+				org.[ShortName] AS [.short-name],
+				org.[Name] AS [.full-name],
+				emp.[ObjectID] AS [.account-manager.@internal-id],
+				emp.[ExternalRefID] AS [.account-manager.@external-id],
+				emp.[LastName] +' '+ emp.[FirstName] + ISNULL( ' '+emp.[MiddleName],'') AS [.account-manager.full-name]
+			FROM
+				dbo.Organization org WITH(NOLOCK)
+				LEFT JOIN dbo.Employee emp WITH(NOLOCK) ON emp.ObjectID=org.Director
+			ORDER BY
+				org.[Name]
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!--
+	
+	Обеспечение обшего сервиса взаимодействия с внешними системами (CommonService)
+	Методы синхронизации данных Организаций.
+	
+	Получение данных организаций, описываемых в справочнике "Организации" системы 
+	IT. Список включает так же данные по сотрудникам, исполняющих роль "Директора 
+	Клиента" (Account Manager).
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="CommonService-Sync-Organizations-GetList" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				o.[ObjectID],
+				o.RefCodeNSI,
+				o.ShortName,
+				o.[Name],
+				o.Parent AS ParentOrgID,
+				o.Director AS DirectorID,
+				o.Comment,
+				o.ExternalID AS NavisionID,
+				o.Home AS IsOwnOrganization,
+				o.OwnTenderParticipant AS IsOwnTenderParticipant
+			FROM
+				dbo.Organization o WITH(NOLOCK)
+			ORDER BY
+				o.ObjectID /* СОРТИРОВКА ВАЖНА! НЕ МЕНЯТЬ! СМ. РЕАЛИЗАЦИЮ СЕРВИСА СИНХРОНИЗАЦИИ! */
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!--
+	
+	Обеспечение обшего сервиса взаимодействия с внешними системами (CommonService)
+	Методы синхронизации данных Организаций.
+	
+	Получение данных организаций, описываемых в справочнике "Организации" системы 
+	IT. Список включает так же данные по сотрудникам, исполняющих роль "Директора 
+	Клиента" (Account Manager).
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="CommonService-Sync-Organizations-GetBranchRefs" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT 
+				ob.ObjectID AS OrganizationID,
+				ob.Value AS BranchID
+			FROM
+				Organization_Branch ob WITH(NOLOCK)
+				INNER JOIN Organization o WITH(NOLOCK) ON o.ObjectID = ob.ObjectID
+			ORDER BY
+				ob.ObjectID /* СОРТИРОВКА ВАЖНА! НЕ МЕНЯТЬ! СМ. РЕАЛИЗАЦИЮ СЕРВИСА СИНХРОНИЗАЦИИ! */
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!--
+	
+	Обеспечение обшего сервиса взаимодействия с внешними системами (CommonService)
+	Методы синхронизации данных Организаций.
+	
+	Получение списка идентификаторов организаций, описываемых в справочнике 
+	"Организации" системы IT.
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="CommonService-Sync-Organizations-GetIDsList" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT org.ObjectID 
+			FROM Organization org WITH(NOLOCK)
+			ORDER BY org.ObjectID	
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!--
+	
+	Обеспечение обшего сервиса взаимодействия с внешними системами (CommonService)
+	Методы синхронизации данных Возможностей (проектов по ведению возможностей / presale).
+	
+	Получение данных проектов по ведению возможностей, описываемых в системе.
+	В зависимости от параметров в список включаются / исключаются проекты 
+	с указанными состояниями.
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="CommonService-Sync-Presales-GetList" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				f.ObjectID,
+				NULL AS [RefCodePresale], /* ПОКА ВСЕГДА NULL, т.к. в системе нет этих данных */
+				f.Customer AS [CustomerID],
+				f.[Name] AS [Name],
+				f.[ExternalID] AS [NavisionID],
+				f.[State] AS [State],
+				f.Initiator AS [InitiatorID]
+			FROM
+				dbo.Folder f WITH(NOLOCK)
+			WHERE
+				f.Type = 8 /* Пресейлы */
+				AND SEARCH_CONDITIONS
+			ORDER BY
+				f.Customer,
+				f.[Name]	
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="InState" array="1" vt="i2">
+				<ds:param-selector op="in">f.State</ds:param-selector>
+			</ds:param>
+			<ds:param n="TargetOrgID" vt="uuid">
+				<ds:param-selector op="not-is-null">f.Customer = :TargetOrgID</ds:param-selector>
+			</ds:param>
+		</ds:params>
+	</ds:data-source>
+	<!--
+	
+	Обеспечение обшего сервиса взаимодействия с внешними системами (CommonService)
+	Методы синхронизации данных Возможностей (проектов по ведению возможностей / presale).
+	
+	Получение списка идентификатров проектов по ведению возможностей, описываемых 
+	в системе IT; в зависимости от параметров в список включаются / исключаются 
+	проекты с указанными состояниями.
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="CommonService-Sync-Presales-GetIDsList" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT f.ObjectID AS PresaleID
+			FROM dbo.Folder f WITH(NOLOCK)
+			WHERE 
+				f.Type = 8 /* Пресейлы */ 
+				AND SEARCH_CONDITIONS
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="InState" array="1" vt="i2">
+				<ds:param-selector op="in">f.State</ds:param-selector>
+			</ds:param>
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение данных справочника "Подразделения" (Department)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetList-Departments" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				d.ExternalRefID AS ObjectID,
+				d.[Name] AS [Name],
+				CASE 
+					WHEN d.Parent IS NULL THEN o.ExternalRefID 
+					ELSE dp.ExternalRefID END AS ParentOrgUnit, 
+				e.ExternalRefID AS Head,
+				d.ObjectID AS ObjectGUID,
+				d.TimeReporting * 2 AS Flags,
+				CAST( d.TimeReporting AS int ) AS TimeReporting,
+				d.Comment AS Descr,
+				NULL AS Address,	/* NB: константное значение, не используется */
+				NULL AS EMail,		/* NB: константное значение, не используется */
+				NULL AS Phone,		/* NB: константное значение, не используется */
+				23 AS AccessRights,	/* NB: константный флаг; не используется */
+				d.Code AS Code,
+				d.IsArchive as IsArchive
+				FROM	
+				dbo.Department d WITH(NOLOCK)
+				JOIN dbo.Organization o WITH(NOLOCK) ON o.ObjectID = d.Organization
+				LEFT JOIN dbo.Employee e WITH(NOLOCK) ON e.ObjectID = d.Director
+				LEFT JOIN dbo.Department dp WITH(NOLOCK) ON dp.ObjectID = d.Parent
+
+		UNION ALL
+
+			SELECT	
+				o.ExternalRefID AS ObjectID,
+				o.[Name] AS [Name],
+				NULL AS ParentOrgUnit,
+				NULL AS Head,
+				o.ObjectID AS ObjectGUID,
+				CASE Home WHEN 0 THEN 1 ELSE 0 END AS Flags,
+				CAST(0 AS int) AS TimeReporting,	/* NB: константный флаг; для "внешних подразделений" не используется */
+				o.Comment AS Descr,
+				NULL AS Address,	/* NB: константное значение, не используется */
+				NULL AS EMail,		/* NB: константное значение, не используется */
+				NULL AS Phone,		/* NB: константное значение, не используется */
+				23 AS AccessRights,	/* NB: константный флаг; не используется */
+				o.ShortName AS Code,
+				0 as IsArchive
+			FROM	
+				dbo.Organization o WITH(NOLOCK) 
+			WHERE	
+				/* явный признак */
+				StructureHasDefined = 1 OR
+				/* косвенные признаки */
+				EXISTS( SELECT * FROM dbo.Department d WITH(NOLOCK) WHERE d.Organization=o.ObjectID ) OR
+				EXISTS( SELECT * FROM dbo.Employee emp WITH(NOLOCK) WHERE emp.Organization=o.ObjectID )
+			ORDER BY
+				ParentOrgUnit, [Name]
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!-- 
+	
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Специальный запрос поиска "настоящего" выщестоящего подразделения. Это может 
+	быть и вышестоящее подразделение, а может быть и организация: для "корневого" 
+	подразделения требуется указать ссылку на организацию (впрочем, в ITv6 это 
+	требуется для всех подразделений); однако в НСИ для описания организации 
+	так же спользуют подразделения (sic!) - и оно как раз корневого уровня.
+	Данный запрос используется для определения типа и идентификатора объекта, 
+	заданного как "вышестоящее подразделение" своим "внешним" идентификатором
+	
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-Special-FindRealParentDepartment" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT TOP 1 fnd.TypeName, fnd.ObjectID 
+			FROM 
+				(
+					SELECT 'Department' AS TypeName, dep.ObjectID AS ObjectID 
+					FROM dbo.Department dep WITH(NOLOCK) WHERE ExternalRefID = :ExternalRefID
+				UNION
+					SELECT 'Organization' AS TypeName, org.ObjectID AS ObjectID
+					FROM dbo.Organization org WITH(NOLOCK) WHERE ExternalRefID = :ExternalRefID
+				) AS fnd
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="ExternalRefID" required="1" vt="i4" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение данных справочника "Сотрудники" (Employee)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetList-Employees" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				su.Login AS UID,
+				emp.FirstName, 
+				emp.MiddleName, 
+				emp.LastName, 
+				CASE WHEN dep.ObjectID IS NOT NULL THEN dep.ExternalRefID ELSE org.ExternalRefID END AS OrgUnit, 
+				emp.ExternalRefID AS ObjectID, 
+				pos.ExternalRefID AS SystemUserPosition, 
+				emp.Address, 
+				emp.ObjectID AS ObjectGUID, 
+				emp.ExternalID AS Flags, 
+				CASE :DoPictureLoad
+					WHEN 0 THEN NULL
+					ELSE emp.Picture 
+					END AS Picture, 
+				emp.Phone, 
+				emp.EMail, 
+				emp.MobilePhone, 
+				emp.PhoneExt
+			FROM
+				dbo.Employee emp WITH(NOLOCK) 
+				JOIN dbo.[SystemUser] su WITH(NOLOCK) ON su.ObjectID = emp.[SystemUser]
+				LEFT JOIN dbo.Department dep WITH(NOLOCK) ON dep.ObjectID = emp.Department
+				LEFT JOIN dbo.Organization org WITH(NOLOCK) ON org.ObjectID = emp.Organization
+				LEFT JOIN dbo.Position pos WITH(NOLOCK) ON pos.ObjectID = emp.Position
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="DoPictureLoad" required="1" vt="boolean" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение данных справочника "Организации" (Organization)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetList-Organizations" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT 
+				org.ObjectID AS ObjectGUID,
+				org.Parent AS Parent,
+				org.[Name] AS sName,
+				1 as Type,		/* NB! На данный момент - константа! */
+				emp.ObjectID AS AccChiefGUID,
+				org.ShortName AS ShortName,
+				org.ExternalID AS NavisionID
+			FROM
+				dbo.Organization org WITH(NOLOCK) 
+				LEFT JOIN dbo.Employee emp WITH(NOLOCK) ON emp.ObjectID = org.Director
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!--
+	
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Вызоа процедуры "слияния" данных двух организаций, описанных в 
+	справочнике "Организации" (Organization)
+	ВНИМАНИЕ! 
+	Наименования и порядок их следования, регистр символов
+	в наименованиях - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-Exec-MergeOrganization" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text type="sp">[dbo].[app_SyncNSI_MergeOrganization]</ds:cmd-text>
+		<ds:params>
+			<ds:param n="MasterOrganizationID" required="1" vt="uuid" />
+			<ds:param n="DuplicatedOrganizationID" required="1" vt="uuid" />
+			<ds:param n="AccChiefID" vt="uuid" />
+			<ds:param n="ParentID" vt="uuid" />
+			<ds:param n="sFullName" vt="string" />
+			<ds:param n="sShortName" vt="string" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+	
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение данных справочника "Календарь исключений в рабочей неделе" 
+	(WorkCalendarExceptions)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetList-WorkCalendarExceptions" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				wce.ExceptionDate AS HolidayDate, 
+				wce.Comment AS [Name], 
+				wce.ExternalRefID AS ObjectID
+			FROM
+				dbo.WorkCalendarExceptions wce WITH(NOLOCK) 
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!--
+
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение данных справочника "Должности" (Position)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetList-Positions" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				p.ExternalRefID AS ObjectID,
+				p.[Name] AS [Name],
+				p.ObjectID AS ObjectGUID,
+				0 AS Flags
+			FROM
+				dbo.Position p WITH(NOLOCK) 
+			ORDER BY 
+				p.[Name]
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!--
+
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение данных справочника "Отрасли" (Branch, из системы СУТ)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetList-Branches" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				b.ExternalRefID AS ObjectID,
+				b.ObjectID AS ObjectGUID,
+				b.[Name] AS [Name],
+				b.Comment AS Rem
+			FROM	
+				dbo.Branch b WITH(NOLOCK) 
+			ORDER BY 
+				b.[Name]
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!--
+
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение данных проектов (Folder)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetList-Projects" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				f.ObjectID,
+				f.Customer AS CustomerID,
+				f.[Name],
+				f.ExternalID AS [NavisionID],
+				f.State,
+				f.Parent AS [MasterProjectID],
+				f.[Type],
+				f.ActivityType
+			FROM 
+				dbo.Folder f WITH(NOLOCK) 
+			WHERE 
+				f.[Type] = 1
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!--
+
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение данных тендеров (Folder)
+	-->
+	<ds:data-source n="SyncNSI-GetList-TenderFolders" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				f.ObjectID,
+				(
+					SELECT
+						MAX(fh.EventDate)
+					FROM
+						dbo.FolderHistory fh
+					WHERE
+						f.ObjectID = fh.Folder AND fh.Event = 2 -- Дата окончания - закрытие Тендера 
+				) AS FinishDate,
+				f.[Name],
+				(
+					SELECT
+						MIN(fh.EventDate)
+					FROM
+						dbo.FolderHistory fh
+					WHERE
+						f.ObjectID = fh.Folder
+				) AS StartDate,
+				f.State,
+				f.[Type],
+				f.Customer,
+				f.Initiator,
+				f.Parent,
+        f.ExternalID
+			FROM 
+				dbo.Folder f
+			WHERE 
+				f.[Type] = 4 -- Тендер
+				AND SEARCH_CONDITIONS
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="ObjectID" vt="uuid" array="1">
+				<ds:param-selector op="in">
+          <![CDATA[
+					f.ObjectID
+					]]>
+        </ds:param-selector>
+			</ds:param>
+		</ds:params>
+	</ds:data-source>
+	<!--
+
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение данных направлений (FolderDirection) для тендеров (Folder)
+	-->
+	<ds:data-source n="SyncNSI-GetList-TenderFolderDirections" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				fd.Folder,
+				fd.Direction
+			FROM 
+				dbo.Folder f
+				JOIN dbo.FolderDirection fd ON fd.Folder = f.ObjectID
+			WHERE 
+				f.[Type] = 4 -- Тендер
+				AND SEARCH_CONDITIONS
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="ObjectID" vt="uuid" array="1">
+				<ds:param-selector op="in">
+          <![CDATA[
+					f.ObjectID
+					]]>
+        </ds:param-selector>
+			</ds:param>
+		</ds:params>
+	</ds:data-source>
+	<!--
+
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение расширенного набора данных для указанного проекта (Folder)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetProjectAdditionalInfo" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT 
+				f.Type,
+				f.Customer AS CustomerID,
+				f.[Name],
+				f.ExternalID AS [NavisionID],
+				f.State,
+				f.Parent AS [MasterProjectID],
+				f.[Description] AS Comments,
+				f.Initiator AS InitiatorEmployeeID,
+				dbo.GetFolderHistoryActor( f.ObjectID, 2 ) AS EnderEmployeeID
+			FROM
+				dbo.Folder f WITH(NOLOCK) 
+			WHERE
+				f.Type = 1 /* Тип папки - "Проект" */
+				AND f.ObjectID = :ProjectID
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="ProjectID" required="1" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение списка идентификаторов направлений, заданных для указанного 
+	проекта (Folder).
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetList-ProjectDirections" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			/* Исходная проверка на наличие папки типа "Проект"; если таковой нет, то запрос  
+				не вернет даже пустой рекорсет; что будет интерпретироваться как ошибка */
+			IF EXISTS ( 
+				SELECT 1 FROM dbo.Folder f WITH(NOLOCK) 
+				WHERE f.ObjectID = :ProjectID AND Type = 1
+			)
+				SELECT fd.Direction AS DirectionID
+				FROM dbo.FolderDirection fd WITH(NOLOCK)
+				WHERE fd.Folder = :ProjectID
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="ProjectID" required="1" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение данных проектеых команд, заданных для указанного проекта (Folder)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetList-ProjectTeam" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			IF EXISTS( SELECT * FROM dbo.Folder f WITH(NOLOCK) WHERE f.ObjectID = :ProjectID)
+			BEGIN 
+				SELECT a.EmployeeID, a.RoleID
+				FROM dbo.GetAllFolderParticipantsRolesList( :ProjectID ) a
+				ORDER BY a.EmployeeID /* NB! Сортировка по ID сотрудников ОБЯЗАТЕЛЬНА! */
+			END
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="ProjectID" required="1" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение данных возможностей (Folder)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetList-Presales" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				f.ObjectID,
+				f.Customer AS CustomerID,
+				f.[Name],
+				f.ExternalID AS [NavisionID],
+				f.State,
+				f.[Type]
+			FROM 
+				dbo.Folder f WITH(NOLOCK) 
+			WHERE 
+				f.[Type] = 8
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!--
+
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение расширенного набора данных для указанной возможности (Folder)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetPresaleAdditionalInfo" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			BEGIN			
+				DECLARE @EnderEmployeeID uniqueidentifier
+				DECLARE @EndDate datetime
+				
+				/* Определение даты и "автора" завершения возможности - если она завершена: */
+				SELECT TOP 1
+					@EnderEmployeeID = emp.ObjectID,
+					@EndDate = fh.EventDate
+				FROM
+					dbo.Folder f WITH(NOLOCK)
+					INNER JOIN dbo.FolderHistory fh WITH(NOLOCK) ON fh.Folder = f.ObjectID
+					INNER JOIN dbo.[SystemUser] su WITH(NOLOCK) ON su.ObjectID = fh.[SystemUser]
+					LEFT JOIN dbo.Employee emp WITH(NOLOCK) ON emp.[SystemUser] = su.ObjectID
+				WHERE
+					f.ObjectID = :PresaleID
+					AND f.Type = 8		/* Тип папки - "Возможность" */ 
+					AND f.State = 4		/* Состояние - "Закрыта" */
+				ORDER BY
+					fh.EventDate DESC
+		
+				/* Вывод всех данных по самой возможности */
+				SELECT 
+					f.Type,
+					f.Customer AS CustomerID,
+					f.[Name],
+					f.ExternalID AS [NavisionID],
+					f.State,
+					NULL AS [TargetProjectID],
+					f.[Description] AS Comments,
+					f.Initiator AS InitiatorEmployeeID,
+					@EndDate AS EndDate,
+					@EnderEmployeeID AS EnderEmployeeID
+				FROM
+					dbo.Folder f WITH(NOLOCK) 
+				WHERE
+					f.Type = 8 /* Тип папки - "Возможность" */
+					AND f.ObjectID = :PresaleID
+			END
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="PresaleID" required="1" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение списка идентификаторов направлений, заданных для 
+	указанной возможности (Folder).
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetList-PresaleDirections" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			/* Проверка на наличие папки типа "Возможность"; если таковой нет, то запрос 
+				не вернет даже пустой рекорсет; что будет интерпретироваться как ошибка */
+			IF EXISTS ( 
+				SELECT 1 FROM dbo.Folder f WITH(NOLOCK) 
+				WHERE f.ObjectID = :PresaleID AND Type = 8
+			)
+				SELECT fd.Direction AS DirectionID
+				FROM dbo.FolderDirection fd WITH(NOLOCK)
+				WHERE fd.Folder = :PresaleID
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="PresaleID" required="1" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение данных проектеых команд, заданных для указанной
+	возможности (Folder)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetList-PresaleTeam" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			IF EXISTS( SELECT * FROM dbo.Folder f WITH(NOLOCK) WHERE f.ObjectID = :PresaleID AND f.Type = 8 )
+			BEGIN 
+				SELECT a.EmployeeID, a.RoleID
+				FROM dbo.GetAllFolderParticipantsRolesList( :PresaleID ) a
+				ORDER BY a.EmployeeID /* NB! Сортировка по ID сотрудников ОБЯЗАТЕЛЬНА! */
+			END
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="PresaleID" required="1" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+	Обеспечение сервиса предсталения данных для формы Бизнес-процесса "Заказ 
+	денежных средств" (как часть сервиса синхронизации справочников с НСИ)
+	Получение данных справочника "Организации" (Organization)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="CommonService-BP-GetList-Organizations" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT 
+				org.[ObjectID] AS ObjectGUID,
+				org.[Name] AS OrgName
+			FROM
+				dbo.Organization org WITH(NOLOCK) 
+			WHERE
+				0 = :bWithOpenProjects 
+				OR org.[ObjectID] IN 
+					(
+						SELECT Customer FROM dbo.Folder f WITH(NOLOCK) 
+						WHERE 1 = f.[Type] AND f.[State] IN (1, 2)
+					)
+			ORDER BY org.[Name]
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="bWithOpenProjects" required="1" vt="boolean" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+	Cервис представления данных для формы Бизнес-процесса "Заказ денежных 
+	средств" (как часть сервиса синхронизации справочников с НСИ).
+	Получение перечня открытых проектов для заданной организации.
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="CommonService-BP-GetList-OpenProjects" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+				SELECT 
+					prj.[ObjectID] AS ObjectGUID,
+					prj.[Name] AS ProjName
+				FROM
+					dbo.[Folder] prj WITH(NOLOCK) 
+				WHERE
+					1 = prj.[Type] 
+					AND prj.[State] IN (1, 2) /* Открытые и в ожидании закрытия */
+					AND :sOrganizationGUID = prj.[Customer]
+				ORDER BY
+					prj.[Name]
+			]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="sOrganizationGUID" required="1" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+		Сервис предствления данных для БП "Закрытие пресейла". Возвращает данные об инцидентах к закрытию 
+		и новый статус, определяемый по категории инц-та("")
+	-->
+	<ds:data-source n="CommonService-BP-GetList-OpenIncidents" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+				SELECT i.ObjectID AS Incident, i_st_new.ObjectID AS NewState
+				FROM Folder f_s 
+					JOIN Folder f ON f.LIndex >= f_s.LIndex AND f.RIndex <= f_s.RIndex AND f.Customer = f_s.Customer
+					JOIN Incident i ON f.ObjectID = i.Folder
+					JOIN IncidentState i_st ON i.State = i_st.ObjectID AND i_st.Category IN (1,2) -- "Открытые" и "В работе"
+					LEFT JOIN IncidentState i_st_new ON i.Type = i_st_new.IncidentType AND i_st_new.Category = @NewCat 
+				WHERE f_s.ObjectID = @FolderID
+			]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="FolderID" required="1" vt="uuid" />
+			<ds:param n="NewCat" required="1" vt="i4" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+		Сервис предствления данных для БП "Закрытие пресейла". Возвращает данные о том, есть ли в активности 
+		"открытые" инциденты.
+	-->
+	<ds:data-source n="CommonService-BP-HasOpenIncidentsInActivity" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+				SELECT TOP 1 1
+				FROM Folder f_s 
+					JOIN Folder f ON f.LIndex >= f_s.LIndex AND f.RIndex <= f_s.RIndex AND f.Customer = f_s.Customer
+					JOIN Incident i ON f.ObjectID = i.Folder
+					JOIN IncidentState i_st ON i.State = i_st.ObjectID AND i_st.Category IN (1,2) -- "Открытые" и "В работе"
+				WHERE f_s.ObjectID = @FolderID
+			]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="FolderID" required="1" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+	Cервис обеспечения данных для систем Oracle HRMS.
+	Получение списка участников проектных команд активностей, в которых в заданный 
+	период времени указанный сотрудник списал времени не менее заданного порога.
+	-->
+	<ds:data-source n="CommonService-Interop-GetProjectsParticipants" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text type="sp">[dbo].[app_INTEROP_GetProjectsParticipants]</ds:cmd-text>
+		<ds:params>
+			<ds:param n="uidEmployee" required="1" vt="uuid" />
+			<ds:param n="dtPeriodBegin" required="1" vt="date" />
+			<ds:param n="dtPeriodEnd" required="1" vt="date" />
+			<ds:param n="nThresholdForTargetEmp" vt="i4" />
+			<ds:param n="nThresholdForOtherEmp" vt="i4" />
+			<ds:param n="nFolderTypeMask" vt="i4" />
+			<ds:param n="bPassOwnOrg" vt="i4" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+	Cервис обеспечения данных для систем Oracle HRMS.
+	Получение описания проектной команды для заданной активности, члены которой 
+	осуществляли списания в заданный период времени.
+	-->
+	<ds:data-source n="CommonService-Interop-GetAllProjectParticipants" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text type="sp">[dbo].[app_INTEROP_GetAllProjectParticipants]</ds:cmd-text>
+		<ds:params>
+			<ds:param n="uidActivity" required="1" vt="uuid" />
+			<ds:param n="dtPeriodBegin" required="1" vt="date" />
+			<ds:param n="dtPeriodEnd" required="1" vt="date" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+	Cервис обеспечения данных для систем Oracle HRMS.
+	Получение списаний сотрудников для заданного интервала времени по заданной причине списания
+	-->
+	<ds:data-source n="GetEmployeeExpensesWithCause" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text type="sp">[dbo].[app_GetEmployeeExpensesWithCause]</ds:cmd-text>
+		<ds:params>
+			<ds:param n="uidCauseID" required="1" vt="uuid" />
+			<ds:param n="dtPeriodBeginDate" required="1" vt="date" />
+			<ds:param n="dtPeriodEndDate" required="1" vt="date" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	Сервис проверки готовности актвности (каталога) к закрытию.
+	-->
+	<ds:data-source n="CommonService-IsProjectClose" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT CASE WHEN EXISTS (
+				SELECT 1 FROM 
+					dbo.Folder fIn WITH(NOLOCK)
+					JOIN dbo.Incident i WITH(NOLOCK) ON i.Folder = fIn.ObjectID 
+					JOIN dbo.IncidentState st WITH(NOLOCK) ON st.ObjectID = i.State
+				WHERE
+					st.Category IN ( 1, 2 ) /* Категории состояний "Открыто" и "На проверке" */
+					AND fIn.Customer = fTarget.Customer
+					AND fIn.LIndex >= fTarget.LIndex AND fIn.RIndex <= fTarget.RIndex
+				) THEN 0 ELSE 1 END AS IsProjectClosing
+			FROM dbo.Folder fTarget WITH(NOLOCK)
+			WHERE 
+				fTarget.State = 2 /* Ожидание закрытия */
+				AND fTarget.ObjectID = :FolderID
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="FolderID" required="1" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+	
+		По идентификатору Сотрудника, Папки и Типа инцидента возвращает идентификатор 
+		роли по умолчанию в инциденте данного типа для данного сотрудника
+	-->
+	<ds:data-source n="GetDefaultIncidentRole" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+				SELECT TOP 1 udrii.UserRoleInIncident 
+				FROM dbo.ProjectParticipant_Roles pp_r WITH(NOLOCK) 
+						JOIN dbo.UserRoleInProject urip WITH(NOLOCK) ON pp_r.Value = urip.ObjectID
+							JOIN dbo.UserDefaultRoleInIncident udrii WITH(NOLOCK) ON urip.ObjectID = udrii.UserRoleInProject
+				WHERE pp_r.ObjectID =
+					(
+						SELECT TOP 1 pp.ObjectID 
+						FROM dbo.Folder f_s WITH(NOLOCK)
+							JOIN dbo.Folder f WITH(NOLOCK) ON f.Customer = f_s.Customer AND f.LIndex <= f_s.LIndex AND f.RIndex >= f_s.RIndex
+								JOIN dbo.ProjectParticipant pp WITH(NOLOCK) ON f.ObjectID = pp.Folder AND pp.Employee = :EmployeeID 
+						WHERE f_s.ObjectID = :FolderID
+						ORDER BY f.LRLevel DESC
+					)
+					AND udrii.IncidentType = :IncidentTypeID
+				ORDER BY 
+				(
+					urip.[Privileges] & 1 + (urip.[Privileges] & 2)/2 + 
+					(urip.[Privileges] & 4)/4 + (urip.[Privileges] & 16)/16 + 
+					(urip.[Privileges] & 32)/32 + (urip.[Privileges] & 64)/64 + 
+					(urip.[Privileges] & 128)/128 + (urip.[Privileges] & 256)/256 + 
+					(urip.[Privileges] & 512)/512 + (urip.[Privileges] & 1024)/1024
+				) DESC
+			]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="FolderID" vt="uuid" required="1" />
+			<ds:param n="EmployeeID" vt="uuid" required="1" />
+			<ds:param n="IncidentTypeID" vt="uuid" required="1" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+		По идентификатору папки возвращается путь из наименований папок от корня до заданной папки, а также путь из наименований клиентов
+	-->
+	<ds:data-source n="GetFolderPath" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+				DECLARE @sFolderPath varchar(4000)
+				DECLARE @sOrgPath varchar(4000)
+				DECLARE @OrgID uniqueidentifier
+				
+				SELECT @sFolderPath = IsNull(@sFolderPath+ '\','') + f.Name, @OrgID = f.Customer
+				FROM Folder f WITH(NOLOCK)
+					JOIN Folder f_s WITH(NOLOCK) ON f.LIndex <= f_s.LIndex AND f.RIndex >= f_s.RIndex AND f.Customer = f_s.Customer
+				WHERE f_s.ObjectID = @FolderID
+				ORDER BY f.LRLevel
+				
+				SELECT @sOrgPath = IsNull(@sOrgPath + '\','') + o.Name
+				FROM Organization o WITH(NOLOCK)
+					JOIN Organization o_s WITH(NOLOCK) ON o.LIndex <= o_s.LIndex AND o.RIndex >= o_s.RIndex
+				WHERE o_s.ObjectID = @OrgID
+				ORDER BY o.LRLevel
+				SELECT @sFolderPath, @sOrgPath
+			]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="FolderID" vt="uuid" required="1" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+		По идентификатору организации возвращает путь из наименований организаций до корня
+	-->
+	<ds:data-source n="GetOrganizationPath" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+				DECLARE @sOrgPath varchar(4000)
+				SELECT @sOrgPath = IsNull(@sOrgPath + '\','') + o.Name
+				FROM Organization o WITH(NOLOCK)
+					JOIN Organization o_s WITH(NOLOCK) ON o.LIndex <= o_s.LIndex AND o.RIndex >= o_s.RIndex
+				WHERE o_s.ObjectID = @OrgID
+				ORDER BY o.LRLevel
+				SELECT @sOrgPath
+			]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="OrgID" vt="uuid" required="1" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+		По идентификатору организации возвращает путь из наименований организаций до корня
+	-->
+	<ds:data-source n="GetActivityTypePath" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+				DECLARE @sPath varchar(4000)
+				SELECT @sPath = IsNull(@sPath + '\','') + at.Name
+				FROM ActivityType at WITH(NOLOCK)
+					JOIN ActivityType at_s WITH(NOLOCK) ON at.LIndex <= at_s.LIndex AND at.RIndex >= at_s.RIndex
+				WHERE at_s.ObjectID = @ActivityTypeID
+				ORDER BY at.LRLevel
+				SELECT @sPath
+			]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="ActivityTypeID" vt="uuid" required="1" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+	
+		Возвращает строку с тремя полями:
+			Путь из папок до папки с заданным идентификатором (может быть NULL)
+			Путь из Организаций до Организации с заданным идентификатором (может быть NULL)
+			Путь из Типов проектных затрат до т.п.з. с заданным идентификатором (может быть NULL)
+	-->
+	<ds:data-source n="GetFolderPaths" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+				DECLARE @sFolderPath varchar(4000)
+				DECLARE @sOrgPath varchar(4000)
+				DECLARE @sActivityTypePath varchar(4000)
+				
+				IF NOT @FolderID IS NULL
+					SELECT @sFolderPath = IsNull(@sFolderPath+ '\','') + f.Name
+					FROM Folder f WITH(NOLOCK)
+						JOIN Folder f_s WITH(NOLOCK) ON f.LIndex <= f_s.LIndex AND f.RIndex >= f_s.RIndex AND f.Customer = f_s.Customer
+					WHERE f_s.ObjectID = @FolderID
+					ORDER BY f.LRLevel
+				
+				IF NOT @OrgID IS NULL
+					SELECT @sOrgPath = IsNull(@sOrgPath + '\','') + o.Name
+					FROM Organization o WITH(NOLOCK)
+						JOIN Organization o_s WITH(NOLOCK) ON o.LIndex <= o_s.LIndex AND o.RIndex >= o_s.RIndex
+					WHERE o_s.ObjectID = @OrgID
+					ORDER BY o.LRLevel
+				
+				IF NOT @ActivityTypeID IS NULL
+					SELECT @sActivityTypePath = IsNull(@sActivityTypePath + '\','') + at.Name
+					FROM ActivityType at WITH(NOLOCK)
+						JOIN ActivityType at_s WITH(NOLOCK) ON at.LIndex <= at_s.LIndex AND at.RIndex >= at_s.RIndex
+					WHERE at_s.ObjectID = @ActivityTypeID
+					ORDER BY at.LRLevel
+				
+				SELECT @sFolderPath, @sOrgPath, @sActivityTypePath
+			]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="FolderID" vt="uuid" />
+			<ds:param n="OrgID" vt="uuid" />
+			<ds:param n="ActivityTypeID" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+		Возвращает описания папок выщестоящих для папки или инцидента. 
+		Используется для обновления узлов в дереве "Клиенты и Проекты".
+		1-ая колонка - идентификатор
+		2-ая колонка - заголовок узла
+		3-ья колонка - селектор иконки
+		4-ая колонка - для сортировки и на клиенте не используется
+		ВНИМАНИЕ: последовательность колонок важна для VBS-кода
+		-->
+	<ds:data-source n="GetParentFoldersInfo" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+				SET NOCOUNT ON
+				DECLARE @LeafFolderID uniqueidentifier
+				DECLARE @Title varchar(512), @IconSelector varchar(50)
+				
+				IF NOT @IncidentID IS NULL BEGIN
+					SELECT @LeafFolderID = Folder, @Title = cast(Number as varchar) + ' - ' + Name, @IconSelector = cast(State as varchar(50))
+					FROM dbo.Incident WITH(NOLOCK) WHERE ObjectID = :IncidentID
+					SELECT @IncidentID, @Title, @IconSelector, 100000 AS LRLevel
+					UNION
+					SELECT 
+						f.ObjectID,
+						f.Name #TITLE_ADDON# AS Title,
+						#ICON_SELECTOR# AS ICON_SELECTOR,
+						f.LRLevel LRLevel
+					FROM dbo.Folder f_s WITH(NOLOCK)
+						JOIN dbo.viewFolder f WITH(NOLOCK) ON f.LIndex <= f_s.LIndex AND f.RIndex >= f_s.RIndex AND f_s.Customer = f.Customer
+					WHERE f_s.ObjectID = @LeafFolderID
+					ORDER BY LRLevel DESC
+				END ELSE BEGIN
+					SELECT 
+						f.ObjectID,
+						f.Name #TITLE_ADDON# AS Title,
+						#ICON_SELECTOR# AS ICON_SELECTOR
+					FROM dbo.Folder f_s WITH(NOLOCK)
+						JOIN dbo.viewFolder f WITH(NOLOCK) ON f.LIndex <= f_s.LIndex AND f.RIndex >= f_s.RIndex AND f_s.Customer = f.Customer
+					WHERE f_s.ObjectID = :FolderID
+					ORDER BY f.LRLevel DESC
+				END
+				SET NOCOUNT OFF
+			]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="FolderID" vt="uuid" />
+			<ds:param n="IncidentID" vt="uuid" />
+			<!--
+				<ds:param-selector op="not-is-null">f_s.ObjectID = :FolderID</ds:param-selector>
+			</ds:param>
+				<ds:param-selector op="not-is-null">f_s.ObjectID = (SELECT Folder FROM dbo.Incident WHERE ObjectID = :IncidentID)</ds:param-selector>
+			</ds:param>
+			-->
+			<ds:param n="ShowWorkProgress" vt="boolean">
+				<ds:switch macro="#ICON_SELECTOR#" explicit="1">
+					<ds:param-selector op="is-null">dbo.GetFolderIconSelector(f.Type, f.State, f.IncidentsInWork, f.IncidentsOnCheck)</ds:param-selector>
+					<ds:param-selector value="1" op="equal">dbo.GetFolderIconSelector(f.Type, f.State, f.IncidentsInWork, f.IncidentsOnCheck)</ds:param-selector>
+					<ds:param-selector value="0" op="equal">cast(f.Type as varchar(5)) + '-' + cast(f.State as varchar(5))</ds:param-selector>
+				</ds:switch>
+				<ds:switch macro="#TITLE_ADDON#" explicit="1">
+					<ds:param-selector value="1" op="equal"><![CDATA[ + CASE WHEN f.IncidentsInWork + f.IncidentsOnCheck > 0 THEN ' [' + cast(f.IncidentsInWork as varchar(10))+ '/' + cast((f.IncidentsInWork + f.IncidentsOnCheck) as varchar(10)) + ']' ELSE '' END]]></ds:param-selector>
+					<ds:param-selector value="0" op="equal" />
+				</ds:switch>
+			</ds:param>
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+		Возвращает описания папок с заданными идентификаторами для обновления узлов в дереве "Клиенты и Проекты"
+		1-ая колонка - идентификатор папки
+		2-ая колонка - заголовок узла
+		3-ая колонка - селектор иконки
+		ВНИМАНИЕ: последовательность колонок важна для VBS-кода
+		-->
+	<ds:data-source n="GetFoldersInfo" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+				SELECT 
+					f.ObjectID,
+					f.Name #TITLE_ADDON# AS Title,
+					#ICON_SELECTOR# AS ICON_SELECTOR
+				FROM dbo.viewFolder f WITH(NOLOCK)
+				WHERE_CLAUSE
+			]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="FolderID" vt="uuid" array="1">
+				<ds:param-selector op="in">f.ObjectID</ds:param-selector>
+			</ds:param>
+			<ds:param n="ShowWorkProgress" vt="boolean">
+				<ds:switch macro="#ICON_SELECTOR#" explicit="1">
+					<ds:param-selector op="is-null">dbo.GetFolderIconSelector(f.Type, f.State, f.IncidentsInWork, f.IncidentsOnCheck)</ds:param-selector>
+					<ds:param-selector value="1" op="equal">dbo.GetFolderIconSelector(f.Type, f.State, f.IncidentsInWork, f.IncidentsOnCheck)</ds:param-selector>
+					<ds:param-selector value="0" op="equal">cast(f.Type as varchar(5)) + '-' + cast(f.State as varchar(5))</ds:param-selector>
+				</ds:switch>
+				<ds:switch macro="#TITLE_ADDON#" explicit="1">
+					<ds:param-selector value="1" op="equal"><![CDATA[ + CASE WHEN f.IncidentsInWork + f.IncidentsOnCheck > 0 THEN ' [' + cast(f.IncidentsInWork as varchar(10))+ '/' + cast((f.IncidentsInWork + f.IncidentsOnCheck) as varchar(10)) + ']' ELSE '' END]]></ds:param-selector>
+					<ds:param-selector value="0" op="equal" />
+				</ds:switch>
+			</ds:param>
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+		Возвращает информацию об последних изменениях определения направлений для указанной папки.
+		Включает так же признак нарушения определения направлений в структуре папок (когда для 
+		рассматриваемой папки задано направление, не указанное для какой либо из вышестоящих в пути)
+		Используется в редакторе папки (см. s-Folder.vbs)
+		ВНИМАНИЕ! Последовательность колонок важна для VBS-кода!
+	-->
+	<ds:data-source n="GetFolderDirectionsInfo" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			BEGIN
+				SET NOCOUNT ON
+				DECLARE @sHistoryInfo varchar(256),
+					@sDirectionStructError varchar(256),
+					@bHasParentDirectionsSet tinyint
+				SELECT 
+					@sHistoryInfo = '(нет данных)', 
+					@sDirectionStructError = '',
+					@bHasParentDirectionsSet = 0
+
+
+				/* Получение исторической информации: когда и кто последний раз изменил определение направлений */
+				SELECT TOP 1 @sHistoryInfo = 
+					CONVERT( varchar(10), hst.EventDate, 104) + ' ' + CONVERT( varchar(5), hst.EventDate, 108  ) + ', ' +
+					ISNULL( e.LastName + ' ' + e.FirstName + ISNULL( ' (#' + e.PhoneExt + ')', '' ) , 'изменения выполнены во внешней системе' )
+				FROM 
+					dbo.FolderHistory hst WITH(NOLOCK)
+					/* привязка к сотрдникам - всегда через LEFT JOIN, т.к. изменения и.б. сделаны сервисом */
+					LEFT JOIN dbo.Employee e WITH(NOLOCK) ON e.[SystemUser] = hst.[SystemUser]
+				WHERE
+					hst.Event = 11 /* Тип события - "Изменение данных по направлениям" */
+					AND hst.Folder = :FolderID
+				ORDER BY
+					hst.EventDate DESC
+
+
+				/* Проверка корректности задания направлений в структуре вышестоящих и подчиненных папок.
+					В первом случае (CH-1) проверяем корректность задания направлений для заданной
+					папки: в общем случае для нее д.б. задано только направление, которое задано и 
+					для вышестоящей папки. Проверка выполняется "от противного": если для любого 
+					направления, заданного для рассматриваемой папки, существует вышестоящая папка, 
+					у которой такого направления НЕТ, то определяем ошибку задания направления.
+					NB! JOIN на вышестоящие папки перемещать внутрь WHERE NOT EXISTS - НЕЛЬЗЯ, т.к
+					в этом случае ошибка будет всегда определяться для самой вышестоящей папки.
+					
+					Во втором случае (CH-2) проверяем корректность задания направлений для вложенных
+					папок: если среди них найдем такую, у которой задано направление, не заданое при
+					этом и для рассматриваемой папки, то определяем ошибку задания направления. 
+					NB! Здесь, так же как и в CH-1, JOIN на вложенные папки нельзя перемещать внутрь
+					WHERE NOT EXISTS, т.к. иначе ошибка будет всегда определяться для листовой папки.
+
+					Если обе проверки выявили нарушение, то тексты сообщений будут разделены '|' */
+				IF EXISTS ( /* CH-1 */
+					SELECT 1 
+					FROM 
+						dbo.Folder f WITH(NOLOCK)
+						JOIN dbo.FolderDirection fd WITH(NOLOCK) ON fd.Folder = f.ObjectID
+						/* только ВЫШЕСТОЯЩИЕ папки; сравнение по L- и RIndex - СТРОГОЕ! */
+						JOIN dbo.Folder fUp WITH(NOLOCK) ON fUp.Customer = f.Customer AND fUp.LIndex < f.LIndex AND fUp.RIndex > f.RIndex	
+					WHERE
+						/* только те вышстоящие, для которых определены направления */
+						EXISTS(	 SELECT 1 FROM dbo.FolderDirection fdUp WITH(NOLOCK) WHERE fdUp.Folder = fUp.ObjectID )
+						/* ... но при этом НЕТ направлений, заданных для рассматриваемой папки */
+						AND NOT EXISTS ( SELECT 1 FROM dbo.FolderDirection fdUp WITH(NOLOCK) WHERE fdUp.Folder = fUp.ObjectID AND fdUp.Direction = fd.Direction )
+						AND f.ObjectID = :FolderID
+				) SET @sDirectionStructError = 'Данное определение направлений не соответствует перечню направлений, указанных для вышестоящих папок;'
+				
+				IF EXISTS ( /* CH-2 */
+					SELECT 1
+					FROM 
+						dbo.Folder fLo WITH(NOLOCK) 
+						JOIN dbo.FolderDirection fdLo WITH(NOLOCK) ON fdLo.Folder = fLo.ObjectID 
+						/* выше - только ПОДЧИНЕННЫЕ папки; сравнение по L- и RIndex - СТРОГОЕ! */
+						JOIN dbo.Folder f WITH(NOLOCK) ON fLo.Customer = f.Customer AND fLo.LIndex > f.LIndex AND fLo.RIndex < f.RIndex
+					WHERE 
+						/* только если для рассматриваемой папки определено какое-либо направление */
+						EXISTS ( SELECT 1 FROM dbo.FolderDirection fd WITH(NOLOCK) WHERE fd.Folder = f.ObjectID )
+						/* отрицание: ... при этом для рассматриваемой папки НЕ найдем направления, заданные и для подчиненных */
+						AND NOT EXISTS ( SELECT 1 FROM  dbo.FolderDirection fd WITH(NOLOCK) WHERE fd.Folder = f.ObjectID AND fd.Direction = fdLo.Direction ) 
+						AND f.ObjectID = :FolderID
+				) SELECT @sDirectionStructError = @sDirectionStructError + 
+					CASE LEN(@sDirectionStructError) WHEN 0 THEN '' ELSE '|' END + 
+					'Для подчиненных папок указаны направления, не соответствующие направлениям, определенным здесь;' 
+
+
+				/* Определяем признак наличия определения направлений для вышестоящей папки: В соответствии
+					с постановкой в этом случае для рассматриваемой папки должно указываться только одно
+					направление. Признак используется на клиенте для коррекции представления в UI */
+				IF EXISTS (
+					SELECT 1
+					FROM dbo.Folder f WITH(NOLOCK)
+					WHERE	EXISTS (
+							SELECT 1 FROM 
+								dbo.Folder fUp WITH(NOLOCK) 
+								JOIN dbo.FolderDirection fdUp WITH(NOLOCK) ON fdUp.Folder = fUp.ObjectID
+							WHERE 
+								/* только ВЫШЕСТОЯЩИЕ папки; сравнение по L- и RIndex - СТРОГОЕ! */
+								fUp.Customer = f.Customer AND fUp.LIndex < f.LIndex AND fUp.RIndex > f.RIndex
+						)
+						AND f.ObjectID = :FolderID
+				) SET @bHasParentDirectionsSet = 1
+
+
+				/* ВЫВОД ИТОГОВЫХ РЕЗУЛЬТАТОВ: ВНИМАНИЕ! ПОРЯДОК СЛЕДОВАНИЯ ЗНАЧЕНИЙ (СТОЛБЦОВ) ВАЖЕН ДЛЯ VBS-КОДА! */
+				SELECT 
+					@sHistoryInfo AS [DirectionChangeHistoryInfo],
+					@sDirectionStructError AS [DirectionStructError],
+					@bHasParentDirectionsSet AS [HasParentDirectionsSet]
+			END
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="FolderID" vt="uuid" required="1" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	-->
+	<ds:data-source n="GetCalculatedExpensesRatio" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			BEGIN
+				DECLARE @RootFolderLRLevel int
+				DECLARE @ExpensesSum bigint
+				DECLARE @tFolders TABLE (
+						Row int NOT NULL IDENTITY(1,1) PRIMARY KEY,
+						FolderID uniqueidentifier,
+						Customer uniqueidentifier,
+						LIndex int,
+						RIndex int,
+						LRLevel int,
+						DirectionID uniqueidentifier,
+						DirsQnt int,
+						Expenses bigint DEFAULT 0
+					)
+
+				SELECT @RootFolderLRLevel = f.LRLevel
+				FROM dbo.Folder f WITH(NOLOCK)
+				WHERE f.ObjectID = :FolderID
+
+				/* (1) Выбираем все подчиненные папки, для которых заданы направления вообще; 
+				зачитываем L- и R-индексы (понадобсятся далее для выбора подчиненных папок), 
+				а так же значение LRLevel:
+				*/
+				INSERT INTO @tFolders( FolderID, Customer, LIndex, RIndex, LRLevel, DirectionID )
+					SELECT	fIn.ObjectID, fIn.Customer, fIn.LIndex, fIn.RIndex, fIn.LRLevel, fdIn.Direction
+					FROM 	
+						dbo.Folder fRoot WITH(NOLOCK)
+						JOIN dbo.Folder fIn WITH(NOLOCK) ON fIn.Customer = fRoot.Customer AND fIn.LIndex >= fRoot.LIndex AND fIn.RIndex <= fRoot.RIndex
+						JOIN dbo.FolderDirection fdIn WITH(NOLOCK) ON fIn.ObjectID = fdIn.Folder
+					WHERE	
+						fRoot.ObjectID = :FolderID
+				
+				/* Коррекции: (а) для каждой строки (которая есть пара "папка - направление"
+				проставим так же кол-во направлений, соотнесенных с папкой, описываемой сторокой:
+				*/
+				UPDATE @tFolders 
+				SET DirsQnt = ( SELECT COUNT(1) FROM @tFolders t2 WHERE t2.FolderID = t.FolderID )
+				FROM @tFolders t
+				
+
+				/* (2) Убираем дубли: если для папки есть вышестоящая папка И у обоих задано 
+				по одному - одинаковому - направлению 
+				*/
+				DELETE FROM @tFolders 
+				WHERE FolderID IN (
+					SELECT FolderID FROM @tFolders t1
+					WHERE t1.DirsQnt = 1 AND EXISTS ( 
+						SELECT 1 FROM @tFolders t2 
+						WHERE t2.FolderID <> t1.FolderID 
+							AND t2.DirectionID = t1.DirectionID 
+							AND t2.LIndex < t1.LIndex AND t2.RIndex > t1.RIndex 
+							AND t2.DirsQnt = 1 
+					)
+				)
+				/* Если после удаления дублей осталась только целевая папка - то это означает,
+				что (а) для нее задано только одно направление, и (б) нет ни одной подчиненной
+				папки, для которой было бы задано что-то иное (или вообще что-то задано). 
+				В этом случае имеет смысл считать затраты по самой целевой папке - что бы код
+				расчета далее работал корректно, переставим @RootFolderLRLevel так, что бы 
+				расчет затрат шел по самой целевой папке: 
+				*/
+				IF NOT EXISTS( SELECT 1 FROM @tFolders WHERE FolderID <> :FolderID )
+					SET @RootFolderLRLevel = -1
+					
+				-- (3) TODO: (Анализ проблем ?)
+
+				-- (4) Затраты
+				UPDATE @tFolders SET Expenses = tIn.Expenses
+				FROM 
+					@tFolders t 
+					JOIN ( 
+						SELECT tIn.FolderID, SUM(tIn.Expenses) AS Expenses
+						FROM
+						(
+							/* списания по инцидентам */
+							SELECT t2.FolderID, SUM(ts.Spent) AS Expenses
+							FROM	
+								@tFolders t2
+								JOIN dbo.Folder fIn WITH(NOLOCK) ON fIn.Customer = t2.Customer AND fIn.LIndex >= t2.LIndex AND fIn.RIndex <= t2.RIndex
+								JOIN dbo.Incident i WITH(NOLOCK) ON i.Folder = fIn.ObjectID 
+								JOIN dbo.Task tsk WITH(NOLOCK) ON tsk.Incident = i.ObjectID 
+								JOIN dbo.TimeSpent ts WITH(NOLOCK) ON ts.Task = tsk.ObjectID
+							WHERE t2.LRLevel <> @RootFolderLRLevel
+							GROUP BY t2.FolderID
+						UNION ALL
+							/* списания на папку */
+							SELECT t2.FolderID, SUM(ls.LostTime) AS Expenses
+							FROM	
+								@tFolders t2
+								JOIN dbo.Folder fIn WITH(NOLOCK) ON fIn.Customer = t2.Customer AND fIn.LIndex >= t2.LIndex AND fIn.RIndex <= t2.RIndex
+								JOIN dbo.TimeLoss ls WITH(NOLOCK) ON ls.Folder = fIn.ObjectID
+							WHERE t2.LRLevel <> @RootFolderLRLevel
+							GROUP BY t2.FolderID
+						) tIn 
+						GROUP BY tIn.FolderID
+					) tIn ON t.FolderID = tIn.FolderID
+				WHERE t.LRLevel <> @RootFolderLRLevel
+
+
+				-- (5) Превращаем в проценты
+				SELECT @ExpensesSum = SUM(t.Expenses) FROM @tFolders t 
+				IF @ExpensesSum <> 0
+				BEGIN
+					UPDATE @tFolders
+					SET Expenses = Expenses * 100 / @ExpensesSum 
+					WHERE LRLevel <> @RootFolderLRLevel
+					SELECT @ExpensesSum = SUM(t.Expenses) FROM @tFolders t
+					IF @ExpensesSum < 100
+						UPDATE @tFolders SET Expenses = Expenses + ( 100 - @ExpensesSum )
+						WHERE FolderID = ( SELECT TOP 1 t2.FolderID FROM @tFolders t2 ORDER BY t2.Expenses DESC )
+
+					/* ПРОВЕРКА, не  удалять!
+					SELECT t.*, f.Name FROM @tFolders t JOIN dbo.Folder f ON f.ObjectID = t.FolderID ORDER BY t.LRLevel 
+					*/	
+					-- (6) РЕЗУЛЬТАТ:
+					SELECT t.DirectionID, SUM(t.Expenses) AS ExpenseRatio
+					FROM @tFolders t
+					WHERE LRLevel <> @RootFolderLRLevel
+					GROUP BY t.DirectionID
+				END	
+				ELSE
+					SELECT NULL,NULL
+			END
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="FolderID" vt="uuid" required="1" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+	
+		Возвращает информацию о пользователе по его логину.
+		(пока возвращаются только идентификатор и фамилия-имя)
+	-->
+	<ds:data-source n="GetUserInfo" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT TOP 1 E.ObjectID,
+				E.LastName + ' ' + E.FirstName AS Name
+			FROM dbo.SystemUser AS U WITH(NOLOCK)
+			INNER JOIN dbo.Employee AS E WITH(NOLOCK) ON E.SystemUser = U.ObjectID
+			WHERE Login = @Login
+				AND U.IsServiceAccount = 0
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="Login" vt="string" required="1" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+	
+		Список доступных состояний инцидента для роли пользователя
+	-->
+	<ds:data-source n="AvailableStatesOfUserRole" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				st.[ObjectID],
+				st.[Name]
+			FROM dbo.Transition t WITH(NOLOCK)
+				JOIN dbo.IncidentState st WITH(NOLOCK) ON t.[To] = st.ObjectID
+			WHERE t.Role = :UserRoleID AND t.[From] = :CurrentStateID
+			ORDER BY st.[Name]
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="UserRoleID" vt="uuid" />
+			<ds:param n="CurrentStateID" vt="uuid" required="1" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+	
+		Список всех состояний для типа инцидента
+	-->
+	<ds:data-source n="AllStatesOfIncidentType" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT ObjectID, Name 
+			FROM IncidentState  WITH(NOLOCK)
+			WHERE IncidentType = @IncidentTypeID
+			ORDER BY [Name]
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="IncidentTypeID" vt="uuid" required="1" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+	
+		Удаляет "неиспользуемые" записи из БД
+	-->
+	<ds:data-source n="DeleteUnusedObjects" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text><![CDATA[EXEC dbo.app_DeleteUnusedObjects]]></ds:cmd-text>
+	</ds:data-source>
+	<!-- 
+	
+		Получение суммарных данных о списаниях сотрудника за предыдущий и текущий месяц,
+		на текущий день; результат - трехстрочный набор, где первая строка - списания за
+		предыдущий месяц, вторая - за текущий, третья - на текущий день. Структура:
+			- RowCode - "номер" строки
+			- PeriodStartDate - дата начала периода (будет использоваться далее для вызова отчета)
+			- PeriodEndDate - дата конца периода (будет использоваться далее для вызова отчета)
+			- WorkDayDuration - продолжительность рабочего дня в минутах
+			- ExpectedExpense - ожидаемое кол-во списаний, в минутах
+			- RealExpense - реальное кол-во списаний, в минутах
+			
+		ВНИМАНИЕ! 
+		Наименование и порядок следования заданных алиасов, регистр символов
+		в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="GetEmployeeCurrentSummaryExpenses" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			BEGIN 
+				DECLARE 
+					@@dtCurrDay datetime,			/* текущий день */
+					@@dtFirstDayPrevMonth datetime,	/* первый день предыдущего месяца */
+					@@dtLastDayPrevMonth datetime,	/* последний день предыдущего месяца */
+					@@dtFirstDayCurrMonth datetime	/* первый день текущего месяца */
+			
+				/* Временная таблица для сохранения результатов выполнения процедуры */
+				CREATE TABLE #t(
+					RowCode int IDENTITY, 
+					PeriodStartDate datetime,
+					PeriodEndDate datetime,
+					WorkDayDuration int NOT NULL,
+					ExpectedExpense int NOT NULL,
+					RealExpense int NOT NULL
+				)
+				
+				/* От текущей даты рассчитаем даты начала и конца предыдущего месяца, а так же дату начала текущего месяца: */
+				SELECT	
+					@@dtCurrDay = dbo.DATETRIM( GETDATE() ), 
+					@@dtLastDayPrevMonth = DATEADD( dd, -1*DATEPART(dd,@@dtCurrDay), @@dtCurrDay ),
+					@@dtFirstDayPrevMonth = DATEADD( mm, -1, DATEADD(dd, -1*DATEPART(dd,@@dtCurrDay)+1, @@dtCurrDay ) ),
+					@@dtFirstDayCurrMonth = DATEADD( dd, 1, @@dtLastDayPrevMonth )
+
+				/* Вызываем процедуру получения суммарных затрат для указанного сотрудника */
+				INSERT INTO #t EXEC dbo.app_GetSummaryTimeExpense :EmployeeID, @@dtFirstDayPrevMonth, @@dtLastDayPrevMonth, NULL
+				INSERT INTO #t EXEC dbo.app_GetSummaryTimeExpense :EmployeeID, @@dtFirstDayCurrMonth, @@dtCurrDay, NULL
+				INSERT INTO #t EXEC dbo.app_GetSummaryTimeExpense :EmployeeID, @@dtCurrDay, NULL, NULL
+
+				/* Выводим все данные из врменной таблицы - в рекордсет */
+				SELECT * FROM #t ORDER BY RowCode
+				
+				/* Удаляем верменную таблицу */
+				DROP TABLE #t
+			END
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="EmployeeID" vt="uuid" required="1" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+		Получение идентификаторов системных ролей, которые нужно присваивать сотрудникам по умолчанию
+		
+	-->
+	<ds:data-source n="GetDefaultSystemRoles" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT roles.ObjectID from dbo.[SystemRole] roles WHERE roles.[IsDefaultRole]=1
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!-- 
+	
+		Получение идентификатора объекта с данными профиля текущего пользователя; 
+		ЗАМЕЧАНИЕ-1: Запрашиваемого объекта с данными профиля может и не быть
+		ЗАМЕЧАНИЕ-2: В запросе используется специальная временная таблица #UserLogin
+	-->
+	<ds:data-source n="GetEmployeeUsersProfileID" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT up.ObjectID
+			FROM dbo.UserProfile up WITH(NOLOCK)
+			WHERE up.[SystemUser] = :UserID
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="UserID" vt="uuid" required="1" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	Получение продолжительности полного рабочего дня (в минутах) для Компании в целом (значение по умолчанию)
+	-->
+	<ds:data-source n="GetWorkdayGlobalDuration" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT [dbo].[GetWorkdayGlobalDuration]()
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!--
+	
+		Список всех зарегистрированных типов внешних ссылок
+	-->
+	<ds:data-source n="AllExternalLinkTypes" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT ObjectID, ServiceType, PresentationMode
+			FROM ExternalLinkType WITH(NOLOCK)
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!-- 
+		Источники данных для интеграции с Microsoft Project 2003
+		
+		Список дефолтовых ролей в инцидентах для участников проектной команды
+	-->
+	<ds:data-source n="MSProjectIntegration_RoleInProject" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT 
+				emp_roles.EmployeeID,
+				udrii.UserRoleInIncident,
+				udrii.IncidentType,
+				urip.Name
+			FROM dbo.GetAllFolderParticipantsRolesList(@FolderID) emp_roles
+				JOIN UserRoleInProject urip WITH(NOLOCK) ON emp_roles.RoleID = urip.ObjectID
+					JOIN UserDefaultRoleInIncident udrii WITH(NOLOCK) ON urip.ObjectID = udrii.UserRoleInProject
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="FolderID" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!-- Сотрудники-пользователи -->
+	<ds:data-source n="MSProjectIntegration_SystemUser" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT
+				su.ObjectID,
+				su.Login,
+				emp.ObjectID
+			FROM
+				dbo.[SystemUser] su WITH(NOLOCK)
+				LEFT JOIN dbo.Employee emp WITH(NOLOCK) ON emp.SystemUser = su.ObjectID
+			WHERE Login LIKE :Login
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="Login" vt="string" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	Обеспечение сервиса получения проектов по заданным направлениям для HPOVSD
+	-->
+	<ds:data-source n="CommonService-GetProjectsByDirections" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text type="sp">[dbo].[app_HPOVSD_GetProjectList]</ds:cmd-text>
+		<ds:params>
+			<ds:param n="Directions" required="1" vt="string" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+	Обеспечение сервиса списания для HPOVSD
+	-->
+	<ds:data-source n="CommonService-InsertTimeLossFromSD" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text type="sp">[dbo].[app_INTEROP_InsertTimeLossFromSD]</ds:cmd-text>
+		<ds:params>
+			<ds:param n="UserID" required="1" vt="string" />
+			<ds:param n="ProjectID" required="1" vt="uuid" />
+			<ds:param n="DirectionID" required="1" vt="uuid" />
+			<ds:param n="TimeLoss" required="1" vt="i4" />
+			<ds:param n="Description" required="1" vt="string" />
+			<ds:param n="DateLoss" required="1" vt="dateTime" />
+			<ds:param n="ExternalID" required="1" vt="string" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+	
+	Список направлений
+	-->
+	<ds:data-source n="SyncNSI-GetList-Directions" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT [ObjectID] as DirectionID
+			FROM [IT].[dbo].[Direction] WITH(NOLOCK)
+		]]>
+    </ds:cmd-text>
+	</ds:data-source>
+	<!-- 
+		Ищем разницу в направлениях между родительской и дочерней папками
+	-->
+	<ds:data-source n="GetFirstFolderDirectionDifference-ForChildFolder" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[SELECT top 1 fd.Direction
+					FROM dbo.FolderDirection fd JOIN  dbo.Folder f ON f.ObjectID=fd.Folder
+					WHERE (fd.Direction not in (SELECT Direction
+						FROM dbo.FolderDirection
+						WHERE  Folder = :ParentID))
+						AND fd.Folder= :FolderID AND EXISTS( SELECT TOP 1 * FROM dbo.Folder WHERE ObjectID = :ParentID )]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="FolderID" required="1" vt="uuid" />
+			<ds:param n="ParentID" required="1" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+		Ищем разницу в направлениях между родительской и дочерней папками
+	-->
+	<ds:data-source n="GetDifferentOrEqualDirection-ForChildFolder" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[IF (:bEqual = 1) 
+					BEGIN
+						SELECT top 1 fd.Direction
+						FROM Folder f WITH(NOLOCK)
+							JOIN Folder fUp WITH(NOLOCK) ON f.LIndex > fUp.LIndex AND f.RIndex < fUp.RIndex AND f.Customer = fUp.Customer  
+							JOIN FolderDirection fd  WITH(NOLOCK) ON f.ObjectID=fd.Folder  
+						WHERE fUp.ObjectID = :FolderID AND
+							(fd.Direction = :DirectionID)
+						END
+					ELSE	
+					BEGIN	
+						SELECT top 1 fd.Direction
+						FROM Folder f WITH(NOLOCK)
+							JOIN Folder fUp WITH(NOLOCK) ON f.LIndex > fUp.LIndex AND f.RIndex < fUp.RIndex AND f.Customer = fUp.Customer  
+							JOIN FolderDirection fd  WITH(NOLOCK) ON f.ObjectID=fd.Folder  
+							WHERE fUp.ObjectID = :FolderID AND
+						(fd.Direction <> :DirectionID)
+					END	]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="FolderID" required="1" vt="uuid" />
+			<ds:param n="DirectionID" required="1" vt="uuid" />
+			<ds:param n="bEqual" required="1" vt="boolean" />
+		</ds:params>
+	</ds:data-source>
+	<!-- 
+		Возвращает список активностей, относящихся к переданной организации
+	-->
+	<ds:data-source n="CommonService-GetOrganizationActivity" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+				SELECT 
+					f.[Customer] AS [ActivityOrganization],
+					f.[ObjectID] AS [ActivityID],
+					f.[Name] AS [ActivityName],
+					f.[ActivityType] AS [ActivityType],
+					f.[Type] AS [ActivityFolderType],	
+					f.[Parent] AS [ActivityParent],
+					f.[State] AS [ActivityState]
+				FROM Folder f (NOLOCK) 
+				WHERE ((f.[Customer] = :OrganizationID) OR (:OrganizationID IS NULL))  
+					AND (
+						((f.[Type] <> 16) AND (:ActivityID IS NULL))
+						OR (
+								EXISTS (
+									SELECT NULL
+									FROM Folder ff (NOLOCK) 
+									WHERE f.[Customer] = ff.[Customer] 
+										AND f.[LIndex] > ff.[LIndex] 
+										AND f.[RIndex] < ff.[RIndex]
+										AND ff.[ObjectID] = :ActivityID				
+								)
+								AND (:ActivityID IS NOT NULL)
+							)
+					)   
+					AND ((f.[State] & :ActivityState ) <> 0) 
+					AND ((f.[ActivityType] = :ActivityType) OR (:ActivityType IS NULL))	
+      ]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="OrganizationID" required="1" vt="uuid" />
+			<ds:param n="ActivityID" required="1" vt="uuid" />
+			<ds:param n="ActivityType" required="1" vt="uuid" />
+			<ds:param n="ActivityState" required="1" vt="i2" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+
+	Обеспечение сервиса синхронизации данных справочников с НСИ
+	Получение данных проектеых команд, заданных для указанной
+	возможности (Folder)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncNSI-GetList-TenderTeam" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			IF EXISTS( SELECT * FROM dbo.Folder f WITH(NOLOCK) WHERE f.ObjectID = :TenderID AND f.Type = 4 )
+			BEGIN 
+				SELECT a.EmployeeID, a.RoleID
+				FROM dbo.GetAllFolderParticipantsRolesList( :PresaleID ) a
+				ORDER BY a.EmployeeID /* NB! Сортировка по ID сотрудников ОБЯЗАТЕЛЬНА! */
+			END
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="TenderID" required="1" vt="uuid" />
+		</ds:params>
+	</ds:data-source>
+	<!--
+
+	Обеспечение сервиса синхронизации данных справочников СУТ с НСИ
+	Получение данных Тендеров Системы Учетов Тендеров
+	возможности (Folder)
+	ВНИМАНИЕ! 
+	Наименование и порядок следования заданных алиасов, регистр символов
+	в наименовании алиасов - ИМЕЮТ ЗНАЧЕНИЕ - И НЕ ДОЛЖНЫ ИЗМЕНЯТЬСЯ!
+	-->
+	<ds:data-source n="SyncTAS-TendersInfo" dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+			SELECT ObjectID
+					,Number
+					,Name
+					,Director
+					,TenderCustomer
+					,Folder
+					,Initiator
+					,InputDate
+			FROM dbo.Tender
+			WHERE SEARCH_CONDITIONS
+		]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="ObjectID" vt="uuid" array="1">
+				<ds:param-selector op="in">
+          <![CDATA[
+					ObjectID
+					]]>
+        </ds:param-selector>
+			</ds:param>
+		</ds:params>
+	</ds:data-source>
+	<ds:data-source n="CheckFoldersForTimeLossSearchingList" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+        SELECT
+          CASE
+            WHEN EXISTS (
+              SELECT TOP 1
+                NULL
+              FROM
+                dbo.ProjectParticipant _pp WITH (NOLOCK)
+              WHERE
+                _pp.Employee = @CurEmployeeID
+                AND (
+                  _pp.Privileges & 4 > 0
+                  OR EXISTS (
+                    SELECT TOP 1
+                      NULL
+                    FROM
+                      dbo.ProjectParticipant_Roles _pp_r WITH(NOLOCK)
+                      JOIN dbo.UserRoleInProject _urip WITH(NOLOCK) ON
+                        _urip.ObjectID = _pp_r.Value
+                    WHERE
+                      _pp.ObjectID = _pp_r.ObjectID
+                      AND (_urip.Privileges & 4 > 0 OR _urip.SystemPrivilegesOnRole & 8 > 0)
+                  )
+                )
+            ) THEN 1
+            ELSE 0
+          END AS [Result]
+      ]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="CurEmployeeID" vt="uuid" required="1" />
+		</ds:params>
+	</ds:data-source>
+	<ds:data-source n="CheckEmployeesFolderPrivilegesForFolder" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+        SELECT
+          ISNULL (
+            (
+              SELECT TOP 1
+                1
+              FROM
+                Folder f
+                JOIN ProjectParticipant pp ON
+                  pp.Folder = f.ObjectID
+                JOIN Folder ff ON
+                  f.Customer = ff.Customer
+                  AND f.LIndex <= ff.LIndex
+                  AND ff.RIndex <= f.RIndex
+              WHERE_CLAUSE
+            ), 0)
+      ]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="Employee" vt="uuid" required="1">
+				<ds:param-selector op="not-is-null"><![CDATA[pp.Employee= :Employee]]></ds:param-selector>
+			</ds:param>
+			<ds:param n="Folder" vt="uuid" required="1">
+				<ds:param-selector op="not-is-null"><![CDATA[ff.ObjectID = :Folder]]></ds:param-selector>
+			</ds:param>
+			<ds:param n="Privileges" vt="i4" required="1">
+				<ds:param-selector op="not-is-null">
+          <![CDATA[
+          pp.Privileges & :Privileges > 0 
+          OR EXISTS (
+            SELECT TOP 1
+              NULL
+            FROM
+              ProjectParticipant_Roles pp_r
+              JOIN (SELECT ObjectID FROM UserRoleInProject WHERE Privileges & :Privileges > 0) urip ON
+	              urip.ObjectID = pp_r.Value
+            WHERE
+	            pp.ObjectID = pp_r.ObjectID
+          )
+          ]]>
+        </ds:param-selector>
+			</ds:param>
+		</ds:params>
+	</ds:data-source>
+	<ds:data-source n="CheckEmployeeAccessToNotOwnFolders" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+		<ds:cmd-text>
+      <![CDATA[
+      SELECT 
+        ISNULL (
+			  (
+				  SELECT TOP 1
+            1
+          FROM
+            Employee e (NOLOCK)
+            JOIN SystemUser su (NOLOCK) ON
+				      su.ObjectID = e.SystemUser
+				      AND su.IsAdmin = 1
+          WHERE e.ObjectID = @Employee
+			  ),
+          ISNULL (
+            (
+              SELECT TOP 1
+                1
+              FROM
+                Employee e (NOLOCK)
+                JOIN SystemUser_SystemRoles su_sr (NOLOCK) ON
+                  e.SystemUser = su_sr.ObjectID
+                JOIN SystemRole sr (NOLOCK) ON
+                  sr.ObjectID = su_sr.Value
+                  AND sr.Priviliges & 512 > 0
+              WHERE e.ObjectID = @Employee
+            ),
+            ISNULL (
+              (
+                SELECT TOP 1
+                  1
+                FROM
+                  Organization o
+                WHERE
+                  o.Director = @Employee
+              ), 0
+            )
+          )
+        )
+      ]]>
+    </ds:cmd-text>
+		<ds:params>
+			<ds:param n="Employee" vt="uuid" required="1" />
+		</ds:params>
+	</ds:data-source>
+</ds:metadata>

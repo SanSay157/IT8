@@ -1,0 +1,128 @@
+<%@ Master 
+	Language="C#"
+	ClassName="Croc.XmlFramework.Web.XEditorMaster"  
+%>
+<%@ Implements 
+	Interface="Croc.XmlFramework.Web.IXMasterPageControl" 
+%>
+
+<script runat="server">
+	/// <summary>
+	/// Управление видимостью управляющих элементов мастер-страницы
+	/// </summary>
+	/// <param name="component">Идентификатор управляющего элемента</param>
+	public void HideControl(XMasterPageComponent component)
+	{
+		switch (component)
+		{
+			case XMasterPageComponent.OpenHelp: cmdHelp.Visible = false; break;
+		}
+	}
+
+	/// <summary>
+	/// Инициализация адреса перехода для кнопок типа "Назад", "Домой", "Помощ" и т.п.
+	/// </summary>
+	/// <param name="component">Идентификатор управляющего элемента</param>
+	/// <param name="sUrl">URL</param>
+	public void SetControlUrl(XMasterPageComponent component, string sUrl)
+	{
+		switch (component)
+		{
+			case XMasterPageComponent.OpenHelp: cmdHelp.NavigateUrl = sUrl;	break;
+		}
+	}
+
+	/// <summary>
+	/// Инициализация страницы в состояние "В доступе отказано"
+	/// </summary>
+	public void SetAccessDenied()
+	{}
+
+    /// <summary>
+    /// Метод осуществляет управление видимостью компонентов master-страницы.
+    /// </summary>
+    /// <param name="component">Элемент master\-страницы (значение
+    ///                         перечисления <see cref="Croc.XmlFramework.Web.XMasterPageComponent" text="XMasterPageComponent" />).</param>
+    public void SetControlVisiblity(XMasterPageComponent component, bool bVisible)
+    {
+    }
+
+    /// <summary>
+    /// Метод осуществляет установку дополнительных аттрибутов  компонентов master-страницы.
+    /// </summary>
+    public void SetAdditionalAttribute(XMasterPageComponent component, string sAtrributeName, string sAtrributeValue)
+    {
+    }
+</script>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:XFW="http://www.croc.ru/XmlFramework/Behaviors">
+<head id="Head1" runat="server" enableviewstate="false">
+	<?import namespace="XFW" implementation="x-menu-html-pe.htc"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"/>
+    <title>Заголовок</title>
+    <script language="vbscript" type="text/vbscript" src="VBS/x-editor-in-dialog-window.vbs"></script>
+    <link rel="SHORTCUT ICON" href="Icons/xu-application-icon.ico" runat="server"/>
+    <link href="x.css" rel="STYLESHEET" type="text/css" runat="server" />
+    <link id="Link1" href="it-styles.css" rel="STYLESHEET" type="text/css" runat="server" />
+</head>
+<body runat="server" enableviewstate="false" scroll="no">
+<form id="XEditorForm" runat="server" enableviewstate="false">
+	<%-- Препятствуем авто-postback'у страницы в случае, если в редакторе будет один текстовый контрол --%>
+	<input type="text" style="display:none"/>
+    <table ID="xLayoutGrid" runat="server" class="x-page-layoutgrid" cellpadding="0" cellspacing="0">
+		<tr runat="server">
+			<%-- ЗАГОЛОВОК --%>
+			<td ID="xPaneHeader" runat="server" class="x-pane-header" oncontextmenu="OnDebugEvent()">
+				<table runat="server" class="x-header" cellpadding="0" cellspacing="0" width="100%" height="100%">
+					<tr runat="server">
+						<td id="xPaneCaption" runat="server" class="x-header-title"></td>
+						<td id="xPaneSpecialCaption" runat="server" class="x-header-special-title"></td>
+						<td runat="server" class="x-header-control" valign="middle" nowrap>
+							<asp:HyperLink ID="cmdHelp" runat="server" TabIndex="-1" CssClass="x-open-help-control"
+								Target="_blank" ImageUrl="Images/x-open-help.gif">Справка</asp:HyperLink>
+							&nbsp;
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr runat="server">
+			<%-- ОСНОВНАЯ ПАНЕЛЬ --%>
+			<td ID="xPaneMain" runat="server" align="center" valign="middle" width="100%" height="100%" CLASS="x-pane-main">
+				<asp:ContentPlaceHolder ID="ContentPlaceHolderForContent" runat="server">
+					Зона размещения содержимого редактора
+				</asp:ContentPlaceHolder>
+			</td>
+		</tr>
+		<tr runat="server">
+			<%-- ПАНЕЛЬ ЭЛЕМЕНТОВ УПРАВЛЕНИЯ --%>
+			<td ID="xPaneControl" class="x-pane-control">
+				<table ID="xBarControl" class="x-controlbar" cellspacing="0" cellpadding="0">
+				<tr>
+					<td class="x-controlbar-left-zone">
+					</td>
+					<td class="x-controlbar-right-zone">
+						<table cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="100%" align="right">
+								<asp:ContentPlaceHolder ID="ContentPlaceHolderForMenu" runat="server">
+									Зона размещения меню операций редактора
+								</asp:ContentPlaceHolder>
+							</td>
+                            <td>
+								<asp:Button ID="cmdCancel" runat="server" Text="Отменить" Enabled="False"
+									CssClass="x-button-wide"
+									ToolTip="Завершение редактирования без сохранения изменений" 
+									UseSubmitBehavior="False" CausesValidation="False" TabIndex="5"/>
+							</td>
+						</tr>
+						</table>
+					</td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+    </table>
+</form>
+</body>
+</html>

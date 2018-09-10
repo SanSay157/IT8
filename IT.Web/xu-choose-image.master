@@ -1,0 +1,108 @@
+<%@ Master 
+	Language="C#"
+	ClassName="Croc.XmlFramework.Web.XChooseImageMaster"  
+%>
+<%@ Implements 
+	Interface="Croc.XmlFramework.Web.IXMasterPageControl" 
+%>
+<script runat="server">
+	/// <summary>
+	/// Управление видимостью управляющих элементов мастер-страницы
+	/// </summary>
+	/// <param name="component">Идентификатор управляющего элемента</param>
+	public void HideControl(XMasterPageComponent component)
+	{}
+
+	/// <summary>
+	/// Инициализация адреса перехода для кнопок типа "Назад", "Домой", "Помощ" и т.п.
+	/// </summary>
+	/// <param name="component">Идентификатор управляющего элемента</param>
+	/// <param name="sUrl">URL</param>
+	public void SetControlUrl(XMasterPageComponent component, string sUrl)
+	{}
+
+	/// <summary>
+	/// Инициализация страницы в состояние "В доступе отказано"
+	/// </summary>
+	public void SetAccessDenied()
+	{}
+
+    /// <summary>
+    /// Метод осуществляет управление видимостью компонентов master-страницы.
+    /// </summary>
+    /// <param name="component">Элемент master\-страницы (значение
+    ///                         перечисления <see cref="Croc.XmlFramework.Web.XMasterPageComponent" text="XMasterPageComponent" />).</param>
+    public void SetControlVisiblity(XMasterPageComponent component, bool bVisible)
+    {
+    }
+    /// <summary>
+    /// Метод осуществляет установку дополнительных аттрибутов  компонентов master-страницы.
+    /// </summary>
+    public void SetAdditionalAttribute(XMasterPageComponent component, string sAtrributeName, string sAtrributeValue)
+    {
+    }
+</script>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xfw="http://www.croc.ru/XmlFramework/Behaviors">
+<head runat="server" enableviewstate="false">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"/>
+    <link rel="SHORTCUT ICON" href="Icons/xu-application-icon.ico" runat="server"/>
+    <link href="x.css" rel="STYLESHEET" type="text/css" runat="server" />
+</head>
+<body runat="server" enableviewstate="false" scroll="no">
+<form runat="server" enableviewstate="false">
+    <table ID="xLayoutGrid" runat="server" class="x-page-layoutgrid" cellpadding="0" cellspacing="0">
+		<tr runat="server">
+			<%-- ЗАГОЛОВОК --%>
+			<td ID="xPaneHeader" runat="server" class="x-pane-header">
+				<table class="x-header" cellpadding="0" cellspacing="0" width="100%" height="100%">
+					<tr>
+						<td ID="xPaneCaption" runat="server" class="x-header-title"><%=Page.Title%></td>
+						<td ID="xPaneSpecialCaption" runat="server" class="x-header-special-title"></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr runat="server">
+			<%-- ОСНОВНАЯ ПАНЕЛЬ --%>
+			<td ID="xPaneMain" runat="server" align="center" valign="middle" width="100%" height="100%" CLASS="x-pane-main">
+				<asp:ContentPlaceHolder ID="ContentPlaceHolderForContent" runat="server">
+					Зона размещения таблицы с картинкой
+				</asp:ContentPlaceHolder>
+			</td>
+		</tr>
+		<tr runat="server">
+			<%-- ПАНЕЛЬ ЭЛЕМЕНТОВ УПРАВЛЕНИЯ --%>
+			<td ID="xPaneControl" class="x-pane-control">
+				<table ID="xBarControl" class="x-controlbar" cellspacing="0" cellpadding="0">
+				<tr>
+					<td class="x-controlbar-left-zone">
+                        <asp:Button ID="cmdBrowse" runat="server" Text="Выбор файла..." Enabled="False" 
+							CssClass="x-button-wide"
+                            ToolTip="Выбор файла" 
+                            UseSubmitBehavior="False" CausesValidation="False" TabIndex="1"/>
+                            
+                        <asp:Button ID="cmdClear" runat="server" Text="Очистить" Enabled="False" 
+							CssClass="x-button-wide"
+                            ToolTip="Очистить картинку" 
+                            UseSubmitBehavior="False" CausesValidation="False" TabIndex="2"/>
+					</td>
+					<td class="x-controlbar-right-zone">
+                        <asp:Button ID="cmdOK" runat="server" Text="ОК" Enabled="False" 
+							CssClass="x-button-wide"
+                            ToolTip="Выбрать" 
+                            UseSubmitBehavior="False" CausesValidation="False" TabIndex="3"/>
+                            
+                        <asp:Button ID="cmdCancel" runat="server" Text="Отменить" Enabled="False" 
+							CssClass="x-button-wide"
+                            ToolTip="Отменить изменения, закрыть окно" 
+                            UseSubmitBehavior="False" CausesValidation="False" TabIndex="4"/>
+					</td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+</body>
+</html>

@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<ds:flags n="FolderPrivileges" d="Привилегии для папки" vt="i4">
+		<ds:value n="ManageIncidents" d="Управление инцидентами" hint="Возможность изменения всех реквизитов любого инцидента, а также удаление. Позволяет устанавливать состояние инцидента вне графа переходов">1</ds:value>
+		<ds:value n="ManageIncidentParticipants" d="Управление составом участников инцидента" hint="Возможность создавать, редактировать и удалять задания для сотрудников в инциденте">2</ds:value>
+		<ds:value n="EditIncidentTimeSpent" d="Управление чужими списаниями" hint="Возможно создавать, редактировать и удалять затраты времени других сотрудников">4</ds:value>
+		<ds:value n="ChangeFolder" d="Редактирование реквизитов проектов" hint="Изменение всех реквизитов проектов, тендеров, пресейлов, кроме ссылок на Организацию, Тип проектных затрат и родительскую папку">64</ds:value>
+		<ds:value n="ManageCatalog" d="Управление каталогами" hint="Изменение всех реквизитов каталога, в том числе перемещение в пределах вышестоящего проекта">128</ds:value>
+		<ds:value n="SpentTimeByProject" d="Создание списания на проект">256</ds:value>
+		<ds:value n="ManageTeam" d="Управление проектной командой" hint="Возможность управлять участниками проектных команд подчиненных папок">512</ds:value>
+		<ds:value n="CloseFolder" d="Закрытие активности">1024</ds:value>
+		<ds:value n="TimeLossOnUnspecifiedDirection" d="Разрешение списания на папку с неоднозначным определением направления">2048</ds:value>
+	</ds:flags>
+	<ds:flags n="UserRoleInProjectFlags" d="Тип роли пользователя в папке" vt="i4">
+		<ds:value n="ProjectManager" d="Менеджер проекта">1</ds:value>
+		<ds:value n="ProjectAdministrator" d="Администратор проекта">2</ds:value>
+		<ds:value n="ClientDirector" d="Директор клиента">4</ds:value>
+	</ds:flags>
+	<ds:enum n="OBJ_TYPE" d="Тип сущности" vt="i4">
+		<ds:value n="CONTRACT" d="Договор">0</ds:value>
+		<ds:value n="OUT_CONTRACT" d="Расходный договор">1</ds:value>
+		<ds:value n="LOAN" d="Займ">2</ds:value>
+		<ds:value n="OUT_DOC" d="Расходный документ">3</ds:value>
+		<ds:value n="INC_DOC" d="Приходный документ">4</ds:value>
+		<ds:value n="OUTCOME" d="Расход">5</ds:value>
+		<ds:value n="INCOME" d="Приход">6</ds:value>
+		<ds:value n="GENOUT_DOC" d="Общий расходный документ">7</ds:value>
+		<ds:value n="GENOUTCOME" d="Общий расход">8</ds:value>
+		<ds:value n="GENINCOME" d="Общий приход">9</ds:value>
+		<ds:value n="BUDGET_OUT" d="Бюджетный расход">10</ds:value>
+		<ds:value n="KASS_TRANS" d="Движение ДС в кассе">30</ds:value>
+		<ds:value n="EMP_MONEY_MOVE" d="Передача ДС">31</ds:value>
+		<ds:value n="AO" d="АО">32</ds:value>
+	</ds:enum>
+	<ds:flags n="SystemPrivileges" d="Системные привилегии" vt="i4">
+		<ds:value n="SetUpIncidentWorkflow" d="Настройка workflow инцидентов" hint="Управление типами инцидентов, состояниями, переходами и ролями пользователей в инцидентах">1</ds:value>
+		<ds:value n="SetUpGlobalBlockPeriod" d="Установка глобального периода блокирования списаний">2</ds:value>
+		<ds:value n="ManageUsers" d="Управление пользователями">4</ds:value>
+		<ds:value n="ManageTimeLoss" d="Управление чужими списаниями">8</ds:value>
+		<ds:value n="TempOrganizationManagment" d="Управление временным описанием организации">16</ds:value>
+		<ds:value n="OrganizationManagement" d="Управление организациями">32</ds:value>
+		<ds:value n="ManageRefObjects" d="Управление справочниками">64</ds:value>
+		<ds:value n="AccessIntoTMS" d="Доступ к Системе учета тендеров">128</ds:value>
+		<ds:value n="MoveFoldersAndIncidents" d="Перенос папок и инцидентов">256</ds:value>
+		<ds:value n="ViewAllOrganizations" d="Просмотр всех Организаций">512</ds:value>
+		<ds:value n="ChangeTempOrgOnConst" d="Замена временного описания Организации постоянным">4096</ds:value>
+		<ds:value n="DecidingManInTMS" d="Принимающий решение в СУТ">8192</ds:value>
+		<ds:value n="ManageRefObjectsInTMS" d="Управление справочниками СУТ">16384</ds:value>
+		<ds:value n="CloseAnyFolder" d="Закрытие активностей">32768</ds:value>
+		<ds:value n="ManageDirectorAccount" d="Управление ролью Директор Аккаунта">65536</ds:value>
+		<ds:value n="ManageProjectTeam" d="Управление проектной командой">131072</ds:value>
+		<ds:value n="ManageContracts" d="Управление контрактами">262144</ds:value>
+		<ds:value n="ManageProjIncOut" d="Управление проектными приходами и расходами">524288</ds:value>
+		<ds:value n="ManageIncOut" d="Управление приходами и расходами">1048576</ds:value>
+		<ds:value n="ManageLoan" d="Управление займами">2097152</ds:value>
+		<ds:value n="ManageFOT" d="Управление ФОТ">4194304</ds:value>
+		<ds:value n="AccessFinReports" d="Финансовая отчетность">8388608</ds:value>
+		<ds:value n="CashManagement" d="Управление кассай">16777216</ds:value>
+	</ds:flags>
+	<ds:flags n="StdObjectPrivileges" d="Стандартные объектные привилегии" vt="i2">
+		<ds:value n="Create" d="Создание">1</ds:value>
+		<ds:value n="Edit" d="Редактирование">2</ds:value>
+		<ds:value n="Delete" d="Удаление">4</ds:value>
+		<ds:value n="Read" d="Чтение">8</ds:value>
+	</ds:flags>
+	<ds:enum n="ACTION_TYPE" d="Тип операции" vt="i2">
+		<ds:value n="INSERT" d="Создание">0</ds:value>
+		<ds:value n="UPDATE" d="Измененние">1</ds:value>
+		<ds:value n="DELETE" d="Удаление">2</ds:value>
+	</ds:enum>
+	<ds:type n="SystemRole" d="Системная роль" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Description" d="Описание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>4000</ds:max>
+		</ds:prop>
+		<ds:prop n="Priviliges" d="Привилегии" vt="i4" cp="scalar" flags="SystemPrivileges">
+			<ds:def default-type="both">0</ds:def>
+			<i:bits AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Настройка workflow инцидентов" hint="Управление типами инцидентов, состояниями, переходами и ролями пользователей в инцидентах">1</i:bit>
+				<i:bit n="Установка глобального периода блокирования списаний">2</i:bit>
+				<i:bit n="Управление пользователями">4</i:bit>
+				<i:bit n="Управление чужими списаниями">8</i:bit>
+				<i:bit n="Управление временным описанием организации">16</i:bit>
+				<i:bit n="Управление организациями">32</i:bit>
+				<i:bit n="Управление справочниками">64</i:bit>
+				<i:bit n="Доступ к Системе учета тендеров">128</i:bit>
+				<i:bit n="Перенос папок и инцидентов">256</i:bit>
+				<i:bit n="Просмотр всех Организаций">512</i:bit>
+				<i:bit n="Замена временного описания Организации постоянным">4096</i:bit>
+				<i:bit n="Принимающий решение в СУТ">8192</i:bit>
+				<i:bit n="Управление справочниками СУТ">16384</i:bit>
+				<i:bit n="Закрытие активностей">32768</i:bit>
+				<i:bit n="Управление ролью Директор Аккаунта">65536</i:bit>
+				<i:bit n="Управление проектной командой">131072</i:bit>
+				<i:bit n="Управление контрактами">262144</i:bit>
+				<i:bit n="Управление проектными приходами и расходами">524288</i:bit>
+				<i:bit n="Управление приходами и расходами">1048576</i:bit>
+				<i:bit n="Управление займами">2097152</i:bit>
+				<i:bit n="Управление ФОТ">4194304</i:bit>
+				<i:bit n="Финансовая отчетность">8388608</i:bit>
+				<i:bit n="Управление кассай">16777216</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="IsDefaultRole" d="Роль по умолчанию" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="ActivityTypes" d="Управление папками типов проектных затрат" vt="object" ot="ActivityType" cp="collection">
+			<i:tree-selector xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="ActivityTypes" />
+			</i:tree-selector>
+		</ds:prop>
+		<ds:prop n="TimeLossCause" d="Доступные причины списаний" vt="object" ot="TimeLossCause" cp="collection">
+			<i:list-selector use-list="OnlyNames" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<i:objects-list t="Системная роль" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" off-icons="1">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT TOP @@MAXROWS 
+						t.[ObjectID],
+						t.[Name],
+						t.[Description],
+						dbo.NameOf_SystemPrivileges(t.[Priviliges])
+					FROM [dbo].[SystemRole] t WITH (NOLOCK)
+					WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="200" />
+			<i:column t="Описание" width="300" />
+			<i:column t="Привилегии" width="500" />
+		</i:objects-list>
+		<i:objects-list n="SystemRoles" t="Системная роль" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" off-icons="1">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT TOP @@MAXROWS 
+						t.[ObjectID],
+						t.[Name]
+					FROM [dbo].[SystemRole] t WITH (NOLOCK)
+					WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="200" />
+		</i:objects-list>
+		<i:editor width="600" height="550" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Основные">x-editor2.xsl?@Name&amp;@Description&amp;@Priviliges</i:page>
+			<i:page t="Типы проектных затрат">
+        <![CDATA[
+				x-editor2.xsl?@ActivityTypes=height:360
+			]]>
+      </i:page>
+			<i:page t="Причины списаний">x-editor2.xsl?@TimeLossCause=height:360</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="UserRoleInProject" d="Роль пользователя в папке" tp="persistent">
+		<ds:prop n="Name" d="Название" vt="string" cp="scalar">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Privileges" d="Привилегии" vt="i4" cp="scalar" flags="FolderPrivileges">
+			<ds:def default-type="both">0</ds:def>
+			<i:bits xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Управление инцидентами" hint="Возможность изменения всех реквизитов любого инцидента, а также удаление. Позволяет устанавливать состояние инцидента вне графа переходов">1</i:bit>
+				<i:bit n="Управление составом участников инцидента" hint="Возможность создавать, редактировать и удалять задания для сотрудников в инциденте">2</i:bit>
+				<i:bit n="Управление чужими списаниями" hint="Возможно создавать, редактировать и удалять затраты времени других сотрудников">4</i:bit>
+				<i:bit n="Редактирование реквизитов проектов" hint="Изменение всех реквизитов проектов, тендеров, пресейлов, кроме ссылок на Организацию, Тип проектных затрат и родительскую папку">64</i:bit>
+				<i:bit n="Управление каталогами" hint="Изменение всех реквизитов каталога, в том числе перемещение в пределах вышестоящего проекта">128</i:bit>
+				<i:bit n="Создание списания на проект">256</i:bit>
+				<i:bit n="Управление проектной командой" hint="Возможность управлять участниками проектных команд подчиненных папок">512</i:bit>
+				<!-- NB! ВОЗМОЖНОСТЬ ЗАДАНИЯ ОТКДЛЮЧЕНА - До разрешения вопроса о том, КТО может выдавать эту привилегию 
+				<i:bit n="Закрытие активности">1024</i:bit>
+				-->
+				<i:bit n="Разрешение списания на папку с неоднозначным определением направления" hint="Разрешение списания на папку с неоднозначным определением направления">2048</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="UserDefaultRoles" d="Роли в инцидентах по умолчанию" vt="object" ot="UserDefaultRoleInIncident" cp="link" built-on="UserRoleInProject">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Тип инцидента" width="200">item.IncidentType.Name</i:column>
+				<i:column t="Роль в инциденте" width="200">item.UserRoleInIncident.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-aggregate" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Type" d="Тип роли" vt="i4" cp="scalar" flags="UserRoleInProjectFlags">
+			<ds:def default-type="both">0</ds:def>
+			<i:bits AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Менеджер проекта">1</i:bit>
+				<i:bit n="Администратор проекта">2</i:bit>
+				<i:bit n="Директор клиента">4</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="IncidentType" d="Доступные типы инцидентов" vt="object" ot="IncidentType" cp="collection">
+			<i:list-selector use-list="OnlyNames" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="SystemPrivilegesOnRole" d="Привилегии на выдачу роли" vt="i4" cp="scalar" flags="SystemPrivileges">
+			<ds:def default-type="both">0</ds:def>
+			<i:bits AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Настройка workflow инцидентов" hint="Управление типами инцидентов, состояниями, переходами и ролями пользователей в инцидентах">1</i:bit>
+				<i:bit n="Установка глобального периода блокирования списаний">2</i:bit>
+				<i:bit n="Управление пользователями">4</i:bit>
+				<i:bit n="Управление чужими списаниями">8</i:bit>
+				<i:bit n="Управление временным описанием организации">16</i:bit>
+				<i:bit n="Управление организациями">32</i:bit>
+				<i:bit n="Управление справочниками">64</i:bit>
+				<i:bit n="Доступ к Системе учета тендеров">128</i:bit>
+				<i:bit n="Перенос папок и инцидентов">256</i:bit>
+				<i:bit n="Просмотр всех Организаций">512</i:bit>
+				<i:bit n="Замена временного описания Организации постоянным">4096</i:bit>
+				<i:bit n="Принимающий решение в СУТ">8192</i:bit>
+				<i:bit n="Управление справочниками СУТ">16384</i:bit>
+				<i:bit n="Закрытие активностей">32768</i:bit>
+				<i:bit n="Управление ролью Директор Аккаунта">65536</i:bit>
+				<i:bit n="Управление проектной командой">131072</i:bit>
+				<i:bit n="Управление контрактами">262144</i:bit>
+				<i:bit n="Управление проектными приходами и расходами">524288</i:bit>
+				<i:bit n="Управление приходами и расходами">1048576</i:bit>
+				<i:bit n="Управление займами">2097152</i:bit>
+				<i:bit n="Управление ФОТ">4194304</i:bit>
+				<i:bit n="Финансовая отчетность">8388608</i:bit>
+				<i:bit n="Управление кассай">16777216</i:bit>
+			</i:bits>
+		</ds:prop>
+		<i:editor t="Роль пользователя в папке" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Основные" n="Main">x-editor2.xsl?@Name&amp;@Privileges&amp;@UserDefaultRoles&amp;@Type</i:page>
+			<i:page t="Доступные типы инцидентов" n="IncidentType">x-editor2.xsl?@IncidentType=height:380</i:page>
+			<i:page t="Привилегии на выдачу роли" n="SystemPrivilegesOnRole">x-editor2.xsl?@SystemPrivilegesOnRole=height:380</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Роль пользователя в проекте" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					t.[ObjectID],
+					t.[Name],
+					dbo.NameOf_UserRoleInProjectFlags(t.Type),
+					dbo.NameOf_FolderPrivileges(t.Privileges)
+				FROM [dbo].[UserRoleInProject] t WITH (NOLOCK)
+				WHERE_CLAUSE
+				ORDER BY t.Name
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Название" width="100" />
+			<i:column t="Тип роли" width="100" />
+			<i:column t="Привилегии" width="100" />
+		</i:objects-list>
+		<i:objects-list t="Роль пользователя в проекте" n="Roles" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					t.[ObjectID],
+					t.[Name]
+				FROM [dbo].[UserRoleInProject] t WITH (NOLOCK)
+				WHERE_CLAUSE
+				ORDER BY t.Name
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column t="Название" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="SystemUser" d="Пользователь приложения" tp="persistent">
+		<ds:prop n="Login" d="Логин" vt="string" cp="scalar">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="SystemRoles" d="Системные роли" vt="object" ot="SystemRole" cp="collection">
+			<i:list-selector off-rownumbers="1" off-icons="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="SystemPrivileges" d="Системные привилегии" vt="i4" cp="scalar" flags="SystemPrivileges">
+			<ds:def default-type="both">0</ds:def>
+			<i:bits AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Настройка workflow инцидентов" hint="Управление типами инцидентов, состояниями, переходами и ролями пользователей в инцидентах">1</i:bit>
+				<i:bit n="Установка глобального периода блокирования списаний">2</i:bit>
+				<i:bit n="Управление пользователями">4</i:bit>
+				<i:bit n="Управление чужими списаниями">8</i:bit>
+				<i:bit n="Управление временным описанием организации">16</i:bit>
+				<i:bit n="Управление организациями">32</i:bit>
+				<i:bit n="Управление справочниками">64</i:bit>
+				<i:bit n="Доступ к Системе учета тендеров">128</i:bit>
+				<i:bit n="Перенос папок и инцидентов">256</i:bit>
+				<i:bit n="Просмотр всех Организаций">512</i:bit>
+				<i:bit n="Замена временного описания Организации постоянным">4096</i:bit>
+				<i:bit n="Принимающий решение в СУТ">8192</i:bit>
+				<i:bit n="Управление справочниками СУТ">16384</i:bit>
+				<i:bit n="Закрытие активностей">32768</i:bit>
+				<i:bit n="Управление ролью Директор Аккаунта">65536</i:bit>
+				<i:bit n="Управление проектной командой">131072</i:bit>
+				<i:bit n="Управление контрактами">262144</i:bit>
+				<i:bit n="Управление проектными приходами и расходами">524288</i:bit>
+				<i:bit n="Управление приходами и расходами">1048576</i:bit>
+				<i:bit n="Управление займами">2097152</i:bit>
+				<i:bit n="Управление ФОТ">4194304</i:bit>
+				<i:bit n="Финансовая отчетность">8388608</i:bit>
+				<i:bit n="Управление кассай">16777216</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="IsServiceAccount" d="Сервисный аккаунт" vt="boolean" cp="scalar" maybenull="1">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="IsAdmin" d="Администратор" vt="boolean" cp="scalar" r="read-only">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="ActivityTypes" d="Управление папками типов проектных затрат" vt="object" ot="ActivityType" cp="collection">
+			<i:tree-selector xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="ActivityTypes" />
+			</i:tree-selector>
+		</ds:prop>
+		<ds:prop n="Employee" d="Сотрудник" vt="object" ot="Employee" cp="link-scalar" built-on="SystemUser">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.LastName</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<i:objects-list t="Пользователи приложения" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					su.[ObjectID],
+					su.[Login],
+					emp.LastName + ' ' + emp.FirstName,
+					su.[IsServiceAccount],
+					su.[IsAdmin]
+				FROM [dbo].[SystemUser] su with (nolock)
+					LEFT JOIN dbo.Employee emp with (nolock) ON su.ObjectID = emp.SystemUser
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Логин" width="100" />
+			<i:column t="ФИО" vt="string" width="200" />
+			<i:column t="Сервисный аккаунт" vt="boolean" width="100" />
+			<i:column t="Администратор" vt="boolean" width="100" />
+		</i:objects-list>
+		<i:editor n="common" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Главная" n="Main">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="Protocol" d="Протокол" tp="persistent">
+		<ds:prop n="EventType" d="Тип события" vt="i2" cp="scalar" enum="ACTION_TYPE">
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Создание">0</i:const-value>
+				<i:const-value n="Измененние">1</i:const-value>
+				<i:const-value n="Удаление">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="ObjType" d="Тип сущности" vt="i4" cp="scalar" maybenull="1" enum="OBJ_TYPE">
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Договор">0</i:const-value>
+				<i:const-value n="Расходный договор">1</i:const-value>
+				<i:const-value n="Займ">2</i:const-value>
+				<i:const-value n="Расходный документ">3</i:const-value>
+				<i:const-value n="Приходный документ">4</i:const-value>
+				<i:const-value n="Расход">5</i:const-value>
+				<i:const-value n="Приход">6</i:const-value>
+				<i:const-value n="Общий расходный документ">7</i:const-value>
+				<i:const-value n="Общий расход">8</i:const-value>
+				<i:const-value n="Общий приход">9</i:const-value>
+				<i:const-value n="Бюджетный расход">10</i:const-value>
+				<i:const-value n="Движение ДС в кассе">30</i:const-value>
+				<i:const-value n="Передача ДС">31</i:const-value>
+				<i:const-value n="АО">32</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Data" d="Данные" vt="string" cp="scalar" maybenull="1">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="DT" d="Время" vt="dateTime" cp="scalar">
+			<ds:def default-type="both">#CURRENT</ds:def>
+		</ds:prop>
+		<ds:prop n="Initiator" d="Инициатор" vt="object" ot="Employee" cp="scalar" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.LastName</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="OID" d="OID" vt="uuid" cp="scalar" maybenull="1" />
+		<i:objects-list t="Протокол" off-create="1" off-edit="1" off-clear="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[DT],
+          dbo.NameOf_OBJ_TYPE(t.[ObjType]),
+          dbo.NameOf_ACTION_TYPE(t.[EventType]),
+          dbo.GetEmployeeString(t.Initiator),
+					t.[Data],
+					CONVERT(VARCHAR(64), t.[OID])
+				FROM [dbo].[Protocol] t
+				WHERE_CLAUSE
+        ORDER BY DT DESC
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="Data" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							t.Data LIKE :Data
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateFrom" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[ 
+							t.DT >= dbo.DATETRIM(:DateFrom) 
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="DateTo" vt="dateTime">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+							t.DT < DATEADD(d, 1, dbo.DATETRIM(:DateTo))
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Initiator" vt="uuid">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  t.Initiator = :Initiator
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Action" vt="i4">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  t.EventType = :Action
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Object" vt="i4">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  t.ObjType = :Object
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="OID" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null">
+              <![CDATA[
+						  CONVERT(VARCHAR(64), t.OID) LIKE UPPER(:OID)
+						]]>
+            </ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterProtocol" height="90" />
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Время" vt="dateTime" width="200" />
+			<i:column t="Сущность" align="center" width="250" />
+			<i:column t="Событие" align="center" width="150" />
+			<i:column t="Инициатор" width="250" />
+			<i:column t="Данные" width="500" />
+			<i:column t="OID" align="center" width="250" />
+		</i:objects-list>
+	</ds:type>
+</ds:metadata>

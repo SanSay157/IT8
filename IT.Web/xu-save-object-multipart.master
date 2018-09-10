@@ -1,0 +1,77 @@
+<%@ Master 
+	Language="C#"
+	ClassName="Croc.XmlFramework.Web.XSaveObjectMultipartMaster"  
+%>
+<%@ Implements 
+	Interface="Croc.XmlFramework.Web.IXMasterPageControl" 
+%>
+<script runat="server">
+	/// <summary>
+	/// Управление видимостью управляющих элементов мастер-страницы
+	/// </summary>
+	/// <param name="component">Идентификатор управляющего элемента</param>
+	public void HideControl(XMasterPageComponent component)
+	{}
+
+	/// <summary>
+	/// Инициализация адреса перехода для кнопок типа "Назад", "Домой", "Помощ" и т.п.
+	/// </summary>
+	/// <param name="component">Идентификатор управляющего элемента</param>
+	/// <param name="sUrl">URL</param>
+	public void SetControlUrl(XMasterPageComponent component, string sUrl)
+	{}
+
+	/// <summary>
+	/// Инициализация страницы в состояние "В доступе отказано"
+	/// </summary>
+	public void SetAccessDenied()
+	{}
+
+    /// <summary>
+    /// Метод осуществляет управление видимостью компонентов master-страницы.
+    /// </summary>
+    /// <param name="component">Элемент master\-страницы (значение
+    ///                         перечисления <see cref="Croc.XmlFramework.Web.XMasterPageComponent" text="XMasterPageComponent" />).</param>
+    public void SetControlVisiblity(XMasterPageComponent component, bool bVisible)
+    {
+    }
+    
+    /// <summary>
+    /// Метод осуществляет установку дополнительных аттрибутов  компонентов master-страницы.
+    /// </summary>
+    public void SetAdditionalAttribute(XMasterPageComponent component, string sAtrributeName, string sAtrributeValue)
+    {
+    }
+</script>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xfw="http://www.croc.ru/XmlFramework/Behaviors">
+<head runat="server" enableviewstate="false">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"/>
+    <script language="vbscript" type="text/vbscript" src="VBS/x-save-object-multipart.vbs"></script>
+    <link rel="SHORTCUT ICON" href="Icons/xu-application-icon.ico" runat="server"/>
+    <link href="x.css" rel="STYLESHEET" type="text/css" runat="server" />
+</head>
+<body runat="server" enableviewstate="false" scroll="no">
+<form id="XEditorForm" runat="server" enableviewstate="false">
+    <table ID="xLayoutGrid" runat="server" class="x-page-layoutgrid" cellpadding="0" cellspacing="0">
+		<tr runat="server">
+			<%-- ЗАГОЛОВОК --%>
+			<td ID="xPaneHeader" runat="server" class="x-pane-header">
+				<table class="x-header" cellpadding="0" cellspacing="0">
+					<tr>
+						<td ID="xPaneCaption" runat="server" class="x-header-title"><%=Page.Title%></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr runat="server">
+			<td runat="server" height="100%" width="100%">
+				<asp:ContentPlaceHolder runat="server" ID="ContentPlaceHolder">
+					Зона размещение содержимого окна
+				</asp:ContentPlaceHolder>
+			</td>
+		</tr>
+	</table>
+</form>
+</body>
+</html>

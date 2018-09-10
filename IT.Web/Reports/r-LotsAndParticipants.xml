@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="windows-1251" ?> 
+<r:report 
+	r:t="Лоты и участники конкурсов"
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+	<r:common>
+		<r:style-class r:n="TENDERS-DATA-HEADER-CLASS">text-align="center" font-size="12px" font-family="Arial"</r:style-class>
+		<r:style-class r:n="LOTS-DATA-HEADER-CLASS">text-align="center" font-size="14px" font-family="Arial"</r:style-class>
+		<!-- стиль отображения для всей таблицы по-умолчанию -->
+		<r:style-class r:n="TABLE">border="solid" border-width="0px 1px 1px 1px" border-color="#50729C" text-align="center" border-collapse="collapse"</r:style-class>
+	</r:common>
+	
+	<!-- Параметры отчета -->
+	<r:params>
+		<r:param r:n="IntervalBegin" r:vt="date" />
+		<r:param r:n="IntervalEnd" r:vt="date" />
+		<r:param r:n="Company" r:vt="uuid" />
+		<r:param r:n="TenderCustomer" r:vt="uuid" />
+		<r:param r:n="ParticipantOrganization" r:vt="uuid" />
+		<r:param r:n="CompetitorType" r:vt="i4" />
+		<r:param r:n="ExcludeOtherParticipants" r:vt="boolean" />
+		<r:param r:n="SortType" r:vt="i4" />
+		<r:param r:n="SortOrder" r:vt="i4" />
+		<r:param r:n="InsertResctrictions" r:vt="boolean" />
+	</r:params>
+	<!-- Источники данных -->
+	<r:data-sources>
+				
+		<r:storage-data-source r:n="Tenders" >
+			<r:cmd r:type="text">
+				<![CDATA[
+					-- округляем даты
+					SET @IntervalBegin = dbo.DATETRIM(@IntervalBegin)
+					SET @IntervalEnd = dbo.DATETRIM(@IntervalEnd)
+					
+					-- Следующие два запроса отличаются только порядком сортировки!!!					
+					
+					IF @SortOrder = 1
+					-- Сортируем по возрастанию
+					SELECT
+						T.ObjectID AS TenderID,
+						T.Name,
+						ISNULL(C.ShortName, C.Name) AS CustomerName,
+						T.DocFeedingDate,
+						dbo.NameOf_LotState( dbo.GetTenderState(T.ObjectID,NULL) ) AS State,
+						T.QualifyingRequirement,
+						D.LastName + ' ' + D.FirstName + ISNULL(' ' + D.MiddleName, '') AS DirectorName,
+						'Удалено' AS TenderDocPrice
+					FROM dbo.Tender AS T WITH(NOLOCK)
+					LEFT JOIN dbo.Organization AS C WITH(NOLOCK) ON C.ObjectID = T.TenderCustomer
+					LEFT JOIN dbo.Employee AS D WITH(NOLOCK) ON D.ObjectID = T.Director
+					WHERE
+						-- ограничение по интервалу дат
+						(dbo.DATETRIM(T.DocFeedingDate) >= @IntervalBegin OR @IntervalBegin IS NULL) AND
+						(dbo.DATETRIM(T.DocFeedingDate) <= @IntervalEnd OR @IntervalEnd IS NULL) AND
+						-- ограничение по организации-конкурсанту
+						(@Company IS NULL OR EXISTS (
+							SELECT 1
+							FROM 
+								dbo.Lot AS L WITH(NOLOCK)
+								INNER JOIN dbo.LotParticipant AS P WITH(NOLOCK) ON P.Lot = L.ObjectID AND P.ParticipationType = 1
+							WHERE 
+								L.Tender = T.ObjectID
+								AND P.ParticipantOrganization = @Company
+						) ) AND
+						-- ограничение по организации-заказчику
+						(@TenderCustomer IS NULL OR T.TenderCustomer = @TenderCustomer) AND
+						-- ограничение по организации-участнику
+						(@ParticipantOrganization IS NULL OR EXISTS (
+							SELECT 1
+							FROM 
+								dbo.Lot AS L WITH(NOLOCK) 
+								INNER JOIN dbo.LotParticipant AS P WITH(NOLOCK) ON P.Lot = L.ObjectID AND P.ParticipationType <> 1
+							WHERE L.Tender = T.ObjectID
+								AND P.ParticipantOrganization = @ParticipantOrganization
+								AND (@CompetitorType IS NULL OR P.ParticipationType = @CompetitorType)
+						) ) AND 
+						-- ограничение по типу отношений
+						(@CompetitorType IS NULL OR EXISTS (
+							SELECT 1
+							FROM 
+								dbo.Lot AS L WITH(NOLOCK)
+								INNER JOIN dbo.LotParticipant AS P WITH(NOLOCK) ON P.Lot = L.ObjectID AND P.ParticipationType = @CompetitorType
+							WHERE L.Tender = T.ObjectID
+						) )
+						ORDER BY LTRIM(
+							CASE @SortType
+								WHEN 1 THEN T.Name
+								WHEN 2 THEN ISNULL(C.ShortName, C.Name)
+								WHEN 3 THEN CONVERT(varchar, T.DocFeedingDate, 121)
+							END) ASC
+							
+					ELSE
+					-- Сортируем по убыванию
+					SELECT
+						T.ObjectID AS TenderID,
+						T.Name,
+						ISNULL(C.ShortName, C.Name) AS CustomerName,
+						T.DocFeedingDate,
+						dbo.NameOf_LotState( dbo.GetTenderState(T.ObjectID,NULL) ) AS State,
+						T.QualifyingRequirement,
+						D.LastName + ' ' + D.FirstName + ISNULL(' ' + D.MiddleName, '') AS DirectorName,
+						'Удалено' AS TenderDocPrice
+					FROM 
+						dbo.Tender AS T
+						LEFT JOIN dbo.Organization AS C WITH(NOLOCK) ON C.ObjectID = T.TenderCustomer
+						LEFT JOIN dbo.Employee AS D WITH(NOLOCK) ON D.ObjectID = T.Director
+					WHERE
+						-- ограничение по интервалу дат
+						(dbo.DATETRIM(T.DocFeedingDate) >= @IntervalBegin OR @IntervalBegin IS NULL) AND
+						(dbo.DATETRIM(T.DocFeedingDate) <= @IntervalEnd OR @IntervalEnd IS NULL) AND
+						-- ограничение по организации-конкурсанту
+						(@Company IS NULL OR EXISTS (
+							SELECT 1
+							FROM 
+								dbo.Lot AS L WITH(NOLOCK)
+								INNER JOIN dbo.LotParticipant AS P WITH(NOLOCK) ON P.Lot = L.ObjectID AND P.ParticipationType = 1
+							WHERE L.Tender = T.ObjectID
+								AND P.ParticipantOrganization = @Company
+						) ) AND
+						-- ограничение по организации-заказчику
+						(@TenderCustomer IS NULL OR T.TenderCustomer = @TenderCustomer) AND
+						-- ограничение по организации-участнику
+						(@ParticipantOrganization IS NULL OR EXISTS (
+							SELECT 1
+							FROM 
+								dbo.Lot AS L WITH(NOLOCK)
+								INNER JOIN dbo.LotParticipant AS P WITH(NOLOCK) ON P.Lot = L.ObjectID AND P.ParticipationType <> 1
+							WHERE L.Tender = T.ObjectID
+								AND P.ParticipantOrganization = @ParticipantOrganization
+								AND (@CompetitorType IS NULL OR P.ParticipationType = @CompetitorType)
+						) ) AND 
+						-- ограничение по типу отношений
+						(@CompetitorType IS NULL OR EXISTS (
+							SELECT 1
+							FROM
+								dbo.Lot AS L WITH(NOLOCK)
+								INNER JOIN dbo.LotParticipant AS P WITH(NOLOCK) ON P.Lot = L.ObjectID AND P.ParticipationType = @CompetitorType
+							WHERE L.Tender = T.ObjectID
+						) )
+						ORDER BY LTRIM(
+							CASE @SortType
+								WHEN 1 THEN T.Name
+								WHEN 2 THEN ISNULL(C.ShortName, C.Name)
+								WHEN 3 THEN CONVERT(varchar, T.DocFeedingDate, 121)
+							END) DESC
+				]]>
+			</r:cmd>
+			<r:cmd-params>
+				<r:cmd-param r:n="@IntervalBegin" r:report-param="IntervalBegin" r:may-be-null="true" />
+				<r:cmd-param r:n="@IntervalEnd" r:report-param="IntervalEnd" r:may-be-null="true" />
+				<r:cmd-param r:n="@Company" r:report-param="Company" r:may-be-null="true" />
+				<r:cmd-param r:n="@TenderCustomer" r:report-param="TenderCustomer" r:may-be-null="true" />
+				<r:cmd-param r:n="@ParticipantOrganization" r:report-param="ParticipantOrganization" r:may-be-null="true" />
+				<r:cmd-param r:n="@CompetitorType" r:report-param="CompetitorType" r:may-be-null="true" />
+				<r:cmd-param r:n="@SortType" r:report-param="SortType" r:may-be-null="true" />
+				<r:cmd-param r:n="@SortOrder" r:report-param="SortOrder" r:may-be-null="true" />
+			</r:cmd-params>
+		</r:storage-data-source>
+		
+		<r:storage-data-source r:n="TenderLots">
+			<r:cmd r:type="text">
+				<![CDATA[
+					SELECT
+						L.ObjectID AS LotID,
+						L.Name,
+						dbo.NameOf_LotState(L.State) AS State,
+						R.Name AS LossReasonName,
+						'Удалено!' AS ApproximateCost,
+						dbo.GetSumString(S2.SumValue, C2.Code) AS GuaranteeSum,
+						G.Note AS GuaranteeNote
+					FROM 
+						dbo.Lot AS L WITH(NOLOCK)
+						LEFT JOIN dbo.LossReason AS R WITH(NOLOCK) ON R.ObjectID = L.LossReason
+						LEFT JOIN dbo.Currency AS C1 WITH(NOLOCK) ON C1.ObjectID = S1.Currency
+						LEFT JOIN dbo.Guarantee AS G WITH(NOLOCK) ON G.ObjectID = L.Guarantee
+						LEFT JOIN dbo.Sum AS S2 WITH(NOLOCK) ON S2.ObjectID = G.GuaranteeSum
+						LEFT JOIN dbo.Currency AS C2 WITH(NOLOCK) ON C2.ObjectID = S2.Currency
+					WHERE L.Tender = @TenderID
+				]]>
+			</r:cmd>
+			<r:cmd-params>
+				<r:cmd-param r:n="@TenderID" r:report-param="TenderID" />
+			</r:cmd-params>
+		</r:storage-data-source>
+		
+		<r:storage-data-source r:n="LotParticipants">
+			<r:cmd r:type="text">
+				<![CDATA[
+					SELECT
+						P.ObjectID AS LotParticipantID,
+						ISNULL(O.ShortName, O.Name) AS OrganizationName,
+						P.HelperContactInfo,
+						dbo.NameOf_Participations(P.ParticipationType) AS ParticipationInfo,
+						dbo.GetSumString(S1.SumValue, C1.Code) AS TenderParticipantPrice,
+						dbo.GetSumString(S2.SumValue, C2.Code) AS GuaranteeSum,
+						P.LossReason
+					FROM 
+						dbo.LotParticipant AS P WITH(NOLOCK)
+						LEFT JOIN dbo.Sum AS S1 WITH(NOLOCK) ON S1.ObjectID = P.TenderParticipantPrice
+						LEFT JOIN dbo.Currency AS C1 WITH(NOLOCK) ON C1.ObjectID = S1.Currency
+						INNER JOIN dbo.Organization AS O WITH(NOLOCK) ON O.ObjectID = P.ParticipantOrganization
+						LEFT JOIN dbo.Guarantee AS G WITH(NOLOCK) ON G.ObjectID = P.Guarantee
+						LEFT JOIN dbo.Sum AS S2 WITH(NOLOCK) ON S2.ObjectID = G.GuaranteeSum
+						LEFT JOIN dbo.Currency AS C2 WITH(NOLOCK) ON C2.ObjectID = S2.Currency
+					WHERE 
+						P.Lot = @LotID AND
+						( @ExcludeOtherParticipants = 0
+							OR 
+								@ParticipantOrganization IS NOT NULL AND
+								@CompetitorType IS NULL AND
+								P.ParticipantOrganization = @ParticipantOrganization
+							OR
+								@ParticipantOrganization IS NOT NULL AND
+								@CompetitorType IS NOT NULL AND
+								P.ParticipantOrganization = @ParticipantOrganization AND
+								P.ParticipationType = @CompetitorType
+						)
+				]]>
+			</r:cmd>
+			<r:cmd-params>
+				<r:cmd-param r:n="@LotID" r:report-param="LotID" />
+				<r:cmd-param r:n="@ParticipantOrganization" r:report-param="ParticipantOrganization" r:may-be-null="true" />
+				<r:cmd-param r:n="@CompetitorType" r:report-param="CompetitorType" r:may-be-null="true" />
+				<r:cmd-param r:n="@ExcludeOtherParticipants" r:report-param="ExcludeOtherParticipants" r:may-be-null="true" />
+			</r:cmd-params>
+		</r:storage-data-source>
+
+		<r:storage-data-source r:n="Params">
+			<r:cmd r:type="text">
+				<![CDATA[
+					SELECT
+					(
+						SELECT TOP 1
+							ISNULL(O.ShortName, O.Name)
+						FROM dbo.Organization AS O WITH(NOLOCK)
+						WHERE O.ObjectID = @Company
+					) AS CompanyName,
+					(
+						SELECT TOP 1
+							ISNULL(O.ShortName, O.Name)
+						FROM dbo.Organization AS O WITH(NOLOCK)
+						WHERE O.ObjectID = @TenderCustomer
+					) AS TenderCustomerName,
+					(
+						SELECT TOP 1
+							ISNULL(O.ShortName, O.Name)
+						FROM dbo.Organization AS O WITH(NOLOCK)
+						WHERE O.ObjectID = @ParticipantOrganization
+					) AS ParticipantOrganizationName,
+					dbo.NameOf_Participations(@CompetitorType) AS CompetitorTypeName
+				]]>
+			</r:cmd>
+			<r:cmd-params>
+				<r:cmd-param r:n="@Company" r:report-param="Company" r:may-be-null="true" />
+				<r:cmd-param r:n="@TenderCustomer" r:report-param="TenderCustomer" r:may-be-null="true" />
+				<r:cmd-param r:n="@ParticipantOrganization" r:report-param="ParticipantOrganization" r:may-be-null="true" />
+				<r:cmd-param r:n="@CompetitorType" r:report-param="CompetitorType" r:may-be-null="true" />
+			</r:cmd-params>
+		</r:storage-data-source>
+
+	</r:data-sources>
+	
+	<r:layouts>
+		<r:header-layout r:n="header"  r:use-data-sources="Params">
+			<r:fragment r:value="&lt;fo:block&gt;Лоты и участники конкурсов&lt;/fo:block&gt;" r:encoding="xml" />
+			<r:fragment r:value="&lt;fo:block /&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+			<r:fragment r:value="&lt;fo:block font-size='14px'&gt;Параметры отчета:&lt;/fo:block&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+			<r:fragment r:value="&lt;fo:table color='#FFFFFF' text-align='left' font-size='12px' font-family='MS Sans-serif'&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-column/&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-column/&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-body&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Период времени:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;c " r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+			<r:fragment r:value="{@IntervalBegin}" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0">
+				<r:formatters>
+					<r:empty-value-evaluator r:value="(не задано)" />
+					<r:date-time-evaluator r:format="dd.MM.yyyy" />
+				</r:formatters>
+			</r:fragment>				
+			<r:fragment r:value=" по " r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0"/>
+			<r:fragment r:value="{@IntervalEnd}" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0">
+				<r:formatters>
+					<r:empty-value-evaluator r:value="(не задано)" />
+					<r:date-time-evaluator r:format="dd.MM.yyyy" />
+				</r:formatters>
+			</r:fragment>				
+			<r:fragment r:value="&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0"/>
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@Company}==null" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Организация-конкурсант:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@Company}==null" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;&lt;![CDATA[{#CompanyName}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@Company}==null" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@Company}==null" />
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@TenderCustomer}==null" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Организация-заказчик:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@TenderCustomer}==null" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;&lt;![CDATA[{#TenderCustomerName}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@TenderCustomer}==null" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@TenderCustomer}==null" />
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@ParticipantOrganization}==null" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Организация-участник:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@ParticipantOrganization}==null" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;&lt;![CDATA[{#ParticipantOrganizationName}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@ParticipantOrganization}==null" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@ParticipantOrganization}==null" />
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@CompetitorType}==null" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Тип отношений с участником:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@CompetitorType}==null" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;&lt;![CDATA[{#CompetitorTypeName}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@CompetitorType}==null" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || {@CompetitorType}==null" />
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Исключить данные по другим участникам:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;да&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || (int){@ExcludeOtherParticipants}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;нет&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || (int){@ExcludeOtherParticipants}!=0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || (int){@SortType}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Сортировка:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || (int){@SortType}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;по наименованию конкурса&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || (int){@SortType}!=1" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;по наименованию заказчика&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || (int){@SortType}!=2" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;по дате проведения&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || (int){@SortType}!=3" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || (int){@SortType}==0" />
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || (int){@SortType}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Порядок сортировки:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || (int){@SortType}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;по возрастанию&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || (int){@SortType}==0 || (int){@SortOrder}!=1" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;по убыванию&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || (int){@SortType}==0 || (int){@SortOrder}!=2" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0 || (int){@SortType}==0" />
+			<r:fragment r:value="&lt;/fo:table-body&gt;&lt;/fo:table&gt;" r:encoding="xml" r:hide-if="(int){@InsertResctrictions}==0" />
+		</r:header-layout>		
+		
+		<r:master-detail-layout
+			r:n="Tenders"
+			r:data-source-name="Tenders"
+		>
+			<r:master-data r:style-class="TENDERS-DATA-HEADER-CLASS">
+				<r:master-data-fragment r:value="&lt;fo:block&gt;Информация о конкурсе № {$RowId}&lt;/fo:block&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table border='1px solid' border-color='#50729C' font-size='12px' font-family='MS Sans-serif'&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-column/&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-column/&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-body&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' background-color='#E1EAF4' width='150px'&gt;&lt;fo:block&gt;Наименование&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid'&gt;&lt;fo:block&gt;&lt;![CDATA[{#Name}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' background-color='#E1EAF4' width='150px'&gt;&lt;fo:block&gt;Заказчик&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid'&gt;&lt;fo:block&gt;&lt;![CDATA[{#CustomerName}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' background-color='#E1EAF4' width='150px'&gt;&lt;fo:block&gt;Директор клиента&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid'&gt;&lt;fo:block&gt;&lt;![CDATA[{#DirectorName}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' background-color='#E1EAF4' width='150px'&gt;&lt;fo:block&gt;Дата проведения&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid'&gt;&lt;fo:block&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;![CDATA[{#DocFeedingDate}]]&gt;" r:encoding="xml">
+					<r:formatters>
+						<r:date-time-evaluator r:format="dd.MM.yyyy" />
+					</r:formatters>
+				</r:master-data-fragment>
+				<r:master-data-fragment r:value="&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' background-color='#E1EAF4' width='150px'&gt;&lt;fo:block&gt;Состояние&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid'&gt;&lt;fo:block&gt;&lt;![CDATA[{#State}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' background-color='#E1EAF4' width='150px'&gt;&lt;fo:block&gt;Квалификация&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid'&gt;&lt;fo:block&gt;&lt;![CDATA[{#QualifyingRequirement}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" />
+
+				<r:master-data-fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' background-color='#E1EAF4' width='150px'&gt;&lt;fo:block&gt;Стоимость документации&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid'&gt;&lt;fo:block&gt;&lt;Удалено&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" />
+
+				<r:master-data-fragment r:value="&lt;/fo:table-body&gt;&lt;/fo:table&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:block&gt;&lt;/fo:block&gt;" r:encoding="xml" />
+			</r:master-data>
+			
+			<r:detail-data r:detail-layout-name="TenderLots">
+				<r:param-column r:name="TenderID" />
+			</r:detail-data>
+		</r:master-detail-layout>
+		
+		<r:master-detail-layout
+			r:n="TenderLots"
+			r:data-source-name="TenderLots"
+			r:master-detail-part="true"
+		>
+			<r:master-data r:style-class="LOTS-DATA-HEADER-CLASS">
+				<r:master-data-fragment r:value="&lt;fo:table border='solid' border-width='1px 1px 0px 1px' border-color='#50729C'  font-size='12px' font-family='MS Sans-serif'&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-column/&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-column/&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-column/&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-column/&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-column/&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-body&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' width='10%' font-weight='bold' font-size='14px' text-align='center' display-align='center' number-rows-spanned='4'&gt;&lt;fo:block&gt;Лот № {$RowId}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' background-color='#E1EAF4' number-columns-spanned='2'&gt;&lt;fo:block&gt;Наименование&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' background-color='#E1EAF4'&gt;&lt;fo:block&gt;Состояние&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' background-color='#E1EAF4'&gt;&lt;fo:block&gt;Причина проигрыша&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell width='40%' border='1px solid' number-columns-spanned='2'&gt;&lt;fo:block&gt;&lt;![CDATA[{#Name}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell width='15%' border='1px solid'&gt;&lt;fo:block&gt;&lt;![CDATA[{#State}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell width='35%' border='1px solid'&gt;&lt;fo:block&gt;&lt;![CDATA[{#LossReasonName}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' background-color='#E1EAF4'&gt;&lt;fo:block&gt;Стоимость предложения&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' background-color='#E1EAF4'&gt;&lt;fo:block&gt;Сумма банковской гарантии&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' background-color='#E1EAF4' number-columns-spanned='2'&gt;&lt;fo:block&gt;Комментарий к банковской гарантии&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid'&gt;&lt;fo:block&gt;&lt;Удалено&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid'&gt;&lt;fo:block&gt;&lt;![CDATA[{#GuaranteeSum}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;fo:table-cell border='1px solid' number-columns-spanned='2'&gt;&lt;fo:block&gt;&lt;![CDATA[{#GuaranteeNote}]]&gt;&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" />
+				<r:master-data-fragment r:value="&lt;/fo:table-body&gt;&lt;/fo:table&gt;" r:encoding="xml" />
+			</r:master-data>
+			
+			<r:detail-data r:detail-layout-name="LotParticipants">
+				<r:param-column r:name="LotID" />
+			</r:detail-data>
+		</r:master-detail-layout>
+		
+		<r:table-layout
+			r:n="LotParticipants"
+			r:data-source-name="LotParticipants"
+			r:no-data-message="(Участники лота не найдены)"
+			r:master-detail-part="true"
+		>
+			<r:col r:t="Участники лота">
+				<r:col
+					r:t="№ п/п"
+					r:counter-start="1"
+					r:counter-increment="1"
+					r:w="20px"
+				/>
+				<r:col
+					r:t="Наименование"
+					r:data="{#OrganizationName}"
+					r:w="15%"
+				/>
+				<r:col
+					r:t="Конт. лицо, тел., E-mail"
+					r:data="{#HelperContactInfo}"
+					r:w="20%"
+				/>
+				<r:col
+					r:t="Тип отношений"
+					r:data="{#ParticipationInfo}"
+					r:w="10%"
+				/>
+				<r:col
+					r:t="Стоимость предложения"
+					r:data="{#TenderParticipantPrice}"
+					r:w="15%"
+				/>
+				<r:col
+					r:t="Сумма банковской гарантии"
+					r:data="{#GuaranteeSum}"
+					r:w="15%"
+				/>
+				<r:col
+					r:t="Примечания"
+					r:data="{#LossReason}"
+					r:w="25%"
+				/>
+			</r:col>
+		</r:table-layout>
+
+	</r:layouts>
+</r:report>

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Croc.IncidentTracker.Utility</name>
+    </assembly>
+    <members>
+        <member name="T:Croc.IncidentTracker.Utility.Utils">
+            <summary>
+            Общие утилиты
+            </summary>
+        </member>
+        <member name="M:Croc.IncidentTracker.Utility.Utils.FormatTimeDuration(System.Int32,System.Int32)">
+            <summary>
+            Форматирует заданное количество минут в строку вида "Х дней Y часов Z минут"
+            </summary>
+            <param name="nMinutes">Количество минут</param>
+            <param name="nWorkdayDurationInMinutes">Количество минут в дне</param>
+            <returns>Строка с форматированным представлением заданного времени</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Utility.Utils.ParseDBString(System.String)">
+            <summary>
+            Преобразует строку БД в число с плавающей запятой
+            с обработкой исключений
+            </summary>
+            <param name="sIn">строка содержащая число</param>
+            <returns>резултирующее число</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Utility.Utils._GetDataFromDataRow(System.Data.IDataRecord)">
+            <summary>
+             считывает строку результата из рекордсета
+            </summary>
+            <param name="r">ридер</param>
+            <returns>Словарь с результирующей строкой</returns>
+        </member>
+        <member name="M:Croc.IncidentTracker.Utility.Utils._GetDataAsArrayList(System.Data.IDataReader)">
+            <summary>
+            зачитывает данные рекордсета в массив
+            </summary>
+            <param name="reader">ридер</param>
+            <returns>результирующий массив данных</returns>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="windows-1251" ?> 
+<r:report 
+	r:t="Хроника изменений инцидентов проекта"
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:it="http://www.croc.ru/Schemas/IncidentTracker/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/IncidentTracker/ReportService Croc.IncidentTracker.ReportService.xsd http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+	<r:common>
+		<r:style-class r:n="SUBTITLE">border="1pt solid" border-color="#50729C" background-color="#e9e9e9" text-align="center" font-size="10px" font-weight="bold" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="SUBTOTAL">border="1pt solid" border-color="#50729C" background-color="#e9e9e9" text-align="center" font-size="10px" font-weight="bold" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="TABLE_HEADER">border="1pt solid" border-color="#50729C" background-color="#E1EAF4" text-align="center" font-size="11px" font-weight="bold" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="TABLE_FOOTER">border="1pt solid" border-color="#50729C" background-color="#E1EAF4" text-align="center" font-size="11px" font-weight="bold" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="CAPTION_CLASS">border="1px solid" border-color="#50729C" text-align="center" font-size="10px" background-color="#e9e9e9" font-family="Tahoma"</r:style-class>
+		<r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+	</r:common>
+
+	<!-- Параметры отчета -->
+	<r:params>
+		<r:param r:n="HideGroupColumns" r:vt="boolean" r:default="1" />
+		<r:param r:n="IntervalBegin" r:vt="date" />
+		<r:param r:n="IntervalEnd" r:vt="date" />
+		<r:param r:n="Folder" r:vt="uuid" r:required="true" />
+		<r:param r:n="ActivityAnalysDepth" r:vt="i4" r:default="2" />
+		<r:param r:n="SectionByActivity" r:vt="i4" r:default="1" />
+		<r:param r:n="Detalization" r:vt="i4" r:default="0" />
+		<r:param r:n="IncludeSubProjects" r:vt="boolean" r:default="1" />
+		<r:param r:n="ShowColumnIncidentNumber" r:vt="boolean" r:default="1" />
+		<r:param r:n="ShowColumnIncidentName" r:vt="boolean" r:default="1" />
+		<r:param r:n="ShowColumnIncidentType" r:vt="boolean" r:default="1" />
+		<r:param r:n="ShowColumnDescr" r:vt="boolean" r:default="1" />
+		<r:param r:n="ShowColumnChangeDate" r:vt="boolean" r:default="1" />
+		<r:param r:n="ShowColumnState" r:vt="boolean" r:default="1" />
+		<r:param r:n="ShowColumnEmployee" r:vt="boolean" r:default="1" />
+		<r:param r:n="ShowColumnSolution" r:vt="boolean" r:default="1" />
+		
+		<r:param r:n="InsertRestrictions" r:vt="boolean" r:default="1" />
+	</r:params>
+	
+	<r:data-sources>
+		<!-- Основной источник данных -->
+		<r:storage-data-source r:n="Main">
+			<r:cmd r:type="sp">rep_FolderIncidentsHistory</r:cmd>
+			<r:cmd-params>
+				<r:cmd-param r:n="IntervalBegin" r:report-param="IntervalBegin" r:may-be-null="true" />
+				<r:cmd-param r:n="IntervalEnd" r:report-param="IntervalEnd" r:may-be-null="true" />
+				<r:cmd-param r:n="FolderID" r:report-param="Folder" />
+				<r:cmd-param r:n="ActivityAnalysDepth" r:report-param="ActivityAnalysDepth" />
+				<r:cmd-param r:n="SectionByActivity" r:report-param="SectionByActivity" />
+				<r:cmd-param r:n="IncludeSubProjects" r:report-param="IncludeSubProjects" />
+				<r:cmd-param r:n="IncidentStateDetalization" r:report-param="Detalization" />
+			</r:cmd-params>
+		</r:storage-data-source>
+		<!-- Источник данных для заголовка -->
+		<r:storage-data-source r:n="Header">
+			<r:cmd r:type="text"><![CDATA[
+				SELECT
+					IsNull([dbo].[GetFullFolderName](@Folder,0), '(Не указан)') AS Folder,
+					dbo.NameOf_ActivityAnalysDepth(@ActivityAnalysDepth) AS ActivityAnalysDepth,
+					dbo.NameOf_SectionByActivity(@SectionByActivity) AS SectionByActivity,
+					dbo.NameOf_ExpenseDetalization(@Detalization) AS Detalization,
+					CASE WHEN 0!=@IncludeSubProjects THEN 'Да' ELSE 'Нет' END AS IncludeSubProjects
+			]]></r:cmd>
+			<r:cmd-params>
+				<r:cmd-param r:n="Folder" r:report-param="Folder" />
+				<r:cmd-param r:n="ActivityAnalysDepth" r:report-param="ActivityAnalysDepth" />
+				<r:cmd-param r:n="SectionByActivity" r:report-param="SectionByActivity" />
+				<r:cmd-param r:n="Detalization" r:report-param="Detalization" />
+				<r:cmd-param r:n="IncludeSubProjects" r:report-param="IncludeSubProjects" />
+			</r:cmd-params>
+		</r:storage-data-source>
+		
+	</r:data-sources>
+	
+	<r:layouts>
+		<!-- Заголовок и параметры отчета -->
+		<r:header-layout r:n="Header" r:use-data-sources="Header">
+			<!-- Шапка таблицы -->
+			<r:fragment r:value="&lt;fo:block&gt;Хроника изменений инцидентов проекта&lt;/fo:block&gt;" r:encoding="xml" />
+			<r:fragment r:value="&lt;fo:block /&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:block font-size='14px'&gt;Параметры отчета:&lt;/fo:block&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table color='#FFFFFF' text-align='left' font-size='12px' font-family='MS Sans-serif'&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-column/&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-column/&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-body&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Период времени -->
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Период времени:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;c " r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="{@IntervalBegin}" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0">
+				<r:formatters>
+					<r:empty-value-evaluator r:value="(не задано)" />
+					<r:date-time-evaluator r:format="dd.MM.yyyy" />
+				</r:formatters>
+			</r:fragment>				
+			<r:fragment r:value=" по " r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0"/>
+			<r:fragment r:value="{@IntervalEnd}" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0">
+				<r:formatters>
+					<r:empty-value-evaluator r:value="(не задано)" />
+					<r:date-time-evaluator r:format="dd.MM.yyyy" />
+				</r:formatters>
+			</r:fragment>				
+			<r:fragment r:value="&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0"/>
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Активность -->
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Активность:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;{html #Folder}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Глубина анализа активностей-->
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Глубина анализа активностей:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;{#ActivityAnalysDepth}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Секционирование по активностям -->
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Секционирование по активностям:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;{#SectionByActivity}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Детализация состояний инцидентов -->
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Детализация состояний инцидентов:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;{#Detalization}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Включать в проект затраты подпроектов -->
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Включать в проект затраты подпроектов:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;{#IncludeSubProjects}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Закрываем таблицу -->
+			<r:fragment r:value="&lt;/fo:table-body&gt;&lt;/fo:table&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+		</r:header-layout>		
+		
+		<!-- Основная таблица -->
+		<r:table-layout r:n="Main" r:data-source-name="Main">
+			<r:var r:n="Folder" r:vt="string">
+				<r:macros>{#Folder}</r:macros>
+			</r:var>
+
+			<r:col
+				r:t="Активность"
+				r:data="{#Folder}"
+				r:aggregation-colspan="6"
+				r:aggregation-string-subtitle="{%Folder}"
+				r:aggregation-string-subtotals="Итого инцидентов по подпроекту:"
+				r:aggregation-string="Всего инцидентов:"
+				r:hide-if="HideGroupColumns"
+			/>
+			<r:col
+				r:t="№"
+				r:data="{#IncidentNumber}"
+				r:rowspan-by="Folder;IncidentNumber"
+				r:hide-if-not="ShowColumnIncidentNumber"
+			/>
+			<r:col
+				r:t="Название"
+				r:data="{#IncidentName}"
+				r:rowspan-by="Folder;IncidentNumber"
+				r:hide-if-not="ShowColumnIncidentName"
+			>
+				<r:formatters>
+					<r:href-evaluator r:href="vbscript:ShowContextForIncident(&quot;{#IncidentID}&quot;, 0, True)" r:target="_self"/>
+				</r:formatters>
+			</r:col>
+			<r:col
+				r:t="Класс"
+				r:data="{#IncidentType}"
+				r:rowspan-by="Folder;IncidentNumber"
+				r:hide-if-not="ShowColumnIncidentType"
+			/>
+			<r:col
+				r:t="Описание"
+				r:data="{#Descr}"
+				r:rowspan-by="Folder;IncidentNumber"
+				r:align="ALIGN_LEFT"
+				r:hide-if-not="ShowColumnDescr"
+				r:encoding="xml"				
+			>
+				<r:formatters>
+					<it:bigtext-evaluator />
+				</r:formatters>
+			
+			</r:col>
+			<r:col
+				r:t="Решение"
+				r:data="{#Solution}"
+				r:rowspan-by="Folder;IncidentNumber"
+				r:align="ALIGN_LEFT"
+				r:hide-if-not="ShowColumnSolution"
+				r:encoding="xml"				
+			>
+				<r:formatters>
+					<it:bigtext-evaluator />
+				</r:formatters>
+			
+			</r:col>
+			<r:col
+				r:t="IncidentCount"
+				r:data="{#IncidentNumber}"
+				r:aggregation-function="distinct-count"
+				r:aggregation-colspan="4"
+				r:hide-if="HideGroupColumns"
+			/>
+			<r:col
+				r:t="Дата"
+				r:data="{#ChangeDate}"
+				r:hide-if-not="ShowColumnChangeDate"
+			>
+				<r:formatters>
+					<r:date-time-evaluator r:format="dd.MM.yyyy HH:mm" />
+				</r:formatters>
+			</r:col>
+			<r:col
+				r:t="Состояние"
+				r:data="{#State}"
+				r:hide-if-not="ShowColumnState"
+			/>
+			<r:col
+				r:t="Сотрудник"
+				r:data="{#Employee}"
+				r:hide-if-not="ShowColumnEmployee"
+			>
+				<r:formatters>
+					<r:href-evaluator r:href="vbscript:ShowContextForEmployeeEx(&quot;{#EmployeeID}&quot;, &quot;{#EmployeeEMail}&quot;, &quot;{#IncidentID}&quot;, &quot;{#FolderID}&quot;, &quot;{@IntervalBegin}&quot;, &quot;{@IntervalEnd}&quot;)" r:target="_self" />
+				</r:formatters>
+			</r:col>
+			
+			<r:grouping>
+				<r:group-by r:n="Folder" r:upper-bound-presentation="sub-title" r:bound-presentation="sub-total" />
+			</r:grouping>
+		</r:table-layout>
+	</r:layouts>
+</r:report>

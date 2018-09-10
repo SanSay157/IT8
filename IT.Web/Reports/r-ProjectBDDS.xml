@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<r:report
+	r:t="Бюджет Движения Денежных Средств"
+	r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll"
+	r:class="Croc.IncidentTracker.ReportService.Reports.r_ProjectBDDS"
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+  <!-- Подключение клиентского скрипта -->
+  <r:common>
+    <r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+  </r:common>
+  <r:params>
+    <r:param r:n="InContract" r:vt="uuid" r:t="Приходный договор"  r:required="true"/>
+    <r:param r:n="DateRatio" r:vt="uuid" r:t="Масштаб"  r:required="true" />
+    <r:param r:n="IsSeparate" r:vt="boolean" r:t="Разделители разрядов"  r:required="true" />
+    <r:param r:n="IsBudgetBinded" r:vt="boolean" r:t="Привязка к бюджету"  r:required="true" />
+    
+  </r:params>
+  <r:data-sources>
+    <r:config-data-source r:n="DateRatioIntervalsDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.DateRatioIntervalsDS" r:section=""/>
+    <r:config-data-source r:n="IntervalSaldoDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.IntervalSaldoDS" r:section=""/>
+    <r:config-data-source r:n="ProjectBudgetForBDDSReportDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectBudgetForBDDSReportDS" r:section=""/>
+    <r:config-data-source r:n="ProjectIncomesForBDDSReportDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectIncomesForBDDSReportDS" r:section=""/>
+    <r:config-data-source r:n="ProjectBudgetBindedOutcomesForBDDSReportDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectBudgetBindedOutcomesForBDDSReportDS" r:section=""/>
+    <r:config-data-source r:n="ProjectSupplierBindedOutcomesForBDDSReportDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectSupplierBindedOutcomesForBDDSReportDS" r:section=""/>    
+    <r:config-data-source r:n="ProjectBudgetBindedOutcomesBeforeForBDDSReportDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectBudgetBindedOutcomesBeforeForBDDSReportDS" r:section=""/>
+    <r:config-data-source r:n="ProjectSupplierBindedOutcomesBeforeForBDDSReportDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectSupplierBindedOutcomesBeforeForBDDSReportDS" r:section=""/>
+    <r:config-data-source r:n="ProjectTotalBudgetBindedOutcomesForBDDSReportDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectTotalBudgetBindedOutcomesForBDDSReportDS" r:section=""/>
+    <r:config-data-source r:n="ProjectTotalSupplierBindedOutcomesForBDDSReportDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectTotalSupplierBindedOutcomesForBDDSReportDS" r:section=""/>
+    <r:config-data-source r:n="ContractDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ContractDS" r:section=""/>
+    <r:config-data-source r:n="ContractInfoDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ContractInfoDS" r:section=""/>
+  </r:data-sources>
+</r:report>

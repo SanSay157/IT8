@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build;GenerateVbsProxy" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{93CF0CA9-8182-4604-B31A-C30F29616F7A}</ProjectGuid>
+    <SccProjectName>"%24/IT.root/IT", PXCAAAAA</SccProjectName>
+    <SccLocalPath>..</SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>MSSCCI:Microsoft Visual SourceSafe</SccProvider>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>Croc.IncidentTracker.Commands.Interop</AssemblyName>
+    <AssemblyOriginatorKeyFile>..\Strong name keys\public.snk</AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>true</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Croc.IncidentTracker.Commands</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SignAssembly>false</SignAssembly>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\IT.Web\bin\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\..\..\IT\Source\APP\IT.Web\bin\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>DOC.Croc.IncidentTracker.Commands.Interop.xml</DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Croc.XmlFramework.Commands.Interop, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Commands.Interop.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Data.Public, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Data.Public.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Public, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Public.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Common project files\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="FactorizeProjectOutcomeRespones.cs" />
+    <Compile Include="FactorizeProjectOutcomeRequest.cs" />
+    <Compile Include="GetKassBallance.cs" />
+    <Compile Include="UpdateActivityStateRequest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CheckDatagramRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DeleteObjectByExKeyRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DKPLocatorResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EmployeeLocatorInCompanyTreeRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FolderLocatorInTreeRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetCurrentUserClientProfileResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetCurrentUserNavInfoResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetEmployeesExpensesRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetEmployeesExpensesResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetExpensesDataResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetFilterTendersInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetMailMsgInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetObjectByExKeyRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetObjectIdByExKeyRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetObjectIdByExKeyResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetObjectsRightsExResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IncidentLocatorInTreeRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MoveFolderRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MoveObjectsRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OM-consts.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TreeLocatorResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserNavigationInfo\NavigationItemIDs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserNavigationInfo\UserNavigationInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UserSubscriptionForEventClassRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="XXGetTreeNodeDragRequest.cs" />
+    <Compile Include="XXGetTreeNodeDragResponse.cs" />
+    <Compile Include="ContractLocatorInTreeRequest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>Клиентский профиль .NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Установщик Windows 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="GenerateVbsProxy" DependsOnTargets="AfterBuild">
+    <Copy SourceFiles="..\Tools\vbsgen.exe" DestinationFolder="$(TargetDir)" />
+    <Copy SourceFiles="..\Tools\Croc.XmlFramework.DevTools.VbsProxyGenerator.dll" DestinationFolder="$(TargetDir)" />
+    <Exec Command="&quot;$(TargetDir)vbsgen.exe&quot; &quot;$(TargetPath)&quot; &quot;..\IT.Web\VBS\it-proxy.vbs&quot;" />
+    <Delete Files="$(TargetDir)vbsgen.exe" />
+    <Delete Files="$(TargetDir)Croc.XmlFramework.DevTools.VbsProxyGenerator.dll" />
+  </Target>
+  <PropertyGroup>
+    <PostBuildEvent>"C:\IT\Source\APP\Tools\vbsgen.exe" "$(TargetDir)Croc.IncidentTracker.Commands.Interop.dll" "C:\IT\IT\VBS\it-proxy.vbs"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

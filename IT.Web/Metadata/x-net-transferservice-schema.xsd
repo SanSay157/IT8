@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns="http://www.croc.ru/Schemas/XmlFramework/TransferService/1.0" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0" xmlns:mstns="http://www.croc.ru/Schemas/XmlFramework/TransferService/1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.croc.ru/Schemas/XmlFramework/TransferService/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:import namespace="http://www.croc.ru/Schemas/XmlFramework/Data/1.0" schemaLocation="x-net-data-schema.xsd"/>
+	<xsd:element name="transfer" type="transferType">
+		<xsd:annotation>
+			<xsd:documentation>Корневой элемент - набор сценариев трансфера	</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="transferType">
+		<xsd:sequence>
+			<xsd:element name="export" type="exportType" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Сценарий выгрузки объектов</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="object-identification" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="steps-group" type="steps-groupType" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Группы шагов общие для нескольких сценариев</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="data-source" type="ds:tDataSource" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="steps-groupType">
+		<xsd:sequence>
+			<xsd:element name="before-export-step" type="before-stepType" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>
+						Шаг процесса подготовки к выгрузке данных.
+						Содержит текст SQL-запроса. В общем случае это может быть SQL-запрос,
+						предназначенный для подготовки данных для выгрузки.
+						В SQL-запросе возможно использование параметров (через data-source)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="export-step" type="export-stepType" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>
+						Шаг выгрузки данных.
+						Содержит SQL-запрос, в результате которого получаем
+						набор ObjectID объектов типа ot="..." для выгрузки
+						В SQL-запросе возможно использование параметров (через data-source).
+						Если надо выгрузить все объекты (select ObjectID from dbo.ИмяТипа), можно указать пустой текст запроса (пример: xtr:export-step ot="Resource"/).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="after-export-step" type="after-stepType" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>
+						Шаг процесса очистки данных после выгрузки.
+						Содержит текст SQL-запроса. В общем случае это может быть SQL-запрос,
+						предназначенный очистки данных для выгрузки, подготовленных запросами,
+						указанными в элементах before-export-step.
+						В SQL-запросе возможно использование параметров (через data-source)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="before-import-step" type="before-stepType" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>
+						Шаг процесса подготовки к загрузке данных.
+						Содержит текст SQL-запроса. В общем случае это может быть SQL-запрос,
+						предназначенный для проведения неких операций, которые должны быть выполнены
+						перед заливкой данных.
+						В SQL-запросе возможно использование параметров (через data-source)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="after-import-step" type="after-stepType" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>
+						Шаг процесса восстановления после выгрузки данных.
+						Содержит текст SQL-запроса. В общем случае это может быть SQL-запрос,
+						предназначенный очистки данных в сценариях обмена, когда загрузка производиться
+						в временные таблицы.
+						В SQL-запросе возможно использование параметров (через data-source)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="n" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Идентификатор сценария.
+					Служит для программной идентификации сценария и определения
+					"сценария-источника" при загрузке данных (имя сценария записывается в
+					файл данных при выгрузке).
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="exportType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="before-export-step" type="before-stepType" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element name="before-export-steps" type="stepDataSourcesRef" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:choice>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="export-step" type="export-stepType" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element name="export-steps" type="stepDataSourcesRef" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:choice>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="after-export-step" type="after-stepType" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element name="after-export-steps" type="stepDataSourcesRef" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:choice>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="before-import-step" type="before-stepType" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element name="before-import-steps" type="stepDataSourcesRef" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:choice>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="after-import-step" type="after-stepType" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element name="after-import-steps" type="stepDataSourcesRef" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:choice>
+			<xsd:element ref="object-identification" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="n" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Идентификатор сценария.
+					Служит для программной идентификации сценария и определения
+					"сценария-источника" при загрузке данных (имя сценария записывается в
+					файл данных при выгрузке).
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="t" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>Название сценария (используется для визуализации)</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="import-full-log" type="xsd:boolean" default="false">
+			<xsd:annotation>
+				<xsd:documentation>
+					Признак, показывающий, что нужно во время загрузки выводить в лог
+					информацию о каждом загружаемом объекте.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="export-transaction-type" default="each_query">
+			<xsd:annotation>
+				<xsd:documentation>
+					Способ использования транзакций при работе с БД при выгрузке данных.
+					each_query - каждый запрос к БД при выгрузке данных выполняется в рамках отдельной транзакции.
+					phase - все запросы, указанные в элементах before-export-step, выполняются в одной транзакции, 
+					потом следует выгрузка данных, 
+					потом в рамках одной транзакции выполняются запросы, указанные в элементах after-export-step.
+					single - одна транзакция на всю операцию
+					no - транзакции не используются
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="each_query"/>
+					<xsd:enumeration value="phase"/>
+					<xsd:enumeration value="single"/>
+					<xsd:enumeration value="no"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="import-transaction-type" default="each_query">
+			<xsd:annotation>
+				<xsd:documentation>
+					Способ использования транзакций при работе с БД при загрузке данных.
+					each_query - каждый запрос к БД при загрузке данных
+					выполняется в рамках отдельной транзакции (и сохранение каждого
+					загружаемого объекта в том числе).
+					phase - все запросы, указанные в элементах before-import-step, 
+					выполняются в одной транзакции, потом следует загрузка всех объектов
+					в рамках второй транзакции, потом в рамках третей транзакции выполняются 
+					запросы, указанные в элементах after-import-step.
+					single - одна транзакция на всю операцию
+					no - транзакции не используются
+					each_query_objects_only - каждый запрос на сохранение 
+					загружаемого объекта выполняется в рамках отдельной транзакции. 
+					Для шагов before-import-step и after-import-step транзакции не применяются.
+					phase_objects_only - загрузка всех объектов выполняется в рамках одной транзакции.
+					Для шагов before-import-step и after-import-step транзакции не применяются.
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="each_query"/>
+					<xsd:enumeration value="phase"/>
+					<xsd:enumeration value="single"/>
+					<xsd:enumeration value="no"/>
+					<xsd:enumeration value="each_query_objects_only"/>
+					<xsd:enumeration value="phase_objects_only"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="export-close-window-if-success" type="xsd:boolean" default="false">
+			<xsd:annotation>
+				<xsd:documentation>Автоматическое закрытие диалога выгрузки при успешном завершении</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="import-close-window-if-success" type="xsd:boolean" default="false">
+			<xsd:annotation>
+				<xsd:documentation>Автоматическое закрытие диалога загрузки при успешном завершении</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="export-show-file-name" type="xsd:boolean" default="false">
+			<xsd:annotation>
+				<xsd:documentation>Показывать ли при выгрузке на сервер имя файла в диалоге рядом с названием сценария</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="import-show-file-name" type="xsd:boolean" default="false">
+			<xsd:annotation>
+				<xsd:documentation>Показывать ли при загрузке на сервер имя файла в диалоге рядом с названием сценария</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="action-on-ignorable-error">
+			<xsd:annotation>
+				<xsd:documentation>
+          Действие в случае возникновения нефатальной ошибки:
+          ignore - игнорировать все ошибки;
+          alert-and-terminate - показать пользователю диалог с сообщением об ошибке с единственным выбором - 'Прервать';
+          terminate - прервать процесс, если указан этот атрибут, диалог с сообщением об ошибке не показывается
+          пользователю.
+        </xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ignore"/>
+          <xsd:enumeration value="alert-and-terminate"/>
+					<xsd:enumeration value="terminate"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="action-on-import-error">
+			<xsd:annotation>
+				<xsd:documentation>
+          Действие в случае возникновения ошибки при записи объекта при импорте и при неразрешенной ссылке:
+          ignore - игнорировать все ошибки;
+          alert-and-terminate - показать пользователю диалог с сообщением об ошибке с единственным выбором - 'Прервать';
+          terminate - прервать процесс, если указан этот атрибут, диалог с сообщением об ошибке не показывается
+          пользователю.
+        </xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="ignore"/>
+          <xsd:enumeration value="alert-and-terminate"/>
+					<xsd:enumeration value="terminate"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+    <xsd:attribute name="storage-error-mode">
+      <xsd:annotation>
+        <xsd:documentation>
+          Интерпретация ошибок, возникающих при работе с хранилищем данных:
+          all-ignorable - считать все ошибки игнорируемыми (по умолчанию);
+          all-fatal - считать все ошибки фатальными;
+          system-fatal - считать все ошибки фатальными кроме:
+          пользовательские, нарушения ограничений целостности, взаимные блокировки
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="all-ignorable">
+            <xsd:annotation>
+              <xsd:documentation>
+                Считать все ошибки игнорируемыми (по умолчанию)
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="all-fatal">
+            <xsd:annotation>
+              <xsd:documentation>
+                Считать все ошибки фатальными
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="system-fatal">
+            <xsd:annotation>
+              <xsd:documentation>
+                Считать все ошибки фатальными кроме:
+                пользовательские, нарушения ограничений целостности, взаимные блокировки
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="stepDataSources" mixed="true">
+		<xsd:sequence>
+			<xsd:element name="data-source" type="ds:tDataSource" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="stepDataSourcesRef" mixed="true">
+		<xsd:attribute name="ref" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>Ссылка на группу шагов</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:element name="object-identification">
+		<xsd:annotation>
+			<xsd:documentation>
+				Элемент, описывающий способ определения уникальности объекта данного типа.
+				Содержит SQL-запрос, возвращающий из БД ObjectID объекта. В качестве значений
+				скалярных свойств объекта, которые подставляются в запрос используются значения
+				XML-атрибутов, получаемые X-Path запросами, определяемыми вложенными элементами xpath
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType mixed="true">
+			<xsd:sequence>
+				<xsd:element name="xpath" minOccurs="0" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:simpleContent>
+							<xsd:extension base="xsd:string">
+								<xsd:annotation>
+									<xsd:documentation>
+										XPath запрос для получения значения свойства объекта при загрузке
+									</xsd:documentation>
+								</xsd:annotation>
+								<xsd:attribute name="vt" type="ds:tVarType" use="required">
+									<xsd:annotation>
+										<xsd:documentation>Тип параметра.</xsd:documentation>
+									</xsd:annotation>
+								</xsd:attribute>
+							</xsd:extension>
+						</xsd:simpleContent>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attribute name="action" default="replace">
+				<xsd:annotation>
+					<xsd:documentation>
+						Действие, выполняющееся в случае обнаружения в БД объекта 
+						данного типа, у которого значение свойств, определяющих уникальность, совпадают
+						со значениями свойств загружаемого объекта
+						возможные значения:
+							skip	- оставить имеющийся в БД объект без изменений
+							replace - заменить имеющийся в БД объект импортируемым
+							ask	- выдать диалоговое окно со списком свойств объектов и предложением пользователю вручную выбрать действие
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="skip"/>
+						<xsd:enumeration value="replace"/>
+						<xsd:enumeration value="ask"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="ot" type="xsd:NMTOKEN" use="required">
+				<xsd:annotation>
+					<xsd:documentation>Тип объекта</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="share-guids" type="xsd:boolean" default="false">
+				<xsd:annotation>
+					<xsd:documentation>
+						Будут ли новые объекты сохраняться под новым уникальным или старым гуидом 
+						(из файла обмена и базы экспорта).
+						По умолчанию генерируется уникальный гуид для нового объекта.
+						Если установлен share-guids="1", новые объекты записываются с гуидом, заданным в файле импорта.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="use-standart-identification" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>
+						Использовать для объекта стандартную идентификацию.
+						Позволяет запретить в конкретном сценарии прикладную идентификацию, объявленную глобально,
+						и/или позволяет использовать атрибут action со значениями skip или ask для объектов без прикладной идентификации.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+      <xsd:attribute name="text-compare-mode" default="strict">
+        <xsd:annotation>
+          <xsd:documentation>
+            Задает режим сравнения строковых или текстовых свойств объектов при
+            нахождении в БД дубликата при импорте
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="strict">
+              <xsd:annotation>
+                <xsd:documentation>
+                  Простое бинарное сравнение (по умолчанию)
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="wise-newline">
+              <xsd:annotation>
+                <xsd:documentation>
+                  Игнорировать различия в наборе символов переноса строки (но сами переносы учитывать)
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="wise">
+              <xsd:annotation>
+                <xsd:documentation>
+                  Игнорировать: переносы строк, пробельные символы (whitespace) в начале и в конце строки,
+                  пустые строки и строки, состоящие только из пробельных символов;
+                  рассматривать один или несколько пробельных символов как один пробел
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:enumeration>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="before-stepType" mixed="true">
+		<xsd:complexContent mixed="true">
+			<xsd:extension base="stepDataSources">
+				<xsd:attribute name="t" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>Название пред-шага (используется для визуализации)</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="export-stepType" mixed="true">
+		<xsd:complexContent mixed="true">
+			<xsd:extension base="stepDataSources">
+				<xsd:sequence>
+					<xsd:element name="not-saving-prop" minOccurs="0" maxOccurs="unbounded">
+						<xsd:annotation>
+							<xsd:documentation>Список свойств, к-е не сохраняются в файл обмена</xsd:documentation>
+						</xsd:annotation>
+						<xsd:complexType>
+							<xsd:attribute name="ot" type="xsd:NMTOKEN" use="required">
+								<xsd:annotation>
+									<xsd:documentation>Тип объекта</xsd:documentation>
+								</xsd:annotation>
+							</xsd:attribute>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:attribute name="ot" type="xsd:NMTOKEN" use="required">
+					<xsd:annotation>
+						<xsd:documentation>Тип объекта</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="t" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>Название шага (используется для визуализации)</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="saving-name-in-file" type="xsd:NMTOKEN">
+					<xsd:annotation>
+						<xsd:documentation>
+							Имя, под которым экспортировать объект в файл. 
+							(Может быть удобно, если при импорте надо загрузить объекты не в основню таблицу
+							для последующей обработки)
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="after-stepType" mixed="true">
+		<xsd:complexContent mixed="true">
+			<xsd:extension base="before-stepType">
+				<xsd:attribute name="when" default="always">
+					<xsd:annotation>
+						<xsd:documentation>
+						Описывает условие завершения операции выгрузки/загрузки данных, при котором
+						должен быть выполнен SQL-запрос, указанный в элементе after-export-step или after-import-step.
+						Возможные условия:
+							always	- запрос выполняется всегда
+							success	- выполняется при успешном завершении операции (не была прервана, и не было фатальных ошибок)
+							cancel	- выполняется, если операция прервана пользователем в т.ч. из SQL шага через RAISERROR
+							error	- выполняется при неудачном завершении операции (не была прервана, но была фатальная ошибка)
+							notsuccess - объединяет условия cancel и error: выполняется, если операция прервана пользователем или была фатальная ошибка
+							(выполняется ровно один из трех типов шагов: success, cancel или error)
+							(выполняется ровно один из двух типов шагов: success или notsuccess)
+						</xsd:documentation>
+					</xsd:annotation>
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:enumeration value="always"/>
+							<xsd:enumeration value="success"/>
+							<xsd:enumeration value="notsuccess"/>
+							<xsd:enumeration value="error"/>
+							<xsd:enumeration value="cancel"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>

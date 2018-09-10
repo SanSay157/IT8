@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<ds:type n="FilterReportEmployeeSaldoDS" d="Фильтр отчета &quot;Сальдо ДС по содруднику&quot;" tp="temporary">
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<i:editor n="editor" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:page n="Main" t=" ">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="FilterReportAllEmpSaldoDS" d="Фильтр отчета &quot;Сальдо ДС по сотрудникам &quot;" tp="temporary">
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<i:editor n="editor" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:client-script>s-Report-AllEmpSaldoDS.vbs</i:client-script>
+			<i:page n="Main" t=" ">p-Report-AllEmpSaldoDS.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<i:report t="Сальдо ДС по сотрудникам" n="AllEmpSaldoDS" width="500" height="220" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportAllEmpSaldoDS" />
+	</i:report>
+</ds:metadata>

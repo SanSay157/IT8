@@ -1,0 +1,116 @@
+<%@ Master 
+	Language="C#"
+	ClassName="Croc.XmlFramework.Web.XCommandExecutorMaster"  
+%>
+<%@ Implements 
+	Interface="Croc.XmlFramework.Web.IXMasterPageControl" 
+%>
+
+<script runat="server">
+	/// <summary>
+	/// Управление видимостью управляющих элементов мастер-страницы
+	/// </summary>
+	/// <param name="component">Идентификатор управляющего элемента</param>
+	public void HideControl(XMasterPageComponent component)
+	{}
+
+	/// <summary>
+	/// Инициализация адреса перехода для кнопок типа "Назад", "Домой", "Помощ" и т.п.
+	/// </summary>
+	/// <param name="component">Идентификатор управляющего элемента</param>
+	/// <param name="sUrl">URL</param>
+	public void SetControlUrl(XMasterPageComponent component, string sUrl)
+	{}
+
+	/// <summary>
+	/// Инициализация страницы в состояние "В доступе отказано"
+	/// </summary>
+	public void SetAccessDenied()
+	{}
+
+    /// <summary>
+    /// Метод осуществляет управление видимостью компонентов master-страницы.
+    /// </summary>
+    /// <param name="component">Элемент master\-страницы (значение
+    ///                         перечисления <see cref="Croc.XmlFramework.Web.XMasterPageComponent" text="XMasterPageComponent" />).</param>
+    public void SetControlVisiblity(XMasterPageComponent component, bool bVisible)
+    {
+    }
+    
+    /// <summary>
+    /// Метод осуществляет установку дополнительных аттрибутов  компонентов master-страницы.
+    /// </summary>
+    public void SetAdditionalAttribute(XMasterPageComponent component, string sAtrributeName, string sAtrributeValue)
+    {
+    }
+</script>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xfw="http://www.croc.ru/XmlFramework/Behaviors">
+<head id="Head1" runat="server" enableviewstate="false">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"/>
+    <title>Заголовок</title>
+    <script language="vbscript" type="text/vbscript" src="VBS/x-execute-command-async.vbs"></script>
+    <link id="Link1" rel="SHORTCUT ICON" href="Icons/xu-application-icon.ico" runat="server"/>
+    <link id="Link2" href="x.css" rel="STYLESHEET" type="text/css" runat="server" />
+</head>
+<body id="Body1" runat="server" enableviewstate="false" scroll="no">
+<form id="MainForm" runat="server" enableviewstate="false">
+    <table ID="xLayoutGrid" runat="server" class="x-page-layoutgrid" cellpadding="0" cellspacing="0">
+		<tr id="Tr1" runat="server">
+			<td ID="xPaneHeader" runat="server" class="x-pane-header">
+				<table id="Table1" runat="server" class="x-header" cellpadding="0" cellspacing="0" width="100%" height="100%">
+					<tr>
+						<td ID="xPaneCaption" runat="server" class="x-header-title"></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr id="Tr2" runat="server">
+			<td ID="xPaneMain" runat="server" align="center" valign="middle" width="100%" height="100%" CLASS="x-pane-main">
+				<table width="100%" height="100%" border="0">
+					<tr style="height:100%;">
+						<td colspan=2 align=center>
+							<asp:ContentPlaceHolder ID="ProgressPlaceHolder" runat="server">
+								Зона размещения прогресс-бара
+							</asp:ContentPlaceHolder>
+						</td>
+					</tr>
+					<tr>
+						<td style="width:10%" align="right">&nbsp;Состояние:&nbsp;</td>
+						<td style="width:90%;">
+							<asp:ContentPlaceHolder ID="StatePlaceHolder" runat="server">
+								Зона размещения состояния
+							</asp:ContentPlaceHolder>
+						</td>
+					</tr>
+					<tr>
+						<td style="width:10%;" align="right">&nbsp;Прошло&nbsp;времени:&nbsp;</td>
+						<td  style="width:90%;">
+							<asp:ContentPlaceHolder ID="TimePlaceHolder" runat="server">
+								Зона размещения остаточного времени
+							</asp:ContentPlaceHolder>
+						</td>
+					</tr>					
+				</table>		
+			</td>
+		</tr>
+		<tr id="Tr3" runat="server">
+			<td ID="xPaneControl" class="x-pane-control">
+				<table ID="xBarControl" class="x-controlbar" cellspacing="0" cellpadding="0">
+				<tr>
+					<td class="x-controlbar-left-zone">
+					</td>
+					<td class="x-controlbar-right-zone">
+                        <asp:Button ID="cmdCancel" runat="server" Text="Прервать" Enabled="False" 
+							CssClass="x-button-wide"
+                            ToolTip="Прервать выполнение операции и закрыть диалог" 
+                            UseSubmitBehavior="False" CausesValidation="False" TabIndex="1"/>
+					</td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+</body>
+</html>

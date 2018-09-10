@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<xs:schema xmlns="http://www.croc.ru/Schemas/IncidentTracker/ReportService" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService" targetNamespace="http://www.croc.ru/Schemas/IncidentTracker/ReportService" elementFormDefault="qualified" attributeFormDefault="qualified">
+	<xs:annotation>
+		<xs:documentation><![CDATA[
+		Основная схема кастомных элементов Report Service для Incident Tracker.
+		]]></xs:documentation>
+	</xs:annotation>
+	<!-- импортируем стандартную схему Report Service -->
+
+	<!--
+		Форматтер продолжительности рабочего времени
+	-->
+	<xs:element name="duration-evaluator" substitutionGroup="r:abstract-formatter">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="r:abstract-formatter">
+					<xs:attribute name="TypeAssembly" type="xs:string" default="Croc.IncidentTracker.ReportService.Layouts.dll"/>
+					<xs:attribute name="TypeClass" type="xs:string" default="Croc.IncidentTracker.ReportService.Layouts.Formatters.durationevaluatorClass"/>
+					<xs:attribute name="class" form="qualified" type="xs:string" default="Croc.IncidentTracker.ReportService.Layouts.Formatters.DurationEvaluator"/>
+					<xs:attribute name="workday-duration" type="xs:string" default="600">
+						<xs:annotation>
+							<xs:documentation>Продолжительность рабочего дня в минутах</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="format" type="xs:string" default="0">
+						<xs:annotation>
+							<xs:documentation>Формат отображаемых данных: 0 - дни, часы, минуты; 1 - часы</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<!--
+		Форматтер длинного текста
+	-->
+	
+	<xs:element name="bigtext-evaluator" substitutionGroup="r:abstract-formatter">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="r:abstract-formatter">
+					<xs:attribute name="TypeAssembly" type="xs:string" default="Croc.IncidentTracker.ReportService.Layouts.dll"/>
+					<xs:attribute name="TypeClass" type="xs:string" default="Croc.IncidentTracker.ReportService.Layouts.Formatters.bigtextevaluatorClass"/>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	
+</xs:schema>

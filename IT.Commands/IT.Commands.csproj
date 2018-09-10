@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0C584F7F-80E5-4E53-8347-5F5C8EA7A0FC}</ProjectGuid>
+    <SccProjectName>"%24/IT.root/IT", PXCAAAAA</SccProjectName>
+    <SccLocalPath>..</SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>MSSCCI:Microsoft Visual SourceSafe</SccProvider>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>Croc.IncidentTracker.Commands</AssemblyName>
+    <AssemblyOriginatorKeyFile>..\Strong name keys\public.snk</AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>true</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Croc.IncidentTracker.Commands</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <SignAssembly>false</SignAssembly>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\IT.Web\bin\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRules>
+    </CodeAnalysisRules>
+    <CodeAnalysisRuleSet>Migrated rules for IT.Commands.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\..\..\IT\Source\APP\IT.Web\bin\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>DOC.Croc.IncidentTracker.Commands.xml</DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Croc.XmlFramework.Commands, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Commands.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Commands.Interop, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Commands.Interop.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Data.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Data.Public, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Data.Public.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.Public, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.Public.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Croc.XmlFramework.XUtils, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5cc95d2b805c9517, processorArchitecture=MSIL">
+      <HintPath>..\(Assemblies.Common)\Croc.XmlFramework.XUtils.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Web">
+      <Name>System.Web</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Common project files\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="FactorizeProjectOutcomeCommand.cs" />
+    <Compile Include="GetKassBallance.cs" />
+    <Compile Include="Trees\DKPTreeContractLevelExecutor.cs" />
+    <Compile Include="UpdateActivityStateCommand.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DataSources\ArrayParamValueCreators.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataSources\DKPParamsProcessor_Folder.cs" />
+    <Compile Include="DataSources\DKPParamsProcessor_Organization.cs" />
+    <Compile Include="DataSources\IncidentSearchingListParamsProcessor.cs" />
+    <Compile Include="DataSources\TimeLossSearchingListParamsProcessor.cs" />
+    <Compile Include="DeleteObjectByExKey.cs" />
+    <Compile Include="DeleteObjectCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EmployeeLocatorInCompanyTreeCommand.cs" />
+    <Compile Include="EventHandlers\Handler_OnApplicationStart.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EventHandlers\Handler_OnSessionStart.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FolderLocatorInTreeCommand.cs" />
+    <Compile Include="GetAvailableStatesOfUserRoleCommand.cs" />
+    <Compile Include="GetCurrentEmployeeXmlCommand.cs" />
+    <Compile Include="GetCurrentUserClientProfileCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetCurrentUserNavInfoCommand.cs" />
+    <Compile Include="GetCurrentUserProfileCommand.cs" />
+    <Compile Include="GetDataCommonCommand.cs" />
+    <Compile Include="GetEmployeesExpensesCommand.cs" />
+    <Compile Include="GetExpensesDataCommand.cs" />
+    <Compile Include="GetFilterTendersInfoCommand.cs" />
+    <Compile Include="GetMailMsgInfoCommand.cs" />
+    <Compile Include="GetObjectByExKeyCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetObjectCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetObjectIdByExKeyCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetObjectsCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GetObjectsRights.cs" />
+    <Compile Include="GetObjectsRightsExCommand.cs" />
+    <Compile Include="GetPropertyCommand.cs" />
+    <Compile Include="GetTreeDataEntryCommand.cs" />
+    <Compile Include="GetTreeMenuEntryCommand.cs" />
+    <Compile Include="Guards\CheckAppUserGuard.cs" />
+    <Compile Include="Guards\ListAccessCheckGuard.cs" />
+    <Compile Include="Guards\TreeAccessCheckGuard.cs" />
+    <Compile Include="Helpers\HierarchySubsystem.cs" />
+    <Compile Include="Helpers\HierarchySubsystem_StdImp.cs" />
+    <Compile Include="Helpers\InterfaceHelpers.cs" />
+    <Compile Include="Helpers\SecurityHelpers.cs" />
+    <Compile Include="Helpers\XMenu.cs" />
+    <Compile Include="Helpers\XTreeLevelInfoIT.cs" />
+    <Compile Include="Helpers\XTreeMenu.cs" />
+    <Compile Include="Helpers\XXTreeNodeDrag.cs" />
+    <Compile Include="Helpers\XTreeStructInfo.cs" />
+    <Compile Include="IncidentLocatorInTreeCommand.cs" />
+    <Compile Include="Jobs\CheckDeadlinedIncidentsCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\DeleteUnusedObjectsCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Jobs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\JobsSchedulerCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Messaging\ApplicationInstallation.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Messaging\EventNotificationMessage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Messaging\MailMessage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Messaging\MessageGenerator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Messaging\MessageMailer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Messaging\MessageSender.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MoveFolderCommand.cs" />
+    <Compile Include="MoveObjectsCommand.cs" />
+    <Compile Include="SaveObjectCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SaveObjectInternalRequest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SaveObjectWithSignatureCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SaveTimeLossObjectCommand.cs" />
+    <Compile Include="SendNotificationMailAsyncCommand.cs" />
+    <Compile Include="Trees\CompanyTreeMenuDataProvider.cs" />
+    <Compile Include="Trees\DKPTreeFolderLevelExecutor.cs" />
+    <Compile Include="Trees\DKPTreeMenuLoadProvider.cs" />
+    <Compile Include="Trees\DKPTreeObjectLocator.cs" />
+    <Compile Include="Trees\DKPTreeStructExecutor.cs" />
+    <Compile Include="Trees\IncidentWorkflowManagerMenuDataProvider.cs" />
+    <Compile Include="Trees\TreeDefaultMenuProvider.cs" />
+    <Compile Include="Trees\TreePageWithAccessCheckInfo.cs" />
+    <Compile Include="Trees\TreePageWithAccessCheckInfoProvider.cs" />
+    <Compile Include="Trees\Utils.cs" />
+    <Compile Include="UserSubscriptionForEventClassCommand.cs" />
+    <Compile Include="XmlObjectRightsProcessor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="XXGetTreeNodeDragCommand.cs" />
+    <Compile Include="ContractLocatorInTreeCommand.cs" />
+    <Content Include="Messaging\Message.xslt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IT.Commands.Interop\IT.Commands.Interop.csproj">
+      <Project>{93CF0CA9-8182-4604-B31A-C30F29616F7A}</Project>
+      <Name>IT.Commands.Interop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Core\IT.Core.csproj">
+      <Project>{7597DE6E-EE57-44D4-AD6E-393416A4868E}</Project>
+      <Name>IT.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Storage\IT.Storage.csproj">
+      <Project>{A5E09F69-A28F-4A24-A6F8-C0B8909D70E7}</Project>
+      <Name>IT.Storage</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Tools.DbCheck\IT.Tools.DbCheck.csproj">
+      <Project>{4079831B-3BA7-4A0E-A0EB-301928EBC799}</Project>
+      <Name>IT.Tools.DbCheck</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\IT.Utility\IT.Utility.csproj">
+      <Project>{BDFC46ED-DE3D-4268-8195-EA96DD130DC2}</Project>
+      <Name>IT.Utility</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Migrated rules for IT.Commands.ruleset" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>Клиентский профиль .NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Установщик Windows 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

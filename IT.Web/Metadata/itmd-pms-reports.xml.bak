@@ -1,0 +1,1979 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<ds:enum n="ActivityDetalizationLevel" d="Уровень детализации активностей" vt="i2">
+		<ds:value n="SubProject" d="до подпроекта 1 уровня">1</ds:value>
+		<ds:value n="ProjectManager" d="до менеджера проекта">2</ds:value>
+		<ds:value n="ProjectCode" d="до кода проекта">3</ds:value>
+	</ds:enum>
+	<ds:enum n="SortExpences" d="Сортировка затрат сотрудников" vt="i2">
+		<ds:value n="NoSort" d="произвольно">0</ds:value>
+		<ds:value n="ByEmployee" d="по сотруднику">1</ds:value>
+		<ds:value n="ByNorm" d="по норме">2</ds:value>
+	</ds:enum>
+	<ds:enum n="RepDepartmentExpensesStructure_AnalysisDepth" d="Объем анализируемых данных отчета &quot;Структура затрат подразделений&quot;" vt="i4">
+		<ds:value n="OnlySelected" d="Только указанные подразделения / организации">0</ds:value>
+		<ds:value n="FirstLevelDepends" d="Включать данные непосредственно подчиненных подразделений">1</ds:value>
+		<ds:value n="AllLevelDepends" d="Включать данные всех подчиненных подразделений">2</ds:value>
+	</ds:enum>
+	<ds:enum n="SectioningByActivity" d="Секционирование по активностям 1" vt="i2">
+		<ds:value n="NoSectioning" d="без секционирования">0</ds:value>
+		<ds:value n="SectioningByTopLevelActivity" d="по активностям верхнего уровня">1</ds:value>
+	</ds:enum>
+	<ds:enum n="RepDepartmentExpensesStructure_ReportForm" d="Форма отчета &quot;Структура затрат подразделений&quot;" vt="i4">
+		<ds:value n="ByDepartment" d="Суммарные данные подразделений">0</ds:value>
+		<ds:value n="ByEmployee" d="Данные по каждому сотруднику подразделения">1</ds:value>
+		<ds:value n="ByEmployeeWithTasksDetali" d="Данные по каждому сотруднику, с данными по заданиям">2</ds:value>
+	</ds:enum>
+	<ds:enum n="SectionByActivity" d="Секционирование по активностям" vt="i2">
+		<ds:value n="NoSection" d="без секционирования">0</ds:value>
+		<ds:value n="Stage1Section" d="по подчиненным активностям 1 уровня">1</ds:value>
+		<ds:value n="AllStagesSection" d="по подчиненным активностям всех уровней">2</ds:value>
+	</ds:enum>
+	<ds:enum n="ExpencesType" d="Вид трудозатрат" vt="i2">
+		<ds:value n="Incidents" d="затраты на инциденты">0</ds:value>
+		<ds:value n="Discarding" d="списания">1</ds:value>
+		<ds:value n="Both" d="затраты на инциденты и списания">2</ds:value>
+	</ds:enum>
+	<ds:enum n="ExpenseDetalization" d="Детализация затрат" vt="i2">
+		<ds:value n="ByExpences" d="по затратам">0</ds:value>
+		<ds:value n="ByIncident" d="по инцидентам">1</ds:value>
+		<ds:value n="BySubActivity" d="по активностям нижнего уровня">2</ds:value>
+	</ds:enum>
+	<ds:enum n="ReportExpensesByDirectionsSortType" d="Тип сортировки в отчете &quot;Затраты в разрезе направлений&quot;" vt="i2">
+		<ds:value n="ByDirection" d="По направлению">0</ds:value>
+		<ds:value n="ByExpenses" d="По сумме затрат">1</ds:value>
+	</ds:enum>
+	<ds:enum n="ReportActivityListSortType" d="Тип сортировки в отчете &quot;Список активностей&quot;" vt="i2">
+		<ds:value n="Random" d="Произвольно">0</ds:value>
+		<ds:value n="ByName" d="По наименованию">1</ds:value>
+		<ds:value n="ByCode" d="По коду">2</ds:value>
+		<ds:value n="ByNavisionID" d="По идентификатору для Navision">3</ds:value>
+	</ds:enum>
+	<ds:enum n="ReportProjectParticipantsAndExpensesSortType" d="Тип сортировки в отчете &quot;Список участников и затрат проекта&quot;" vt="i2">
+		<ds:value n="Random" d="Произвольно">0</ds:value>
+		<ds:value n="ByEmployee" d="По сотруднику">1</ds:value>
+		<ds:value n="ByTasksDone" d="По выполненным заданиям">2</ds:value>
+		<ds:value n="ByTasksLeft" d="По оставшимся заданиям">3</ds:value>
+		<ds:value n="ByLostTime" d="По списанному времени">4</ds:value>
+		<ds:value n="BySpentTime" d="По затраченному времени">5</ds:value>
+		<ds:value n="ByPlannedTime" d="По запланированному времени">6</ds:value>
+		<ds:value n="BySummaryTime" d="По общим трудозатратам">7</ds:value>
+		<ds:value n="ByLeftTime" d="По оставшемуся времени">8</ds:value>
+	</ds:enum>
+	<ds:enum n="PeriodType" d="Период времени" vt="i2">
+		<ds:value n="DateInterval" d="Интервал дат">1</ds:value>
+		<ds:value n="CurrentWeek" d="На текущую неделю">2</ds:value>
+		<ds:value n="CurrentMonth" d="На текущий месяц">3</ds:value>
+		<ds:value n="PreviousMonth" d="На предыдущий месяц">5</ds:value>
+		<ds:value n="SelectedQuarter" d="На заданный квартал">4</ds:value>
+	</ds:enum>
+	<ds:enum n="LossDetalization" d="Детализация списаний сотрудников" vt="i2">
+		<ds:value n="ByLosses" d="по отдельным списаниям">1</ds:value>
+		<ds:value n="ByDates" d="по датам">2</ds:value>
+	</ds:enum>
+	<ds:enum n="ActivityAnalysDepth" d="Глубина анализа активностей" vt="i2">
+		<ds:value n="OnlyCurrentActivity" d="только выбранная активность">0</ds:value>
+		<ds:value n="FirstStageSubActivities" d="подчиненные активности 1 уровня">1</ds:value>
+		<ds:value n="AllStagesSubActivities" d="подчиненные активности всех уровней">2</ds:value>
+	</ds:enum>
+	<ds:enum n="DateDetalization" d="Детализация по датам" vt="i2">
+		<ds:value n="NoDate" d="без дат (только сводные данные)">0</ds:value>
+		<ds:value n="ExpencesDate" d="даты с затратами (все колонки, имеющие данные)">1</ds:value>
+		<ds:value n="AllDate" d="все даты (все колонки отчета)">2</ds:value>
+	</ds:enum>
+	<ds:flags n="RepDepartmentExpensesStructure_OptColsFlags" d="Отображаемые колонки отчета &quot;Структура затрат подразделений&quot;" vt="i4">
+		<ds:value n="ShowPeriodRate" d="Норма рабочего времени">1</ds:value>
+		<ds:value n="ShowPeriodDisbalance" d="Дисбаланс">2</ds:value>
+		<ds:value n="ShowUtilization" d="Коэффициент утилизации">4</ds:value>
+		<ds:value n="ShowCauseDetailization" d="Причины списания">8</ds:value>
+	</ds:flags>
+	<ds:enum n="ReportDepartmentCostSort" d="Сортировка отчета &quot;Затраты в разрезе Департаментов&quot;" vt="i2">
+		<ds:value n="DepartmentSort" d="По департаментам">0</ds:value>
+		<ds:value n="CostSort" d="По затратам">1</ds:value>
+	</ds:enum>
+	<ds:enum n="DepartmentAnalysDepth" d="Глубина анализа подразделений" vt="i2">
+		<ds:value n="OnlySelected" d="только выбранное подразделение">0</ds:value>
+		<ds:value n="FirstSubLevel" d="подчиненные подразделения 1 уровня">1</ds:value>
+		<ds:value n="AllSubLevels" d="подчиненные подразделения всех уровней">2</ds:value>
+	</ds:enum>
+	<ds:enum n="ReportEmployeesBusynessInProjectsSortType" d="Тип сортировки в отчете &quot;Занятость сотрудников в проектах&quot;" vt="i2">
+		<ds:value n="Random" d="произвольно">0</ds:value>
+		<ds:value n="ByCustomer" d="по аккаунту">1</ds:value>
+		<ds:value n="ByFolder" d="по активности">2</ds:value>
+		<ds:value n="ByExpense" d="по трудозатратам">3</ds:value>
+	</ds:enum>
+	<ds:enum n="AnalysDirection" d="Направление анализа" vt="i2">
+		<ds:value n="LastYearExpenses" d="за прошедший период">0</ds:value>
+		<ds:value n="OpenedIncidents" d="открытые инциденты">1</ds:value>
+	</ds:enum>
+	<ds:enum n="ReportTimeLossesSortType" d="Тип сортировки в отчете &quot;Списание времени сотрудниками&quot;" vt="i2">
+		<ds:value n="Random" d="произвольно">0</ds:value>
+		<ds:value n="ByCause" d="по причине списания">1</ds:value>
+		<ds:value n="ByEmployee" d="по сотруднику">2</ds:value>
+		<ds:value n="ByLossFixed" d="по дате списания">3</ds:value>
+	</ds:enum>
+	<ds:enum n="ReportProjectIncidentsAndExpensesSortType" d="Тип сортировки в отчете &quot;Список инцидентов и затрат проекта&quot;" vt="i2">
+		<ds:value n="Random" d="Произвольно">0</ds:value>
+		<ds:value n="ByIncident" d="По инциденту/списанию">1</ds:value>
+		<ds:value n="BySolution" d="По решению">2</ds:value>
+		<ds:value n="ByState" d="По состоянию">3</ds:value>
+		<ds:value n="ByPriority" d="По приоритету">4</ds:value>
+		<ds:value n="ByDeadLine" d="По дате крайнего срока">5</ds:value>
+		<ds:value n="ByInputDate" d="По дате открытия">6</ds:value>
+		<ds:value n="ByLastChange" d="По дате последней смены состояния">7</ds:value>
+		<ds:value n="ByLastSpent" d="По дате последней затраты времени">8</ds:value>
+		<ds:value n="ByRole" d="По роли">9</ds:value>
+		<ds:value n="ByEmployee" d="По сотруднику">10</ds:value>
+		<ds:value n="ByPlannedTime" d="По запланированному времени">11</ds:value>
+		<ds:value n="BySpentTime" d="По общим трудозатратам">12</ds:value>
+		<ds:value n="ByLeftTime" d="По оставшемуся времени">13</ds:value>
+	</ds:enum>
+	<ds:enum n="TimeMeasureUnits" d="Единицы измерения времени" vt="i2">
+		<ds:value n="Days" d="Дни, часы, минуты">0</ds:value>
+		<ds:value n="Hours" d="Часы">1</ds:value>
+	</ds:enum>
+	<ds:enum n="Quarter" d="Квартал" vt="i2">
+		<ds:value n="First" d="1-й">1</ds:value>
+		<ds:value n="Second" d="2-й">2</ds:value>
+		<ds:value n="Third" d="3-й">3</ds:value>
+		<ds:value n="Fourth" d="4-й">4</ds:value>
+	</ds:enum>
+	<ds:enum n="DepartmentDetalization" d="Детализация отчета «Затраты в разрезе Департаментов»» " vt="i2">
+		<ds:value n="WithoutDetalization" d="Без детализации">0</ds:value>
+		<ds:value n="ByDepartment" d="По департаментам">1</ds:value>
+	</ds:enum>
+	<ds:enum n="RepDepartmentExpensesStructure_SortingMode" d="Сортировка в отчете &quot;Структура затрат подразделений&quot;" vt="i4">
+		<ds:value n="ByName" d="По подразделению / сотруднику">0</ds:value>
+		<ds:value n="ByExpenses" d="По трудозатратам">1</ds:value>
+		<ds:value n="ByDisbalance" d="По значению дисбаланса">2</ds:value>
+		<ds:value n="ByUtilization" d="По значению коэффициента утилизации">3</ds:value>
+	</ds:enum>
+	<ds:enum n="ActivitySelection" d="Выборка активностей" vt="i2">
+		<ds:value n="HaveExpenses" d="с затратами за период">1</ds:value>
+		<ds:value n="WaitingForClose" d="переведенные в ожидание закрытия">2</ds:value>
+		<ds:value n="Closed" d="закрытые за период">3</ds:value>
+	</ds:enum>
+	<ds:enum n="ReportLastExpenseDatesSortType" d="Тип сортировки в отчете &quot;Даты последнего учета затрат сотрудниками&quot;" vt="i2">
+		<ds:value n="Random" d="произвольно">0</ds:value>
+		<ds:value n="ByEmployee" d="по сотруднику">1</ds:value>
+		<ds:value n="ByDateTime" d="по дате и времени">2</ds:value>
+	</ds:enum>
+	<ds:enum n="RepDepartmentExpensesStructure_DataFormat" d="Форма представления данных отчета &quot;Структура затрат подразделений&quot;" vt="i4">
+		<ds:value n="TimeAndPercent" d="Время и проценты">0</ds:value>
+		<ds:value n="OnlyTime" d="Только время">1</ds:value>
+		<ds:value n="OnlyPercent" d="Только проценты">2</ds:value>
+	</ds:enum>
+	<ds:enum n="SortIncidentExpenses" d="Сортировка инцидентов и затрат" vt="i2">
+		<ds:value n="ByDateTime" d="по дате и времени">0</ds:value>
+		<ds:value n="ByLossReason" d="по причине списания">1</ds:value>
+		<ds:value n="BySpentTime" d="по затраченному времени">2</ds:value>
+	</ds:enum>
+	<ds:enum n="IncidentStateDetalization" d="Детализация состояний инцидента" vt="i2">
+		<ds:value n="AllStates" d="по всем состояниям">0</ds:value>
+		<ds:value n="OpenAndClosedStates" d="по открытию и закрытию">1</ds:value>
+		<ds:value n="OffDetalizationOpenStatesOnly" d="без детализации (только открытые)">2</ds:value>
+	</ds:enum>
+	<ds:enum n="FilterReportEmploymentPlannedSortType" d="Тип сортировки в отчете &quot;Плановая занятость сотрудников&quot;" vt="i2">
+		<ds:value n="WithoutSpecification" d="Без детализации">0</ds:value>
+		<ds:value n="Period" d="По периодам">1</ds:value>
+		<ds:value n="Period_Project" d="По периодам и проектам">2</ds:value>
+	</ds:enum>
+	<!--
+		Фильтр отчета "Динамика затрат сотрудников"
+	-->
+	<ds:type n="FilterReportUsersExpences" d="Фильтр отчета &quot;Динамика затрат сотрудников&quot;" tp="temporary">
+		<ds:prop n="SectionByActivity" d="Секционирование по активностям" vt="i2" cp="scalar" enum="SectionByActivity">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection no-empty-value="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="без секционирования">0</i:const-value>
+				<i:const-value n="по подчиненным активностям 1 уровня">1</i:const-value>
+				<i:const-value n="по подчиненным активностям всех уровней">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="DateDetalization" d="Детализация по датам" vt="i2" cp="scalar" enum="DateDetalization">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection no-empty-value="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="без дат (только сводные данные)">0</i:const-value>
+				<i:const-value n="даты с затратами (все колонки, имеющие данные)">1</i:const-value>
+				<i:const-value n="все даты (все колонки отчета)">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SortOrder" d="Порядок сортировки" vt="i2" cp="scalar" enum="SortOrder">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection no-empty-value="1" selector="radio" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="По возрастанию">1</i:const-value>
+				<i:const-value n="По убыванию">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="TimeMeasureUnits" d="Единицы измерения времени" vt="i2" cp="scalar" enum="TimeMeasureUnits">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection no-empty-value="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Дни, часы, минуты">0</i:const-value>
+				<i:const-value n="Часы">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Folder" d="Активность" vt="object" ot="Folder" cp="scalar" maybenull="1">
+			<i:object-presentation use-tree-selector="FolderSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation-const" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Customer" d="Клиент" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-presentation use-tree-selector="OrganizationSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation-const" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="FolderType" d="Тип активности" vt="i2" cp="scalar" flags="FolderTypeFlags">
+			<ds:def default-type="both">13</ds:def>
+			<i:bits xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Проект">1</i:bit>
+				<i:bit n="Тендер">4</i:bit>
+				<i:bit n="Пресейл">8</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="IncludeSubProjects" d="Включать в проект затраты подпроектов" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="InsertRestrictions" d="Включить в отчет условия поиска" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ActivityAnalysDepth" d="Глубина анализа активностей" vt="i2" cp="scalar" enum="ActivityAnalysDepth">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="только выбранная активность">0</i:const-value>
+				<i:const-value n="подчиненные активности 1 уровня">1</i:const-value>
+				<i:const-value n="подчиненные активности всех уровней">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SortType" d="Сортировка" vt="i2" cp="scalar" enum="SortExpences">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="произвольно">0</i:const-value>
+				<i:const-value n="по сотруднику">1</i:const-value>
+				<i:const-value n="по норме">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="ShowColumnWorkTimeNorm" d="Показывать норму рабочего времени" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ExpensesType" d="Вид трудозатрат" vt="i2" cp="scalar" enum="ExpencesType">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="затраты на инциденты">0</i:const-value>
+				<i:const-value n="списания">1</i:const-value>
+				<i:const-value n="затраты на инциденты и списания">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<!-- <ds:prop n="ShowColumnOverheads" d="Показывать накладные расходы" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnSalaryExpenses" d="Показывать затраты на з/п" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop> -->
+		<i:editor t="Динамика затрат сотрудников" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>tms-tools.vbs</i:client-script>
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:client-script>s-Report-UsersExpences.vbs</i:client-script>
+			<i:page t="Основные параметры">p-Report-UsersExpences-1.xsl</i:page>
+			<i:page t="Формат">p-Report-UsersExpences-2.xsl</i:page>
+		</i:editor>
+	</ds:type>
+	<!-- 
+		Фильтр (параметры) отчета "Инциденты и списания сотрудника" (9.17)
+	-->
+	<ds:type n="FilterEmployeeExpensesList" d="Фильтр отчета &quot;Список инцидентов и затрат сотрудника&quot;" tp="temporary">
+		<ds:prop n="Employee" d="Сотрудник" vt="object" ot="Employee" cp="scalar">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" use-tree-selector="AnyEmployees" off-create="1" off-delete="1" off-edit="1">
+				<i:value>
+          <![CDATA[
+					item.LastName & " " & item.FirstName & " " & item.MiddleName
+				]]>
+        </i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation-const" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="ActivityType" d="Тип активности" vt="i2" cp="scalar" maybenull="1" enum="FolderTypeEnum">
+			<i:const-value-selection selector="combo" empty-value-text="(Все)" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Проект">1</i:const-value>
+				<i:const-value n="Тендер">4</i:const-value>
+				<i:const-value n="Пресейл">8</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="NonProjectExpences" d="Не учитывать не проектые списания" vt="boolean" cp="scalar" maybenull="1">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="TimeLossReason" d="Причина списания" vt="boolean" cp="scalar" maybenull="1">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="IncidentAttributes" d="№, наименование инцидента +  Класс инцидента" vt="boolean" cp="scalar" maybenull="1">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="boolean" cp="scalar" maybenull="1">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="NumberOfTasks" d="Количество заданий" vt="boolean" cp="scalar" maybenull="1">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="Remaining" d="Осталось" vt="boolean" cp="scalar" maybenull="1">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="NewState" d="Новое состояние" vt="boolean" cp="scalar" maybenull="1">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="Comment" d="Комментарий" vt="boolean" cp="scalar" maybenull="1">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="IncludeParams" d="Включить в отчет условия поиска" vt="boolean" cp="scalar" maybenull="1">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ExepenseDetalization" d="Детализация затрат" vt="i2" cp="scalar" maybenull="1" enum="ExpenseDetalization">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection selector="combo" no-empty-value="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="по затратам">0</i:const-value>
+				<i:const-value n="по инцидентам">1</i:const-value>
+				<i:const-value n="по активностям нижнего уровня">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SectionByActivity" d="Секционирование по активностям" vt="i2" cp="scalar" maybenull="1" enum="SectioningByActivity">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection selector="combo" no-empty-value="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="без секционирования">0</i:const-value>
+				<i:const-value n="по активностям верхнего уровня">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="ExpenseType" d="Вид трудозатрат" vt="i2" cp="scalar" maybenull="1" enum="ExpencesType">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection selector="combo" no-empty-value="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="затраты на инциденты">0</i:const-value>
+				<i:const-value n="списания">1</i:const-value>
+				<i:const-value n="затраты на инциденты и списания">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Sort" d="Сортировка" vt="i2" cp="scalar" maybenull="1" enum="SortIncidentExpenses">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection selector="combo" no-empty-value="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="по дате и времени">0</i:const-value>
+				<i:const-value n="по причине списания">1</i:const-value>
+				<i:const-value n="по затраченному времени">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="TimeMeasureUnits" d="Единицы измерения времени" vt="i2" cp="scalar" maybenull="1" enum="TimeMeasureUnits">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection selector="combo" no-empty-value="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Дни, часы, минуты">0</i:const-value>
+				<i:const-value n="Часы">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="AnalysDirection" d="Направление анализа" vt="i2" cp="scalar" maybenull="1" enum="AnalysDirection">
+			<ds:def default-type="both">0</ds:def>
+			<!-- TODO! -->
+			<i:const-value-selection xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="затраты за прошедший период">0</i:const-value>
+				<i:const-value n="открытые инциденты">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SortOrder" d="Порядок" vt="i2" cp="scalar" maybenull="1" enum="SortOrder">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="По возрастанию">1</i:const-value>
+				<i:const-value n="По убыванию">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection selector="combo" no-empty-value="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection selector="combo" no-empty-value="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IncidentState" d="Состояние инцидента" vt="i2" cp="scalar" maybenull="1" enum="IncidentStateCat">
+			<i:const-value-selection selector="combo" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="В работе">1</i:const-value>
+				<i:const-value n="На проверке">2</i:const-value>
+				<i:const-value n="Работа окончена">3</i:const-value>
+				<i:const-value n="Заморожен">4</i:const-value>
+				<i:const-value n="Отклонен">5</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<i:editor t="Список инцидентов и затрат сотрудника" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>tms-tools.vbs</i:client-script>
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:client-script>s-ReportEmployeeExpensesList.vbs</i:client-script>
+			<i:page t="Основные параметры">p-FilterEmployeeExpenses.xsl?DisableHR=1</i:page>
+		</i:editor>
+	</ds:type>
+	<!--
+		Фильтр отчета "Список участников и затрат проекта"
+	-->
+	<ds:type n="FilterReportProjectParticipantsAndExpenses" d="Фильтр отчета &quot;Список участников и затрат проекта&quot;" tp="temporary">
+		<ds:prop n="Departments" d="Подразделения" vt="object" ot="Department" cp="collection">
+			<i:tree-selector off-expand-all="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="Company" />
+			</i:tree-selector>
+		</ds:prop>
+		<ds:prop n="Employees" d="Сотрудники" vt="object" ot="Employee" cp="collection">
+			<i:tree-selector off-expand-all="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="AnyEmployees" />
+			</i:tree-selector>
+			<i:elements-list use-tree-selector="AnyEmployees" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Фамилия" width="200">item.LastName</i:column>
+				<i:column t="Имя" width="100">item.FirstName</i:column>
+				<i:column t="Отчество" width="100">item.MiddleName</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="ActivityAnalysDepth" d="Глубина анализа активностей" vt="i2" cp="scalar" enum="ActivityAnalysDepth">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="только выбранная активность">0</i:const-value>
+				<i:const-value n="подчиненные активности 1 уровня">1</i:const-value>
+				<i:const-value n="подчиненные активности всех уровней">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IncludeSubProjects" d="Включать затраты подпроектов" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="TimeMeasureUnits" d="Единицы измерения времени" vt="i2" cp="scalar" enum="TimeMeasureUnits">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Дни, часы, минуты">0</i:const-value>
+				<i:const-value n="Часы">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SectionByActivity" d="Секционировать по активностям" vt="i2" cp="scalar" enum="SectionByActivity">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="без секционирования">0</i:const-value>
+				<i:const-value n="по подчиненным активностям 1 уровня">1</i:const-value>
+				<i:const-value n="по подчиненным активностям всех уровней">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Folder" d="Активность" vt="object" ot="Folder" cp="scalar">
+			<i:object-presentation use-tree-selector="FolderSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu>
+						<i:menu-item action="DoSelectFromDb" t="Выбрать" default="1" may-be-default="1" />
+					</i:menu>
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="ShowColumnTasksDone" d="Показывать выполненные задания" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnTasksLeft" d="Показывать оставшиеся задания" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnLostTime" d="Показывать списанное время" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnSpentTime" d="Показывать затраченное время" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnPlannedTime" d="Показывать запланированное время" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnSummaryTime" d="Показывать общие трудозатраты" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnLeftTime" d="Показывать оставшееся время" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="SortType" d="Сортировка" vt="i2" cp="scalar" enum="ReportProjectParticipantsAndExpensesSortType">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Произвольно">0</i:const-value>
+				<i:const-value n="По сотруднику">1</i:const-value>
+				<i:const-value n="По выполненным заданиям">2</i:const-value>
+				<i:const-value n="По оставшимся заданиям">3</i:const-value>
+				<i:const-value n="По списанному времени">4</i:const-value>
+				<i:const-value n="По затраченному времени">5</i:const-value>
+				<i:const-value n="По запланированному времени">6</i:const-value>
+				<i:const-value n="По общим трудозатратам">7</i:const-value>
+				<i:const-value n="По оставшемуся времени">8</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SortOrder" d="Порядок сортировки" vt="i2" cp="scalar" enum="SortOrder">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="По возрастанию">1</i:const-value>
+				<i:const-value n="По убыванию">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="InsertRestrictions" d="Включить в отчет условия поиска" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="Organizations" d="Организации" vt="object" ot="Organization" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Краткое наименование" width="100">item.ShortName</i:column>
+				<i:column t="Примечание" width="100">item.Comment</i:column>
+				<i:column t="Организация-владелец системы" width="100" vt="boolean">item.Home</i:column>
+				<i:column t="Участник тендеров от нас" width="100" vt="boolean">item.OwnTenderParticipant</i:column>
+				<i:column t="Структура организации определена" width="100" vt="boolean">item.StructureHasDefined</i:column>
+				<i:column t="Член группы компаний" width="100" vt="boolean">item.HoldingPart</i:column>
+				<i:column t="Поставщик" width="100" vt="boolean">item.Supplier</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="IncludeSubDepartments" d="Включать сотрудников подчиненных подразделений" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<i:editor t="Список участников и затрат проекта" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-pe-any-type-objects-tree-selector.vbs</i:client-script>
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:client-script>s-Report-ProjectParticipantsAndExpenses.vbs</i:client-script>
+			<i:page t="Основные параметры">p-Report-ProjectParticipantsAndExpenses-1.xsl</i:page>
+			<i:page t="Сотрудники">p-Report-ProjectParticipantsAndExpenses-3.xsl</i:page>
+			<i:page t="Формат">p-Report-ProjectParticipantsAndExpenses-4.xsl</i:page>
+		</i:editor>
+	</ds:type>
+	<!-- 
+		Диалог задания параметиров (фильтр) отчета "Структура затрат подразделений"
+	-->
+	<ds:type n="FilterReportDepartmentExpensesStructure" d="Фильтр отчета &quot;Структура затрат подразделений&quot;" tp="temporary">
+		<ds:prop n="ActivityTypesAsExternal" d="Типы внешних проектов" vt="object" ot="ActivityType" cp="collection">
+			<i:list-selector n="ExternalActivityTypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Код" width="100">item.Code</i:column>
+				<i:column t="Наименование" width="300">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Organizations" d="Организации" vt="object" ot="Organization" cp="collection">
+			<i:elements-list off-create="1" off-edit="1" off-delete="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="600">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Departments" d="Подразделения" vt="object" ot="Department" cp="collection">
+			<i:tree-selector xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="AnyOrgsOrDepsWithEmployess" />
+			</i:tree-selector>
+			<i:elements-list off-create="1" off-edit="1" off-delete="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Код" width="100">item.Code</i:column>
+				<i:column t="Наименование" width="500">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-const" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="ReportForm" d="Форма отчета" vt="i4" cp="scalar" enum="RepDepartmentExpensesStructure_ReportForm">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Суммарные данные подразделений">0</i:const-value>
+				<i:const-value n="Данные по каждому сотруднику подразделения">1</i:const-value>
+				<i:const-value n="Данные по каждому сотруднику, с данными по заданиям">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="AnalysisDepth" d="Объем анализируемых данных" vt="i4" cp="scalar" enum="RepDepartmentExpensesStructure_AnalysisDepth">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<!-- Внимание! Наименования элементов скорректированы -->
+				<i:const-value n="Только указанные подразделения (организации)">0</i:const-value>
+				<i:const-value n="Включать данные непосредственно подчиненных подразделений">1</i:const-value>
+				<i:const-value n="Включать данные всех подчиненных подразделений">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="ExpensesSumAsPercentBase" d="Сумма затрат как база процентного расчета" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="ShownColumns" d="Отображаемые колонки" vt="i4" cp="scalar" flags="RepDepartmentExpensesStructure_OptColsFlags">
+			<ds:def default-type="both">0</ds:def>
+			<i:bits AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Норма рабочего времени">1</i:bit>
+				<i:bit n="Дисбаланс">2</i:bit>
+				<i:bit n="Коэффициент утилизации">4</i:bit>
+				<i:bit n="Причины списания">8</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="DoGroup" d="Группировка по подразделению" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="DataFormat" d="Форма предствления данных" vt="i4" cp="scalar" enum="RepDepartmentExpensesStructure_DataFormat">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Время и проценты">0</i:const-value>
+				<i:const-value n="Только время">1</i:const-value>
+				<i:const-value n="Только проценты">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="TimeMeasureUnits" d="Представление времени" vt="i2" cp="scalar" enum="TimeMeasureUnits">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Дни, часы, минуты">0</i:const-value>
+				<i:const-value n="Часы">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SortingMode" d="Сортировка" vt="i4" cp="scalar" enum="RepDepartmentExpensesStructure_SortingMode">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="По подразделению / сотруднику">0</i:const-value>
+				<i:const-value n="По трудозатратам">1</i:const-value>
+				<i:const-value n="По значению дисбаланса">2</i:const-value>
+				<i:const-value n="По значению коэффициента утилизации">3</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="ShowRestrictions" d="Включить в отчет условия поиска" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="PassRedundant" d="Исключить уволенных сотрудников" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="PassDisabled" d="Исключить временно нетрудоспособных сотрудников" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<!-- Определение редактора - по сути, формы задания параметров отчета -->
+		<i:editor t="Структура затрат подразделений" default-for-editing="1" width="570" height="530" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:client-script>it-pe-any-type-objects-tree-selector.vbs</i:client-script>
+			<i:client-script>s-Report-DepartmentExpensesStructure.vbs</i:client-script>
+			<i:page n="MainParams" t="Основные параметры">p-Report-DepartmentExpensesStructure-Main.xsl</i:page>
+			<i:page n="Format" t="Настройки представления">p-Report-DepartmentExpensesStructure-Format.xsl</i:page>
+		</i:editor>
+	</ds:type>
+	<!--
+		Фильтр отчета "Даты последнего учета затрат сотрудниками"
+	-->
+	<ds:type n="FilterReportLastExpenseDates" d="Фильтр отчета &quot;Даты последнего учета затрат сотрудниками&quot;" tp="temporary">
+		<ds:prop n="Folders" d="Активности" vt="object" ot="Folder" cp="collection">
+			<i:tree-selector off-expand-all="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="FolderSelector" />
+			</i:tree-selector>
+		</ds:prop>
+		<ds:prop n="Departments" d="Подразделения" vt="object" ot="Department" cp="collection">
+			<i:tree-selector off-expand-all="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="Company" />
+			</i:tree-selector>
+		</ds:prop>
+		<ds:prop n="Organizations" d="Организации" vt="object" ot="Organization" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Краткое наименование" width="100">item.ShortName</i:column>
+				<i:column t="Примечание" width="100">item.Comment</i:column>
+				<i:column t="Организация-владелец системы" width="100" vt="boolean">item.Home</i:column>
+				<i:column t="Участник тендеров от нас" width="100" vt="boolean">item.OwnTenderParticipant</i:column>
+				<i:column t="Структура организации определена" width="100" vt="boolean">item.StructureHasDefined</i:column>
+				<i:column t="Член группы компаний" width="100" vt="boolean">item.HoldingPart</i:column>
+				<i:column t="Поставщик" width="100" vt="boolean">item.Supplier</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="FolderType" d="Тип активности" vt="i2" cp="scalar" flags="FolderTypeFlags">
+			<ds:def default-type="both">13</ds:def>
+			<i:bits xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Проект">1</i:bit>
+				<i:bit n="Тендер">4</i:bit>
+				<i:bit n="Пресейл">8</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="IncludeSubProjects" d="Включать затраты подпроектов" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="IncludeSubDepartments" d="Включать сотрудников подчиненных подразделений" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="SortType" d="Сортировка" vt="i2" cp="scalar" enum="ReportLastExpenseDatesSortType">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="произвольно">0</i:const-value>
+				<i:const-value n="по сотруднику">1</i:const-value>
+				<i:const-value n="по дате и времени">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SortOrder" d="Порядок сортировки" vt="i2" cp="scalar" enum="SortOrder">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="По возрастанию">1</i:const-value>
+				<i:const-value n="По убыванию">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="InsertRestrictions" d="Включить в отчет условия поиска" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="Employees" d="Сотрудники" vt="object" ot="Employee" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Фамилия" width="100">item.LastName</i:column>
+				<i:column t="Имя" width="100">item.FirstName</i:column>
+				<i:column t="Отчество" width="100">item.MiddleName</i:column>
+				<i:column t="Дата выхода на работу" width="100" vt="date">item.WorkBeginDate</i:column>
+				<i:column t="Дата окончания работы" width="100" vt="date">item.WorkEndDate</i:column>
+				<i:column t="Телефон" width="100">item.Phone</i:column>
+				<i:column t="Добавочный номер к телефону" width="100">item.PhoneExt</i:column>
+				<i:column t="Мобильный телефон" width="100">item.MobilePhone</i:column>
+				<i:column t="Почтовый адрес" width="100">item.Address</i:column>
+				<i:column t="Адрес электронной почты" width="100">item.EMail</i:column>
+				<i:column t="Телефон пейджера" width="100">item.PagerPhone</i:column>
+				<i:column t="Номер пейджера" width="100">item.PagerCode</i:column>
+				<i:column t="Временная нетрудоспособность" width="100" vt="boolean">item.TemporaryDisability</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<i:editor t="Даты последнего учета затрат сотрудниками" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-pe-any-type-objects-tree-selector.vbs</i:client-script>
+			<i:client-script>s-Report-LastExpenseDates.vbs</i:client-script>
+			<i:page t="Активности">p-Report-LastExpenseDates-1.xsl</i:page>
+			<i:page t="Сотрудники">p-Report-LastExpenseDates-2.xsl</i:page>
+			<i:page t="Формат">p-Report-LastExpenseDates-3.xsl</i:page>
+		</i:editor>
+	</ds:type>
+	<!--
+		Фильтр отчета "Список инцидентов и затрат проекта"
+	-->
+	<ds:type n="FilterReportProjectIncidentsAndExpenses" d="Фильтр отчета &quot;Список инцидентов и затрат проекта&quot;" tp="temporary">
+		<ds:prop n="Folder" d="Активность" vt="object" ot="Folder" cp="scalar">
+			<i:object-presentation use-tree-selector="FolderSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu>
+						<i:menu-item action="DoSelectFromDb" t="Выбрать" default="1" may-be-default="1" />
+					</i:menu>
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Planners" d="Планировщики" vt="object" ot="Employee" cp="collection">
+			<i:tree-selector off-expand-all="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="AnyEmployees" />
+			</i:tree-selector>
+		</ds:prop>
+		<ds:prop n="IncidentStates" d="Состояния инцидентов" vt="object" ot="IncidentState" cp="collection">
+			<i:tree-selector off-expand-all="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="IncidentStates" />
+			</i:tree-selector>
+		</ds:prop>
+		<ds:prop n="Workers" d="Исполнители" vt="object" ot="Employee" cp="collection">
+			<i:tree-selector off-expand-all="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="AnyEmployees" />
+			</i:tree-selector>
+		</ds:prop>
+		<ds:prop n="ActivityAnalysDepth" d="Глубина анализа активностей" vt="i2" cp="scalar" enum="ActivityAnalysDepth">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="только выбранная активность">0</i:const-value>
+				<i:const-value n="подчиненные активности 1 уровня">1</i:const-value>
+				<i:const-value n="подчиненные активности всех уровней">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SectionByActivity" d="Секционировать по активностям" vt="i2" cp="scalar" enum="SectionByActivity">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="без секционирования">0</i:const-value>
+				<i:const-value n="по подчиненным активностям 1 уровня">1</i:const-value>
+				<i:const-value n="по подчиненным активностям всех уровней">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IncludeSubProjects" d="Включать затраты подпроектов" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="TimeMeasureUnits" d="Единицы измерения времени" vt="i2" cp="scalar" enum="TimeMeasureUnits">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Дни, часы, минуты">0</i:const-value>
+				<i:const-value n="Часы">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="InsertRestrictions" d="Включить в отчет условия поиска" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ExpencesType" d="Виды трудозатрат" vt="i2" cp="scalar" enum="ExpencesType">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="затраты на инциденты">0</i:const-value>
+				<i:const-value n="списания">1</i:const-value>
+				<i:const-value n="затраты на инциденты и списания">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="DeadLine" d="Инциденты с крайними сроками до" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SortType" d="Сортировка" vt="i2" cp="scalar" enum="ReportProjectIncidentsAndExpensesSortType">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Произвольно">0</i:const-value>
+				<i:const-value n="По инциденту/списанию">1</i:const-value>
+				<i:const-value n="По решению">2</i:const-value>
+				<i:const-value n="По состоянию">3</i:const-value>
+				<i:const-value n="По приоритету">4</i:const-value>
+				<i:const-value n="По дате крайнего срока">5</i:const-value>
+				<i:const-value n="По дате открытия">6</i:const-value>
+				<i:const-value n="По дате последней смены состояния">7</i:const-value>
+				<i:const-value n="По дате последней затраты времени">8</i:const-value>
+				<i:const-value n="По роли">9</i:const-value>
+				<i:const-value n="По сотруднику">10</i:const-value>
+				<i:const-value n="По запланированному времени">11</i:const-value>
+				<i:const-value n="По общим трудозатратам">12</i:const-value>
+				<i:const-value n="По оставшемуся времени">13</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SortOrder" d="Порядок сортировки" vt="i2" cp="scalar" enum="SortOrder">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="По возрастанию">1</i:const-value>
+				<i:const-value n="По убыванию">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="ShowColumnSolution" d="Показывать решение" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnState" d="Показывать состояние" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnPriority" d="Показывать приоритет" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnDeadLine" d="Показывать дату крайнего срока" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnInputDate" d="Показывать дату открытия" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnLastChange" d="Показывать дату последней смены состояния" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnLastSpent" d="Показывать дату последней затраты времени" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnRole" d="Показывать роль" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnEmployee" d="Показывать сотрудника" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnPlannedTime" d="Показывать запланированное время" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnSpentTime" d="Показывать общие трудозатраты" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnLeftTime" d="Показывать оставшееся время" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="PlannerOrganizations" d="Организации планировщиков" vt="object" ot="Organization" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Краткое наименование" width="100">item.ShortName</i:column>
+				<i:column t="Примечание" width="100">item.Comment</i:column>
+				<i:column t="Организация-владелец системы" width="100" vt="boolean">item.Home</i:column>
+				<i:column t="Участник тендеров от нас" width="100" vt="boolean">item.OwnTenderParticipant</i:column>
+				<i:column t="Структура организации определена" width="100" vt="boolean">item.StructureHasDefined</i:column>
+				<i:column t="Член группы компаний" width="100" vt="boolean">item.HoldingPart</i:column>
+				<i:column t="Поставщик" width="100" vt="boolean">item.Supplier</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="WorkerOrganizations" d="Организации исполнителей" vt="object" ot="Organization" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Краткое наименование" width="100">item.ShortName</i:column>
+				<i:column t="Примечание" width="100">item.Comment</i:column>
+				<i:column t="Организация-владелец системы" width="100" vt="boolean">item.Home</i:column>
+				<i:column t="Участник тендеров от нас" width="100" vt="boolean">item.OwnTenderParticipant</i:column>
+				<i:column t="Структура организации определена" width="100" vt="boolean">item.StructureHasDefined</i:column>
+				<i:column t="Член группы компаний" width="100" vt="boolean">item.HoldingPart</i:column>
+				<i:column t="Поставщик" width="100" vt="boolean">item.Supplier</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="PlannerDepartments" d="Подразделения планировщиков" vt="object" ot="Department" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Код" width="100">item.Code</i:column>
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Примечание" width="100">item.Comment</i:column>
+				<i:column t="Тип" width="100" vt="i2">item.Type</i:column>
+				<i:column t="Архивное" width="100" vt="boolean">item.IsArchive</i:column>
+				<i:column t="Учет временных затрат сотрудников" width="100" vt="boolean">item.TimeReporting</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="WorkerDepartments" d="Подразделения исполнителей" vt="object" ot="Department" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Код" width="100">item.Code</i:column>
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Примечание" width="100">item.Comment</i:column>
+				<i:column t="Тип" width="100" vt="i2">item.Type</i:column>
+				<i:column t="Архивное" width="100" vt="boolean">item.IsArchive</i:column>
+				<i:column t="Учет временных затрат сотрудников" width="100" vt="boolean">item.TimeReporting</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="IncludePlannerSubDepartments" d="Включать планировщиков подчиненных подразделений" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="IncludeWorkerSubDepartments" d="Включать исполнителей подчиненных подразделений" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnDescription" d="Показывать описание" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<i:editor t="Список инцидентов и затрат проекта" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-pe-any-type-objects-tree-selector.vbs</i:client-script>
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:client-script>s-Report-ProjectIncidentsAndExpenses.vbs</i:client-script>
+			<i:page t="Основные параметры">p-Report-ProjectIncidentsAndExpenses-1.xsl</i:page>
+			<i:page t="Исполнители">p-Report-ProjectIncidentsAndExpenses-3.xsl</i:page>
+			<i:page t="Планировщики">p-Report-ProjectIncidentsAndExpenses-4.xsl</i:page>
+			<i:page t="Состояния инцидентов">p-Report-ProjectIncidentsAndExpenses-5.xsl</i:page>
+			<i:page t="Формат">p-Report-ProjectIncidentsAndExpenses-6.xsl</i:page>
+		</i:editor>
+	</ds:type>
+	<!-- 
+		Фильтр (параметры) отчета "Баланс списаний сотрудника" (9.18)
+	-->
+	<ds:type n="FilterReportEmployeeExpensesBalance" d="Фильтр отчета &quot;Баланс списания сотрудника&quot;" tp="temporary">
+		<ds:prop n="Employee" d="Сотрудник" vt="object" ot="Employee" cp="scalar">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>
+          <![CDATA[
+					item.LastName & " " & item.FirstName & " " & item.MiddleName
+				]]>
+        </i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation-const" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="ShowFreeWeekends" d="Показывать выходные дни без списаний" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="TimeMeasureUnits" d="Еденицы измерения времени" vt="i2" cp="scalar" enum="TimeMeasureUnits">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Дни, часы, минуты">0</i:const-value>
+				<i:const-value n="Часы">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="ShowRestrictions" d="Включать в отчет условия поиска" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<i:editor t="Баланс списаний сотрудника - Параметры" default-for-creation="1" default-for-editing="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>tms-tools.vbs</i:client-script>
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:client-script>s-FilterReportEmployeeExpensesBalance.vbs</i:client-script>
+			<i:page t="Параметры">p-FilterReportEmployeeExpensesBalance.xsl</i:page>
+		</i:editor>
+	</ds:type>
+	<!-- 
+		Фильтр (параметры) отчета "Списание времени сотрудниками" (9.15)
+	-->
+	<ds:type n="FilterReportTimeLosses" d="Фильтр отчета &quot;Списание времени сотрудниками&quot;" tp="temporary">
+		<ds:prop n="Departments" d="Подразделения" vt="object" ot="Department" cp="collection">
+			<i:tree-selector off-expand-all="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="Company" />
+			</i:tree-selector>
+		</ds:prop>
+		<ds:prop n="Folder" d="Активность" vt="object" ot="Folder" cp="scalar">
+			<i:object-presentation use-tree-selector="FolderSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation-const" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="FolderType" d="Тип активности" vt="i2" cp="scalar" flags="FolderTypeFlags">
+			<ds:def default-type="both">13</ds:def>
+			<i:bits xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Проект">1</i:bit>
+				<i:bit n="Тендер">4</i:bit>
+				<i:bit n="Пресейл">8</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="ActivityAnalysDepth" d="Глубина анализа активностей" vt="i2" cp="scalar" enum="ActivityAnalysDepth">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="только выбранная активность">0</i:const-value>
+				<i:const-value n="подчиненные активности 1 уровня">1</i:const-value>
+				<i:const-value n="подчиненные активности всех уровней">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="LossDetalization" d="Детализация списаний сотрудников" vt="i2" cp="scalar" enum="LossDetalization">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="по отдельным списаниям">1</i:const-value>
+				<i:const-value n="по датам">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SectionByActivity" d="Секционирование по активностям" vt="i2" cp="scalar" enum="SectionByActivity">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="без секционирования">0</i:const-value>
+				<i:const-value n="по подчиненным активностям 1 уровня">1</i:const-value>
+				<i:const-value n="по подчиненным активностям всех уровней">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IncludeSubProjects" d="Включать затраты подпроектов" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnTimeLossCause" d="Показывать причину списания" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnDescr" d="Показывать комментарий" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="SortType" d="Сортировка" vt="i2" cp="scalar" enum="ReportTimeLossesSortType">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="произвольно">0</i:const-value>
+				<i:const-value n="по причине списания">1</i:const-value>
+				<i:const-value n="по сотруднику">2</i:const-value>
+				<i:const-value n="по дате списания">3</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SortOrder" d="Порядок сортировки" vt="i2" cp="scalar" enum="SortOrder">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="По возрастанию">1</i:const-value>
+				<i:const-value n="По убыванию">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="TimeMeasureUnits" d="Единицы измерения времени" vt="i2" cp="scalar" enum="TimeMeasureUnits">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Дни, часы, минуты">0</i:const-value>
+				<i:const-value n="Часы">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="InsertRestrictions" d="Включить в отчет условия поиска" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Organizations" d="Организации" vt="object" ot="Organization" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Краткое наименование" width="100">item.ShortName</i:column>
+				<i:column t="Примечание" width="100">item.Comment</i:column>
+				<i:column t="Организация-владелец системы" width="100" vt="boolean">item.Home</i:column>
+				<i:column t="Участник тендеров от нас" width="100" vt="boolean">item.OwnTenderParticipant</i:column>
+				<i:column t="Структура организации определена" width="100" vt="boolean">item.StructureHasDefined</i:column>
+				<i:column t="Член группы компаний" width="100" vt="boolean">item.HoldingPart</i:column>
+				<i:column t="Поставщик" width="100" vt="boolean">item.Supplier</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Employees" d="Сотрудники" vt="object" ot="Employee" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Фамилия" width="100">item.LastName</i:column>
+				<i:column t="Имя" width="100">item.FirstName</i:column>
+				<i:column t="Отчество" width="100">item.MiddleName</i:column>
+				<i:column t="Дата выхода на работу" width="100" vt="date">item.WorkBeginDate</i:column>
+				<i:column t="Дата окончания работы" width="100" vt="date">item.WorkEndDate</i:column>
+				<i:column t="Телефон" width="100">item.Phone</i:column>
+				<i:column t="Добавочный номер к телефону" width="100">item.PhoneExt</i:column>
+				<i:column t="Мобильный телефон" width="100">item.MobilePhone</i:column>
+				<i:column t="Почтовый адрес" width="100">item.Address</i:column>
+				<i:column t="Адрес электронной почты" width="100">item.EMail</i:column>
+				<i:column t="Телефон пейджера" width="100">item.PagerPhone</i:column>
+				<i:column t="Номер пейджера" width="100">item.PagerCode</i:column>
+				<i:column t="Временная нетрудоспособность" width="100" vt="boolean">item.TemporaryDisability</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<i:editor t="Списание времени сотрудниками" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:client-script>it-pe-any-type-objects-tree-selector.vbs</i:client-script>
+			<i:client-script>s-Report-TimeLosses.vbs</i:client-script>
+			<i:page t="Основные параметры">p-Report-TimeLosses-1.xsl</i:page>
+			<i:page t="Сотрудники">p-Report-TimeLosses-2.xsl</i:page>
+			<i:page t="Формат">p-Report-TimeLosses-3.xsl</i:page>
+		</i:editor>
+	</ds:type>
+	<ds:type n="FilterReportDepartmentCost" d="Фильтр отчета &quot;Затраты в разрезе Департаментов&quot;" tp="temporary">
+		<ds:prop n="Folder" d="Активность" vt="object" ot="Folder" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Department" d="Подразделение" vt="object" ot="Department" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Code</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="TimeMeasureUnits" d="Представление времени" vt="i2" cp="scalar" enum="TimeMeasureUnits">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection no-empty-value="1" selector="combo" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Дни, часы, минуты">0</i:const-value>
+				<i:const-value n="Часы">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="ShowRestrictions" d="Включить в отчет условия поиска" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="FolderType" d="Тип активности" vt="i2" cp="scalar" flags="FolderTypeFlags">
+			<ds:def default-type="both">13</ds:def>
+			<i:bits AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Проект">1</i:bit>
+				<i:bit n="Тендер">4</i:bit>
+				<i:bit n="Пресейл">8</i:bit>
+				<i:bit n="Каталог">16</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="ShowDetalization" d="Детализация" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="SortBy" d="Сортировка" vt="i2" cp="scalar" enum="ReportDepartmentCostSort">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection no-empty-value="1" selector="combo" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="По департаментам">0</i:const-value>
+				<i:const-value n="По затратам">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection no-empty-value="1" selector="combo" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection no-empty-value="1" selector="combo" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<i:editor t="Затраты в разрезе департаментов" default-for-creation="1" default-for-editing="1" width="650" height="370" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-FilterReportDepartmentCost.vbs</i:client-script>
+			<i:page t="Параметры отчета" n="Main"><![CDATA[x-editor2.xsl?DisableHR=1&MainTableHeight=100%&@PeriodType=maybenull:0&@IntervalBegin&@IntervalEnd&@Quarter&@Folder=maybenull:0&@ShowDetalization=description:Детализация по отделам и группам&@TimeMeasureUnits&@SortBy&@ShowRestrictions]]></i:page>
+		</i:editor>
+	</ds:type>
+	<ds:type n="FilterReportEmployeeRate" d="Фильтр отчета Ннорма рабочего времени сотрудников&quot;" tp="temporary">
+		<ds:prop n="PassRedundant" d="Исключить уволенных сотрудников" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowRestrictions" d="Включить в отчет условия поиска" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="PassDisabled" d="Исключить временно нетрудоспособных сотрудников" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Department" d="Подразделение" vt="object" ot="Department" cp="scalar">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Code</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Organization" d="Организация" vt="object" ot="Organization" cp="scalar">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<i:editor t="Норма рабочего времени сотрудников" default-for-creation="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Основные параметры">p-Report-EmployeesRate.xsl</i:page>
+		</i:editor>
+	</ds:type>
+	<!--
+		Фильтр отчета "Список активностей"
+	-->
+	<ds:type n="FilterReportActivityList" d="Фильтр отчета &quot;Список активностей&quot;" tp="temporary">
+		<ds:prop n="ActivitySelection" d="Выборка активностей" vt="i2" cp="scalar" enum="ActivitySelection">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection selector="combo" no-empty-value="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="с затратами за период">1</i:const-value>
+				<i:const-value n="переведенные в ожидание закрытия">2</i:const-value>
+				<i:const-value n="закрытые за период">3</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="FolderType" d="Тип активности" vt="i2" cp="scalar" flags="FolderTypeFlags">
+			<ds:def default-type="both">13</ds:def>
+			<i:bits xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Проект">1</i:bit>
+				<i:bit n="Тендер">4</i:bit>
+				<i:bit n="Пресейл">8</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="FolderState" d="Статус активности" vt="i2" cp="scalar" flags="FolderStatesFlags">
+			<ds:def default-type="both">15</ds:def>
+			<i:bits AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Открыто">1</i:bit>
+				<i:bit n="Ожидание закрытия">2</i:bit>
+				<i:bit n="Закрыто">4</i:bit>
+				<i:bit n="Заморожено">8</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="ActivityAnalysDepth" d="Глубина анализа активностей" vt="i2" cp="scalar" enum="ActivityAnalysDepth">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="только выбранная активность">0</i:const-value>
+				<i:const-value n="подчиненные активности 1 уровня">1</i:const-value>
+				<i:const-value n="подчиненные активности всех уровней">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="ActivityDetalizationLevel" d="Уровень детализации активностей" vt="i2" cp="scalar" enum="ActivityDetalizationLevel">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="до подпроекта 1 уровня">1</i:const-value>
+				<i:const-value n="до менеджера проекта">2</i:const-value>
+				<i:const-value n="до кода проекта">3</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SectionByActivity" d="Секционирование по активностям" vt="i2" cp="scalar" enum="SectionByActivity">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="без секционирования">0</i:const-value>
+				<i:const-value n="по подчиненным активностям 1 уровня">1</i:const-value>
+				<i:const-value n="по подчиненным активностям всех уровней">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SectionByClient" d="Секционировать по клиентам" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="SectionByActivityType" d="Секционировать по типу активности" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="SortType" d="Сортировка" vt="i2" cp="scalar" enum="ReportActivityListSortType">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Произвольно">0</i:const-value>
+				<i:const-value n="По наименованию">1</i:const-value>
+				<i:const-value n="По коду">2</i:const-value>
+				<i:const-value n="По идентификатору для Navision">3</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SortOrder" d="Порядок сортировки" vt="i2" cp="scalar" enum="SortOrder">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="По возрастанию">1</i:const-value>
+				<i:const-value n="По убыванию">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="InsertRestrictions" d="Включить в отчет условия поиска" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Folders" d="Активности" vt="object" ot="Folder" cp="collection">
+			<i:tree-selector off-expand-all="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="FolderSelector" />
+			</i:tree-selector>
+		</ds:prop>
+		<ds:prop n="ShowColumnNavisionID" d="Показывать идентификатор для Navision" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnProjectManager" d="Показывать менеджера проекта" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnProjectAdmin" d="Показывать администратора проекта" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnDirector" d="Показывать директора клиента" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnNotAssignedRoles" d="Показывать не назначенные роли" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="NotAssignedRoles" d="Не заданные роли" vt="object" ot="UserRoleInProject" cp="collection">
+			<i:list-selector use-list="Roles" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="AllFolders" d="Все активности" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnProjectCode" d="Показывать код активности" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<i:editor t="Список активностей" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:client-script>s-Report-ActivitySelector.vbs</i:client-script>
+			<i:client-script>s-Report-ActivityList.vbs</i:client-script>
+			<i:page t="Основные параметры">p-Report-ActivityList-1.xsl</i:page>
+			<i:page t="Клиенты/Активности">p-Report-ActivitySelector.xsl</i:page>
+			<i:page t="Не заданные роли">p-Report-ActivityList-2.xsl</i:page>
+		</i:editor>
+	</ds:type>
+	<!--
+		Диалог задания параметров (фильтр) отчета "Затраты в разрезе направлений"
+	-->
+	<ds:type n="FilterReportExpensesByDirections" d="Фильтр отчета &quot;Затраты в разрезе направлений&quot;" tp="temporary">
+		<ds:prop n="Organization" d="Организация-Клиент" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:object-presentation use-list-selector="TmsOrganizations" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation-const" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Folder" d="Активность" vt="object" ot="Folder" cp="scalar" maybenull="1">
+			<i:object-presentation use-list-selector="ProjectsList" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation-const" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="FolderType" d="Тип активности" vt="i2" cp="scalar" flags="FolderTypeFlags">
+			<ds:def default-type="both">13</ds:def>
+			<!-- Все флаги, кроме каталога: из-за этого снят атрибут AUTO-GENERATED -->
+			<i:bits xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Проект">1</i:bit>
+				<i:bit n="Тендер">4</i:bit>
+				<i:bit n="Пресейл">8</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="ShowDetails" d="Детализация" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowHistoryInfo" d="Отображать данные о последнем изменении" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="SortBy" d="Сортировка" vt="i2" cp="scalar" enum="ReportExpensesByDirectionsSortType">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection selector="combo" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="По направлению">0</i:const-value>
+				<i:const-value n="По затратам">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="ShowRestrictions" d="Включить в отчет условия поиска" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="OnlyActiveFolders" d="Только открытые активности" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="TimeMeasureUnits" d="Представление времени" vt="i2" cp="scalar" enum="TimeMeasureUnits">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Дни, часы, минуты">0</i:const-value>
+				<i:const-value n="Часы">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<!-- Специальный редактор, для задания параметров отчета -->
+		<i:editor t="Затраты в разрезе направлений" default-for-editing="1" width="650" height="470" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:client-script>s-Report-ExpensesByDirections.vbs</i:client-script>
+			<i:page n="MainParams" t="Параметры">p-Report-ExpensesByDirections.xsl</i:page>
+		</i:editor>
+	</ds:type>
+	<!--
+		Фильтр отчета "Занятость сотрудников в проектах"
+	-->
+	<ds:type n="FilterReportEmployeesBusynessInProjects" d="Фильтр отчета &quot;Занятость сотрудников в проектах&quot;" tp="temporary">
+		<ds:prop n="FolderType" d="Тип активности" vt="i2" cp="scalar" flags="FolderTypeFlags">
+			<ds:def default-type="both">13</ds:def>
+			<i:bits xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Проект">1</i:bit>
+				<i:bit n="Тендер">4</i:bit>
+				<i:bit n="Пресейл">8</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="ExpencesType" d="Виды трудозатрат" vt="i2" cp="scalar" enum="ExpencesType">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="затраты на инциденты">0</i:const-value>
+				<i:const-value n="списания">1</i:const-value>
+				<i:const-value n="затраты на инциденты и списания">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="CauseDetalization" d="Детализация по причинам списания" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SortType" d="Сортировка" vt="i2" cp="scalar" enum="ReportEmployeesBusynessInProjectsSortType">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="произвольно">0</i:const-value>
+				<i:const-value n="по аккаунту">1</i:const-value>
+				<i:const-value n="по активности">2</i:const-value>
+				<i:const-value n="по трудозатратам">3</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SortOrder" d="Порядок сортировки" vt="i2" cp="scalar" enum="SortOrder">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="По возрастанию">1</i:const-value>
+				<i:const-value n="По убыванию">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="TimeMeasureUnits" d="Единицы измерения времени" vt="i2" cp="scalar" enum="TimeMeasureUnits">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Дни, часы, минуты">0</i:const-value>
+				<i:const-value n="Часы">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="InsertRestrictions" d="Включить в отчет условия поиска" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnCustomer" d="Показывать аккаунт" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnProjectRole" d="Показывать проектную роль" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnExpenses" d="Показывать трудозатраты, время" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="IncludeSubDepartments" d="Включать сотрудников подчиненных подразделений" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="Organizations" d="Организации" vt="object" ot="Organization" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Краткое наименование" width="100">item.ShortName</i:column>
+				<i:column t="Примечание" width="100">item.Comment</i:column>
+				<i:column t="Организация-владелец системы" width="100" vt="boolean">item.Home</i:column>
+				<i:column t="Участник тендеров от нас" width="100" vt="boolean">item.OwnTenderParticipant</i:column>
+				<i:column t="Структура организации определена" width="100" vt="boolean">item.StructureHasDefined</i:column>
+				<i:column t="Член группы компаний" width="100" vt="boolean">item.HoldingPart</i:column>
+				<i:column t="Поставщик" width="100" vt="boolean">item.Supplier</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Employees" d="Сотрудники" vt="object" ot="Employee" cp="collection">
+			<i:tree-selector off-expand-all="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="AnyEmployees" />
+			</i:tree-selector>
+		</ds:prop>
+		<ds:prop n="Departments" d="Подразделения" vt="object" ot="Department" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Код" width="100">item.Code</i:column>
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Примечание" width="100">item.Comment</i:column>
+				<i:column t="Тип" width="100" vt="i2">item.Type</i:column>
+				<i:column t="Архивное" width="100" vt="boolean">item.IsArchive</i:column>
+				<i:column t="Учет временных затрат сотрудников" width="100" vt="boolean">item.TimeReporting</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<i:editor t="Занятость сотрудников в проектах" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-pe-any-type-objects-tree-selector.vbs</i:client-script>
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:client-script>s-Report-EmployeesBusynessInProjects.vbs</i:client-script>
+			<i:page t="Основные параметры">p-Report-EmployeesBusynessInProjects-1.xsl</i:page>
+			<i:page t="Сотрудники">p-Report-EmployeesBusynessInProjects-3.xsl</i:page>
+			<i:page t="Формат">p-Report-EmployeesBusynessInProjects-2.xsl</i:page>
+		</i:editor>
+	</ds:type>
+	<ds:type n="FilterReportEmploymentPlanned" d="Фильтр отчета &quot;Плановая занятость сотрудников&quot;" tp="temporary">
+		<ds:prop n="Departments" d="подразделения" vt="object" ot="Department" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Код" width="100">item.Code</i:column>
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Примечание" width="100">item.Comment</i:column>
+				<i:column t="Тип" width="100" vt="i2">item.Type</i:column>
+				<i:column t="Архивное" width="100" vt="boolean">item.IsArchive</i:column>
+				<i:column t="Учет временных затрат сотрудников" width="100" vt="boolean">item.TimeReporting</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Employees" d="Сотрудники" vt="object" ot="Employee" cp="collection">
+			<i:tree-selector off-expand-all="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="AnyEmployees" />
+			</i:tree-selector>
+		</ds:prop>
+		<ds:prop n="Organizations" d="Организации" vt="object" ot="Organization" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Краткое наименование" width="100">item.ShortName</i:column>
+				<i:column t="Примечание" width="100">item.Comment</i:column>
+				<i:column t="Организация-владелец системы" width="100" vt="boolean">item.Home</i:column>
+				<i:column t="Участник тендеров от нас" width="100" vt="boolean">item.OwnTenderParticipant</i:column>
+				<i:column t="Структура организации определена" width="100" vt="boolean">item.StructureHasDefined</i:column>
+				<i:column t="Член группы компаний" width="100" vt="boolean">item.HoldingPart</i:column>
+				<i:column t="Поставщик" width="100" vt="boolean">item.Supplier</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="TimeMeasureUnits" d="Единицы измерения времени" vt="i2" cp="scalar" enum="TimeMeasureUnits">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Дни, часы, минуты">0</i:const-value>
+				<i:const-value n="Часы">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="InsertRestrictions" d="Включить в отчет условия поиска" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="SortOrder" d="Порядок сортировки" vt="i2" cp="scalar" enum="SortOrder">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="По возрастанию">1</i:const-value>
+				<i:const-value n="По убыванию">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IncludeSubDepartments" d="Включать сотрудников подчиненных подразделений" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="PassRedundant" d="Исключить данные уволенных сотрудников" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="PassDisabled" d="Исключить данные временно нетрудоспособных  сотрудников" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IncludeEmployeesWithZeroEmploiment" d="Включать сотрудников с нормой 0" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="Folders" d="Активности" vt="object" ot="Folder" cp="collection">
+			<i:tree-selector off-expand-all="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:objects-tree-selector n="FolderSelector" />
+			</i:tree-selector>
+		</ds:prop>
+		<ds:prop n="AllFolders" d="Все активности" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ActivityAnalysDepth" d="Глубина анализа активностей" vt="i2" cp="scalar" enum="ActivityAnalysDepth">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="только выбранная активность">0</i:const-value>
+				<i:const-value n="подчиненные активности 1 уровня">1</i:const-value>
+				<i:const-value n="подчиненные активности всех уровней">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<i:editor t="Плановая занятость сотрудников" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Report-ActivitySelector.vbs</i:client-script>
+			<i:client-script>it-pe-any-type-objects-tree-selector.vbs</i:client-script>
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:client-script>s-Report-EmployeesEmployment.vbs</i:client-script>
+			<i:page t="Основные параметры">p-Report-Employment-1.xsl</i:page>
+			<i:page t="Сотрудники">p-Report-Employment-2.xsl</i:page>
+			<i:page t="Клиенты/Активности">p-Report-ActivitySelector.xsl</i:page>
+		</i:editor>
+	</ds:type>
+	<!-- 
+		Фильтр отчета "Хроника изменений инцидентов проекта"
+	-->
+	<ds:type n="FilterReportFolderIncidentsHistory" d="Фильтр отчета &quot;Хроника изменений инцидентов проекта&quot;" tp="temporary">
+		<ds:prop n="Folder" d="Активность" vt="object" ot="Folder" cp="scalar">
+			<i:object-presentation use-tree-selector="FolderSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu>
+						<i:menu-item action="DoSelectFromDb" t="Выбрать" default="1" may-be-default="1" />
+					</i:menu>
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="ActivityAnalysDepth" d="Глубина анализа активностей" vt="i2" cp="scalar" enum="ActivityAnalysDepth">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="только выбранная активность">0</i:const-value>
+				<i:const-value n="подчиненные активности 1 уровня">1</i:const-value>
+				<i:const-value n="подчиненные активности всех уровней">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="SectionByActivity" d="Секционирование по активностям" vt="i2" cp="scalar" enum="SectionByActivity">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="без секционирования">0</i:const-value>
+				<i:const-value n="по подчиненным активностям 1 уровня">1</i:const-value>
+				<i:const-value n="по подчиненным активностям всех уровней">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IncludeSubProjects" d="Включать затраты подпроектов" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="Detalization" d="Детализация" vt="i2" cp="scalar" enum="IncidentStateDetalization">
+			<ds:def default-type="both">0</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="по всем состояниям">0</i:const-value>
+				<i:const-value n="по открытию и закрытию">1</i:const-value>
+				<i:const-value n="без детализации (только открытые)">2</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="ShowColumnIncidentNumber" d="Показывать номер инцидента" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnIncidentName" d="Показывать название инцидента" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnIncidentType" d="Показывать класс инцидента" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnDescr" d="Показывать описание инцидента" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnChangeDate" d="Показывать дату" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnState" d="Показывать состояние" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnEmployee" d="Показывать сотрудника" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="ShowColumnSolution" d="Показывать решение" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<ds:prop n="PeriodType" d="Период времени" vt="i2" cp="scalar" maybenull="1" enum="PeriodType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Интервал дат">1</i:const-value>
+				<i:const-value n="На текущую неделю">2</i:const-value>
+				<i:const-value n="На текущий месяц">3</i:const-value>
+				<i:const-value n="На предыдущий месяц">5</i:const-value>
+				<i:const-value n="На заданный квартал">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IntervalBegin" d="Начало" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="IntervalEnd" d="Окончание" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="Quarter" d="Квартал" vt="i2" cp="scalar" maybenull="1" enum="Quarter">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="1-й">1</i:const-value>
+				<i:const-value n="2-й">2</i:const-value>
+				<i:const-value n="3-й">3</i:const-value>
+				<i:const-value n="4-й">4</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<i:editor t="Хроника изменений инцидентов проекта" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>it-period-selector.vbs</i:client-script>
+			<i:client-script>s-Report-FolderIncidentsHistory.vbs</i:client-script>
+			<i:page t="Основные параметры">p-Report-FolderIncidentsHistory.xsl</i:page>
+		</i:editor>
+	</ds:type>
+	<!-- Отчет "Список инцидентов и затрат сотрудника" -->
+	<i:report t="Список инцидентов и затрат сотрудника" n="ReportEmployeeExpensesList" width="600" height="700" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:client-script>s-ReportEmployeeExpensesList.vbs</i:client-script>
+		<i:filter-as-editor ot="FilterEmployeeExpensesList" />
+	</i:report>
+	<!-- Отчет "Динамика затрат сотрудников" -->
+	<i:report t="Динамика затрат сотрудников" n="ReportUsersExpences" width="600" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportUsersExpences" />
+	</i:report>
+	<!-- Отчет "Список активностей" -->
+	<i:report t="Список активностей" n="ActivityList" width="600" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportActivityList" />
+	</i:report>
+	<!-- Отчет "Список участников и затрат проекта" -->
+	<i:report t="Список участников и затрат проекта" n="ProjectParticipantsAndExpenses" width="600" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:client-script>s-Report-ProjectParticipantsAndExpenses.vbs</i:client-script>
+		<i:filter-as-editor ot="FilterReportProjectParticipantsAndExpenses" />
+	</i:report>
+	<!-- Отчет "Список инцидентов и затрат проекта" -->
+	<i:report t="Список инцидентов и затрат проекта" n="ProjectIncidentsAndExpenses" width="600" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:client-script>s-Report-ProjectIncidentsAndExpenses.vbs</i:client-script>
+		<i:filter-as-editor ot="FilterReportProjectIncidentsAndExpenses" />
+	</i:report>
+	<!-- Отчет "Баланс списаний сотрудника" -->
+	<i:report t="Баланс списаний сотрудника" n="EmployeeExpensesBalance" width="600" height="300" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportEmployeeExpensesBalance" />
+	</i:report>
+	<!-- Отчет "Списание времени сотрудниками" -->
+	<i:report t="Списание времени сотрудниками" n="TimeLosses" width="600" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportTimeLosses" />
+	</i:report>
+	<!-- Отчет "Хроника изменений инцидентов проекта" -->
+	<i:report t="Хроника изменений инцидентов проекта" n="FolderIncidentsHistory" width="600" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportFolderIncidentsHistory" />
+	</i:report>
+	<!-- Отчет "Даты последнего учета затрат сотрудниками" -->
+	<i:report t="Даты последнего учета затрат сотрудниками" n="LastExpenseDates" width="600" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportLastExpenseDates" />
+	</i:report>
+	<!-- Отчет "Занятость сотрудников в проектах" -->
+	<i:report t="Занятость сотрудников в проектах" n="EmployeesBusynessInProjects" width="600" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportEmployeesBusynessInProjects" />
+	</i:report>
+	<!-- Отчет "Затраты в разрезе направлений" -->
+	<i:report t="Затраты в разрезе направлений" n="ExpensesByDirections" width="650" height="470" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportExpensesByDirections" />
+	</i:report>
+	<!-- Отчет "Структура затрат подразделений" -->
+	<i:report t="Структура затрат подразделений" n="DepartmentExpensesStructure" width="570" height="530" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportDepartmentExpensesStructure" />
+	</i:report>
+	<!-- Отчет "Норма рабочего времени" -->
+	<i:report t="Норма рабочего времени" n="EmployeesRate" width="450" height="250" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportEmployeeRate" />
+	</i:report>
+	<!-- Отчет "Норма рабочего времени" -->
+	<i:report t="Плановая занятость сотрудников" n="Employment" width="600" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportEmploymentPlanned" />
+	</i:report>
+	<!-- Отчет "Затраты в разрезе департаментов" -->
+	<i:report t="Затраты в разрезе департаментов" n="CostsByDepartments" width="650" height="370" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+		<i:filter-as-editor ot="FilterReportDepartmentCost" height="370" />
+	</i:report>
+	<i:report t="История измеения организации" n="OrganizationHistory" width="600" height="450" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+</ds:metadata>

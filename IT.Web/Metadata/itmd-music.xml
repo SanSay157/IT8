@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<ds:enum n="GENDER" d="Пол" vt="i2">
+		<ds:value n="MALE" d="M">1</ds:value>
+		<ds:value n="FEMALE" d="F">0</ds:value>
+	</ds:enum>
+	<ds:enum n="ALBUM_TYPE" d="Тип альбома" vt="i2">
+		<ds:value n="STUDIO" d="Студийный">0</ds:value>
+		<ds:value n="CONCERT" d="Концертный">1</ds:value>
+		<ds:value n="COLLECTION" d="Сборник">2</ds:value>
+		<ds:value n="COVER" d="Каверы">3</ds:value>
+	</ds:enum>
+	<ds:flags n="MC_TYPE_OF_MUS_ACTION" d="Тип участия музыканта" vt="i4">
+		<ds:value n="VOCAL" d="Вокал">1</ds:value>
+		<ds:value n="GUITAR" d="Гитара">2</ds:value>
+		<ds:value n="BASS" d="Бас">4</ds:value>
+		<ds:value n="DRUMS" d="Ударные">8</ds:value>
+		<ds:value n="PERCISSION" d="Перкуссия">16</ds:value>
+		<ds:value n="KEYS" d="Клавишные">32</ds:value>
+		<ds:value n="SM" d="Смычковые">64</ds:value>
+		<ds:value n="DUH" d="Духовые">128</ds:value>
+		<ds:value n="PRODUCER" d="Продюсер">131071</ds:value>
+	</ds:flags>
+</ds:metadata>

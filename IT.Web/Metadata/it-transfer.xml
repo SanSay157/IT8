@@ -1,0 +1,83 @@
+<!-- 
+	Файл сгенерирован автоматически!
+	В приложении Incident Tracker transfer-service не используется. Файл оставлен для корректной работы приложения
+-->
+<?xml version="1.0" encoding="windows-1251" ?>
+<xtr:transfer
+	xmlns:dt="urn:schemas-microsoft-com:datatypes"
+	xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0"
+	xmlns:xtr="http://www.croc.ru/Schemas/XmlFramework/TransferService/1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Data/1.0 x-net-data-schema.xsd 
+		http://www.croc.ru/Schemas/XmlFramework/TransferService/1.0 x-net-transferservice-schema.xsd"
+	>
+
+  <xtr:export n="department" t="Отделы" import-show-file-name="true" export-show-file-name="true">
+    <xtr:export-step ot="Department">
+      <xtr:data-source>
+        <ds:cmd-text>
+          SELECT ObjectID FROM Department WHERE ObjectID = @DepartmentID
+          UNION
+          SELECT ObjectID FROM Department WHERE Parent = @DepartmentID
+          UNION
+          SELECT ObjectID FROM Department WHERE Parent in (SELECT ObjectID FROM Department WHERE Parent = @DepartmentID)
+          UNION
+          SELECT ObjectID FROM Department WHERE Parent in (
+          SELECT ObjectID FROM Department WHERE Parent in (
+          SELECT ObjectID FROM Department WHERE Parent = @DepartmentID))
+        </ds:cmd-text>
+        <ds:params>
+          <ds:param n="DepartmentID" vt="uuid" required="1" />
+        </ds:params>
+      </xtr:data-source>
+      <xtr:not-saving-prop ot="Projects" />
+    </xtr:export-step>
+
+    <xtr:export-step ot="Employee" t="Employee">
+      <xtr:data-source>
+        <ds:cmd-text>
+          SELECT ObjectId FROM Employee WHERE Department = @DepartmentID
+          UNION
+          SELECT ObjectId FROM Employee WHERE Department in (SELECT ObjectID FROM Department WHERE Parent = @DepartmentID)
+          UNION
+          SELECT ObjectId FROM Employee WHERE Department in (
+          SELECT ObjectID FROM Department WHERE Parent in (
+          SELECT ObjectID FROM Department WHERE Parent = @DepartmentID))
+          UNION
+          SELECT ObjectId FROM Employee WHERE Department in (
+          SELECT ObjectID FROM Department WHERE Parent in (
+          SELECT ObjectID FROM Department WHERE Parent in (
+          SELECT ObjectID FROM Department WHERE Parent = @DepartmentID)))
+        </ds:cmd-text>
+        <ds:params>
+          <ds:param n="DepartmentID" vt="uuid" required="1" />
+        </ds:params>
+      </xtr:data-source>
+      <xtr:not-saving-prop ot="Manager" />
+      <xtr:not-saving-prop ot="Projects" />
+      <xtr:not-saving-prop ot="Resource" />
+      <xtr:not-saving-prop ot="Active" />
+    </xtr:export-step>
+
+    <xtr:object-identification ot="Department" action="replace">
+      SELECT ObjectID FROM Department WHERE
+      Name = <xtr:xpath vt='string'>Name</xtr:xpath>
+      AND
+      (
+      Parent = <xtr:xpath vt='uuid'>Parent/Department/@oid</xtr:xpath> AND NOT <xtr:xpath vt='uuid'>Parent/Department/@oid</xtr:xpath> IS NULL
+      OR
+      Parent IS NULL AND <xtr:xpath vt='uuid'>Parent/Department/@oid</xtr:xpath> IS NULL
+      )
+    </xtr:object-identification>
+  </xtr:export>
+
+  <xtr:export n="error" t="Файл с ошибкой">
+
+    <xtr:before-import-step t="err">
+
+      неправильный sql-запрос
+
+    </xtr:before-import-step>
+  </xtr:export>
+
+</xtr:transfer>

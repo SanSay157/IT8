@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<r:report
+	r:t="Кассовые разрывы по проекту"
+	r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll"
+	r:class="Croc.IncidentTracker.ReportService.Reports.r_ProjectCashGap"
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+  <!-- Подключение клиентского скрипта -->
+  <r:common>
+    <r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+  </r:common>
+  <r:params>
+    <r:param r:n="InContract" r:vt="uuid" r:t="Приходный договор"  r:required="true"/>
+    <r:param r:n="DateRatio" r:vt="uuid" r:t="Масштаб"  r:required="false" />
+    <r:param r:n="ShowDateIntervalWithOperationOnly" r:vt="boolean" r:t="Отображать только интервалы содержащие операции"  r:required="true" r:default="1"/>
+    <r:param r:n="DateIntervalMode" r:vt="i4" r:t="Тип временного интервала"  r:required="true" r:default="1"/>
+    <r:param r:n="DateFrom" r:t="Дата с" r:vt="date" r:required="false"/>
+    <r:param r:n="DateTo" r:t="Дата по" r:vt="date" r:required="false"/>
+    
+
+
+  </r:params>
+  <r:data-sources>
+    <r:config-data-source r:n="ProjectOutcomesForBDRReportDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectOutcomesForBDRReportDS" r:section=""/>
+    <r:config-data-source r:n="ProjectIncomesForBDRReportDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ProjectIncomesForBDRReportDS" r:section=""/>
+    <r:config-data-source r:n="ContractDS" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.ContractDS" r:section=""/>
+  </r:data-sources>
+</r:report>

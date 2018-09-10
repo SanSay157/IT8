@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dbc:dbcheck
+	xmlns:dbc="http://www.croc.ru/Schemas/IncidentTracker/DbCheck/1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/IncidentTracker/DbCheck/1.0 it-special-dbcheck-schema.xsd"
+>
+  <!-- "Проверяльщики" наличия объектов в БД -->
+  <dbc:dbcheckers>
+    <dbc:dbchecker
+			dbobject-type="table"
+			class-name="Croc.IncidentTracker.Tools.DbCheck.DbCheckerMsSqlTable"
+			assembly-name="Croc.IncidentTracker.Tools.DbCheck" />
+    <dbc:dbchecker
+			dbobject-type="view"
+			class-name="Croc.IncidentTracker.Tools.DbCheck.DbCheckerMsSqlView"
+			assembly-name="Croc.IncidentTracker.Tools.DbCheck" />
+    <dbc:dbchecker
+			dbobject-type="procedure"
+			class-name="Croc.IncidentTracker.Tools.DbCheck.DbCheckerMsSqlProcedure"
+			assembly-name="Croc.IncidentTracker.Tools.DbCheck" />
+    <dbc:dbchecker
+			dbobject-type="function"
+			class-name="Croc.IncidentTracker.Tools.DbCheck.DbCheckerMsSqlFunction"
+			assembly-name="Croc.IncidentTracker.Tools.DbCheck" />
+    <dbc:dbchecker
+			dbobject-type="trigger"
+			class-name="Croc.IncidentTracker.Tools.DbCheck.DbCheckerMsSqlTrigger"
+			assembly-name="Croc.IncidentTracker.Tools.DbCheck" />
+    <dbc:dbchecker
+			dbobject-type="index"
+			class-name="Croc.IncidentTracker.Tools.DbCheck.DbCheckerMsSqlIndex"
+			assembly-name="Croc.IncidentTracker.Tools.DbCheck" />
+    <dbc:dbchecker
+			dbobject-type="check-constraint"
+			class-name="Croc.IncidentTracker.Tools.DbCheck.DbCheckerMsSqlCheckConstraint"
+			assembly-name="Croc.IncidentTracker.Tools.DbCheck" />
+  </dbc:dbcheckers>
+  <!-- 
+		Объекты в БД 
+	-->
+  <dbc:dbobjects>
+    <!-- Таблицы (пока только для примера, поэтому набор неполный) -->
+    <dbc:table name="Tender" owner="dbo" description="Таблица тендеров" />
+    <dbc:table name="FolderHistory">
+      <dbc:index name="IX$FolderHistory_Folder" />
+    </dbc:table>
+    <dbc:table name="Guarantee">
+      <dbc:check-constraint name="CC_Guarantee_GuaranteeSum_OR_PortionValue" />
+    </dbc:table>
+    <dbc:table name="Folder">
+      <dbc:index name="IDX_Folder_LRIndex" />
+    </dbc:table>
+    <dbc:table name="Department">
+      <dbc:index name="IDX_Department_LRIndex" />
+    </dbc:table>
+    <dbc:table name="Organization">
+      <dbc:index name="IDX_Organization_LRIndex" />
+    </dbc:table>
+    <dbc:table name="ActivityType">
+      <dbc:index name="IDX_ActivityType_LRIndex" />
+    </dbc:table>
+
+    <!-- Представления -->
+    <dbc:view name="viewFolder" />
+    <dbc:view name="viewSum" />
+
+    <!-- Процедуры -->
+    <dbc:procedure name="app_GetSummaryTimeExpense" />
+    <dbc:procedure name="app_GetTreeOrganizations" />
+    <dbc:procedure name="app_DeleteUnusedObjects" />
+    <dbc:procedure name="app_SyncNSI_MergeOrganization" />
+    <dbc:procedure name="app_INTEROP_BI_getProjectLoss" />
+    <dbc:procedure name="app_INTEROP_BI_getProjectParticipants" />
+    <dbc:procedure name="app_INTEROP_BI_getProjectRolesList" />
+    <dbc:procedure name="app_INTEROP_GetProjectsParticipants" />
+    <dbc:procedure name="app_INTEROP_GetAllProjectParticipants" />
+
+    <!-- Отчеты -->
+    <dbc:procedure name="rep_ActivityList" />
+    <dbc:procedure name="rep_ProjectParticipantsAndExpenses" />
+    <dbc:procedure name="rep_ProjectIncidentsAndExpenses" />
+    <dbc:procedure name="rep_TimeLosses" />
+    <dbc:procedure name="rep_FolderIncidentsHistory" />
+    <dbc:procedure name="rep_EmployeeExpensesBalance" />
+    <dbc:procedure name="rep_LastExpenseDates" />
+    <dbc:procedure name="rep_EmployeesBusynessInProjects" />
+    <dbc:procedure name="rep_ExpensesByDirections" />
+    <dbc:procedure name="rep_DepartmentExpensesStructure" />
+
+    <!-- Функции -->
+    <dbc:function name="DATETRIM" />
+    <dbc:function name="DATECEIL" />
+    <dbc:function name="GetWeekdayName" />
+    <dbc:function name="GetWorkdayGlobalDuration" />
+    <dbc:function name="IsWeekend" />
+    <dbc:function name="IsWorkday" />
+    <dbc:function name="FormatDurationAsString" />
+    <dbc:function name="GetSumString" />
+    <dbc:function name="GetOrganizationBranches" />
+    <dbc:function name="GetFolderHistoryActor" />
+    <dbc:function name="GetFolderIconSelector" />
+    <dbc:function name="GetFolderPath" />
+    <dbc:function name="GetAllFolderParticipants" />
+    <dbc:function name="GetAllFolderParticipantsRolesList" />
+    <dbc:function name="GetLastIncidentActivityDate" />
+    <dbc:function name="GuidListFromString" />
+    <dbc:function name="GetAllFolderRoles" />
+    <dbc:function name="GetFolderRoleEmployees" />
+    <dbc:function name="GetFolderNotAssignedRoles" />
+    <dbc:function name="rep_GetSubFolders" />
+    <dbc:function name="rep_GetSubFoldersEx" />
+    <dbc:function name="rep_GetTotalFolders" />
+    <dbc:function name="rep_GetEmployees" />
+    <dbc:function name="GetDepartmentCode" />
+    <dbc:function name="GetFolderEmployeeRoles" />
+    <dbc:function name="GetWorkdayCalendar" />
+    <dbc:function name="GetEmployeesString" />
+    <dbc:function name="GetMinimaxBoundingDates" />
+    <dbc:function name="GetFullNameDepartment" />
+
+    <!-- Триггеры -->
+    <dbc:trigger name="tIU_Incident_StateHistory" />
+    <dbc:trigger name="tIU_Sum_CheckGuaranteeCurrency" />
+    <dbc:trigger name="tI_Department_ManageExternalRefID" />
+    <dbc:trigger name="tI_Department_ManageLRIndex" />
+    <dbc:trigger name="tU_Department_ManageLRIndex" />
+    <dbc:trigger name="tD_Department_ManageLRIndex" />
+    <dbc:trigger name="tI_Organization_ManageExternalRefID" />
+    <dbc:trigger name="tI_Organization_ManageLRIndex" />
+    <dbc:trigger name="tU_Organization_ManageLRIndex" />
+    <dbc:trigger name="tD_Organization_ManageLRIndex" />
+    <dbc:trigger name="tI_Folder_ManageLRIndex" />
+    <dbc:trigger name="tU_Folder_ManageLRIndex" />
+    <dbc:trigger name="tD_Folder_ManageLRIndex" />
+
+    <!-- Система рассылки оповещений -->
+    <!--
+		Пока закомментируем
+		<dbc:trigger name="tI_msg_Incident_NewIncidentCreated" />
+		<dbc:trigger name="tU_msg_Incident_FolderChanged" />
+		<dbc:trigger name="tU_msg_Incident_StateChanged" />
+		<dbc:trigger name="tU_msg_Incident_DeadlineOrPriorityChanged" />
+		<dbc:trigger name="tU_msg_Incident_NameOrDescrOrSolutionChanged" />
+		<dbc:trigger name="tI_msg_Task_NewTaskCreated" />
+		<dbc:trigger name="tU_msg_Task_RoleChanged" />
+		<dbc:trigger name="tD_msg_Incident_IncidentDeleted" />
+		<dbc:trigger name="tI_msg_ProjectParticipant_NewProjectParticipant" />
+		<dbc:trigger name="tD_msg_ProjectParticipant_Deleted" />
+		<dbc:trigger name="tD_msg_ProjectParticipant_Roles_Deleted" />
+		<dbc:trigger name="tI_msg_ProjectParticipant_Roles_NewRole" />
+		<dbc:trigger name="tU_msg_ProjectParticipant_Roles_RoleChanged" />
+		<dbc:trigger name="tD_msg_Organization_Deleted" />
+		<dbc:trigger name="tU_msg_Organization_DirectorChanged" />
+		<dbc:trigger name="tU_msg_Folder_NameChanged" />
+		<dbc:trigger name="tU_msg_Folder_ExternalIDChanged" />
+		<dbc:trigger name="tU_msg_Folder_IsLockedChanged" />
+		<dbc:trigger name="tD_msg_Folder_Deleted" />
+		<dbc:trigger name="tI_msg_Folder_Created" />
+		<dbc:trigger name="tU_msg_Folder_ParentOrCustomerChanged" />
+		<dbc:trigger name="tU_msg_Folder_StateOrIsPrototypeChanged" />
+		<dbc:trigger name="tU_msg_Folder_ActivityTypeChanged" />
+		<dbc:trigger name="tU_msg_Organization_ParentChanged" />
+		<dbc:trigger name="tU_msg_Organization_NameOrShortNameChanged" />
+		<dbc:trigger name="tI_msg_Organization_NewOrganization" />
+		<dbc:trigger name="tU_msg_Task_PlannedTimeChanged" />
+		<dbc:trigger name="tU_msg_Task_LeftTimeChanged" />
+		<dbc:trigger name="tIUD_msg_TimeSpentBlockPeriod_Modified" />
+		<dbc:trigger name="tU_msg_Organization_IsTemporaryLocalChangedFrom1to0" />
+		<dbc:trigger name="tI_msg_Tender_NewTenderCreated" />
+		<dbc:trigger name="tI_msg_LotParticipant_NewLotParticipantCreated" />
+		<dbc:trigger name="tU_msg_LotParticipant_ParticipantOrganizationChanged" />
+		<dbc:trigger name="tD_msg_LotParticipant_Deleted" />
+		<dbc:trigger name="tU_msg_Tender_DirectorChanged" />
+		<dbc:trigger name="tD_msg_Tender_Deleted" />
+		<dbc:trigger name="tU_msg_Lot_StateChanged" />
+		<dbc:trigger name="tI_msg_TimeSpent_NewTimeSpent" />
+		<dbc:trigger name="tU_msg_TimeSpent_SpentChanged" />
+		<dbc:trigger name="tI_msg_Lot_NewLotCreated" />
+		<dbc:trigger name="tU_msg_Lot_Changed" />
+		<dbc:trigger name="tD_msg_Lot_Deleted" />
+		<dbc:trigger name="tU_msg_Tender_AnyScalarNonBlobAttributeExceptDirectorChanged" />
+		<dbc:trigger name="tU_msg_Tender_AnyScalarBlobAttributeChanged" />
+		<dbc:trigger name="tU_msg_Lot_ManagerOrDiscussionAttendantOrOpeningAttendantsChanged" />
+		<dbc:trigger name="tI_msg_DepartmentParticipation_NewDepartmentParticipation" />
+		<dbc:trigger name="tD_msg_DepartmentParticipation_Deleted" />
+		<dbc:trigger name="tU_msg_DepartmentParticipation_ExecutorChanged" />
+
+		<dbc:function name="GetFullFolderName" />		
+		<dbc:function name="XmlEncodeLite" />		
+		<dbc:function name="GetDepartmentDirectors" />		
+		<dbc:function name="GetAllUserRolesForFolder" />		
+		<dbc:function name="GetAllUserRolesForChildFolder" />		
+		
+		<dbc:procedure name="app_messagingWriteEmployeeXml" />
+		<dbc:procedure name="app_messagingWriteTaskXml" />
+		<dbc:procedure name="app_EventOccured" />
+		<dbc:procedure name="app_messagingCheckIncidentsDeadline" />
+		<dbc:procedure name="app_messagingEnableTriggers" />
+		
+		<dbc:procedure name="app_messagingUnsubscribeEmployee"/>
+		<dbc:procedure name="app_messagingForceUnsubscribeEmployee"/>
+		-->
+
+  </dbc:dbobjects>
+</dbc:dbcheck>

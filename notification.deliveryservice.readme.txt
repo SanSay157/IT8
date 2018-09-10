@@ -1,0 +1,31 @@
+1. Запустить setup.exe
+2. Следовать указаниям мастера
+3. Зайти в папку, куда был установлен сервис (по умолчанию, C:\Program Files\CROC INcorporated\IT.Notification.DeliveryService)
+4. Отредактировать файл Croc.IncidentTracker.Notification.DeliveryService.exe.config
+
+* заменить в строке <add name="Croc.IncidentTracker.Notification.DeliveryService.Properties.Settings.IT"
+   connectionString="Data Source=server;Initial Catalog=DB;Persist Security Info=True;User ID=user;Password=password"
+   providerName="System.Data.SqlClient" />
+значения server, DB, user, password на соответствующие строке подключения к БД приложения Incident Tracker
+
+* заменить в строке <setting name="SMTPHost" serializeAs="String">
+    <value>smtp.server</value>
+   </setting>
+значение smtp.server на имя smtp-сервера
+
+* заменить в строке <setting name="SMTPPort" serializeAs="String">
+    <value>25</value>
+   </setting>
+значение 25 на номер порта smtp-сервера
+
+* заменить в строках 
+   <setting name="InternalUri" serializeAs="String">
+    <value>http://itServer/it</value>
+   </setting>
+   <setting name="ExternalUri" serializeAs="String">
+    <value>http://itServer/it</value>
+   </setting>
+значения http://itServer/it на адрес приложения Incident Tracker
+
+5. зайти в оснастку Службы (start->run->services.msc), найти службу Croc.IncidentTracker.Notification.DeliveryService, и запустить ее
+Можно поменять режим запуска с manual на automatic

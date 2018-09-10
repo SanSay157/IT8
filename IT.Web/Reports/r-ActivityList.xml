@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="windows-1251" ?> 
+<r:report 
+	r:t="Список активностей"
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+	<r:common>
+		<r:style-class r:n="CUSTOMER_SUBTITLE">border="1pt solid" border-color="#50729C" background-color="#e9e9e9" text-align="center" font-size="14px" font-weight="bold" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="CUSTOMER_SUBTOTAL">border="1pt solid" border-color="#50729C" background-color="#e9e9e9" text-align="center" font-size="11px" font-weight="bold" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="CUSTOMER_TOTAL">border="1pt solid" border-color="#50729C" background-color="#E1EAF4" text-align="right" font-size="12px" font-weight="bold" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="FOLDERTYPE">border="1pt solid" border-color="#50729C" background-color="#a9a9a9" text-align="center" font-size="10px" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="TOPFOLDER">border="1pt solid" border-color="#50729C" background-color="#e9e9e9" text-align="center" font-size="10px" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="SUBTITLE">border="1pt solid" border-color="#50729C" background-color="#e9e9e9" text-align="center" font-size="10px" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="SUBTOTAL">border="1pt solid" border-color="#50729C" background-color="#e9e9e9" text-align="center" font-size="10px" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:style-class r:n="TABLE_FOOTER">border="1pt solid" border-color="#50729C" background-color="#E1EAF4" text-align="center" font-size="10px" font-family="Tahoma" padding="2px"</r:style-class>
+		<r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+	</r:common>
+
+	<!-- Параметры отчета -->
+	<r:params>
+		<r:param r:n="HideGroupColumns" r:vt="boolean" r:default="1" />
+		<r:param r:n="IntervalBegin" r:vt="date" />
+		<r:param r:n="IntervalEnd" r:vt="date" />
+		<r:param r:n="ActivitySelection" r:vt="i4" r:default="1" />
+		<r:param r:n="FolderType" r:vt="i4" r:default="2147483647" />
+		<r:param r:n="FolderState" r:vt="i4" r:default="2147483647" />
+		<r:param r:n="ActivityAnalysDepth" r:vt="i4" r:default="2" />
+		<r:param r:n="SortType" r:vt="i4" r:default="0" />
+		<r:param r:n="SortOrder" r:vt="i4" r:default="1" />
+		<r:param r:n="AllFolders" r:vt="boolean" r:default="1" />
+		<r:param r:n="Folders" r:vt="string" />
+		<r:param r:n="NotAssignedRoles" r:vt="string" />
+		<r:param r:n="ShowColumnNavisionID" r:vt="boolean" r:default="1" />
+		<r:param r:n="ShowColumnProjectManager" r:vt="boolean" r:default="1" />
+		<r:param r:n="ShowColumnProjectAdmin" r:vt="boolean" r:default="1" />
+		<r:param r:n="ShowColumnDirector" r:vt="boolean" r:default="1" />
+		<r:param r:n="ShowColumnNotAssignedRoles" r:vt="boolean" r:default="1" />
+		<r:param r:n="InsertRestrictions" r:vt="boolean" r:default="1" />
+	</r:params>
+	
+	<r:data-sources>
+		<r:storage-data-source r:n="Folders">
+			<r:cmd r:type="sp">rep_ActivityList</r:cmd>
+			<r:cmd-params>
+				<r:cmd-param r:n="IntervalBegin" r:report-param="IntervalBegin" r:may-be-null="true" />
+				<r:cmd-param r:n="IntervalEnd" r:report-param="IntervalEnd" r:may-be-null="true" />
+				<r:cmd-param r:n="ActivitySelection" r:report-param="ActivitySelection" />
+				<r:cmd-param r:n="FolderType" r:report-param="FolderType" />
+				<r:cmd-param r:n="FolderState" r:report-param="FolderState" />
+				<r:cmd-param r:n="ActivityAnalysDepth" r:report-param="ActivityAnalysDepth" />
+				<r:cmd-param r:n="SortType" r:report-param="SortType" />
+				<r:cmd-param r:n="SortOrder" r:report-param="SortOrder" />
+				<r:cmd-param r:n="AllFolders" r:report-param="AllFolders" />
+				<r:cmd-param r:n="SelectedFolders" r:report-param="Folders" r:may-be-null="true" />
+				<r:cmd-param r:n="NotAssignedRoles" r:report-param="NotAssignedRoles" r:may-be-null="true" />
+			</r:cmd-params>
+		</r:storage-data-source>
+
+		<r:storage-data-source r:n="Header">
+			<r:cmd r:type="text"><![CDATA[
+				DECLARE @sSelectedFoldersNames varchar(8000)
+				DECLARE @sNotAssignedRoleNames varchar(8000)
+				
+				-- Собираем выделенные активности
+				SELECT @sSelectedFoldersNames =
+					CASE
+						WHEN @sSelectedFoldersNames IS NULL THEN F.Name
+						ELSE @sSelectedFoldersNames + ', ' + F.Name
+					END
+				FROM dbo.Folder AS F
+				INNER JOIN dbo.GuidListFromString(@SelectedFolders) AS L ON L.Value = F.ObjectID
+				
+				-- Собираем не заданные роли
+				SELECT @sNotAssignedRoleNames =
+					CASE
+						WHEN @sNotAssignedRoleNames IS NULL THEN R.Name
+						ELSE @sNotAssignedRoleNames + ', ' + R.Name
+					END
+				FROM dbo.UserRoleInProject AS R
+				INNER JOIN dbo.GuidListFromString(@NotAssignedRoles) AS L ON L.Value = R.ObjectID
+
+				SELECT dbo.NameOf_FolderTypeFlags(@FolderType) AS FolderType,
+					dbo.NameOf_FolderStatesFlags(@FolderState) AS FolderState,
+					dbo.NameOf_ActivityAnalysDepth(@ActivityAnalysDepth) AS ActivityAnalysDepth,
+					@sSelectedFoldersNames AS SelectedFoldersNames,
+					@sNotAssignedRoleNames AS NotAssignedRoleNames,
+					dbo.NameOf_ReportActivityListSortType(@SortType) AS SortType,
+					dbo.NameOf_SortOrder(@SortOrder) AS SortOrder
+			]]></r:cmd>
+			<r:cmd-params>
+				<r:cmd-param r:n="FolderType" r:report-param="FolderType" />
+				<r:cmd-param r:n="FolderState" r:report-param="FolderState" />
+				<r:cmd-param r:n="ActivityAnalysDepth" r:report-param="ActivityAnalysDepth" />
+				<r:cmd-param r:n="SelectedFolders" r:report-param="Folders" r:may-be-null="true" />
+				<r:cmd-param r:n="NotAssignedRoles" r:report-param="NotAssignedRoles" r:may-be-null="true" />
+				<r:cmd-param r:n="SortType" r:report-param="SortType" />
+				<r:cmd-param r:n="SortOrder" r:report-param="SortOrder" />
+			</r:cmd-params>
+		</r:storage-data-source>
+	</r:data-sources>
+	
+	<r:layouts>
+		<r:header-layout r:n="Header" r:use-data-sources="Header">
+			<!-- Шапка таблицы -->
+			<r:fragment r:value="&lt;fo:block&gt;Список активностей&lt;/fo:block&gt;" r:encoding="xml" />
+			<r:fragment r:value="&lt;fo:block /&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:block font-size='14px'&gt;Параметры отчета:&lt;/fo:block&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table color='#FFFFFF' text-align='left' font-size='12px' font-family='MS Sans-serif'&gt;&lt;fo:table-column column-number='1' column-width='proportional-column-width(1)'/&gt;&lt;fo:table-column column-number='2' column-width='proportional-column-width(1)'/&gt;&lt;fo:table-body&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Период времени -->
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Период времени:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;c " r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="{@IntervalBegin}" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0">
+				<r:formatters>
+					<r:empty-value-evaluator r:value="(не задано)" />
+					<r:date-time-evaluator r:format="dd.MM.yyyy" />
+				</r:formatters>
+			</r:fragment>				
+			<r:fragment r:value=" по " r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0"/>
+			<r:fragment r:value="{@IntervalEnd}" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0">
+				<r:formatters>
+					<r:empty-value-evaluator r:value="(не задано)" />
+					<r:date-time-evaluator r:format="dd.MM.yyyy" />
+				</r:formatters>
+			</r:fragment>				
+			<r:fragment r:value="&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0"/>
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Тип активности -->
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Тип активности:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;{#FolderType}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Статус активности -->
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Статус активности:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;{#FolderState}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Глубина анализа активностей -->			
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Глубина анализа активностей:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;{#ActivityAnalysDepth}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Активности -->	
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Активности:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;{#SelectedFoldersNames}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0 || (int){@AllFolders}!=0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;(все активности)&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0 || (int){@AllFolders}==0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Не заданные роли -->	
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0 || {@NotAssignedRoles}==null" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Не заданные роли:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0 || {@NotAssignedRoles}==null" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;{#NotAssignedRoleNames}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0 || {@NotAssignedRoles}==null" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0 || {@NotAssignedRoles}==null" />
+			<!-- Сортировка -->			
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Сортировка:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;{#SortType}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Порядок сортировки -->			
+			<r:fragment r:value="&lt;fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell width='35%'&gt;&lt;fo:block&gt;Порядок сортировка:&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;fo:table-cell&gt;&lt;fo:block&gt;{#SortOrder}&lt;/fo:block&gt;&lt;/fo:table-cell&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<r:fragment r:value="&lt;/fo:table-row&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+			<!-- Закрываем таблицу -->
+			<r:fragment r:value="&lt;/fo:table-body&gt;&lt;/fo:table&gt;" r:encoding="xml" r:hide-if="(int){@InsertRestrictions}==0" />
+		</r:header-layout>
+		
+		<r:table-layout
+			r:n="Folders"
+			r:data-source-name="Folders"
+		>
+			<r:var r:n="CustomerName" r:vt="string">
+				<r:macros><![CDATA[System.Web.HttpUtility.HtmlEncode({#Customer}.ToString())]]></r:macros>
+			</r:var>
+					
+			<r:var r:n="Customer" r:vt="string" >
+				<r:macros >{#Customer}</r:macros>
+				<r:formatters>
+					<r:href-evaluator r:href="vbscript:ShowContextForOrganization(&quot;{#CustomerID}&quot;, &quot;{#CustomerExtID}&quot;, &quot;{#DirectorEMail}&quot;)" r:target="_self" />
+				</r:formatters>		
+			</r:var>
+			<r:var r:n="Director" r:vt="string">
+				<r:macros>{#Director}</r:macros>
+			</r:var>
+
+			<r:var r:n="FolderType" r:vt="string">
+				<r:macros>{#FolderType}</r:macros>
+			</r:var>
+
+			<r:var r:n="TopFolder" r:vt="string">
+				<r:macros>{#TopFolder}</r:macros>
+			</r:var>
+
+			<r:var r:n="NoDirector" r:vt="string">
+				<r:macros>System.Convert.IsDBNull({#DirectorID}) ? "1" : "0"</r:macros>
+			</r:var>
+
+
+			<!-- r:col r:t="№ п/п" r:counter-start="1" r:counter-increment="1" / --> 
+
+			<r:col
+				r:t="Заказчик"
+				r:encoding="xml"
+				r:data="{#Customer}"
+				r:rowspan-by="Customer"
+				r:aggregation-colspan="7"
+				r:aggregation-string-subtitle="{%Customer}"
+				r:aggregation-string-subtotals="Итого активностей по клиенту &quot;{%CustomerName}&quot;"
+				r:aggregation-string="Итого активностей"
+				r:hide-if="HideGroupColumns"
+				r:subtitle-style-class="CUSTOMER_SUBTITLE"
+				r:subtotal-style-class="CUSTOMER_SUBTOTAL"
+				r:total-style-class="CUSTOMER_TOTAL"
+			/>
+			
+			<r:col
+				r:t="Тип активности"
+				r:data="{#FolderType}"
+				r:rowspan-by="FolderType"
+				r:aggregation-colspan="6"
+				r:aggregation-string-subtitle="{%FolderType}"
+				r:aggregation-string-subtotals="Итого активностей по типу &quot;{%FolderType}&quot;"
+				r:hide-if="HideGroupColumns"
+				r:subtitle-style-class="FOLDERTYPE"
+				r:subtotal-style-class="FOLDERTYPE"
+			/>
+			
+			<r:col
+				r:t="Активность верхнего уровня"
+				r:data="{#TopFolder}"
+				r:rowspan-by="TopFolder"
+				r:aggregation-colspan="5"
+				r:aggregation-string-subtitle="{%TopFolder}"
+				r:aggregation-string-subtotals="Итого активностей по группе &quot;{%TopFolder}&quot;"
+				r:hide-if="HideGroupColumns"
+				r:subtitle-style-class="TOPFOLDER"
+				r:subtotal-style-class="TOPFOLDER"
+			/>
+			
+			<r:col
+				r:t="Наименование активности"
+				r:encoding="xml"
+				r:data="{#Folder}"
+			 
+			>
+				
+				<r:formatters>
+					<r:href-evaluator  r:href="vbscript:ShowContextForFolderEx(&quot;{#FolderID}&quot;, True, &quot;{@IntervalBegin}&quot;, &quot;{@IntervalEnd}&quot;)" r:target="_self" />
+				</r:formatters>
+			</r:col>
+			<r:col
+				r:t="Идентификатор активности для Navision"
+				r:data="{#ExternalID}"
+				r:hide-if-not="ShowColumnNavisionID"
+			/>
+			
+			<r:col
+				r:t="Менеджер проекта"
+				r:data="{#ProjectManager}"
+				r:hide-if-not="ShowColumnProjectManager"
+			/>
+			
+			<r:col
+				r:t="Администратор проекта"
+				r:data="{#ProjectAdmin}"
+				r:hide-if-not="ShowColumnProjectAdmin"
+			/>
+			
+			<r:col
+			
+				r:t="Директор клиента"
+				r:data="{#Director}"
+				r:aggregation-function="count"
+				r:aggregation-colspan="2"
+				r:hide-if-not="ShowColumnDirector"
+			>
+				<r:formatters>
+					<r:href-evaluator r:href="vbscript:ShowContextForEmployeeEx(&quot;{#DirectorID}&quot;, &quot;{#DirectorEMail}&quot;, GUID_EMPTY, &quot;{#FolderID}&quot;, &quot;{@IntervalBegin}&quot;, &quot;{@IntervalEnd}&quot;)" r:target="_self" r:if-href-is-null="{%NoDirector}"  />
+				</r:formatters>
+			</r:col>
+			
+			<r:col
+				r:t="Не назначенные роли"
+				r:data="{#NotAssignedRoles}"
+				r:hide-if-not="ShowColumnNotAssignedRoles"
+			/>
+			
+			<r:grouping>
+				<r:group-by r:n="Customer" r:upper-bound-presentation="sub-title" r:bound-presentation="sub-total" />
+				<r:group-by r:n="FolderType" r:upper-bound-presentation="sub-title" r:bound-presentation="sub-total" />
+				<r:group-by r:n="TopFolder" r:upper-bound-presentation="sub-title" r:bound-presentation="sub-total" />
+			</r:grouping>
+		</r:table-layout>
+	</r:layouts>
+</r:report>

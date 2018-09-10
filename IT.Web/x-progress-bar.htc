@@ -1,0 +1,215 @@
+<!-- 
+********************************************************************************
+ CROC.Behaviors :: XProgressBar
+ Компонента, реализующая логику progress bar
+ Реализация - Viewlink Element Behaviors (см. MSDN, Web Development, Behaviors)
+********************************************************************************
+-->
+<PUBLIC:COMPONENT 
+	tagName="XProgressBar"
+	lightWeight="false"
+	literalContent="false"
+	supportsEditMode="false"
+	URN="http://www.croc.ru/XmlFramework/Behaviors/XProgressBar"
+>
+	<META HTTP-EQUIV="MSThemeCompatible" CONTENT="yes">
+	<PUBLIC:DEFAULTS
+		canHaveHTML = "true"
+		viewLinkContent = "true"
+		viewInheritStyle = "false"
+		tabStop = "false" 
+		viewMasterTab = "true"
+		contentEditable  = "false"
+	/>
+	
+	<!-- Обрабатываем событие: элемент бихейвера распарсен IE -->
+	<PUBLIC:ATTACH EVENT="oncontentready" FOR="element" ONEVENT="Initialize"/>
+
+	<!-- СВОЙСТВА -->
+	<!-- Возвращает признак полной готовности бихейвера -->
+	<PUBLIC:PROPERTY NAME="IsComponentReady" GET="get_IsComponentReady" />
+	
+	<!-- Максимальное значение progress-bar-а -->
+	<PUBLIC:PROPERTY NAME="MaxVal" GET="get_MaxVal" PUT="put_MaxVal" />
+	
+	<!-- Минимальное значение progress-bar-а -->
+	<PUBLIC:PROPERTY NAME="MinVal" GET="get_MinVal" PUT="put_MinVal" />
+	
+	<!-- Текущее значение progress-bar-а в процентах -->
+	<PUBLIC:PROPERTY NAME="Progress" GET="get_Progress" />
+	
+	<PUBLIC:PROPERTY NAME="CurrentVal" GET="get_CurrentVal" PUT="put_CurrentVal" />	
+	
+	<!-- МЕТОДЫ КОМПОНЕНТЫ -->
+	<!-- Установка состояния прогресс-бара: максимально, минимального и текущего значения -->
+	<PUBLIC:METHOD NAME="SetState"/>
+
+</PUBLIC:COMPONENT>
+<!-- 
+********************************************************************************
+ HTML-реализация компоненты
+********************************************************************************
+-->
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1251">
+<LINK href="x.css" rel="STYLESHEET" type="text/css">
+<SCRIPT LANGUAGE="VBScript" TYPE="text/vbscript">
+Option Explicit
+'================================================================
+' Глобальные переменные страницы/скрытые члены класса
+dim g_dblMax			' Максимальное значение
+dim g_dblMin			' Минимальное значение
+dim g_dblCurrent		' Текущее значение
+dim g_bReady			' Признак готовности
+dim g_nLastBlueCount	' Последний номер закрашеной ячейки
+
+const HUNDRED_PERCENT = 100	' 100%
+const CELL_COUNT = 50		' сколько всего ячеек
+
+'================================================================
+' Обработчик загрузки страницы, как-бы конструктор
+Sub Initialize
+	' Выставим стиль динамически - чтоб DIV с процентами всегда был посередине
+	idPercents.style.setExpression "top", "(document.all(""idTable"",0).offsetHeight- idPercents.offsetHeight)\2 & ""px""", "VBScript"
+	idPercents.style.setExpression "left", "(document.all(""idTable"",0).offsetWidth- idPercents.offsetWidth)\2 & ""px""", "VBScript"
+	' Проинициализируем члены класса
+	g_dblCurrent = 0
+	g_dblMax = HUNDRED_PERCENT
+	g_dblMin = 0
+	g_nLastBlueCount = 0
+	g_bReady = True
+End Sub
+
+
+'================================================================
+' Метод SetState
+' [in] dblMin		- минимум
+' [in] dblMax		- максимум
+' [in] dblCurrent	- текущее значение
+Public Sub SetState( dblMin, dblMax, dblCurrent)
+	g_dblMin = dblMin 
+	g_dblMax = dblMax
+	g_dblCurrent = dblCurrent
+	InternalRedraw  
+End Sub
+
+
+'================================================================
+' Свойство IsComponentReady (R/O)
+' возвращает признак полной готовности бихейвера
+' ВНИМАНИЕ: Должно быть реализовано во всех behavior'ах фреймворка !
+Function get_IsComponentReady()
+	get_IsComponentReady = (True=g_bReady)
+End Function
+
+
+'================================================================
+' Свойство MaxVal (R/W)
+' Максимальное значение progress-bar-а
+Function get_MaxVal()
+	get_MaxVal = g_dblMax 
+End Function
+
+Sub put_MaxVal( dblValue)
+	If g_dblMax <> dblValue Then
+		g_dblMax = dblValue
+		InternalRedraw 
+	End If
+End Sub
+
+
+'================================================================
+' Свойство MinVal (R/W)
+' Минимальное значение progress-bar-а
+Function get_MinVal()
+	get_MinVal = g_dblMin
+End Function
+
+Sub put_MinVal( dblValue)
+	If g_dblMin <> dblValue Then
+		g_dblMin = dblValue
+		InternalRedraw 
+	End If
+End Sub
+
+
+'================================================================
+' Свойство CurrentVal (R/W)
+' Текущее значение progress-bar-а
+Function get_CurrentVal()
+	get_CurrentVal = g_dblCurrent 
+End Function
+
+Sub put_CurrentVal( dblValue)
+	If g_dblCurrent <> dblValue Then
+		g_dblCurrent = dblValue
+		InternalRedraw 
+	End If
+End Sub
+
+
+'================================================================
+' Свойство Progress (R/O)
+' Текущее значение progress-bar-а (в %)
+Function get_Progress()
+	On Error Resume Next
+	get_Progress = Int( ABS(g_dblCurrent - g_dblMin)*HUNDRED_PERCENT/ABS(g_dblMax - g_dblMin))
+	' Трюк: при ошибке НИЧЕГО не делаем
+	If 0<> Err.number Then 
+		get_Progress = 0
+		err.Clear 
+	End If	
+End Function
+
+
+'================================================================
+' Внутренняя процедура прорисовки 
+Sub InternalRedraw
+	Dim nBlueCellCount		' число закрашиваемых ячеек
+	Dim nPercentage			' Текущее значение progress-bar-а (в %)
+	Dim i
+	nPercentage = get_Progress
+
+	nBlueCellCount = Int(nPercentage*CELL_COUNT/HUNDRED_PERCENT)
+	
+	With document.all("progress")
+		If nBlueCellCount > g_nLastBlueCount Then
+			For i=g_nLastBlueCount+1 to nBlueCellCount
+				.item(i-1).className = "x-progress-active"
+			Next
+		ElseIf nBlueCellCount < g_nLastBlueCount Then
+			For i=nBlueCellCount+1 to g_nLastBlueCount
+				.item(i-1).className = "x-progress-inactive"
+			Next	
+		End If
+	End With
+	
+	g_nLastBlueCount = nBlueCellCount
+	
+	idPercents.innerText = nPercentage & "%"
+End Sub
+
+
+'================================================================
+' Внутренняя процедура формирования таблички с ячейками
+Sub InternalDrawTable
+	Dim i
+	document.write "<table id=idTable cellspacing=1 cellpadding=0 height=100% width=100% class=x-progress-table>"
+	document.write "<tr>"
+	For i=1 To CELL_COUNT
+		document.write 	"<td class=x-progress-inactive  id=progress></td>"
+	Next
+	document.write "</tr>"
+	document.write "</table>"
+End Sub
+
+</SCRIPT>
+</HEAD>
+<!-- margin-bottom:-4px; - обход бага, иначе появляется скроллер -->
+<body style="padding:0;margin:0 0 -4px 0;" scroll="no" ONSELECTSTART="window.event.returnValue=false : window.event.cancelBubble=true">
+	<script language="VBScript">
+		' Сформируем таблицу
+		InternalDrawTable
+	</script>
+	<div id="idPercents" class="x-progress-percents" scroll="no"></div>
+</body>

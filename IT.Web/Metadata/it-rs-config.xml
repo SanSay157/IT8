@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<configuration>
+  <!--
+		 Путь к папке с отчетами. 
+		 В данном случае - относительный по отношению к директории приложения.
+	     Может быть задан абсолютно.	
+	-->
+  <reportsDirectory>Reports</reportsDirectory>
+
+  <!--
+		Признак того, требуется ли кешировать при инициализации RS все доступные профили отчетов. 
+		В случае true - RS инициализируется долго. 
+	-->
+  <full-caching>false</full-caching>
+  <max-size-of-xslfo-cache>0</max-size-of-xslfo-cache>
+  <!-- 
+		Доступные для рендеринга форматы с указанием сборки и класса, осуществляющего рендеринг.
+	-->
+  <outputFormats>
+    <format n="HTML"
+       class="Croc.XmlFramework.ReportService.ReportRenderer.Core.HTMLRenderer"
+       assembly="Croc.XmlFramework.ReportService.ReportRenderer.Core.dll"
+       content-type="text/html"
+       custom-data="xsl/x-fo2html.xsl"
+				/>
+
+    <format n="EXCEL"
+				class="Croc.IncidentTracker.ReportService.Layouts.ReportRenderer.Excel.ReportRenderer"
+				assembly="Croc.IncidentTracker.ReportService.Layouts.ReportRenderer.Excel.dll"
+				content-type="application/vnd.ms-excel" />
+    <!--<format n="WORD" 
+				class="Croc.XmlFramework.ReportService.ReportRenderer.Word.XslFo2WordRenderer"
+				assembly="Croc.XmlFramework.ReportService.ReportRenderer.Word.dll"
+				content-type="application/msword" />-->
+    <format n="XSL-FO"
+				class="Croc.XmlFramework.ReportService.ReportRenderer.Core.FORenderer"
+				assembly="Croc.XmlFramework.ReportService.ReportRenderer.Core.dll"
+				content-type="text/xml" />
+    <!--<format n="PDF"
+				class="Croc.XmlFramework.ReportService.ReportRenderer.PDFRenderer"
+				assembly="Croc.XmlFramework.ReportService.ReportRenderer.Pdf-PostScript.dll"
+				content-type="application/pdf" />
+		<format n="POSTSCRIPT"
+				class="Croc.XmlFramework.ReportService.ReportRenderer.PostScriptRenderer"
+				assembly="Croc.XmlFramework.ReportService.ReportRenderer.Pdf-PostScript.dll"
+				content-type="application/postscript" /> -->
+  </outputFormats>
+
+  <!--
+		Информация для десериализатора.
+	-->
+  <schemas>
+    <schema>Croc.IncidentTracker.ReportService.xsd</schema>
+    <schema>Croc.XmlFramework.ReportService.xsd</schema>
+
+  </schemas>
+
+  <!--
+			Стили.
+			Содержимое элемента style-class - это фактически набор аттрибутов элемента. При отрисовке xsl-fo
+			профиля отчета содержимое style-class вставляется в соответствующий xsl-fo
+			элемент как набор аттрибутов и их значений. Поэтому правильно писать только - свойство="значение свойства".
+			Весь другой текст будет проигнорирован.
+	-->
+  <styles>
+    <!-- Стиль для отображения заголовков (header-layout) -->
+    <style-class n="APPNAME">
+      text-align="center"
+      font-family="Verdana" font-size="12pt" font-weight="bold"
+      color="#FFFFFF" background-color="#50729C"
+      padding-after="2px" padding-before="2px"
+      padding-left="15px" padding-right="15px"
+    </style-class>
+    <!-- Стиль отображения подзаголовков (sub-header) -->
+    <style-class n="TITLES">
+      text-align="center"
+      font-family="Verdana" font-size="8pt"
+      color="#30383F" background-color="#e9e9e9"
+      padding="4px 5px 5px 5px"
+    </style-class>
+
+    <!-- Стиль пустого отчета -->
+    <style-class n="EMPTY">
+      text-align="center"
+      font-family="Verdana" font-size="12pt" font-weight="bold"
+      color="#304050"
+      margin-top="10px" margin-bottom="10px"
+    </style-class>
+
+    <!-- стиль отображения для всей таблицы по-умолчанию -->
+    <style-class n="TABLE">
+      margin-top="5px"
+      border="1px solid" border-color="#50729C" border-collapse="collapse"
+    </style-class>
+
+    <!-- Стиль  отображения ячеек заголовков таблиц -->
+    <style-class n="TABLE_HEADER">
+      text-align="center" vertical-align="middle"
+      font-family="Verdana" font-size="8pt" font-weight="bold"
+      color="#FFFFFF" background-color="#80A2CC"
+      border="1px solid" border-color="#50729C"
+      padding="2px"
+    </style-class>
+    <!-- -->
+    <style-class n="TABLE_FOOTER">
+      font-family="Verdana" font-size="8pt" font-weight="bold"
+      color="#304050" background-color="#E0F0FF"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+
+    <!-- Стиль отображения строки таблицы с заголовком группы -->
+    <style-class n="GROUP_HEADER">
+      font-family="Verdana" font-size="8pt" font-weight="bold"
+      color="#304050" background-color="#E0F0FF"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <!-- Стиль отображения строки таблицы с подвалом группы (с данными подитогов) -->
+    <style-class n="GROUP_FOOTER">
+      font-family="Verdana" font-size="8pt" font-weight="bold"
+      color="#304050"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <style-class n="GROUP_FOOTER_COLOR">
+      font-family="Verdana" font-size="8pt" font-weight="bold"
+      color="#304050" background-color="#D8FFD0"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+
+    <!-- стиль отображения ячеек таблицы -->
+    <style-class n="CELL_CLASS">
+      text-align="center"
+      font-family="Verdana" font-size="8pt"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <style-class n="TABLE_CELL">
+      font-family="Verdana" font-size="8pt" font-weight="normal"
+      color="#30353A"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <style-class n="TABLE_CELL_BOLD">
+      font-family="Verdana" font-size="8pt" font-weight="bold"
+      color="#30353A"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <style-class n="TABLE_CELL_ND">
+      font-family="Verdana" font-size="8pt" font-weight="normal"
+      color="#DADADA"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <!-- стиль для отображения номеров колонок -->
+    <style-class n="CAPTION_CLASS">
+      text-align="center" vertical-align="top"
+      font-family="Verdana" font-size="8pt" font-weight="normal"
+      color="#30353A" background-color="#e9e9e9"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <style-class n="TABLE_CELL_ROWNUM">
+      text-align="center" vertical-align="top"
+      font-family="Verdana" font-size="8pt" font-weight="normal"
+      color="#30353A"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <!-- Стиль "подсвеченной" ячейки отчета: зеленый -->
+    <style-class n="TABLE_CELL_COLOR_GREEN">
+      font-family="Verdana" font-size="8pt" font-weight="normal"
+      color="#30353A" background-color="#D8FFD0"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <!-- Стиль "подсвеченной" ячейки отчета: красный -->
+    <style-class n="TABLE_CELL_COLOR_RED">
+      font-family="Verdana" font-size="8pt" font-weight="normal"
+      color="#30353A" background-color="#FFD8D0"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <style-class n="TABLE_CELL_COLOR_ORANGE">
+      font-family="Verdana" font-size="8pt" font-weight="normal"
+      color="#30353A" background-color="#ffcc66"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <style-class n="TABLE_CELL_COLOR_YELLOW">
+      font-family="Verdana" font-size="8pt" font-weight="normal"
+      color="#30353A" background-color="#ffff33"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    
+    <!-- стиль отображения строчки подзаголовка -->
+    <style-class n="SUBTITLE">
+      text-align="center"
+      font-family="Verdana" font-size="8pt"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <!-- стиль отображения для итоговой строчки -->
+    <style-class n="SUBTOTAL">
+      text-align="center"
+      font-family="Verdana" font-size="8pt"
+      border="1px solid" border-color="#50729C"
+      padding="2px 5px 3px 5px"
+    </style-class>
+
+    <!-- стиль для master-data-header элемента в лейауте master-data-layout -->
+    <style-class n="MASTER-DATA-HEADER-CLASS">
+      text-align="center"
+      font-family="Verdana" font-size="8pt" font-weight="bold"
+      padding="2px"
+    </style-class>
+    <!-- стиль для master-data-footer элемента в лейауте master-data-layout -->
+    <style-class n="MASTER-DATA-FOOTER-CLASS">
+      text-align="left"
+      font-family="Verdana" font-size="8pt" font-weight="bold"
+      padding="2px"
+    </style-class>
+
+    <!-- 
+			Набор стилей для отображения специальной таблицы, для отображения 
+			дополнительной  информации в виде текстовых замечаний 
+			NB! Для таблицы и всех ее элеметов отключены рамки (и их - не включать!)
+		-->
+    <style-class n="TABLE_NOTE">
+      margin-top="5px" margin-bottom="5px"
+      border="0px solid" border-collapse="collapse"
+    </style-class>
+    <style-class n="TABLE_NOTE_HEADER">
+      text-align="left" vertical-align="top"
+      font-family="Verdana" font-size="8pt" font-weight="bold"
+      color="#30353A"
+      border="0px solid"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <style-class n="TABLE_NOTE_CELL">
+      text-align="left" vertical-align="top"
+      font-family="Verdana" font-size="8pt" font-weight="normal"
+      color="#30353A"
+      border="0px solid"
+      padding="2px 5px 3px 5px"
+    </style-class>
+    <style-class n="TABLE_NOTE_FOOTER">
+      text-align="left" vertical-align="top"
+      font-family="Verdana" font-size="8pt" font-weight="bold"
+      color="#30353A"
+      border="0px solid"
+      padding="2px 5px 3px 5px"
+    </style-class>
+  </styles>
+</configuration>

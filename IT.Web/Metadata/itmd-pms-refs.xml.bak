@@ -1,0 +1,2335 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<ds:metadata xmlns:dt="urn:schemas-microsoft-com:datatypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" xmlns:it-i="http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0" xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0" xmlns:ie="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension" xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0 x-net-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Interface/1.0 it-special-interface-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Data/1.0 it-special-data-schema.xsd http://www.croc.ru/Schemas/IncidentTracker/Security/1.0 it-special-security-schema.xsd http://www.croc.ru/Schemas/XmlFramework/Interface/1.0/Extension x-net-interface-extension-schema.xsd" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+	<ds:flags n="PresentationModes" d="Формат отображения ссылки" vt="i4">
+		<ds:value n="DisplayDescr" d="Отображать наименование">1</ds:value>
+		<ds:value n="DisplayData" d="Отображать данные">2</ds:value>
+	</ds:flags>
+	<ds:enum n="FolderTypeEnum" d="Тип папки enum" vt="i2">
+		<ds:value n="Project" d="Проект">1</ds:value>
+		<ds:value n="Tender" d="Тендер">4</ds:value>
+		<ds:value n="Presale" d="Пресейл">8</ds:value>
+		<ds:value n="Directory" d="Каталог">16</ds:value>
+	</ds:enum>
+	<ds:enum n="IncidentStateCat" d="Категория состояния инцидента" vt="i2">
+		<ds:value n="Open" d="В работе">1</ds:value>
+		<ds:value n="OnCheck" d="На проверке">2</ds:value>
+		<ds:value n="Finished" d="Работа окончена">3</ds:value>
+		<ds:value n="Frozen" d="Заморожен">4</ds:value>
+		<ds:value n="Declined" d="Отклонен">5</ds:value>
+	</ds:enum>
+	<ds:enum n="ServiceSystemType" d="Тип системы обслуживания" vt="i4">
+		<ds:value n="URL" d="Ссылка URL">1</ds:value>
+		<ds:value n="FileLink" d="Ссылка на файл">2</ds:value>
+		<ds:value n="DirectoryLink" d="Ссылка на папку">3</ds:value>
+		<ds:value n="DocumentumFileLink" d="Ссылка на файл в Documentum">4</ds:value>
+		<ds:value n="DocumentumDirectoryLink" d="Ссылка на папку в Documentum">5</ds:value>
+	</ds:enum>
+	<ds:enum n="DepartmentType" d="Тип подразделения" vt="i2">
+		<ds:value n="CostsCenter" d="Центр затрат">1</ds:value>
+		<ds:value n="ProfitCenter" d="Центр прибыли">2</ds:value>
+		<ds:value n="Direction" d="Отдел">3</ds:value>
+	</ds:enum>
+	<ds:flags n="FolderTypeFlags" d="Тип папки flags" vt="i2">
+		<ds:value n="Project" d="Проект">1</ds:value>
+		<ds:value n="Tender" d="Тендер">4</ds:value>
+		<ds:value n="Presale" d="Пресейл">8</ds:value>
+		<ds:value n="Directory" d="Каталог">16</ds:value>
+	</ds:flags>
+	<ds:type n="OrganizationHistory" d="Запись истории организации" tp="persistent">
+		<ds:prop n="SystemUser" d="Пользователь" vt="object" ot="SystemUser" cp="scalar">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Login</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="DateTime" d="Дата изменения" vt="dateTime" cp="scalar">
+			<ds:def default-type="both">#CURRENT</ds:def>
+		</ds:prop>
+		<i:objects-list t="Запись истории организации" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[DateTime]
+				FROM [dbo].[OrganizationHistory] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Дата изменения" vt="dateTime" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="Position" d="Должность" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<i:editor xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Main">x-editor2.xsl?@Name&amp;@ExternalID</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Должность" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" off-icons="1">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[ExternalRefID],
+					t.[ExternalID]
+				FROM [dbo].[Position] t with (nolock)
+				WHERE_CLAUSE
+				ORDER BY Name
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="100" />
+			<i:column t="Индентификатор НСИ" vt="i4" width="100" />
+			<i:column t="Идентификатор внешней системы" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="WorkCalendarExceptions" d="Календарь исключений в рабочей неделе" defer-indexes="1" tp="persistent">
+		<ds:prop n="ExceptionDate" d="Дата" vt="date" cp="scalar">
+			<ds:def default-type="both">#CURRENT</ds:def>
+		</ds:prop>
+		<ds:prop n="Comment" d="Описание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<ds:prop n="IsWorkDay" d="Признак рабочего дня" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:index n="IDX_WorkCalendarExceptions" unique="1" clustered="1">
+			<ds:prop-ref n="ExceptionDate" />
+			<ds:prop-ref n="IsWorkDay" />
+		</ds:index>
+		<i:editor xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Main">x-editor2.xsl?@ExceptionDate&amp;@Comment&amp;@IsWorkDay&amp;@ExternalID</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Календарь исключений в рабочей неделе" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" off-icons="1">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[ExceptionDate],
+					t.[Comment],
+					CASE 
+						WHEN t.[IsWorkDay] =1 THEN 'рабочий'
+						ELSE 'выходной'
+					END
+				FROM [dbo].[WorkCalendarExceptions] t with (nolock)
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Дата" vt="date" width="100" />
+			<i:column t="Описание" width="200" />
+			<i:column t="Рабочий/выходной" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="Transition" d="Переход" tp="persistent">
+		<ds:prop n="Role" d="Роль" vt="object" ot="UserRoleInIncident" cp="scalar" delete-cascade="1">
+			<i:object-dropdown use-list="RolesOfIncidentType" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="From" d="Из" vt="object" ot="IncidentState" cp="scalar" delete-cascade="1">
+			<i:object-dropdown use-list="AllStatesOfIncidentType" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="To" d="В" vt="object" ot="IncidentState" cp="scalar" delete-cascade="1">
+			<i:object-dropdown use-list="AllStatesOfIncidentType" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="DemandTimeSpent" d="Требует затрат времени" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<!-- -->
+		<i:editor t="Переход" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Transition.vbs</i:client-script>
+			<i:page n="Main" t="Главная">x-editor.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:editor t="Переход" n="cool" height="300" width="400" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Transition.vbs</i:client-script>
+			<i:preload>IncidentType.States</i:preload>
+			<i:preload>IncidentType.Roles</i:preload>
+			<i:page n="Main" t="Главная">x-editor.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Переход" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[DemandTimeSpent]
+				FROM [dbo].[Transition] t with (nolock)
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Требует затрат времени" vt="boolean" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="OrganizationSnap" d="Срез данных об организации" tp="persistent">
+		<ds:prop n="Director" d="Директор клиента" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.LastName</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Anchor" d="Идентификатор" vt="object" ot="OrganizationAnchor" cp="scalar" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.ObjectID</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="StructureHasDefined" d="Структура организации определена" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="ExternalID" d="Идентификатор внешней системы" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>512</ds:max>
+		</ds:prop>
+		<ds:prop n="ShortName" d="Краткое наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="DateTime" d="Дата изменения" vt="dateTime" cp="scalar">
+			<ds:def default-type="both">#CURRENT</ds:def>
+		</ds:prop>
+		<ds:index n="IDX_OrganizationSnap_Anchor_DateTime" unique="1" clustered="1">
+			<ds:prop-ref n="Anchor" />
+			<ds:prop-ref n="DateTime" />
+		</ds:index>
+		<i:objects-list t="Срез данных об организации" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[StructureHasDefined],
+					t.[ExternalID],
+					t.[Name],
+					t.[ShortName],
+					t.[DateTime]
+				FROM [dbo].[OrganizationSnap] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Структура организации определена" vt="boolean" width="100" />
+			<i:column t="Идентификатор внешней системы" width="100" />
+			<i:column t="Наименование" width="100" />
+			<i:column t="Краткое наименование" width="100" />
+			<i:column t="Дата изменения" vt="dateTime" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="Organization" d="Организация" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>512</ds:max>
+		</ds:prop>
+		<ds:prop n="ShortName" d="Краткое наименование" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="HoldingPart" d="Член группы компаний" vt="boolean" cp="scalar" maybenull="1" />
+		<ds:prop n="Supplier" d="Поставщик" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="OwnTenderParticipant" d="Участник тендеров от нас" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="StructureHasDefined" d="Структура организации определена" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Comment" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+			<itds:auto-signature xmlns:itds="http://www.croc.ru/Schemas/IncidentTracker/Data/1.0">true</itds:auto-signature>
+		</ds:prop>
+		<ds:prop n="LIndex" d="LIndex" vt="i4" cp="scalar" maybenull="1" r="ignore" />
+		<ds:prop n="RIndex" d="RIndex" vt="i4" cp="scalar" maybenull="1" r="ignore" />
+		<ds:prop n="Director" d="Директор Клиента" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="LRLevel" d="LRLevel" vt="i4" cp="scalar" maybenull="1" r="read-only">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="RefCodeNSI" d="Код синхронизации НСИ" vt="string" cp="scalar" maybenull="1" r="read-only">
+			<ds:max>128</ds:max>
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Children" d="Подчиненные" vt="object" ot="Organization" cp="link" built-on="Parent">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Parent" d="Вышестоящая" vt="object" ot="Organization" cp="scalar" maybenull="1">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="PartsOfFOT" d="Доли ФОТ" vt="object" ot="PartOfFOT" cp="link" built-on="Company">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Loans" d="Займы" vt="object" ot="Loan" cp="link" built-on="Organization">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Home" d="Организация-владелец системы" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="OutDocs" d="Расходные документы" vt="object" ot="OutDoc" cp="link" built-on="Organization">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="OutContracts" d="Расходные договора" vt="object" ot="OutContract" cp="link" built-on="Org">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<!-- Иконки всех видов -->
+		<i:icons default="Organization.ico" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="home">Organization-Home.ico</i:icon>
+			<i:icon selector="const">Organization-Const.ico</i:icon>
+			<i:icon selector="temp">Organization-Temp.ico</i:icon>
+			<i:icon selector="participant">Organization-Participant.ico</i:icon>
+			<i:icon selector="home-participant">Organization-HomeParticipant.ico</i:icon>
+		</i:icons>
+		<!-- Мастер-редактор организации для администратора системы (признак Home не задаем)-->
+		<i:editor n="Admin-editor" t="Описание организации" save-cmd="SaveObjectWithSignature" width="700" height="300" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Organization.vbs</i:client-script>
+			<i:page t="Основные реквизиты" n="Main">
+        <![CDATA[
+				p-Organization-editor-Admin.xsl?@*&@Home=display:0
+			]]>
+      </i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<!-- Мастер-редактор организации поставщика для расходных документов (признак Home не задаем)-->
+		<i:editor n="Suppl-editor" t="Описание организации" save-cmd="SaveObjectWithSignature" width="700" height="300" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Organization.vbs</i:client-script>
+			<i:page t="Основные реквизиты" n="Main">
+        <![CDATA[
+				p-Organization-editor-Suppl.xsl?@*&@Home=display:0
+			]]>
+      </i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<!-- Мастер-редактор организации для TMS (признак Home не задаем)-->
+		<i:editor n="TMS-editor" t="Описание организации" save-cmd="SaveObjectWithSignature" width="700" height="300" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Organization.vbs</i:client-script>
+			<i:page t="Основные реквизиты" n="Main">
+        <![CDATA[
+				p-Organization-editor-TMS.xsl?@*&@Home=display:0
+			]]>
+      </i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<!-- Список владельцев для выбора в редакторе сотрудника-->
+		<i:objects-list n="OwnerSelectorForEmployee" t="Организации" width="650" height="300" off-rownumbers="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT TOP @@MAXROWS 
+						o.ObjectID,
+						o.ShortName,
+            o.Name
+					FROM dbo.Organization o
+          WHERE o.HoldingPart = 1
+					AND SEARCH_CONDITIONS
+          ORDER BY o.Name
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column t="Краткое наименование" width="250" />
+			<i:column t="Наименование" width="400" />
+		</i:objects-list>
+		<!-- Список контрагентов для выбора в редакторе общего расходного документа-->
+		<i:objects-list n="CompanySelectorForGenOutDoc" t="Контрагенты" width="650" height="600" off-rownumbers="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT TOP @@MAXROWS 
+						o.ObjectID,
+						o.ShortName,
+            o.Name
+					FROM dbo.Organization o
+          WHERE o.HoldingPart <> 1
+					AND SEARCH_CONDITIONS
+          ORDER BY o.Name
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="Name" vt="string">
+						<ds:param-selector op="not-is-null"><![CDATA[(O.ShortName LIKE :Name + '%' OR O.Name LIKE :Name + '%')]]></ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterTmsOrganizations" height="35" />
+			<i:column t="Краткое наименование" width="300" />
+			<i:column t="Наименование" width="500" />
+		</i:objects-list>
+		<!-- Список организаций для администратора -->
+		<i:objects-list n="AdminOrganizations" t="Организации" width="800" height="600" off-rownumbers="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>tms-tools.vbs</i:client-script>
+			<i:client-script>s-TmsOrganizationsList.vbs</i:client-script>
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT TOP @@MAXROWS 
+						O.ObjectID,
+						O.Name,
+						O.ShortName,
+						CASE 
+							WHEN O.Home<>0 AND O.OwnTenderParticipant<>0 THEN 'Владелец системы, Участник тендеров'
+							WHEN O.Home<>0 THEN 'Владелец системы'
+							WHEN O.OwnTenderParticipant<>0 THEN 'Участник тендеров'
+							ELSE NULL
+						END AS Status,
+						O.Comment AS EditorName,
+						CASE
+							WHEN O.Home=0 AND O.OwnTenderParticipant=0 THEN 'const'
+							WHEN O.Home=0 AND O.OwnTenderParticipant<>0 THEN 'participant'
+							WHEN O.Home<>0 AND O.OwnTenderParticipant=0 THEN 'home'
+							WHEN O.Home<>0 AND O.OwnTenderParticipant<>0 THEN 'home-participant'
+						END AS ICON_SELECTOR
+					FROM dbo.Organization AS O with (nolock)
+					WHERE_CLAUSE
+          ORDER BY O.Name
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="Name" vt="string">
+						<ds:param-selector op="not-is-null"><![CDATA[(O.ShortName LIKE :Name + '%' OR O.Name LIKE :Name + '%')]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="OwnTenderParticipant" vt="boolean">
+						<ds:param-selector op="equal" value="1"><![CDATA[O.OwnTenderParticipant <> 0]]></ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterTmsOrganizations" height="60" />
+			<i:list-menu>
+				<i:menu>
+					<i:visibility-handler>TmsOrganizations_VisibilityHandler</i:visibility-handler>
+					<i:execution-handler>TmsOrganizations_ExecuteHandler</i:execution-handler>
+					<i:menu-item action="DoCreate" t="Создать">
+						<i:params>
+							<i:param n="MetanameForEdit">Admin-editor</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK">
+						<i:params>
+							<i:param n="MetanameForEdit">Admin-editor</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoDelete" t="Удалить" hotkey="VK_DEL" />
+					<i:menu-item action="ShowHistory" t="История изменения" />
+					<i:menu-item-separ horizontal-line="1" />
+					<i:menu-item action="DoReport" t="Отчет" />
+					<i:menu-item action="DoExcelExport" t="Экспорт в Excel" />
+					<i:menu-item-separ horizontal-line="1" />
+					<i:menu-item action="DoRefresh" t="Обновить" />
+					<i:menu-item action="DoResetFilter" t="Очистить фильтр" />
+				</i:menu>
+			</i:list-menu>
+			<i:column t="Наименование" width="450" />
+			<i:column t="Краткое наименование" width="300" />
+			<i:column t="Статус" width="250" />
+			<i:column t="Примечание" width="300" />
+			<!-- Определим волшебный скрытый столбец MetanameForEdit. Его значение потом автоматически подставится в качестве одноименного маркоса и определит тем самым название нужного редактора -->
+			<i:column t="MetanameForEdit" n="MetanameForEdit" width="0" />
+		</i:objects-list>
+		<!-- Список организаций для СУТ -->
+		<i:objects-list n="TmsOrganizations" t="Организации" width="800" height="600" off-rownumbers="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>tms-tools.vbs</i:client-script>
+			<i:client-script>s-TmsOrganizationsList.vbs</i:client-script>
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT TOP @@MAXROWS 
+						O.ObjectID,
+						O.Name,
+						O.ShortName,
+						CASE 
+							WHEN O.Home<>0 AND O.OwnTenderParticipant<>0 THEN 'Владелец системы, Участник тендеров'
+							WHEN O.Home<>0 THEN 'Владелец системы'
+							WHEN O.OwnTenderParticipant<>0 THEN 'Участник тендеров'
+							ELSE NULL
+						END AS Status,
+						O.Comment AS EditorName,
+						CASE
+							WHEN O.Home=0 AND O.OwnTenderParticipant=0 THEN 'const'
+							WHEN O.Home=0 AND O.OwnTenderParticipant<>0 THEN 'participant'
+							WHEN O.Home<>0 AND O.OwnTenderParticipant=0 THEN 'home'
+							WHEN O.Home<>0 AND O.OwnTenderParticipant<>0 THEN 'home-participant'
+						END AS ICON_SELECTOR
+					FROM dbo.Organization AS O with (nolock)
+					WHERE_CLAUSE
+          ORDER BY O.Name
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="Name" vt="string">
+						<ds:param-selector op="not-is-null"><![CDATA[(O.ShortName LIKE :Name + '%' OR O.Name LIKE :Name + '%')]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="OwnTenderParticipant" vt="boolean">
+						<ds:param-selector op="equal" value="1"><![CDATA[O.OwnTenderParticipant <> 0]]></ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterTmsOrganizations" height="60" />
+			<i:list-menu>
+				<i:menu>
+					<i:visibility-handler>TmsOrganizations_VisibilityHandler</i:visibility-handler>
+					<i:execution-handler>TmsOrganizations_ExecuteHandler</i:execution-handler>
+					<i:menu-item action="DoCreate" t="Создать">
+						<i:params>
+							<i:param n="MetanameForEdit">TMS-editor</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK">
+						<i:params>
+							<i:param n="MetanameForEdit">TMS-editor</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoDelete" t="Удалить" hotkey="VK_DEL" />
+					<i:menu-item action="ShowHistory" t="История изменения" />
+					<i:menu-item-separ horizontal-line="1" />
+					<i:menu-item action="DoReport" t="Отчет" />
+					<i:menu-item action="DoExcelExport" t="Экспорт в Excel" />
+					<i:menu-item-separ horizontal-line="1" />
+					<i:menu-item action="DoRefresh" t="Обновить" />
+					<i:menu-item action="DoResetFilter" t="Очистить фильтр" />
+				</i:menu>
+			</i:list-menu>
+			<i:column t="Наименование" width="450" />
+			<i:column t="Краткое наименование" width="300" />
+			<i:column t="Статус" width="250" />
+			<i:column t="Примечание" width="300" />
+			<!-- Определим волшебный скрытый столбец MetanameForEdit. Его значение потом автоматически подставится в качестве одноименного маркоса и определит тем самым название нужного редактора -->
+			<i:column t="MetanameForEdit" n="MetanameForEdit" width="0" />
+		</i:objects-list>
+		<!-- Список организаций для СУТ -->
+		<i:objects-list n="TmsOrganizationsSelector" t="Организации" height="700" width="400" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					O.ObjectID,
+					O.Name,
+					O.ShortName,
+					CASE 
+						WHEN O.Home<>0 AND O.OwnTenderParticipant<>0 THEN 'Владелец системы, Участник тендеров'
+						WHEN O.Home<>0 THEN 'Владелец системы'
+						WHEN O.OwnTenderParticipant<>0 THEN 'Участник тендеров'
+						ELSE NULL
+					END AS Status,
+					D.LastName + ' ' + D.FirstName + ISNULL(' ' + D.MiddleName, '') + ISNULL(' (#' + D.PhoneExt + ')', '') AS Director,
+					O.Comment,
+					 'TMS-editor' AS EditorName,
+					CASE
+						WHEN O.Home=0 AND O.OwnTenderParticipant=0 THEN 'const'
+						WHEN O.Home<>0 AND O.OwnTenderParticipant=0 THEN 'home'
+						WHEN O.Home=0 AND O.OwnTenderParticipant<>0 THEN 'participant'
+						WHEN O.Home<>0 AND O.OwnTenderParticipant<>0 THEN 'home-participant'
+					END AS ICON_SELECTOR
+				FROM dbo.Organization AS O with (nolock)
+				LEFT JOIN dbo.Employee AS D with (nolock) ON D.ObjectID = O.Director
+				WHERE SEARCH_CONDITIONS
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="Name" vt="string">
+						<ds:param-selector op="not-is-null"><![CDATA[(O.ShortName LIKE :Name + '%' OR O.Name LIKE :Name + '%')]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="Director" vt="uuid">
+						<ds:param-selector op="not-is-null"><![CDATA[O.Director = :Director]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="OwnTenderParticipant" vt="boolean">
+						<ds:param-selector op="equal" value="1"><![CDATA[O.OwnTenderParticipant <> 0]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="BranchFilterType" vt="i2">
+						<ds:param-selector op="equal" value="1">
+              <![CDATA[
+						(
+							SELECT COUNT(1)
+							FROM dbo.Organization_Branch with (nolock)
+							WHERE ObjectID = O.ObjectID
+								AND Value IN #BranchIDs#
+						) =
+						(
+							SELECT COUNT(1)
+							FROM dbo.Branch with (nolock)
+							WHERE ObjectID IN #BranchIDs#
+						)
+						]]>
+            </ds:param-selector>
+						<ds:param-selector op="equal" value="2">
+              <![CDATA[
+						EXISTS
+						(
+							SELECT 1
+							FROM dbo.Organization_Branch with (nolock)
+							WHERE ObjectID = O.ObjectID
+								AND Value IN #BranchIDs#
+						)
+						]]>
+            </ds:param-selector>
+					</ds:param>
+					<ds:param n="Branch" vt="uuid" array="1">
+						<ds:array-param-processor macro="#BranchIDs#" />
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterTmsOrganizations" height="110" />
+			<i:column t="Наименование" width="200" />
+			<i:column t="Краткое наименование" width="150" />
+			<i:column t="Статус" width="150" />
+			<i:column t="Директор клиента" width="250" />
+			<!-- Определим волшебный скрытый столбец MetanameForEdit. Его значение потом автоматически подставится в качестве одноименного маркоса и определит тем самым название нужного редактора -->
+			<i:column t="MetanameForEdit" n="MetanameForEdit" width="0" />
+		</i:objects-list>
+		<!-- Селектор для выбора организации владельца конкурса из выпадающего списка фильтра тендеров и лотов-->
+		<i:objects-list n="OwnTenderParticipants" t="Организация" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					ISNULL( t.[ShortName], t.[Name] )
+				FROM [dbo].[Organization] t with (nolock)
+				WHERE t.[OwnTenderParticipant] <> 0
+					AND SEARCH_CONDITIONS
+				ORDER BY
+					ISNULL( t.[ShortName], t.[Name] )
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column t="Наименование" width="250" />
+		</i:objects-list>
+		<!-- Селектор для выбора организации-поставщика для расходных документов-->
+		<i:objects-list t="Организация" n="SupplierSelector" off-rownumbers="1" height="700" width="600" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name]
+				FROM [dbo].[Organization] t
+				WHERE t.Supplier = 1 AND
+        SEARCH_CONDITIONS
+        ORDER BY t.[Name]
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="Name" vt="string">
+						<ds:param-selector op="not-is-null"><![CDATA[(t.ShortName LIKE :Name + '%' OR t.Name LIKE :Name + '%')]]></ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterTmsOrganizations" height="35" />
+			<i:list-menu>
+				<i:menu>
+					<i:menu-item action="DoCreate" t="Создать">
+						<i:params>
+							<i:param n="MetanameForEdit">Suppl-editor</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoEdit" t="Редактировать" hotkey="VK_ENTER,VK_DBLCLICK">
+						<i:params>
+							<i:param n="MetanameForEdit">Suppl-editor</i:param>
+						</i:params>
+					</i:menu-item>
+					<i:menu-item action="DoDelete" t="Удалить" hotkey="VK_DEL" />
+					<i:menu-item action="DoRefresh" t="Обновить" />
+					<i:menu-item action="DoResetFilter" t="Очистить фильтр" />
+				</i:menu>
+			</i:list-menu>
+			<i:column t="Наименование" width="400" />
+		</i:objects-list>
+		<!-- Селектор для выбора организации члена группы компаний из выпадающего списка-->
+		<i:objects-list t="Организация" n="OwnerSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					t.[Value],
+          dbo.GetProjectOwnerShortNameByID(t.[Value]) AS ShortName
+				FROM [dbo].[Employee_Owners] t
+				WHERE t.ObjectID = @CurrentEmployeeID
+        ORDER BY ShortName
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="CurrentEmployeeID" vt="uuid" />
+				</ds:params>
+			</ds:data-source>
+			<i:column t="Наименование" width="400" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="FolderTypeDependences" d="Зависимости типов папок" tp="persistent">
+		<ds:prop n="ParentType" d="Вышестоящий тип" vt="i2" cp="scalar" enum="FolderTypeEnum">
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Проект">1</i:const-value>
+				<i:const-value n="Тендер">4</i:const-value>
+				<i:const-value n="Пресейл">8</i:const-value>
+				<i:const-value n="Каталог">16</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="ChildrenTypes" d="Подчиненные типы" vt="i2" cp="scalar" flags="FolderTypeFlags">
+			<ds:def default-type="both">0</ds:def>
+			<i:bits AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Проект">1</i:bit>
+				<i:bit n="Тендер">4</i:bit>
+				<i:bit n="Пресейл">8</i:bit>
+				<i:bit n="Каталог">16</i:bit>
+			</i:bits>
+		</ds:prop>
+		<i:objects-list t="Зависимости типов папок" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[ParentType],
+					t.[ChildrenTypes]
+				FROM [dbo].[FolderTypeDependences] t with (nolock)
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Вышестоящий тип" vt="i2" width="100" />
+			<i:column t="Подчиненные типы" vt="i2" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="EmploymentParticipantProject" d="Занятость участника на проектах" tp="persistent">
+		<ds:prop n="ProjectParticipant" d="Участник проекта" vt="object" ot="ProjectParticipant" cp="scalar" delete-cascade="1">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+			<i:object-presentation hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Privileges</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="DateBegin" d="Дата начала" vt="date" cp="scalar" />
+		<ds:prop n="DateEnd" d="Дата окончания" vt="date" cp="scalar" />
+		<ds:prop n="Percent" d="Процент занятости" vt="i2" cp="scalar">
+			<ds:min>1</ds:min>
+			<ds:max>100</ds:max>
+		</ds:prop>
+		<!--<i:editor default-for-creation="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" width="400" height="300">
+			<i:client-script>s-Employment.vbs</i:client-script>
+			<i:page n="Main" t="">x-editor2.xsl?@ProjectParticipant=off-operations:1&amp;@DateBegin&amp;@DateEnd&amp;@Percent</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor> -->
+		<i:editor default-for-editing="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" width="400" height="300">
+			<i:client-script>s-Employment.vbs</i:client-script>
+			<i:page n="Main" t="" expand="ProjectParticipant">x-editor.xsl?PROPLIST=DateBegin;DateEnd;Percent</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Занятость участника на проектах" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[DateBegin],
+					t.[DateEnd],
+					t.[Percent]
+				FROM [dbo].[EmploymentParticipantProject] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Дата начала" vt="date" width="100" />
+			<i:column t="Дата окончания" vt="date" width="100" />
+			<i:column t="Процент занятости" vt="i2" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="UserDefaultRoleInIncident" d="Роль пользователя в инциденте по умолчанию" defer-indexes="1" tp="persistent">
+		<ds:prop n="IncidentType" d="Тип инцидента" vt="object" ot="IncidentType" cp="scalar" delete-cascade="1">
+			<i:object-dropdown use-list="OnlyNames" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="UserRoleInIncident" d="Роль в инциденте" vt="object" ot="UserRoleInIncident" cp="scalar" delete-cascade="1">
+			<i:object-dropdown use-list="RolesOfIncidentType" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="UserRoleInProject" d="Роль пользователя в папке" vt="object" ot="UserRoleInProject" cp="scalar" delete-cascade="1">
+			<i:object-dropdown use-list="Roles" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:index n="IDX_UserDefaultRoleInIncident_IncidentTypeRole" unique="1">
+			<ds:prop-ref n="IncidentType" />
+			<ds:prop-ref n="UserRoleInProject" />
+		</ds:index>
+		<i:editor xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-UserDefaultRoleInIncident.vbs</i:client-script>
+			<i:page t="Основные">x-editor2.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+	</ds:type>
+	<ds:type n="TimeLossCause" d="Причина списания" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Type" d="Тип" vt="i2" cp="scalar" enum="TimeLossCauseTypes">
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Требует применение к папке">1</i:const-value>
+				<i:const-value n="Не может быть применена к папке">2</i:const-value>
+				<i:const-value n="Может быть применена к папке">3</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="CommentReq" d="Требует указания комментария" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Descr" d="Описание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>512</ds:max>
+		</ds:prop>
+		<ds:prop n="TimeQuote" d="Квота времени (%)" vt="i4" cp="scalar" maybenull="1" />
+		<ds:prop n="SystemRole" d="Системные роли" vt="object" ot="SystemRole" cp="collection-membership" built-on="TimeLossCause">
+			<i:list-selector use-list="SystemRoles" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<!-- 
+			Список "Причины списаний", представление справочника в системе
+		-->
+		<i:objects-list t="Причины списаний" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" off-icons="1">
+			<it-sec:access-requirements xmlns:it-sec="http://www.croc.ru/Schemas/IncidentTracker/Security/1.0">
+				<it-sec:demand-privilege n="ManageRefObjects" />
+			</it-sec:access-requirements>
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT TOP @@MAXROWS 
+						tlc.ObjectID, 
+						tlc.[Name],
+						CASE tlc.Type
+							WHEN 1 THEN 'Обязательно'
+							WHEN 2 THEN 'Невозможно'
+							WHEN 3 THEN 'Возможно'
+						END AS IsApplicableToFolder,
+						tlc.TimeQuote,
+						tlc.Descr
+					FROM dbo.TimeLossCause tlc WITH(NOLOCK)
+					ORDER BY tlc.[Name]
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="400" />
+			<i:column t="Указание проекта" width="130" />
+			<i:column t="Квота времени" width="120" vt="i4" align="right" />
+			<i:column t="Описание" width="300" />
+		</i:objects-list>
+		<!-- 
+			Список, используемый для наполнения селектора выбора причины списания
+			NB! В списке СПЕЦИАЛЬНО удалено определение меню - операции здесь НЕДОСТУПНЫ!
+		-->
+		<i:objects-list t="Причина списания" n="OnlyNames" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" off-icons="1">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT t.[ObjectID], t.[Name]
+				FROM [dbo].[TimeLossCause] t with (nolock)
+				WHERE_CLAUSE
+				ORDER BY
+					/* сортировка по типу: проектые / смешанные / не проектные */
+					CASE t.Type 
+						WHEN 1 THEN 1
+						WHEN 3 THEN 2
+						ELSE 3 END,
+					t.[Name]					
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column t="Наименование" width="300" />
+		</i:objects-list>
+		<!--
+			Список причин списаний для Системных Ролей
+		-->
+		<i:objects-list t="Доступные причины списания" n="AvailableTimeLossCauses" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					IF EXISTS 
+						( SELECT TOP 1 1 
+							FROM [dbo].[SystemUser] su WITH(NOLOCK)
+									LEFT JOIN [dbo].[SystemUser_SystemRoles] susr WITH(NOLOCK) ON su.[ObjectID] = susr.[ObjectID] 
+									LEFT JOIN [dbo].[SystemRole] sr ON susr.[Value] = sr.[ObjectID]
+							WHERE su.ObjectID = @SystemUserID AND (ISNUll(su.SystemPrivileges, 0) & @Privileges <> 0 OR ISNUll(sr.Priviliges, 0) & @Privileges <> 0)
+						 )
+					BEGIN
+						SELECT t.[ObjectID], t.[Name]
+						FROM [dbo].[TimeLossCause] t with (nolock)
+						WHERE_CLAUSE
+						ORDER BY
+							/* сортировка по типу: проектые / смешанные / не проектные */
+							CASE t.Type 
+								WHEN 1 THEN 1
+								WHEN 3 THEN 2
+								ELSE 3 END,
+							t.[Name]	
+					END	 
+					ELSE	 
+					BEGIN	 
+						SELECT tlc.[ObjectID], 
+							   tlc.[Name]							
+						FROM [dbo].[SystemUser] su WITH(NOLOCK) 
+								JOIN [dbo].[SystemUser_SystemRoles] susr WITH(NOLOCK) ON su.[ObjectID] = susr.[ObjectID] 
+								JOIN [dbo].[SystemRole_TimeLossCause] srtlc WITH(NOLOCK) ON susr.[Value] = srtlc.[ObjectID]	
+								JOIN [dbo].[TimeLossCause] tlc WITH(NOLOCK) ON tlc.[ObjectID]=srtlc.[Value]
+						WHERE  su.ObjectID = @SystemUserID
+						ORDER BY
+						/* сортировка по типу: проектые / смешанные / не проектные */
+						CASE tlc.Type 
+									WHEN 1 THEN 1
+									WHEN 3 THEN 2
+									ELSE 3 END,
+						tlc.[Name]
+					END
+					]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="SystemUserID" vt="uuid" required="1" />
+					<ds:param n="Privileges" vt="i4" required="1" />
+				</ds:params>
+			</ds:data-source>
+			<i:column t="Наименование" width="300" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="ExternalLinkType" d="Тип внешней ссылки" tp="persistent">
+		<ds:prop n="ServiceType" d="Cистема обслуживания" vt="i4" cp="scalar" enum="ServiceSystemType">
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Ссылка URL">1</i:const-value>
+				<i:const-value n="Ссылка на файл">2</i:const-value>
+				<i:const-value n="Ссылка на папку">3</i:const-value>
+				<i:const-value n="Ссылка на файл в Documentum">4</i:const-value>
+				<i:const-value n="Ссылка на папку в Documentum">5</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="PresentationMode" d="Форма отображения" vt="i4" cp="scalar" flags="PresentationModes">
+			<ds:def default-type="both">0</ds:def>
+			<i:bits AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Отображать наименование">1</i:bit>
+				<i:bit n="Отображать данные">2</i:bit>
+			</i:bits>
+		</ds:prop>
+		<i:objects-list t="Тип внешней ссылки" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					CASE t.[ServiceType]
+						WHEN 1 THEN 'Ссылка URL'
+						WHEN 2 THEN 'Ссылка на файл'
+						WHEN 3 THEN 'Ссылка на папку'
+						WHEN 4 THEN 'Ссылка на файл в Documentum'
+						WHEN 5 THEN 'Ссылка на папку в Documentum'
+					END
+				FROM [dbo].[ExternalLinkType] t with (nolock)
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Cистема обслуживания" vt="string" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="Department" d="Подразделение" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="Type" d="Тип" vt="i2" cp="scalar" enum="DepartmentType">
+			<ds:def default-type="both">1</ds:def>
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Центр затрат">1</i:const-value>
+				<i:const-value n="Центр прибыли">2</i:const-value>
+				<i:const-value n="Отдел">3</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Code" d="Код" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="TimeReporting" d="Учет временных затрат сотрудников" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Director" d="Руководитель" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value><![CDATA[ item.LastName & " " & item.FirstName ]]></i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation-const" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Parent" d="Вышестоящее" vt="object" ot="Department" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Code</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Children" d="Подчиненные" vt="object" ot="Department" cp="link" built-on="Parent">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Код" width="100">item.Code</i:column>
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Примечание" width="100">item.Comment</i:column>
+				<i:column t="Тип" width="100" vt="i2">item.Type</i:column>
+				<i:column t="Учет временных затрат сотрудников" width="100" vt="boolean">item.TimeReporting</i:column>
+				<i:column t="Индентификатор НСИ" width="100" vt="i4">item.ExternalRefID</i:column>
+				<i:column t="Идентификатор внешней системы" width="100">item.ExternalID</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Organization" d="Организация" vt="object" ot="Organization" cp="scalar">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Directions" d="Направления" vt="object" ot="Direction" cp="link" built-on="Department">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="400">item.Name</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu ref="std-objects-list-aggregate" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Comment" d="Примечание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>2048</ds:max>
+		</ds:prop>
+		<ds:prop n="LIndex" d="LIndex" vt="i4" cp="scalar" maybenull="1" r="ignore" />
+		<ds:prop n="RIndex" d="RIndex" vt="i4" cp="scalar" maybenull="1" r="ignore" />
+		<ds:prop n="LRLevel" d="LRLevel" vt="i4" cp="scalar" maybenull="1" r="read-only" />
+		<ds:prop n="IsArchive" d="Архивное" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<i:icons default="Department.ico" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="Archive">Department-Archive.ico</i:icon>
+		</i:icons>
+		<!-- редактор для создания -->
+		<i:editor n="create" default-for-creation="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Department.vbs</i:client-script>
+			<i:preload>Parent</i:preload>
+			<i:page t="Главная" n="Main">
+        <![CDATA[
+				x-editor2.xsl?@Organization&@Parent/Department/Name=description:Вышестоящий отдел;disabled:1;separator-after:2&@Children&@Name&@Type=hide-if:IsForeignOrganization&@TimeReporting=hide-if:IsForeignOrganization&@Code=hide-if:IsForeignOrganization;width:300&@Directions=hide-if:IsForeignOrganization;height:250;separator-before:1;separator-after:1&@ExternalRefID&@ExternalID&@Comment=maxheight:20;minheight:5&DisableHR=1
+			]]>
+      </i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<!-- редактор для редактирования -->
+		<i:editor n="edit" default-for-editing="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Department.vbs</i:client-script>
+			<i:preload>Parent</i:preload>
+			<i:preload>Organization</i:preload>
+			<i:page t="Главная" n="Main">
+        <![CDATA[
+				x-editor2.xsl?@Organization/Organization/Name=disabled:1&@Name&@IsArchive&@TimeReporting&@Director&@Code&@Directions&@ExternalRefID&@Comment
+			]]>
+      </i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Подразделение" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" off-icons="1">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Code],
+					t.[Name],
+					t.[Comment],
+					t.[Type],
+					t.[IsArchive],
+					t.[TimeReporting],
+					t.[ExternalRefID],
+					t.[ExternalID],
+					CASE t.[IsArchive] WHEN 0 THEN 'Actual' ELSE 'Archive' END AS ICON_SELECTOR
+				FROM [dbo].[Department] t with (nolock)
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Код" width="100" />
+			<i:column t="Наименование" width="100" />
+			<i:column t="Примечание" width="100" />
+			<i:column t="Тип" vt="i2" width="100" />
+			<i:column t="Архивное" vt="boolean" width="100" />
+			<i:column t="Учет временных затрат сотрудников" vt="boolean" width="100" />
+			<i:column t="Индентификатор НСИ" vt="i4" width="100" />
+			<i:column t="Идентификатор внешней системы" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="IncidentType" d="Тип инцидента" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="ShowedAttrs" d="Отображаемые атрибуты" vt="i2" cp="scalar" maybenull="1" enum="ShowedAttrs">
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Приоритет">1</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="DefaultPriority" d="Приоритет по умолчанию" vt="i2" cp="scalar" enum="IncidentPriority">
+			<ds:def default-type="both">2</ds:def>
+			<i:const-value-selection selector="combo" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="Высокий">1</i:const-value>
+				<i:const-value n="Средний">2</i:const-value>
+				<i:const-value n="Низкий">3</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="States" d="Состояния" vt="object" ot="IncidentState" cp="link" built-on="IncidentType" order-by="OrderIndex">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" off-select="1" use-for-creation="cool" use-for-editing="cool">
+				<i:column t="Наименование" width="200">item.Name</i:column>
+				<i:column t="Категория" width="100">item.Category</i:column>
+				<i:column t="Начальное состояние" width="100"><![CDATA[iif(item.IsStartState, "Да", "Нет")]]></i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="IniciatorRole" d="Роль для инициатора" vt="object" ot="UserRoleInIncident" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="IncidentCategories" d="Категории" vt="object" ot="IncidentCategory" cp="link" built-on="IncidentType">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Description" d="Описание" vt="string" cp="scalar" maybenull="1">
+			<ds:max>1024</ds:max>
+		</ds:prop>
+		<ds:prop n="Props" d="Дополнительные свойства" vt="object" ot="IncidentProp" cp="link" built-on="IncidentType" order-by="Index">
+			<i:elements-list off-sortcolumn="1" off-select="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Тип" width="150">NameOf_IPROP_TYPE(item.Type)</i:column>
+				<i:column t="Признаки" width="100">GetPropertyMeaning(Me, item())</i:column>
+				<i:column t="Значение по умолчанию" width="150">GetPropertyDefaultValue(Me, item())</i:column>
+				<i:column t="Минимальное и максимальное значение" width="230">GetPropertyMinMaxValue(Me, item())</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Roles" d="Роли" vt="object" ot="UserRoleInIncident" cp="link" built-on="IncidentType">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Длительность по умолчанию" width="100" vt="i4">item.DefDuration</i:column>
+				<i:column t="Отображать в сокращенном списке инцидентов" width="100" vt="boolean">item.ShowInShortTaskList</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="UserDefaultRolesInIncident" d="Роли по умолчанию" vt="object" ot="UserDefaultRoleInIncident" cp="link" built-on="IncidentType">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Роль в инциденте" width="100">item.UserRoleInIncident.Name</i:column>
+				<i:column t="Роль в папке" width="100">item.UserRoleInProject.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-aggregate" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="UserRoleInProject" d="Роль пользователя в папке" vt="object" ot="UserRoleInProject" cp="collection-membership" built-on="IncidentType">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Название" width="100">item.Name</i:column>
+				<i:column t="Привилегии" width="100" vt="i4">item.Privileges</i:column>
+				<i:column t="Тип роли" width="100" vt="i4">item.Type</i:column>
+				<i:column t="Привилегии на выдачу роли" width="100" vt="i4">item.SystemPrivilegesOnRole</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="ProjectParticipant" d="Участник проекта" vt="object" ot="ProjectParticipant" cp="collection-membership" built-on="IncidentType">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Привилегии" width="100" vt="i4">item.Privileges</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" default="IncidentType.ico">
+			<i:icons-in-db pn="Icon" ot="IncidentState" />
+		</i:icons>
+		<i:editor t="Тип инцидента" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-IncidentType-editor.vbs</i:client-script>
+			<i:preload>Props</i:preload>
+			<i:page t="Основные">x-editor.xsl?propList=Name;Description;DefaultPriority;States;Props;UserDefaultRolesInIncident&amp;DisableHR=1</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Тип инцидента" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name],
+					t.[Description],
+					(SELECT COUNT(*) FROM dbo.IncidentProp with (nolock) WHERE IncidentType=t.ObjectID),
+					(SELECT TOP 1 ObjectID FROM dbo.IncidentState with (nolock) WHERE IncidentType=t.ObjectID AND IsStartState!=0) Icon_Selector	
+				FROM [dbo].[IncidentType] t with (nolock)
+				WHERE_CLAUSE
+				ORDER BY t.[Name]
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="200" />
+			<i:column t="Описание" width="200" />
+			<i:column t="Количество дополительных свойств" vt="i2" width="300" />
+		</i:objects-list>
+		<i:objects-list t="Тип инцидента для пользователя в проекте" n="AvailableIcidentTypesOfUserRole" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					DECLARE @FolderIDWithIncType uniqueidentifier -- Идентификатор проекта (или "родительского" проекта), в котором заданы типы инцидентов
+													  -- для данного Пользователя
+					-- Проверим заданы ли типы инцидентов в проекте(или в "родительских" проектах) для конкретного участника
+					SELECT TOP 1 @FolderIDWithIncType  = fParent.ObjectID --, fParent.Name
+					FROM dbo.Folder f WITH(NOLOCK)
+						JOIN dbo.Folder fParent WITH(NOLOCK) ON 
+										fParent.Customer = f.Customer AND  
+										fParent.LIndex <= f.LIndex AND fParent.RIndex >= f.RIndex 
+						JOIN dbo.ProjectParticipant team WITH(NOLOCK) ON team.Folder = fParent.ObjectID
+						JOIN [dbo].[ProjectParticipant_IncidentType] ppt WITH(NOLOCK) ON team.[ObjectID]=ppt.[ObjectID]
+						JOIN [dbo].[IncidentType] inct WITH(NOLOCK) ON inct.[ObjectID]=ppt.[Value]
+					WHERE team.Employee = :CurrentEmployeeID AND f.ObjectID = :FolderID 
+					ORDER BY fParent.LRLevel DESC	
+
+					-- Если не заданы типы инцидентов, то возьмем их исходя из настроек безопасности пользователя или его проектной роли
+					IF (@FolderIDWithIncType IS NULL) BEGIN
+						-- Если у пользователя существует доступ к данному типу проектной активности - выводим все типы инцидентов
+						if exists(
+							select top 1 1
+							from dbo.Folder as f with(nolock)
+							where 
+								(f.ObjectID =  :FolderID) and
+								(f.ActivityType in 
+									(
+									SELECT distinct at.ObjectID
+									FROM dbo.SystemUser_ActivityTypes su_at WITH (nolock)
+									inner join dbo.Employee as e with(nolock) on e.SystemUser = su_at.ObjectID
+									inner join  dbo.ActivityType at WITH (nolock) ON su_at.Value = at.ObjectID
+									WHERE e.ObjectID = :CurrentEmployeeID
+									UNION
+									SELECT at.ObjectID
+									FROM dbo.SystemUser_SystemRoles su_sr WITH (nolock)
+									inner join dbo.Employee as e with(nolock) on e.SystemUser = su_sr.ObjectID
+									inner join dbo.SystemRole_ActivityTypes sr_at WITH (nolock) ON su_sr.Value = sr_at.ObjectID
+									inner join dbo.ActivityType at WITH (nolock) ON sr_at.Value = at.ObjectID
+									WHERE e.ObjectID = :CurrentEmployeeID
+									)
+								)
+						) BEGIN
+							SELECT  it.[ObjectID],
+									it.[Name]
+							FROM [dbo].[IncidentType] it WITH(NOLOCK)
+							ORDER BY it.[Name]
+						END
+						ELSE BEGIN
+							SELECT DISTINCT inct.[ObjectID], 
+									inct.[Name]
+							FROM dbo.Folder f WITH(NOLOCK)
+								JOIN dbo.Folder fParent WITH(NOLOCK) ON fParent.Customer = f.Customer AND  
+																	fParent.LIndex <= f.LIndex AND fParent.RIndex >= f.RIndex 
+								JOIN [dbo].[ProjectParticipant] pp WITH(NOLOCK) ON pp.Folder = fParent.ObjectID
+								JOIN [dbo].[ProjectParticipant_Roles] ppr WITH(NOLOCK) ON pp.ObjectID = ppr.ObjectID
+								JOIN [dbo].[UserRoleInProject_IncidentType] urit WITH(NOLOCK) ON ppr.Value = urit.ObjectID
+								JOIN [dbo].[IncidentType] inct WITH(NOLOCK) ON inct.[ObjectID]=urit.[Value]
+							WHERE pp.Employee = :CurrentEmployeeID AND f.ObjectID = :FolderID
+							ORDER BY inct.[Name]
+						END
+					END
+					-- Если заданы тогда берем те типы, которые заданы для пользователя в данном проекте (или в "родительских" проектах)
+					ELSE BEGIN
+						SELECT  it.[ObjectID],
+								it.[Name]
+						FROM [dbo].[IncidentType] it WITH(NOLOCK)
+							JOIN [dbo].[ProjectParticipant_IncidentType] ppt WITH(NOLOCK) ON it.[ObjectID]=ppt.[Value]
+							JOIN [dbo].[ProjectParticipant] pp WITH(NOLOCK) ON ppt.[ObjectID] = pp.[ObjectID]
+							JOIN [dbo].[Folder] f WITH(NOLOCK) ON pp.Folder = f.ObjectID
+						WHERE pp.Employee = :CurrentEmployeeID AND  
+								f.ObjectID = @FolderIDWithIncType
+						ORDER BY it.[Name]
+					END	
+					]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="CurrentEmployeeID" vt="uuid" />
+					<ds:param n="FolderID" vt="uuid" />
+				</ds:params>
+			</ds:data-source>
+			<i:column t="Тип инцидента" width="400" />
+		</i:objects-list>
+		<!-- Список всех типов для комбобокса -->
+		<i:objects-list t="Тип инцидента" n="OnlyNames" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT 
+					t.[ObjectID],
+					t.[Name],
+					(SELECT TOP 1 ObjectID FROM dbo.IncidentState with (nolock) WHERE IncidentType=t.ObjectID AND IsStartState!=0) Icon_Selector
+				FROM [dbo].[IncidentType] t with (nolock)
+				ORDER BY t.[Name]
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column t="Тип инцидента" width="400" />
+		</i:objects-list>
+		<!--
+			Интеграция с Microsoft Project 2003
+		-->
+		<i:objects-list t="Интеграция с Microsoft Project: список типов инцидентов" n="MSProjectIntegration_IncidentType" maxrows="1000000" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT 
+						ObjectID, 
+						Name
+					FROM 
+						dbo.IncidentType with (nolock)
+					WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="Name" vt="string">
+						<ds:param-selector op="not-is-null"><![CDATA[ Name = :Name ]]></ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:column t="Name" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="EmployeeRate" d="Норма рабочего времени" tp="persistent">
+		<ds:prop n="Employee" d="Сотрудник" vt="object" ot="Employee" cp="scalar">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.LastName</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Rate" d="Норма" vt="i2" cp="scalar">
+			<ds:min>0</ds:min>
+			<ds:max>720</ds:max>
+			<i:const-value-selection selector="combo" no-empty-value="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="0">0</i:const-value>
+				<i:const-value n="1">60</i:const-value>
+				<i:const-value n="2">120</i:const-value>
+				<i:const-value n="3">180</i:const-value>
+				<i:const-value n="4">240</i:const-value>
+				<i:const-value n="5">300</i:const-value>
+				<i:const-value n="6">360</i:const-value>
+				<i:const-value n="7">420</i:const-value>
+				<i:const-value n="8">480</i:const-value>
+				<i:const-value n="9">540</i:const-value>
+				<i:const-value n="10">600</i:const-value>
+				<i:const-value n="11">660</i:const-value>
+				<i:const-value n="12">720</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="Date" d="Дата" vt="date" cp="scalar" />
+		<ds:prop n="Comment" d="Комментарий" vt="text" cp="scalar" maybenull="1" />
+		<ds:index n="IDX_EmployeeRate_EmployeeDate" unique="1">
+			<ds:prop-ref n="Employee" />
+			<ds:prop-ref n="Date" />
+		</ds:index>
+		<i:editor xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" width="400" height="300">
+			<i:page t="Main">p-EmployeeRate.xsl</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Норма рабочего времени" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Rate],
+					t.[Date],
+					t.[Comment]
+				FROM [dbo].[EmployeeRate] t
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Норма" vt="i2" width="100" />
+			<i:column t="Дата" vt="date" width="100" />
+			<i:column t="Комментарий" vt="text" width="200" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="Direction" d="Направление" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Department" d="Подразделение" vt="object" ot="Department" cp="scalar">
+			<i:object-presentation use-tree-selector="FriendlyDepartments" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation-const" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Director" d="Руководитель" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:object-presentation use-tree-selector="FriendlyEmployees" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>
+          <![CDATA[ 
+					item.LastName & " " & item.FirstName &
+					iif( hasValue(item.PhoneExt), " (#" & item.PhoneExt & ")", "" )
+				]]>
+        </i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation-const" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="FolderDirection" d="Направление активности" vt="object" ot="FolderDirection" cp="link-scalar" built-on="Direction">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.ExpenseRatio</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="IsObsolete" d="Устаревшее" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Manager" d="Администратор" vt="object" ot="Employee" cp="scalar" maybenull="1">
+			<i:object-presentation use-tree-selector="FriendlyEmployees" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>
+          <![CDATA[ 
+					item.LastName & " " & item.FirstName &
+					iif( hasValue(item.PhoneExt), " (#" & item.PhoneExt & ")", "" )
+				]]>
+        </i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation-const" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<!-- Иконки -->
+		<i:icons default="Direction.ico" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="actual">Direction.ico</i:icon>
+			<i:icon selector="obsolete">Direction-Obsolete.ico</i:icon>
+			<i:icon selector="incorrect">Direction-Incorrect.ico</i:icon>
+		</i:icons>
+		<!-- Редактор направления -->
+		<i:editor width="550" height="270" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:preload>Department</i:preload>
+			<i:page t="Реквизиты"><![CDATA[x-editor2.xsl?@Name=&@IsObsolete=separator-after:1&@Department=&@Director=&@Manager&DisableHR=1]]></i:page>
+			<!-- Стандартное меню редактора -->
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<!-- 
+		
+			Основной список, отображается как справочник 
+		-->
+		<i:objects-list t="Направления" width="850" height="600" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT TOP @@MAXROWS 
+						d.[ObjectID],
+						d.[Name],
+						emp.LastName + ' ' + emp.FirstName + IsNull(' (#' + emp.PhoneExt + ')',''),
+						man.LastName + ' ' + man.FirstName + IsNull(' (#' + man.PhoneExt + ')',''),
+						dep.Name,
+						CASE d.[IsObsolete] WHEN 0 THEN 'actual' ELSE 'obsolete' END AS ICON_SELECTOR
+					FROM 
+						[dbo].[Direction] d WITH(NOLOCK)
+						/* Руководитель направления может быть не задан */
+						LEFT JOIN dbo.Employee emp WITH(NOLOCK) ON d.Director = emp.ObjectID
+						LEFT JOIN dbo.Employee man WITH(NOLOCK) ON d.Manager = man.ObjectID
+						LEFT JOIN dbo.Department dep WITH(NOLOCK) ON d.Department = dep.ObjectID
+					WHERE_CLAUSE
+					ORDER BY 
+						d.IsObsolete, d.[Name]
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="ShowObsolete" vt="boolean">
+						<ds:param-selector op="equal" value="0">d.[IsObsolete] = 0</ds:param-selector>
+						<ds:param-selector op="equal" value="1">1=1</ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterDirectionList" height="35" />
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="250" />
+			<i:column t="Руководитель направления" width="200" />
+			<i:column t="Менеджер направления" width="200" />
+			<i:column t="Ответственное подразделение" width="300" />
+		</i:objects-list>
+		<!-- 
+			Список выбора направления
+		-->
+		<i:objects-list t="Направления" n="NameAndDirector" width="750" height="500" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT TOP @@MAXROWS 
+						d.[ObjectID],
+						d.[Name],
+						emp.LastName + ' ' + emp.FirstName + IsNull(' (#' + emp.PhoneExt + ')',''),
+						CASE d.[IsObsolete] WHEN 0 THEN 'actual' ELSE 'obsolete' END AS ICON_SELECTOR
+					FROM 
+						[dbo].[Direction] d WITH(NOLOCK)
+						/* Руководитель направления может быть не задан */
+						LEFT JOIN dbo.Employee emp WITH(NOLOCK) ON d.Director = emp.ObjectID
+					WHERE_CLAUSE
+					ORDER BY 
+						d.IsObsolete, d.[Name]
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="ShowObsolete" vt="boolean">
+						<ds:param-selector op="equal" value="0">d.[IsObsolete] = 0</ds:param-selector>
+						<ds:param-selector op="equal" value="1">1=1</ds:param-selector>
+					</ds:param>
+					<ds:param n="HideID" vt="uuid" array="1">
+						<ds:array-param-processor values-macro="#HideDirections_IDLIST#">
+              <![CDATA[ 
+							d.ObjectID NOT IN (
+								SELECT fd.Direction 
+								FROM FolderDirection fd WITH(NOLOCK) 
+								WHERE fd.ObjectID IN ( #HideDirections_IDLIST# )
+							)
+						]]>
+            </ds:array-param-processor>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterDirectionList" height="35" />
+			<i:column t="Наименование" width="350" />
+			<i:column t="Руководитель" width="300" />
+		</i:objects-list>
+		<!-- 
+			Простой список в одну колонку, используется для выбора направлений в "больших" фильтрах 
+		-->
+		<i:objects-list t="Направление" n="SimpleList" width="600" height="400" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT TOP @@MAXROWS 
+						d.[ObjectID],
+						d.[Name] + CASE 
+							WHEN e.ObjectID IS NOT NULL 
+							THEN ' (руководитель: ' + e.LastName + ' ' + e.FirstName + ISNULL( ', #' + e.PhoneExt, '' ) + ')'
+							ELSE ''
+						END AS FullName,
+						CASE d.[IsObsolete] WHEN 0 THEN 'actual' ELSE 'obsolete' END AS ICON_SELECTOR
+					FROM 
+						[dbo].[Direction] d WITH(NOLOCK)
+						/* Руководитель направления может быть не задан */
+						LEFT JOIN dbo.Employee e WITH(NOLOCK) ON d.Director = e.ObjectID
+					WHERE_CLAUSE
+					ORDER BY 
+						d.IsObsolete, d.[Name]
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column t="Направления" width="500" />
+		</i:objects-list>
+		<!-- 
+			Специальный список, используется для загрузки списка направлений в редакторе папки, 
+			в случаях когда указание направления выполняется путем выбора одного из напарвлений, 
+			заданных для ВЫШЕСТОЯЩЕЙ папки.
+			ВНИМАНИЕ! Список требует обязательной параметризации - указания ID папки, для
+			которой задается направление; от этого ID будет получена ближайщая родительская
+			папка, для которой заданы направления - именно их перечень выдает список
+		-->
+		<i:objects-list t="Направление" n="SpecialSelectorList" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT 
+						d.[ObjectID],
+						d.[Name] AS DirectionName,
+						e.LastName + ' ' + e.FirstName + ISNULL( ' (#' + e.PhoneExt + ')', '' ) AS DirectorName,
+						CASE WHEN d.ObjectID = tUpDirections.DirectionID 
+							THEN ( CASE d.[IsObsolete] WHEN 0 THEN 'actual' ELSE 'obsolete' END )
+							ELSE 'incorrect'  
+						END AS ICON_SELECTOR
+					FROM 
+						[dbo].[Direction] d WITH(NOLOCK)
+						/* Руководитель направления может быть не задан */
+						LEFT JOIN dbo.Employee e WITH(NOLOCK) ON d.Director = e.ObjectID
+						/* Направления, заданные для ближайшей вышестоящей папки */
+						LEFT JOIN (
+							SELECT DISTINCT fdUp.Direction AS DirectionID
+							FROM dbo.[FolderDirection] fdUp WITH(NOLOCK) 
+							WHERE fdUp.Folder = (
+								SELECT TOP 1 fUp.ObjectID
+								FROM 
+									dbo.Folder fUp WITH(NOLOCK)
+									JOIN dbo.Folder f WITH(NOLOCK) ON 
+										/* рассматриваются ТОЛЬКО вышестоящие папки - строгое условие на L- и RIndex */
+										f.Customer = fUp.Customer AND f.LIndex > fUp.LIndex AND f.RIndex < fUp.RIndex
+								WHERE 
+									f.ObjectID = :FolderID
+									AND EXISTS ( SELECT 1 FROM FolderDirection WITH(NOLOCK) WHERE Folder = fUp.ObjectID )
+								ORDER BY fUp.LRLevel DESC
+							) OR fdUp.Folder = :ParentFolderID
+						) tUpDirections ON d.ObjectID = tUpDirections.DirectionID
+					WHERE 
+						d.ObjectID = tUpDirections.DirectionID	
+						OR 
+						/* так же в списке отображается направление, УЖЕ ЗАДАННОЕ для папки */
+						d.ObjectID IN ( REQUIRED_ID_LIST )
+					ORDER BY 
+						CASE WHEN d.ObjectID = tUpDirections.DirectionID THEN 0 ELSE 1 END,
+						d.IsObsolete, 
+						d.[Name]
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="FolderID" vt="uuid" required="1" />
+					<ds:param n="ParentFolderID" vt="uuid" />
+				</ds:params>
+			</ds:data-source>
+			<i:column t="Направление" width="300" />
+			<i:column t="Руководитель направления" width="320" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="IncidentCategory" d="Категория инцидента" tp="persistent">
+		<ds:prop n="IncidentType" d="Тип инцидента" vt="object" ot="IncidentType" cp="scalar">
+			<i:object-presentation off-operations="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Parent" d="Базовая категория" vt="object" ot="IncidentCategory" cp="scalar" maybenull="1" delete-cascade="1">
+			<i:object-presentation off-operations="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Children" d="Подкатегории" vt="object" ot="IncidentCategory" cp="link" built-on="Parent">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="LIndex" d="LIndex" vt="i4" cp="scalar" maybenull="1" r="ignore" />
+		<ds:prop n="RIndex" d="RIndex" vt="i4" cp="scalar" maybenull="1" r="ignore" />
+		<ds:prop n="LRLevel" d="LRLevel" vt="i4" cp="scalar" maybenull="1" r="read-only" />
+		<i:editor width="400" height="300" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:page t="Main">x-editor2.xsl?@IncidentType&amp;@Parent&amp;@Name</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:objects-list t="Категория инцидента" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Name]
+				FROM [dbo].[IncidentCategory] t with (nolock)
+				WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Наименование" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="OrganizationAnchor" d="Идентификатор организации" tp="persistent">
+		<ds:prop n="StatusHistory" d="Изменения статуса" vt="object" ot="OrganizationStatusHistory" cp="link" built-on="Anchor">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Существует" width="100" vt="boolean">item.Exists</i:column>
+				<i:column t="Дата изменения" width="100" vt="dateTime">item.DateTime</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Snaps" d="Срезы данных" vt="object" ot="OrganizationSnap" cp="link" built-on="Anchor">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Структура организации определена" width="100" vt="boolean">item.StructureHasDefined</i:column>
+				<i:column t="Идентификатор внешней системы" width="100">item.ExternalID</i:column>
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Краткое наименование" width="100">item.ShortName</i:column>
+				<i:column t="Дата изменения" width="100" vt="dateTime">item.DateTime</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+	</ds:type>
+	<ds:type n="Employee" d="Сотрудник" tp="persistent">
+		<ds:prop n="Owners" d="Допустимые организации владельцы" vt="object" ot="Organization" cp="collection">
+			<i:elements-list use-list-selector="OwnerSelectorForEmployee" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Краткое наименование" width="400">item.ShortName</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu>
+						<i:menu-item action="DoSelectFromDb" t="Выбрать" may-be-default="1" />
+						<i:menu-item action="DoUnlink" t="Очистить" />
+					</i:menu>
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Organization" d="Организация" vt="object" ot="Organization" cp="scalar">
+			<i:object-presentation off-create="1" off-edit="1" off-delete="1" use-tree-selector="OrganizationSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation-const" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Department" d="Подразделение" vt="object" ot="Department" cp="scalar" maybenull="1">
+			<i:object-presentation use-tree-selector="DepartmentSelector" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu>
+						<i:menu-item action="DoSelectFromDb" t="Выбрать" may-be-default="1" />
+						<i:menu-item action="DoCreate" t="Создать" />
+						<i:menu-item action="DoEdit" t="Редактировать" />
+						<i:menu-item action="DoUnlink" t="Очистить" />
+					</i:menu>
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Position" d="Должность" vt="object" ot="Position" cp="scalar" maybenull="1">
+			<i:object-dropdown xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="SystemUser" d="Пользователь приложения" vt="object" ot="SystemUser" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Login</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="LastName" d="Фамилия" vt="string" cp="scalar">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="FirstName" d="Имя" vt="string" cp="scalar">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="MiddleName" d="Отчество" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="WorkBeginDate" d="Дата выхода на работу" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="WorkEndDate" d="Дата окончания работы" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="TemporaryDisability" d="Временная нетрудоспособность" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="Phone" d="Телефон" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="PhoneExt" d="Добавочный номер к телефону" vt="string" cp="scalar" maybenull="1">
+			<ds:max>7</ds:max>
+		</ds:prop>
+		<ds:prop n="MobilePhone" d="Мобильный телефон" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="Address" d="Почтовый адрес" vt="string" cp="scalar" maybenull="1">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="EMail" d="Адрес электронной почты" vt="string" cp="scalar" maybenull="1">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="PagerPhone" d="Телефон пейджера" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="PagerCode" d="Номер пейджера" vt="string" cp="scalar" maybenull="1">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="Picture" d="Фотография" vt="bin" cp="scalar" maybenull="1">
+			<i:binary-presentation is-image="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Subscriptions" d="Подписка на событие" vt="object" ot="EventSubscription" cp="link" built-on="User">
+			<i:elements-list hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Включать в сборник" width="100" vt="boolean">item.IncludeInDigest</i:column>
+				<i:column t="Получать уведомления немедленно" width="100" vt="boolean">item.InstantDelivery</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="History" d="История" vt="object" ot="EmployeeHistory" cp="link" built-on="Employee">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Дата события" width="100" vt="dateTime">item.EventDate</i:column>
+				<i:column t="Событие" width="200">NameOf_EmployeeHistoryEvents(item.Event)</i:column>
+				<i:column t="Пользователь" width="200">
+          <![CDATA[
+						iif(	hasValue(item.SystemUser.Employee),
+								(	item.SystemUser.Employee.LastName & " " & item.SystemUser.Employee.FirstName &
+									iif( hasValue(item.SystemUser.Employee.PhoneExt), " (#" & item.SystemUser.Employee.PhoneExt & ")", "" )
+								),
+								iif( 0<>item.SystemUser.IsServiceAccount, "Сервисный пользователь", "Пользователь" ) &
+								item.SystemUser.Login & " (данных о сотруднике нет)"
+						)
+					]]>
+        </i:column>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="EmployeeRate" d="Норма" vt="object" ot="EmployeeRate" cp="link" built-on="Employee">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Норма" width="100" vt="i2">item.Rate/60</i:column>
+				<i:column t="Дата" width="100" vt="date">item.Date</i:column>
+				<i:column t="Комментарий" width="100">item.Comment</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-aggregate" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="FOTs" d="ФОТ" vt="object" ot="FOT" cp="link" built-on="Employee">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Loans" d="Займы" vt="object" ot="Loan" cp="link" built-on="Employee">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="PartsOfFOT" d="Доли ФОТ" vt="object" ot="PartOfFOT" cp="link" built-on="Employee">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Actions" d="События" vt="object" ot="Protocol" cp="link" built-on="Initiator">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="AO" d="АО" vt="object" ot="AO" cp="link" built-on="Employee">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<i:icons default="Employee.ico" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="Archived">Employee-Archived.ico</i:icon>
+			<i:icon selector="TemporaryDisability">Employee-TemporaryDisability.ico</i:icon>
+		</i:icons>
+		<i:editor n="create" wizard-mode="get-data" default-for-creation="1" width="800" height="1000" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Employee.vbs</i:client-script>
+			<i:page t="Сотрудник" n="Main">
+        <![CDATA[
+				x-editor2.xsl?@*&@SystemUser=display:0&@History=display:0&@ExternalRefID=display:0&@ExternalID=hide-if:IsForeignOrganization&DisableHR=1
+			]]>
+      </i:page>
+			<i:page t="Пользователь приложения" n="SystemUser" expand="SystemUser">p-Employee-SystemUser.xsl</i:page>
+			<i:menu ref="std-wizard-menu" />
+		</i:editor>
+		<i:editor n="edit" default-for-editing="1" width="800" height="1000" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-Employee.vbs</i:client-script>
+			<i:preload>Organization</i:preload>
+			<i:preload>Department</i:preload>
+			<i:preload>SystemUser.SystemRoles</i:preload>
+			<i:preload>SystemUser.ActivityTypes</i:preload>
+			<i:page t="Сотрудник" n="Main">
+        <![CDATA[
+				x-editor2.xsl?@*&@SystemUser=display:0&@History=display:0&@ExternalRefID=display:0&@ExternalID=hide-if:IsForeignOrganization&DisableHR=1
+			]]>
+      </i:page>
+			<i:page t="Пользователь приложения" n="SystemUser">p-Employee-SystemUser.xsl</i:page>
+			<i:page n="History" t="История">x-array.xsl?PN=History</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<!--
+			Список сотрудников, используемый по умолчанию
+		-->
+		<i:objects-list t="Сотрудники" off-load="1" width="750" height="750" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT 
+						emp.ObjectID,
+						emp.LastName,
+						emp.FirstName,
+						emp.MiddleName,
+						dep.[Name] AS DepName,
+						emp.PhoneExt,
+            emp.MobilePhone,
+						emp.EMail
+					FROM 	
+						dbo.Employee emp with (nolock)
+							INNER JOIN dbo.Organization org with (nolock) ON emp.Organization = org.ObjectID
+								LEFT JOIN dbo.Department dep with (nolock) ON emp.Department = dep.ObjectID
+					WHERE
+						emp.WorkEndDate IS NULL /* TODO: уволенных ПОКА не выводим */ AND
+						SEARCH_CONDITIONS
+					ORDER BY 
+						emp.LastName, 
+						emp.FirstName			
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="ByLastName" vt="string" use-wildcard="conditional-on-end">
+						<ds:param-selector op="not-is-null"><![CDATA[ emp.LastName LIKE :ByLastName ]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="ByOrganization" vt="uuid">
+						<ds:param-selector op="not-is-null"><![CDATA[ org.ObjectID=:ByOrganization ]]></ds:param-selector>
+					</ds:param>
+					<ds:param n="ByDepartment" vt="uuid">
+						<ds:param-selector op="not-is-null"><![CDATA[ dep.ObjectID=:ByDepartment ]]></ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:filter-as-editor ot="FilterEmployeesList" height="75" />
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Фамилия" width="150" />
+			<i:column t="Имя" width="120" />
+			<i:column t="Отчество" width="120" />
+			<i:column t="Подразделение" width="300" />
+			<i:column t="Телефон" width="100" />
+			<i:column t="Моб.телефон" width="200" />
+		</i:objects-list>
+		<!--
+			Список Сотрудников заданного Отдела -->
+		<i:objects-list t="Сотрудник" n="SystemUsersByDepartment" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					emp.ObjectID,
+					emp.LastName,
+					emp.FirstName,
+					emp.MiddleName,
+					p.Name
+				FROM [dbo].[Employee] emp with (nolock)
+					LEFT JOIN dbo.Position p with (nolock) ON emp.Position = p.ObjectID
+				WHERE
+					emp.Department = :DepartmentID
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="DepartmentID" vt="uuid" />
+				</ds:params>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Фамилия" width="100" />
+			<i:column t="Имя" width="100" />
+			<i:column t="Отчество" width="100" />
+			<i:column t="Должность" width="100" />
+		</i:objects-list>
+		<!--
+			Список Сотрудников участников заданного проекта -->
+		<i:objects-list t="Сотрудник" n="FolderParticipantsWithRoles" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					emp.ObjectID,
+					emp.LastName + ' ' + emp.FirstName,
+					x.Roles
+				FROM [dbo].[Employee] emp with (nolock)
+					JOIN dbo.GetAllFolderParticipants(:FolderID) x ON emp.ObjectID = x.EmployeeID
+				WHERE SEARCH_CONDITIONS 
+				UNION
+				SELECT
+					emp.ObjectID,
+					emp.LastName + ' ' + emp.FirstName,
+					''
+				FROM [dbo].[Employee] emp with (nolock)
+				WHERE emp.ObjectID IN (REQUIRED_ID_LIST) AND SEARCH_CONDITIONS 
+				ORDER BY 2
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="FolderID" vt="uuid" />
+					<ds:param n="IgnoreEmployeeID" vt="uuid" array="1">
+						<ds:param-selector op="in">emp.ObjectID NOT</ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:column t="ФИО" width="250" />
+			<i:column t="Проектная роль" width="300" />
+		</i:objects-list>
+		<!-- Список сотрудников, хоть раз заданных в качестве директора тендора -->
+		<i:objects-list t="Сотрудник" n="TenderDirectors" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT DISTINCT
+					e.ObjectID,
+					e.LastName + ' ' + e.FirstName + ISNULL(' ' + e.MiddleName, '') AS FullName
+				FROM dbo.Employee AS e with (nolock)
+				INNER JOIN dbo.Tender AS t with (nolock) ON t.Director = e.ObjectID
+				WHERE_CLAUSE				
+				]]>
+        </ds:cmd-text>
+				<ds:order-by>FullName</ds:order-by>
+			</ds:data-source>
+			<i:column t="ФИО" width="250" />
+		</i:objects-list>
+		<!-- Список сотрудников, хоть раз заданных в качестве менеджера лота -->
+		<i:objects-list t="Сотрудник" n="LotManagers" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT DISTINCT
+					e.ObjectID,
+					e.LastName + ' ' + e.FirstName + ISNULL(' ' + e.MiddleName, '') AS FullName
+				FROM dbo.Employee AS e with (nolock)
+				INNER JOIN dbo.Lot AS l with (nolock) ON l.Manager = e.ObjectID
+				WHERE_CLAUSE				
+				]]>
+        </ds:cmd-text>
+				<ds:order-by>FullName</ds:order-by>
+			</ds:data-source>
+			<i:column t="ФИО" width="250" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="ActivityType" d="Тип проектных затрат" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>256</ds:max>
+		</ds:prop>
+		<ds:prop n="Code" d="Код" vt="string" cp="scalar">
+			<ds:max>64</ds:max>
+		</ds:prop>
+		<ds:prop n="IsTimeLossCause" d="Является причиной списания времени" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="AccountRelated" d="Активность в отношении клиента" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="FolderType" d="Допустимые типы папок" vt="i2" cp="scalar" flags="FolderTypeFlags">
+			<ds:def default-type="both">0</ds:def>
+			<i:bits AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:bit n="Проект">1</i:bit>
+				<i:bit n="Тендер">4</i:bit>
+				<i:bit n="Пресейл">8</i:bit>
+				<i:bit n="Каталог">16</i:bit>
+			</i:bits>
+		</ds:prop>
+		<ds:prop n="Parent" d="Вышестоящая" vt="object" ot="ActivityType" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Children" d="Подчиненные" vt="object" ot="ActivityType" cp="link" built-on="Parent">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Код" width="100">item.Code</i:column>
+				<i:column t="Является причиной списания времени" width="100" vt="boolean">item.IsTimeLossCause</i:column>
+				<i:column t="Активность в отношении клиента" width="100" vt="boolean">item.AccountRelated</i:column>
+				<i:column t="Допустимые типы папок" width="100" vt="i2">item.FolderType</i:column>
+				<i:column t="Дата начала действия" width="100" vt="date">item.StartDate</i:column>
+				<i:column t="Дата окончания действия" width="100" vt="date">item.EndDate</i:column>
+				<i:prop-menu menu-style="horizontal-buttons">
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Directions" d="Направления" vt="object" ot="Direction" cp="collection">
+			<i:elements-list AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование" width="100">item.Name</i:column>
+				<i:column t="Устаревшее" width="100" vt="boolean">item.IsObsolete</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="Previous" d="Предыдущий" vt="object" ot="ActivityType" cp="scalar" maybenull="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="StartDate" d="Дата начала действия" vt="date" cp="scalar">
+			<ds:def default-type="both">#CURRENT</ds:def>
+		</ds:prop>
+		<ds:prop n="EndDate" d="Дата окончания действия" vt="date" cp="scalar" maybenull="1" />
+		<ds:prop n="LIndex" d="LIndex" vt="i4" cp="scalar" maybenull="1" r="ignore" />
+		<ds:prop n="RIndex" d="RIndex" vt="i4" cp="scalar" maybenull="1" r="ignore" />
+		<ds:prop n="LRLevel" d="LRLevel" vt="i4" cp="scalar" maybenull="1" r="read-only" />
+		<!-- Определение иконок -->
+		<i:icons default="ActivityType.ico" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icon selector="0">ActivityTypeInternal.ico</i:icon>
+			<i:icon selector="1">ActivityTypeExternal.ico</i:icon>
+		</i:icons>
+		<!-- Виды активности с заданными типом папки. -->
+		<i:objects-list t="Вид активности" n="ActivityTypeByFolderType" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					t.ObjectID,
+					t.Name
+				FROM dbo.ActivityType t with (nolock)
+				WHERE t.FolderType & :FolderType > 0 AND SEARCH_CONDITIONS
+				ORDER BY t.Name
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="FolderType" vt="i4" />
+					<ds:param n="AccountRelated" vt="i2">
+						<ds:param-selector op="not-is-null">t.AccountRelated = @AccountRelated</ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:column t="Наименование" width="100" />
+		</i:objects-list>
+		<!-- Виды активности в отношении клиента -->
+		<i:objects-list t="Вид активности" n="ExternalActivityTypes" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT 
+						t.ObjectID, 
+						t.[Name], 
+						t.AccountRelated AS ICON_SELECTOR
+					FROM dbo.ActivityType t with (nolock)
+					WHERE t.AccountRelated = 1
+					ORDER BY t.[Name]
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column t="Наименование" width="300" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="OrganizationStatusHistory" d="Изменение статуса организации" tp="persistent">
+		<ds:prop n="Anchor" d="Идентификатор" vt="object" ot="OrganizationAnchor" cp="scalar" delete-cascade="1">
+			<i:object-presentation AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.ObjectID</i:value>
+				<i:prop-menu>
+					<i:menu ref="std-object-presentation" />
+				</i:prop-menu>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Exists" d="Существует" vt="boolean" cp="scalar" />
+		<ds:prop n="DateTime" d="Дата изменения" vt="dateTime" cp="scalar">
+			<ds:def default-type="both">#CURRENT</ds:def>
+		</ds:prop>
+		<ds:index n="IDX_OrganizationStatusHistory_Anchor_DateTime" unique="1" clustered="1">
+			<ds:prop-ref n="Anchor" />
+			<ds:prop-ref n="DateTime" />
+		</ds:index>
+		<i:objects-list t="Изменение статуса организации" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text><![CDATA[
+				SELECT TOP @@MAXROWS 
+					t.[ObjectID],
+					t.[Exists],
+					t.[DateTime]
+				FROM [dbo].[OrganizationStatusHistory] t
+				WHERE_CLAUSE
+				]]></ds:cmd-text>
+			</ds:data-source>
+			<i:list-menu>
+				<i:menu ref="std-list" />
+			</i:list-menu>
+			<i:column t="Существует" vt="boolean" width="100" />
+			<i:column t="Дата изменения" vt="dateTime" width="100" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="IncidentState" d="Состояние инцидента" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="IncidentType" d="Тип инцидента" vt="object" ot="IncidentType" cp="scalar" delete-cascade="1">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Category" d="Категория" vt="i2" cp="scalar" enum="IncidentStateCat">
+			<i:const-value-selection AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:const-value n="В работе">1</i:const-value>
+				<i:const-value n="На проверке">2</i:const-value>
+				<i:const-value n="Работа окончена">3</i:const-value>
+				<i:const-value n="Заморожен">4</i:const-value>
+				<i:const-value n="Отклонен">5</i:const-value>
+			</i:const-value-selection>
+		</ds:prop>
+		<ds:prop n="IsStartState" d="Начальное состояние" vt="boolean" cp="scalar">
+			<ds:def default-type="both">0</ds:def>
+		</ds:prop>
+		<ds:prop n="TransitionsTo" d="Переходы из текущего состояния" vt="object" ot="Transition" cp="link" built-on="From">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование состояния" width="100">item.To.Name</i:column>
+				<i:column t="Роль" width="100">item.Role.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-aggregate" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="TransitionsFrom" d="Переходы в текущее состояние" vt="object" ot="Transition" cp="link" built-on="To">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Наименование состояния" width="100">item.From.Name</i:column>
+				<i:column t="Роль" width="100">item.Role.Name</i:column>
+				<i:prop-menu>
+					<i:menu ref="std-objects-list-aggregate" />
+				</i:prop-menu>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="OrderIndex" d="Порядок" vt="i4" cp="scalar">
+			<ds:def default-type="xml">0</ds:def>
+			<i:behavior hide-on-create="1" hide-on-edit="1" AUTO-GENERATED="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+		</ds:prop>
+		<ds:prop n="Icon" d="Иконка" vt="bin" cp="scalar" maybenull="1" />
+		<i:icons xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:icons-in-db pn="Icon" ot="IncidentState" />
+		</i:icons>
+		<i:objects-list t="Список состояний инцидента для типа инцидента" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT
+						t.[ObjectID],
+						it.Name,
+						t.[Name],
+						t.ObjectID Icon_Selector
+					FROM 
+						[dbo].[IncidentState] t with (nolock)
+						join [dbo].IncidentType it with (nolock) ON it.ObjectID=t.IncidentType
+					WHERE_CLAUSE
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column n="Name" t="Тип инцидента" width="100" />
+			<i:column n="Name" t="Состояние" width="100" />
+		</i:objects-list>
+		<!-- 
+			Список состояний инцидента для типа инцидента. Вызывается из редактора инцидента.
+			Строится специальной командой GetAvailableStatesOfUserRole, которая использует два data-source'a:
+			AllStatesOfIncidentType и AvailableStatesOfUserRole
+		-->
+		<i:objects-list load-cmd="GetAvailableStatesOfUserRole" t="Список доступных состояний инцидента для роли пользователя" n="AvailableStatesOfUserRole" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:column n="Name" t="Наименование" width="100" />
+		</i:objects-list>
+		<!-- Список доступных состояний инцидента для роли пользователя -->
+		<i:objects-list t="Список доступных состояний инцидента для роли пользователя" n="AllStatesOfIncidentType" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source ref="AllStatesOfIncidentType" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0" />
+			<i:column n="Name" t="Наименование" width="100" />
+		</i:objects-list>
+		<!-- Редактора -->
+		<i:editor xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-IncidentState-editor.vbs</i:client-script>
+			<i:preload>IncidentType.States</i:preload>
+			<i:page n="Main" t="Главная">x-editor.xsl?PROPLIST=Name;Category;Icon;IsStartState;TransitionsTo;TransitionsFrom</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<i:editor n="cool" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<i:client-script>s-IncidentState-editor.vbs</i:client-script>
+			<i:page n="Main" t="Главная">x-editor2.xsl?@Name=&amp;@Category=&amp;@IsStartState=&amp;@TransitionsTo=use-for-creation:cool;use-for-editing:cool&amp;@TransitionsFrom=use-for-creation:cool;use-for-editing:cool</i:page>
+			<i:menu ref="std-editor-menu" />
+		</i:editor>
+		<!--
+			Интеграция с Microsoft Project 2003
+		-->
+		<i:objects-list t="Интеграция с Microsoft Project: список состояний инцидентов" n="MSProjectIntegration_IncidentState" maxrows="1000000" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+					SELECT
+						istate.ObjectID,
+						istate.Name,
+						istate.IncidentType
+					FROM
+						dbo.IncidentState istate  with (nolock)
+					WHERE_CLAUSE
+					ORDER BY istate.IncidentType
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="OnlyStartStates" vt="boolean">
+						<ds:param-selector op="not-is-null"><![CDATA[ IsStartState= 1 ]]></ds:param-selector>
+					</ds:param>
+				</ds:params>
+			</ds:data-source>
+			<i:column t="Наименование" width="0" />
+			<i:column t="Класс инцидента" width="0" />
+		</i:objects-list>
+	</ds:type>
+	<ds:type n="UserRoleInIncident" d="Роль пользователя в инциденте" tp="persistent">
+		<ds:prop n="Name" d="Наименование" vt="string" cp="scalar">
+			<ds:max>128</ds:max>
+		</ds:prop>
+		<ds:prop n="IncidentType" d="Тип инцидента" vt="object" ot="IncidentType" cp="scalar" delete-cascade="1">
+			<i:behavior hide-on-create="1" hide-on-edit="1" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0" />
+			<i:object-presentation xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:value>item.Name</i:value>
+			</i:object-presentation>
+		</ds:prop>
+		<ds:prop n="Transitions" d="Переходы" vt="object" ot="Transition" cp="link" built-on="Role">
+			<i:elements-list xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+				<i:column t="Из" width="200">item.From.Name</i:column>
+				<i:column t="В" width="200">item.To.Name</i:column>
+				<i:column t="Требует затрат времени" width="100"><![CDATA[iif(item.DemandTimeSpent, "Да", "Нет")]]></i:column>
+			</i:elements-list>
+		</ds:prop>
+		<ds:prop n="DefDuration" d="Длительность по умолчанию" vt="i4" cp="scalar">
+			<ds:min>0</ds:min>
+		</ds:prop>
+		<ds:prop n="ShowInShortTaskList" d="Отображать в сокращенном списке инцидентов" vt="boolean" cp="scalar">
+			<ds:def default-type="both">1</ds:def>
+		</ds:prop>
+		<!-- 
+			Выпадающий список ролей для типа инцидента -->
+		<i:objects-list t="Выпадающий список ролей" n="RolesOfIncidentType" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					t.[ObjectID],
+					t.[Name]
+				FROM [dbo].[UserRoleInIncident] t with (nolock)
+				WHERE IncidentType = :IncidentType
+				]]>
+        </ds:cmd-text>
+				<ds:params>
+					<ds:param n="IncidentType" vt="uuid" />
+				</ds:params>
+			</ds:data-source>
+			<i:column t="Название" width="100" />
+		</i:objects-list>
+		<!-- 
+			Выпадающий список ролей для всех типов -->
+		<i:objects-list t="Полный список ролей" n="AllRoles" xmlns:i="http://www.croc.ru/Schemas/XmlFramework/Interface/1.0">
+			<ds:data-source dbms="mssql" xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0">
+				<ds:cmd-text>
+          <![CDATA[
+				SELECT
+					t.[ObjectID],
+					t.[Name]
+				FROM [dbo].[UserRoleInIncident] t with (nolock)
+				]]>
+        </ds:cmd-text>
+			</ds:data-source>
+			<i:column t="Название" width="100" />
+		</i:objects-list>
+	</ds:type>
+</ds:metadata>

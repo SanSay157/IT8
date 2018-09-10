@@ -1,0 +1,1327 @@
+<!-- 
+********************************************************************************
+ CROC - Система оперативного управления IncidentTracker 
+ 
+ Компонента отображения данных по балансу списания времени в IT пользователем  
+ Реализация - Custom Tag (см. MSDN, Web Development, Behaviors)
+********************************************************************************
+-->
+<PUBLIC:COMPONENT 
+	tagName="EXPENSESPANEL"
+	NAME="ExpensesPanel"
+	lightWeight="false"
+	literalContent="false"
+	supportsEditMode="false"
+	URN="http://www.croc.ru/CustomTags/IncidentTracker/ExpensesPanel"
+>
+	<PUBLIC:DEFAULTS
+		canHaveHTML = "true"
+		viewLinkContent = "true"
+		viewInheritStyle = "false"
+		tabStop = "false"
+		viewMasterTab = "false"
+		contentEditable  = "false"
+	/>
+	
+	<!-- Обрабатываемые события "внешнeго" документа -->
+	<PUBLIC:ATTACH EVENT="ondocumentready" FOR="element" ONEVENT="Initialize"/>
+	<PUBLIC:ATTACH EVENT="onblur" FOR="window" ONEVENT="ShowExpensesDetails false"/>
+
+	<!-- Свойства, определяемые для элемента компонентой -->
+	<!-- 
+		Режим автообновления отображаемых данных: при задании свойства в 
+		значение True данные о затратах будут обновляться автоматически 
+		с частотой, заданной свойством AutoUpdateDelay.
+		Значение по умолчанию - FALSE (блокировка автообновления)
+	-->
+	<PUBLIC:PROPERTY NAME="AutoUpdate" ID="prop_AutoUpdate"
+		GET="get_AutoUpdate"
+		PUT="put_AutoUpdate"
+	/>
+	<!-- 
+		Задержка между автообновлениями отображаемых данных, в минутах
+		Значение используется только в том случае, когда свойство AutoUpdate
+		установлено в значение True.
+		Значение по умолчанию - 5 минут
+	-->
+	<PUBLIC:PROPERTY NAME="AutoUpdateDelay" ID="prop_AutoUpdateDelay"
+		GET="get_AutoUpdateDelay"
+		PUT="put_AutoUpdateDelay"
+	/>
+
+	<!-- Методы элемента управления -->
+	<!-- Перезагрузка данных, отображаемых элементом -->
+	<PUBLIC:METHOD NAME="Reload"/>
+	<!-- Выполнение доп. операций: отображение отчета, списание времени -->
+	<PUBLIC:METHOD NAME="DoExtOperation"/>
+	<!-- Принудительное отображение / сокрытие всплывающего окна с детальными данными -->
+	<PUBLIC:METHOD NAME="ShowExpensesDetails"/>
+
+</PUBLIC:COMPONENT>
+
+<!-- 
+********************************************************************************
+ HTML-реализация viewlink behavior компоненты
+********************************************************************************
+-->
+<HEAD ID="htcHEAD">
+	<STYLE>
+		BODY, TD { 
+			font-family: Verdana, Helvetica;
+			font-weight: bold;
+			font-size: 8px;
+			margin: 0px;
+		}
+		TD {
+			text-align: center; 
+			vertical-align: middle; 
+		}
+		
+		/* Класс для основных таблиц ("кулиски" или основной таблицы с данными) */
+		.tblMainPane {
+			position: relative;
+			width: 190px; 
+			height: 50px;
+			overflow: hidden;
+			cursor: default; 
+			border: none;
+			border-width: 0px;
+			background: transparent;
+		}
+		
+		/* Ячейка таблицы - "кулиска", отобажаемая во время инициализации */
+		#tdLoadingCurtain {
+			position: relative;
+			width: 100%; 
+			height: 100%; 
+			font-family: Verdana, Arial Cyr, Helvetica;
+			font-wight: bold;
+			font-size: 10px;
+			text-transform: uppercase;
+			text-align: center; 
+			vertical-align: middle; 
+			border: #6699bb outset 1px;
+			color: #112233;
+			background-color: #4F75A5;
+			filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr='#FF333F4F',EndColorStr='#FF4F75A5');
+		}
+		
+		.ExpenseDigit {
+			padding:0px;
+			font-family: Arial Cyr, Verdana, Impact, Helvetica;
+			font-weight: bold;
+			font-size: 19px; 
+			vertical-align: bottom;
+		}
+		.ExpenseText {
+			overflow-x: visible;
+			margin: -3px 0px 0px 0px;
+			padding: 0px 3px 0px 3px;
+			font-family: Verdana, Arial Cyr, Helvetica;
+			font: bold 8px;
+			vertical-align: top;
+		}
+		
+		/* Классы, назначемые ячекам - "кнопкам" и общей панели, соотв. "законченности" соотв. периода */
+		.tdExpensesCompleteness {
+			width: 100%;
+			padding: 1px 3px 1px 3px;
+			border: #e4e0d8 outset 1px; 
+			background-color: #a4a098; 
+			color: #fff; 
+		}
+		.tdExpensesCompleteness_GreenZone {
+			width: 100%;
+			padding: 1px 3px 1px 3px;
+			border: #afa outset 1px; 
+			background-color: #080; 
+			color: #fff; 
+		}
+		.tdExpensesCompleteness_BlueZone {
+			width: 100%;
+			padding: 1px 3px 1px 3px;
+			border: #aaf outset 1px; 
+			background-color: #06a; 
+			color: #fff; 
+		}
+		.tdExpensesCompleteness_RedZone {
+			width: 100%;
+			padding: 1px 3px 1px 3px;
+			border: #faa outset 1px; 
+			background-color: #d00; 
+			color: #fff; 
+		}
+		/* Стиль специальной пустой ячеки - маркера, отображаемой рядом с выбранным периодом */
+		#tdTheOnesRing {
+			position: realtive;
+			overflow: hidden; 
+			width: 1px; 
+			padding: 0px;
+			padding-left: 2px;
+			background: #F7AF00;
+			border: #FFDF80 outset 1px; 
+			border-width: 2px 0px 1px 0px;
+		}
+		
+		#tdExpenseZone1,
+		#tdExpenseZone2,
+		#tdExpenseZone3,
+		#tdExpenseMainPane {
+			filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr='#00000000',EndColorStr='#55113355');
+		}
+		
+		/* -- панель отображения сообщения "Списано все" */
+		#divNoExpenseTable {
+			padding:0px;
+			font-family: Arial Cyr, Helvetica;
+			font-weight: bold;
+			font-size: 14px; 
+			vertical-align: middle;
+		}
+		
+		/* Стили всплывающего окна с ссылками на отчет */
+		.ExpenseDetail {
+			position: relative; 
+			width: 100%; 
+			height: 100%;
+			overflow: auto;
+			font-family: Arial Cyr, Helvetica;
+			font-weight: normal;
+			font-size: 10px;
+			cursor: default;
+			border: #def outset 1px;
+			color: #246;
+			background-color: #AACCFF;
+			filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr='#FFAACCFF',EndColorStr='#FFFFFFFF');
+		}
+		.ExpenseDetail TD {
+			font-weight: normal;
+			font-size: 10px;
+			text-align: left;
+			vertical-align: top;
+			padding: 3px 5px 3px 5px;
+		}
+		.ExpenseDetail TD.tdBottomLine {
+			padding: 3px 5px 3px 5px;
+			border: #BCD solid 1px; 
+			border-width: 0px 0px 1px 0px;
+			background: transparent;
+			cursor: default;
+		}
+		.ExpenseDetail TD.tdBottomLineBlank {
+			padding: 3px 5px 4px 5px;
+			border: none; 
+			border-width: 0px;
+			background: transparent;
+			cursor: default;
+		}
+		.ExpenseDetail TD.tdBottomLineHover {
+			padding: 3px 5px 3px 4px;
+			border: #FFF1C0 outset 1px; 
+			border-width: 0px 0px 1px 1px;
+			background-color: #FFDF90;
+			cursor: hand;
+		}
+		
+		.lblRedZone	{ color: #d00; }
+		.lblBlueZone { color: #68A; }
+		.lblGreenZone { color: #080; }
+		
+	</STYLE>
+	
+	<!-- Подключение x-proxу требуется из-за явного использования объекта XRequest -->
+	<SCRIPT LANGUAGE="VBScript" SRC="VBS/x-proxy.vbs"></SCRIPT>
+	
+	<SCRIPT LANGUAGE="VBScript">
+	'***************************************************************************
+	' Реализация логики стилевой компоненты
+	'***************************************************************************
+	Option Explicit
+	
+	' Наименование операции сервера приложений, реализующей получение данных
+	Const DATA_LOADING_COMMAND_NAME = "GetExpensesData"
+	' Наименование файла, в котором сохраняются данные о текущей раскладке панелей
+	Const STATE_DATA_CONTAINER_NAME = "IT.ExpensePanel.StateInfo"
+	' Коды периодов (используются при сохранении информации о раскладке панелей):
+	Const PERIOD_CODE_PREVMONTH	= "PREVMONTH"
+	Const PERIOD_CODE_CURRMONTH	= "CURRMONTH"
+	Const PERIOD_CODE_TODAY		= "TODAY"
+	Const PERIOD_CODE_BYDEMAND	= "BYDEMAND"
+	Const DO_SPENDTIME			= "SPENDTIME"
+	' Предопределенная ширина всплывающего окна, отображающего детальную информацию 
+	Const DETAIL_INFO_PANEL_WIDTH = 370
+	' Фиксированные части URL для запуска отчетов
+	'	... отчет "Баланс списаний сотрудника"
+	Const URL_REPORT_EmployeeExpensesBalance = "x-get-report.aspx?name=r-EmployeeExpensesBalance.xml"
+	'	... отчет "Инциденты и затраты сотрудника"
+	Const URL_REPORT_EmployeeExpensesList = "x-get-report.aspx?name=r-EmployeeExpensesList.xml"
+	
+	
+	Dim LocalXService		' Ссылка на экземпляр компоненты XClientService, СВОЙ экземпляр, 
+							' не тот, что на "родительской" странице - отдельно порожденный!
+							
+	Dim g_sThisElementID	' Идентификатор данного экземпляра компоненты
+	Dim g_bIsInitilized		' Логический признак завершения первичной инициализации компоненты
+	
+	Dim g_bIsAutoUpdate		' Флаг режима автообновления отображаемых данных; значение свойства AUTOUPDATE
+	Dim g_nAutoUpdateDelay	' Задержка между авто-обновлениями, в минутах; значение свойства AUTOUPDATEDELAY
+	Dim g_nAutoUpdateTimer	' Handle таймера, используемого для просчета времени 
+	
+	Dim g_bIsLoading    	' Признак выполнения загрузки данных (True - данные загружаются)
+	Dim g_bIsErrOnLoad		' Признак ошибки загрузки; если True, то задан g_oLastErrorOnLoad
+	Dim g_oLastErrorOnLoad	' Объект, представляющий информацию об ошибке, возникшей при загрузке данных
+	
+	Dim g_sShowInMain		' Кодовое название периода, чьи данные отображаются в "основной" панели
+	
+	Dim g_sEmployeeID		' Идентификатор пользователя, для которого получены данные по списаниям
+	Dim g_oPrevMonthExpense	' Данные затрат предыдущего месяца; экземпляр PeriodExpensesInfo
+	Dim g_oCurrMonthExpense	' Данные затрат текущего месяца; экземпляр PeriodExpensesInfo 
+	Dim g_oTodayExpense		' Данные затрат текущего дня; экземпляр PeriodExpensesInfo (см. 
+							' определение этого и спопутствующего классво в it-proxy.vbs)
+	
+	Dim g_oPopup			' HTML-объект высплывающего окна (popup), в котором отображаются
+							' детальные данные о затратах, и из которого вызываются отчеты
+	
+	' Пред-инициализация значений
+	Set LocalXService = Nothing
+	g_sThisElementID = ""
+	g_bIsInitilized = False
+	
+	g_bIsAutoUpdate = False
+	g_nAutoUpdateDelay = 5
+	g_nAutoUpdateTimer = Null
+	
+	g_bIsLoading = False
+	g_bIsErrOnLoad = False
+	Set g_oLastErrorOnLoad = Nothing
+	
+	g_sShowInMain = PERIOD_CODE_TODAY
+	
+	Set g_oPrevMonthExpense	= Nothing
+	Set g_oCurrMonthExpense = Nothing
+	Set g_oTodayExpense = Nothing
+	Set g_oPopup = Nothing
+	
+	
+	'---------------------------------------------------------------------------
+	' Метод инициализации компоненты; вызывается при генерации события 
+	' "готовности" документа, содержащего элемент, для которого назначена 
+	' стилевая компонента
+	Sub Initialize()
+		g_bIsInitilized = False
+	
+		' #0: В родительском окне ДОЛЖНА БЫТЬ определена компонента CROC.XClientService:
+		Set LocalXService = element.document.all("XService")
+		' ...если нашли XService на родительской станице - от него порождаем 
+		' СВОЙ экземпляр. Здесь должен использоваться CreateObject именно из 
+		' CROC.XClientService, т.к. только в этом случае в своем экземпляре
+		' будет корректно проставлен client site:
+		If hasValue(LocalXService) Then Set LocalXService = LocalXService.CreateObject("CROC.XClientService")
+		If Not hasValue(LocalXService) Then
+			Err.Raise _
+				vbObjectError + 1, _
+				getElementFullName(element) & " - ОШИБКА ИНИЦИАЛИЗАЦИИ", _
+				"В документе, содержащем элемент " & getElementFullName(element) & ", " & _
+				"должен быть определен объект CROC.XClientService с фиксированным индентификатором XService!"
+		End If		
+		
+		' #1: Что бы сработали все возможности панели, НЕОБХОДИМО, что бы для 
+		' custom-тега панели был задан идентификатор, причем в рамках документа,
+		' в котором размещается тег - УНИКАЛЬНЫЙ. Проверим это:
+		g_sThisElementID = Trim(element.ID)
+		If 0 = Len(g_sThisElementID) Then
+			Err.Raise _
+				vbObjectError + 1, _
+				getElementFullName(element) & " - ОШИБКА ИНИЦИАЛИЗАЦИИ", _
+				"Для элемента " & getElementFullName(element) & " должен быть задан идентификатор!"
+		End If
+		If 0 = StrComp("DispHTMLElementCollection", TypeName(window.document.body.all.item(g_sThisElementID)), 1) Then
+			Err.Raise _
+				vbObjectError + 1, _
+				getElementFullName(element) & " - ОШИБКА ИНИЦИАЛИЗАЦИИ", _
+				"Для элемента " & getElementFullName(element) & " должен быть задан УНИКАЛЬНЫЙ идентификатор!"
+		End If
+		' ... c идентификатором все хорошо - сохраним его в контексте 
+		' высплывающего окна (см. раскладку), что бы потом из него - через 
+		' "родительский" документ можно было бы вызывать методы компоненты
+		divCustomTagIDsHiddenContainer.innerText = g_sThisElementID
+		
+	
+		' #2 : Создаем объект всплывающего окна, в котором будут отображаться 
+		' детальные данные по затратам:
+		Set g_oPopup = window.createPopup()
+		g_oPopup.document.body.className = "ExpenseDetail"
+   	    ' ... копируем все стили, доступные на родительской странице 
+   	    copyStyles document, g_oPopup.document
+   	    
+		
+		' #3: Инициализируем значения переменных:
+		' ... из прикладных атрибутов, заданных для элемента:
+		g_bIsAutoUpdate	= CBool( getAttributeValue( element.parentElement, "AUTOUPDATE", false ) )
+		g_nAutoUpdateDelay = CInt( getAttributeValue( element.parentElement, "AUTOUPDATEDELAY", 5 ) )
+		' ... из пользовательских данных, сохраненных локально (в AppData\CROCApps):
+   	    loadCurrState
+   	    
+   	    ' #4: Первоначальная загрузка данных по всем затратам - вызываем метод
+		' перезагрузки самой компоненты - через таймаут, для обеспечения 
+		' "асинхронности" (основная страница ждать завершения загрузки не должна - 
+		' к этому и стремимся). Так как вызов выполняется через "внешюю" страницу,
+		' которая в момент вызова может перегружаться - во избежание отображения
+		' неизбежных в таком случае ошибов вызов оборачиваем в On Error Resume Next
+		window.setTimeout _
+			"On Error Resume Next : " & _
+			"document.body.all.item( """ & g_sThisElementID & """ ).Reload : " & _
+			"On Error Goto 0", _
+			5, "VBScript" 
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Публичный метод, для перезагрузки данных:
+	Sub Reload()
+		' Если обновление вызвано программно - может быть открыто
+		' высплывающее окно c детальными данным; спрячем его:
+		
+		g_oPopup.hide
+		
+    	' Загрузка данных по всем затратам; прежде, во избежания "чмызганья"	
+    	' сбросим флаг успешного завершения инициализации (что заблокирует 
+    	' все пользовательские действия с компонентой):
+		g_bIsInitilized = False
+		loadExpensesData
+		' Анализ результата загрузки (выполнилась или нет)
+		If g_bIsErrOnLoad Then
+		    
+			tblExpenseLayoutTable.style.display = "none"
+			tblLoadingCurtain.style.display = "block"
+		    ' Ошибка загрзки данных: так и напишем на "кулиске":
+			' детально данные можно будет посмотреть, кликнув на кулиску:
+			tdLoadingCurtain.innerText = "(ОШИБКА ИНИЦИАЛИЗАЦИИ)"
+			g_bIsInitilized = False
+			
+		Else
+			' Первоначальная загрузка выполнилсась успешно; включаем 
+			' автоматическое обновление - если это задано настройками:
+			processAutoUpdateSequence( g_bIsAutoUpdate )
+			' Убираем "шторку", показваем панели:
+			tblLoadingCurtain.style.display = "none"
+			tblExpenseLayoutTable.style.display = "block"
+			' -- все, инициализация прошла успешно
+			g_bIsInitilized = True
+		End If
+		
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Публичный метод, для явного отображения / сокрытия всплывающего окна 
+	' с детальной информацией о затратах
+	'	[in] bDoShow  - логический признак; True - отображать окно, False - скрыть
+	Sub ShowExpensesDetails( bDoShow )
+		If Not g_bIsInitilized Then Exit Sub
+		If bDoShow Then
+			' Отображаем всплывающее окно с детальными данными; но прежде 
+			' обновим HTML-содержание во всплывающем окне
+			g_oPopup.document.body.innerHtml = divDetailedPopupContent.innerHtml
+			showAutoSizedPopup g_oPopup, tblExpenseLayoutTable, DETAIL_INFO_PANEL_WIDTH, 3, false
+		Else
+			g_oPopup.hide
+		End If
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Публичный метод, для вызова отчета за заданный период
+	' ВЫПОЛНЯЕТСЯ ТОЛЬКО В ТОМ СЛУЧАЕ, ЕСЛИ КОМПОНЕНТА УСПЕШНО ИНИЦИАЛИЗИРОВАННА
+	Sub DoExtOperation( sPeriodCode )
+		Dim sReportParams	' Стока с параметрами отчета
+	    Dim oTimeSpentEditor
+		If Not g_bIsInitilized Then Exit Sub
+		
+		' Далее - в зависимости от указанного кода периода:
+		Select Case CStr(sPeriodCode)
+		
+			Case PERIOD_CODE_PREVMONTH
+				' Вызов отчета "Баланс списаний сотрудника", на предыдущий месяц
+				X_OpenReport URL_REPORT_EmployeeExpensesBalance & _
+					"&Employee=" & g_sEmployeeID & _
+					"&IntervalBegin=" & X_DateToXmlType( g_oPrevMonthExpense.m_dtPeriodStartDate,true ) & _
+					"&IntervalEnd=" & X_DateToXmlType( g_oPrevMonthExpense.m_dtPerionEndDate,true ) & _
+					"&ShowFreeWeekends=0&TimeMeasureUnits=0&ShowRestrictions=1"
+			
+			Case PERIOD_CODE_CURRMONTH
+				' Вызов отчета "Баланс списаний сотрудника", на текущий месяц
+				' (здесь дату окончания НЕ задаем - будет взята текущая)
+				X_OpenReport URL_REPORT_EmployeeExpensesBalance & _
+					"&Employee=" & g_sEmployeeID & _
+					"&IntervalBegin=" & X_DateToXmlType( g_oCurrMonthExpense.m_dtPeriodStartDate,true ) & _
+					"&ShowFreeWeekends=0&TimeMeasureUnits=0&ShowRestrictions=1"
+				
+			Case PERIOD_CODE_TODAY
+				' Вызов отчета "текущие инциденты", на текущую дату
+				X_OpenReport URL_REPORT_EmployeeExpensesList & _
+					"&Employee=" & g_sEmployeeID & _
+					"&IntervalBegin=" & X_DateToXmlType( Now, true ) & _
+					"&IntervalEnd=" & X_DateToXmlType( Now, true ) & _
+					"&NonProjectExpences=0" & _
+					"&AnalysDirection=0" & _
+					"&SectionByActivity=0" & _
+					"&ExepenseDetalization=1" & _
+					"&ExpenseType=2" & _
+					"&TimeLossReason=1" & _
+					"&IncludeParams=1&TimeMeasureUnits=0" & _
+					"&Sort=0&SortOrder=1"
+			
+			Case PERIOD_CODE_BYDEMAND
+				' Вызов отчета списания времени, явно с диалогом задания параметров
+				' указываем текущего сотрудника, дата  начала периода  - "<текущая дата>-64,дата конца периода - "<текущая дата>-5 
+				X_RunReport "EmployeeExpensesBalance", ".Employee=" & g_sEmployeeID & "&.IntervalBegin=" & X_DateToXmlType(DateAdd("d", -64, Date()), true ) & _
+					"&.IntervalEnd=" & X_DateToXmlType( DateAdd("d", -5, Date()), true )
+				
+			Case DO_SPENDTIME
+				' Операция "Сисать время":
+				g_oPopup.hide
+			Set oTimeSpentEditor = New ObjectEditorDialogClass
+			With oTimeSpentEditor
+					.IsNewObject = True 
+					.IsAggregation = False
+					Set .XmlObject = X_GetObjectFromServer("TimeLoss", Null, Null)
+					.XmlObject.selectSingleNode("Worker").setAttribute "read-only", "1"
+					' елси списание было - обновить табло несписанного времени:
+			End With
+			If hasValue(ObjectEditorDialogClass_Show(oTimeSpentEditor)) Then Reload 
+		End Select
+	End Sub
+
+		
+	
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства AUTOUPDATE
+	' :: Чтение значения свойства
+	Function get_AutoUpdate()
+		get_AutoUpdate = g_bIsAutoUpdate
+	End Function
+	' :: Изменение значения свойства
+	Function put_AutoUpdate( bIsValue )
+		Dim bPrevValue	' Предыдущее значение свойства
+		bPrevValue = g_bIsAutoUpdate
+		
+    	g_bIsAutoUpdate = CBool( bIsValue )
+    	
+    	' Если в целом инициализация еще завершилась - то на этом и завершаем:
+    	If Not g_bIsInitilized Then Exit Function
+    	
+    	' Если инициализация завершилась: 
+    	' (А) Изначально таймер не был запущен, а сейчас требуется - запускаем;
+    	' (Б) Таймер был запущен, а сейчас НЕ требуется - остановим автобновление:
+    	If bPrevValue <> g_bIsAutoUpdate Then
+	    	processAutoUpdateSequence( g_bIsAutoUpdate )
+		End If
+	End Function
+
+	
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства AUTOUPDATEDELAY
+	' :: Чтение значения свойства
+	Function get_AutoUpdateDelay()
+		get_AutoUpdateDelay = g_nIsAutoUpdateDelay
+	End Function
+	' :: Изменение значения свойства
+	Function put_AutoUpdateDelay( nValue )
+		g_nAutoUpdateDelay = CInt(nValue)
+		' Корректируем значения: если задано меньше 1, то проставим 1...
+		If g_nAutoUpdateDelay < 1 Then g_nAutoUpdateDelay = 1
+		' ...если час и более - то час (60 минут):
+		If g_nAutoUpdateDelay > 60 Then g_nAutoUpdateDelay = 60
+	End Function
+	
+	
+	'***************************************************************************
+	' Внутренние методы / функции компоненты
+	
+	'---------------------------------------------------------------------------
+	' Функция выполняет "копирование" всех стилевых правил CSS, представленных 
+	' в документе заданного окна oSrcWindow, в документ целевого окна oDestWindow
+	'	[in] oSrcWindow - исходное окно, из документа которого стили копируются
+	'	[in] oDestWindow - целевое окно, в которое стили копируются из исходного
+	' Возвращает кол-во перенесенных правил.
+	Function copyStyles( oSrcDocument, oDestDocument )
+	    Dim oMenuStyleSheet
+	    Dim nStyleSheetsQnt
+	    Dim nStyleSheet
+	    Dim nRulesQnt
+	    Dim nRule
+	    Dim nSummaryRules
+	    
+	    nSummaryRules = 0
+	    
+	    ' Перенос выполняется только если исходный и целевой объекты заданы:
+	    If (IsObject(oSrcDocument) And Not(oSrcDocument Is Nothing) And _
+	    	IsObject(oDestDocument) And Not(oDestDocument Is Nothing)) _
+	    Then
+			' Если в целевом документе нет стилевых таблиц - создадим новую:
+			' в которую будем добавлять скопированные правила:
+			If 0 = oDestDocument.styleSheets.length Then
+				oDestDocument.appendChild oDestDocument.createElement("STYLE")
+			End If
+			' Выбираем стилевую таблицу, в которую будем добавлять правила:
+			' всегда берем самую последнюю, что бы перекрыть существущие
+			' правила (if any):
+			Set oMenuStyleSheet = oDestDocument.styleSheets(oDestDocument.styleSheets.length - 1)
+			
+			' Выполняем итерацию:
+			' ...по всем стилевым страницам исходного документа:
+			nStyleSheetsQnt = oSrcDocument.styleSheets.length
+			For nStyleSheet = 0 To nStyleSheetsQnt - 1
+				' ... и всем правилам в рассматриваемой стилевой странице:
+				nRulesQnt = oSrcDocument.styleSheets(nStyleSheet).rules.length
+				For nRule = 0 To nRulesQnt - 1
+					' Копируем CSS-правило только в том случае, если его текст 
+					' непустой (в противном случае попытка переноса правила приводит 
+					' к вознокновению runtime-ошибки в реализации интерфейсов HTML DOM)
+					If 0<>Len(oSrcDocument.styleSheets(nStyleSheet).rules(nRule).style.cssText) Then
+						oMenuStyleSheet.addRule _
+							oSrcDocument.styleSheets(nStyleSheet).rules(nRule).selectorText, _
+							oSrcDocument.styleSheets(nStyleSheet).rules(nRule).style.cssText
+						nSummaryRules = nSummaryRules + 1	
+					End If
+				Next
+			Next
+		End If
+		
+		copyStyles = nSummaryRules
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Внутрений метод записи текущего состояния раскладки панелей представления
+	' Данные о состоянии сохраняются в ПОЛЬЗОВАТЕЛЬСКОМ КАТАЛОГЕ ПРИЛОЖЕНИЯ (см.
+	' спецификацию метода XService.SetUserData) и включают:
+	'	-- информацию о конфигурации панели (какой период - в основной панели)
+	Sub saveCurrState()
+		' "Кодируем" данные, представляюще текущую раскладку панелей: на данный 
+		' момент сохранение кодовое имя периода, отображаемого в осовной панели
+		' (одно из "сегодня / текущий мес. / предыдущий месяц):
+		LocalXService.SetUserData STATE_DATA_CONTAINER_NAME, g_sShowInMain
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Внутрений метод получения данных о состоянии представления панели
+	' Данные о состоянии сохраняются в ПОЛЬЗОВАТЕЛЬСКОМ КАТАЛОГЕ ПРИЛОЖЕНИЯ (см.
+	' спецификацию метода XService.GetUserData) и включают:
+	'	-- информацию о конфигурации панели (какой период в основной панели)
+	' Метод изменяет состояние внутренних переменных, но перерисовку панелей
+	' НЕ инициирует; если сохраненных данных нет, значения внутренних переменных 
+	' не изменяются
+	Sub loadCurrState()
+		Dim sCurrStateInfo	' строка с кодированными данными
+		Dim bIsIncorrect	' признак НЕкорректных данных 
+		
+		' Предварительно сбросим переменные, изменяемые при чтении конфигурации:
+		g_sShowInMain = ""
+		
+		' Зачитываем данные:
+		If ( LocalXService.GetUserData( STATE_DATA_CONTAINER_NAME, sCurrStateInfo) ) Then 
+			' Данные получены - это строка со значением внутренней переменной
+			' g_sShowInMain; перепишем значение в переменную
+			g_sShowInMain = Trim(sCurrStateInfo)
+		End If
+		
+		' Если чтения конфигурации полученные данные не попадают в приемлемые
+		' границы - то принудительно установим значения по умолчанию и явно и 
+		' ПРИНУДИТЕЛЬНО перезапишем конфигурацию:
+		bIsIncorrect = Not( _
+			PERIOD_CODE_PREVMONTH = g_sShowInMain Or _
+			PERIOD_CODE_CURRMONTH = g_sShowInMain Or _
+			PERIOD_CODE_TODAY = g_sShowInMain )
+			
+		If bIsIncorrect Then
+			g_sShowInMain = PERIOD_CODE_TODAY
+			saveCurrState
+		End If
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' ЗАГРУЗКА ДАННЫХ ПО СПИСАНИЯМ ПОЛЬЗОВАТЕЛЯ
+	' Выполняет серверную операцию; результат операции 
+	' содержит все данные по списаниям (см. определение классов DurationInfo,
+	' PeriodExpensesInfo в it-proxy.vbs). После успешной загрузки данных 
+	' обновляет представление данных в компоненте и во всплывающем окне.
+	Sub loadExpensesData()
+		Dim oResponse	' Результат выполнения операции
+		Dim aErr		' Массив с описанием ошибки
+		
+		' Если процесс загрузки уже выполняется, просто выходим из процедуры
+		If g_bIsLoading Then Exit Sub
+		g_bIsLoading = True
+		
+		' ВЫЗОВ СЕРВЕРНОЙ ОПЕРАЦИИ: 
+		On Error Resume Next
+		With New XRequest
+			.m_sName = DATA_LOADING_COMMAND_NAME
+			Set oResponse = X_ExecuteCommandEx( .Self, LocalXService )
+		End With
+
+		If X_WasErrorOccured() Then
+			On Error Goto 0
+			g_bIsErrOnLoad = True
+			Set g_oLastErrorOnLoad = X_GetLastError()
+			' ...данные окна при этом никак не обновляются: вся информация 
+			' об ошибке будет представлена при клике по "кулиске":
+			Exit Sub
+			
+		ElseIf Err Then
+			' ошибка произошла на клиенте
+			aErr = Array(Err.Number, Err.Source, Err.Description)
+			On Error Goto 0
+			Err.Raise aErr(0), aErr(1), aErr(2)				
+		
+		ElseIf Not hasValue(oResponse) Then
+			g_bIsErrOnLoad = True
+			Set g_oLastErrorOnLoad = New_ErrorInfoClass()
+			With g_oLastErrorOnLoad 
+				.ErrNumber = vbObjectError + 1
+				.ErrSource = "Вызов операции загрузки данных " & DATA_LOADING_COMMAND_NAME
+				.ErrDescription = "Пустой результат операции """ & DATA_LOADING_COMMAND_NAME & """"
+			End With
+			Exit Sub
+		End If
+		On Error Goto 0
+		
+		
+		' ЗАПОМИНАЕМ И ОБРАБАТЫВАЕМ ПОЛУЧЕННЫЕ ДАННЫЕ:
+		g_sEmployeeID = oResponse.m_sEmployeeID
+		Set g_oPrevMonthExpense = oResponse.m_oPreviousMonth
+		Set g_oCurrMonthExpense = oResponse.m_oCurrentMonth
+		Set g_oTodayExpense = oResponse.m_oCurrentDay
+
+		' Задаем отображение панелей-"кнопок" - метод выставляет корректное 
+		' наименование периода и задает класс с нужным "цветом", соотв. 
+		' долгам по списаниям за соотв. период:
+		showDataInAltPanle tdExpenseZone1, g_oPrevMonthExpense
+		showDataInAltPanle tdExpenseZone2, g_oCurrMonthExpense
+		showDataInAltPanle tdExpenseZone3, g_oTodayExpense
+		' Принудительное отображение данных на панелях компоненты
+		arrangeDataInPanels()
+		
+
+		' ФОРМИРУЕМ ДЕТАЛЬНОЕ ПРЕДСТАВЛЕНИЕ ЗАТРАТ во всплывающем окне:
+		' ... наименование месяцев - предыдущего и текущего:
+		placePrevMonth.innerText = UCase( g_oPrevMonthExpense.m_sPeriodName )
+		placeCurrMonth.innerText = UCase( g_oCurrMonthExpense.m_sPeriodName )
+		' ... отображение затрат - планируемых, реальных, остатка - для каждого периода:
+		tdDetailedInfoPrevMonth.innerHtml = getExpnenseFullDescription( g_oPrevMonthExpense )
+		tdDetailedInfoCurrMonth.innerHtml = getExpnenseFullDescription( g_oCurrMonthExpense )
+		tdDetailedInfoToday.innerHtml = getExpnenseFullDescription( g_oTodayExpense )
+		
+		' Сбрасыаем флаг - загрузка данных выполнена
+		g_bIsLoading = False
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Внутренний метод, координирующий отображение данных на панелях компоненты,
+	' в зависимости от ее состояния, представленного внутренней переменной
+	' g_sShowInMain
+	' Вызывает в свою очередь специальные методы, "заточенные" на отображении 
+	' данных на конкретной панели (основная, первая или вторая дополнительные - 
+	' см. showDataInMainPanel и showDataInAltPanle)
+	Sub arrangeDataInPanels()
+		Dim oFlyingTD	' Ссылка на "плавающий" TD-маркер выбранной "кнопки"
+		
+		' "Изымаем" из раскладки панелей ячйку-маркер выбранной кнопки:
+		' т.к. этот далее будет снова включен в раскладку (только, возможно,
+		' в другую строку), сохраняем ссылку на него:
+		Set oFlyingTD = tdTheOnesRing.removeNode(true)
+		' ...что бы раскладка не "разъехалась" из-за изъятой ячейки, устновим
+		' для соседнего элемента COLSPAN в 2; что бы не разбираться для какого
+		' именно элемента - установим всем (хуже от этого не станет):
+		tdExpenseZone1.colSpan = 2
+		tdExpenseZone2.colSpan = 2
+		tdExpenseZone3.colSpan = 2
+		' ...что бы при этом отцентрированный текст в ячейках "не прыгал" - 
+		' проставим левый отсуп - ровно на ширину изъятой ячейки + бордюр:
+		tdExpenseZone1.style.paddingLeft = "5px"
+		tdExpenseZone2.style.paddingLeft = "5px"
+		tdExpenseZone3.style.paddingLeft = "5px"
+		
+		' Отображаем выбранноый период (код которого представлен в глобальной
+		' переменной g_sShowInMain) в основной панели. При этом в той же строке
+		' где размещен TD соотв. "кнопки", вставим наш "плавающий" TD - маркер
+		' (+ соотв. действия - т.к. TD в строке будет два, то COLSPAN уже не 
+		' нужен, левый отступ для текста - тоже):
+		Select Case g_sShowInMain 
+			Case PERIOD_CODE_TODAY:		
+				showDataInMainPanel g_oTodayExpense
+				tdExpenseZone3.colSpan = 1
+				tdExpenseZone3.style.paddingLeft = "0px"
+				tdExpenseZone3.parentElement.insertBefore oFlyingTD, tdExpenseZone3
+
+			Case PERIOD_CODE_CURRMONTH:	
+				showDataInMainPanel g_oCurrMonthExpense
+				tdExpenseZone2.colSpan = 1
+				tdExpenseZone2.style.paddingLeft = "0px"
+				tdExpenseZone2.parentElement.insertBefore oFlyingTD, tdExpenseZone2
+				
+			Case PERIOD_CODE_PREVMONTH:	
+				showDataInMainPanel g_oPrevMonthExpense
+				tdExpenseZone1.colSpan = 1
+				tdExpenseZone1.style.paddingLeft = "0px"
+				tdExpenseZone1.parentElement.insertBefore oFlyingTD, tdExpenseZone1
+		End Select
+	End Sub
+		
+	
+	'---------------------------------------------------------------------------
+	' Внутренний метод, отображающий заданные данные о затратах периода на 
+	' ОСНОВНОЙ панели компоненты; в отличии от дополнительной (см. реализацию
+	' showDataInAltPanle), здесь отображаются не только наименование периода,
+	' но и остаток несписанного времени
+	'	[in] oPeriodExpensesInfo - данные с затратами за периода, экземпляр 
+	'			класса PeriodExpensesInfo (см. it-proxy.vbs)
+	Sub showDataInMainPanel( oPeriodExpensesInfo )
+		Dim sStyleClassName		' Наименование стилевого класса
+		Dim bIsNoLoss			' Признак, что в указанный период списаний нет вообще
+
+		sStyleClassName = "tdExpensesCompleteness_" & oPeriodExpensesInfo.m_sCompleteness
+		bIsNoLoss = (0 = oPeriodExpensesInfo.m_oRemainsExpense.m_nDuration)
+
+		spExpenseMonthName.innerText = UCase(oPeriodExpensesInfo.m_sPeriodName)
+		tdExpenseMainTitle.className = sStyleClassName
+		tdExpenseMainPane.className = sStyleClassName
+		
+		If bIsNoLoss Then
+			' Каких-либо "долгов" по списаниям нет, по этому поводу покажем
+			' соотв. радостное сообшение; но прежде скорректируем сам текст
+			' сообщния: если списаний и не ожидалось - то это выходные; во всех
+			' остальных случаях считем что "списано все":
+			If	0 = oPeriodExpensesInfo.m_oExpectedExpense.m_nDuration Then
+				If oPeriodExpensesInfo.m_bIsOneDayPeriod Then
+					divNoExpenseTable.innerText = "ВЫХОДНОЙ"
+				Else
+					divNoExpenseTable.innerText = "СПИСАНО ВСЕ"
+				End If
+			End If
+			tblExpenseMainTable.style.display = "none"
+			divNoExpenseTable.style.display = "inline"
+			
+		Else
+			' Есть долги по списаниям: покажем в цифрах сколько:
+			
+			divNoExpenseTable.style.display = "none"
+			tblExpenseMainTable.style.display = "block"
+			
+			With oPeriodExpensesInfo.m_oRemainsExpense ' Остаток затрат - это экземпляр DurationInfo
+				If .m_nDays<>0 Then
+					tdExpenseDays.style.display = "block" 
+					tdExpenseDaysNum.innerText = CStr( .m_nDays )
+					tdExpenseDaysTtl.innerText = .m_sDaysLabel
+				Else
+					tdExpenseDays.style.display = "none" 
+				End If
+				
+				If .m_nHours<>0 Then
+					tdExpenseHours.style.display = "block" 
+					tdExpenseHoursNum.innerText = CStr( .m_nHours )
+					tdExpenseHoursTtl.innerText = .m_sHoursLabel
+				Else
+					tdExpenseHours.style.display = "none" 
+				End If
+				
+				If .m_nMinutes<>0 Then
+					tdExpenseMinutes.style.display = "block" 
+					tdExpenseMinutesNum.innerText = CStr( .m_nMinutes )
+					tdExpenseMinutesTtl.innerText = .m_sMinutesLabel
+				Else
+					tdExpenseMinutes.style.display = "none" 
+				End If
+			
+			End With
+		End If
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Внутренний метод, отображающий заданные данные о затратах периода в указанной 
+	' дополнительной панели компоненты
+	'	[in] oAltPanelElement - HTML-элемент дополнительной панели
+	'	[in] oPeriodExpensesInfo - данные с затратами за периода, экземпляр 
+	'			класса PeriodExpensesInfo (см. it-proxy.vbs)
+	Sub showDataInAltPanle( oAltPanelElement, oPeriodExpensesInfo )
+		oAltPanelElement.innerText = UCase(oPeriodExpensesInfo.m_sPeriodName)
+		oAltPanelElement.className = "tdExpensesCompleteness_" & oPeriodExpensesInfo.m_sCompleteness
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Внутренний метод включения / отключения процесса (таймера) автообновления 
+	' отображаемых данных о затратах;
+	'	[in] bActivateAutoUpdate - указание включения (true) / отключения (false)
+	'		процесса автообновления данных
+	Sub processAutoUpdateSequence( bActivateAutoUpdate )
+		Dim sLabel	' Текст с информацией об автоматическом обновлении
+		
+		' По любому остановим старый таймер - даже если будем создавать 
+		' заново, т.к. описатель таймера будет уже другим:
+		If Not IsNull(g_nAutoUpdateTimer) Then
+			window.clearTimeout g_nAutoUpdateTimer
+			g_nAutoUpdateTimer = Null
+		End If
+		' Если задан режим автообновления - создаем новый таймер:
+		If bActivateAutoUpdate Then
+			g_nAutoUpdateTimer = window.setInterval( g_sThisElementID & ".Reload", g_nAutoUpdateDelay * 60 * 1000, "VBScript" )
+		End If
+	
+		' Корректируем отображение информации об автоматичкском обновлении 
+		' во всплывающем окне с детальной информацией: указываем, включено ли
+		' автообновление, и если да - то с какой частотой:
+		If bActivateAutoUpdate Then
+			sLabel = "<B>включено</B>, выполняется "
+			If g_nAutoUpdateDelay > 1 Then 
+				sLabel = sLabel & "каждые <B>" & g_nAutoUpdateDelay & "</B> мин."
+			Else
+				sLabel = sLabel & "каждую минуту"
+			End If
+			sLabel = sLabel 
+		Else
+			sLabel = "<B>выключено<B>"
+		End If
+		divAutoUpdateInfo.innerHTML = "Автообновление " & sLabel 
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Формирует строку с форматированным HTML-текстом, содержащим полное 
+	' описание списаний за период, представленных экземпляром oPerionExpenseInfo
+	'	[in] oPerionExpenseInfo - Данные о списаниях за период; экземпляр класса
+	'		PerionExpenseInfo (см. определение в it-proxy.vbs)
+	' Результат: строке с HTML-текстом; 
+	Function getExpnenseFullDescription( oPerionExpenseInfo )
+		Dim sResultHtml		' Строка с итоговым HTML
+		Dim sTemp			' Временный контейнер
+		
+		' Есди это однодневынй период и ожидаемые затрарты - нулевые, значит
+		' это выходной; списывать в такой день не обязательно:
+		If (oPerionExpenseInfo.m_bIsOneDayPeriod And 0 = oPerionExpenseInfo.m_oExpectedExpense.m_nDuration) Then
+			' Пишем, что текущий день - выходной, но все же покажем кол-во
+			' списанмй в этот день (такие могут быть, но не обязательно):
+			sResultHtml = "<B CLASS='lblGreenZone'>Выходной</B>"
+			If (0 <> oPerionExpenseInfo.m_oRealExpense.m_nDuration) Then
+				sResultHtml = sResultHtml & ",<BR/>" & _
+				"списано <B>" & oPerionExpenseInfo.m_oRealExpense.m_sDurationString & "</B>"
+			End If
+				
+		Else
+			' Или это большой период, или рабочий день:
+		
+			' Проверим остаток затрат - от этого зависит порядок фраз в предложении
+			' (остаток, m_oRemainsExpense - это экземпляр DurationInfo):
+			If (oPerionExpenseInfo.m_oRemainsExpense.m_nDuration > 0) Then
+				' Есть несписанное время:	
+				sTemp = oPerionExpenseInfo.m_oRealExpense.m_sDurationString
+				If 0 = Len(sTemp) Then sTemp = "(списаний нет)"
+				
+				sResultHtml = _
+					"Требуется списать: <B>" & oPerionExpenseInfo.m_oExpectedExpense.m_sDurationString & "</B>,<BR/>" & _
+					"из них списано: <B>" & sTemp & "</B>,<BR/>" & _
+					"не списано: <B CLASS='lbl" & oPerionExpenseInfo.m_sCompleteness & "'>" & _
+						oPerionExpenseInfo.m_oRemainsExpense.m_sDurationString & "</B>"
+			Else
+				' Все время списано: так и скажем, уточнив при этом сколько 
+				' действительно было списано:
+				sResultHtml = _
+					"Требуется списать: <B>" & oPerionExpenseInfo.m_oExpectedExpense.m_sDurationString & "</B>,<BR/>" & _
+					"<B CLASS='lblGreenZone'>списано все</B> (" & oPerionExpenseInfo.m_oRealExpense.m_sDurationString & ")"
+			End If
+		End If
+				
+		getExpnenseFullDescription = sResultHtml
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Внтутренний метод - обработчик клков по панелям компоненты. Реализует 
+	' логику "переключения" панелей (при кликах по дополнительным панелям), а 
+	' также, при клиен на основную панель, инициирует отображение всплывающего 
+	' окна c детальной информацией о затратах по всем периодам:
+	Sub processPanels()
+		Dim vPanelIdAttribute	' объект атрибута "PANELID"
+		Dim oElement			' HTML-объект, в котором ищем атрибут, переменная цикла
+		Dim sPanelID			' идентификатор панели, значение атрибута "PANELID"
+		Dim sPanelCode			' временная переменая, для "трех-стаканного" обмена значениями
+		
+		' #1: processPanels - это обработчик клика мышкой, подвешенный на всю
+		' таблицу раскладки ВСЕХ панелей. Т.е. в него "всплывают" клики, выполненые
+		' в любом месте таблицы, в любой панели. Что бы выделить ту панель, 
+		' в которой пользователь щелкнул мышкой, делаем следующее: идем по иерархии 
+		' вложенных HTML-объектов, от элемента - источника события до корневого, 
+		' и проверяем для каждого рассматриваемого элемента наличие "волшебного" 
+		' атрибута PANELID - в нем зашит идентификатор конкретной панели (см. 
+		' раскладку). Как найдем атрибут - считай определили и панель:
+		Set oElement = window.event.srcElement
+		Set vPanelIdAttribute = Nothing
+		While Not hasValue(vPanelIdAttribute) AND "BODY"<>UCase(oElement.tagName) AND hasValue(oElement.parentElement)
+			vPanelIdAttribute = oElement.getAttribute("PANELID",0)
+			If Not hasValue(vPanelIdAttribute) Then 
+				Set oElement = oElement.parentElement
+			End If
+		Wend
+		If Not hasValue(vPanelIdAttribute) Then Exit sub
+		sPanelID = UCase(CStr( vPanelIdAttribute ))
+		
+		' #2: Реакция зависит от панели, по которой щелкнул пользователь:
+		Select Case sPanelID
+			Case "MAIN"
+				' Основная панель: отображаем всплывающее окно с детальными данными:
+				g_oPopup.hide ' .. перестраховка, на всякий пожарный
+				g_oPopup.document.body.innerHtml = divDetailedPopupContent.innerHtml
+				showAutoSizedPopup g_oPopup, tblExpenseLayoutTable, DETAIL_INFO_PANEL_WIDTH, 3, false
+				
+			Case "ALT_PERIOD_ONE"
+				' Дополнительная панель (этот Case и все последуюшие):
+				' Запоминаем выбранный период в гл. переменой и запускаем процесс
+				' перерисовки панелей; после запишем данные о том, что сейчас 
+				' выставленно как "основная" панель:
+				g_oPopup.hide ' .. перестраховка, на всякий пожарный
+				g_sShowInMain = PERIOD_CODE_PREVMONTH
+				arrangeDataInPanels()
+				saveCurrState
+				
+			Case "ALT_PERIOD_TWO"
+				g_oPopup.hide ' .. перестраховка, на всякий пожарный
+				g_sShowInMain = PERIOD_CODE_CURRMONTH
+				arrangeDataInPanels()
+				saveCurrState
+				
+			Case "ALT_PERIOD_THREE"
+				g_oPopup.hide ' .. перестраховка, на всякий пожарный
+				g_sShowInMain = PERIOD_CODE_TODAY
+				arrangeDataInPanels()
+				saveCurrState
+				
+		End Select
+	End sub
+	
+	
+	'-------------------------------------------------------------------------------
+	' Расчитывает позицию уже созданного всплывающего окна (popup), относительно 
+	' заданного "родительского" элемента - элемента, возле которого надо показать 
+	' окно; при этом для окна задается фиксированная ширина, а его высота 
+	' высчитывается динамически - так, что бы все содержимое поместилось
+	'	[in] oPopup - объект сплывающего окна 
+	'	[in] oPopupOwner - "HTML"-объект, ниже которого должно быть отображено окно
+	'	[in] nPopupFixedWidth - фиксированная ширина окна (выстоа считается автоматом)
+	'	[in] nSpacing - отступ от "рожителя" до элемента 
+	'	[in] bIsLeftAligning - признак выравнивания по левой границе "родительского"
+	'		элемента (иначе, при false) выравнивание будет по правой границе
+	Sub showAutoSizedPopup( oPopup, oPopupOwner, nPopupFixedWidth, nSpacing, bIsLeftAligning )
+	    Dim oElement	' HTML-элемент, итератор цикла
+		Dim nPosX		' Суммарное абсолютное смещение окна по горизонтали
+		Dim nPosY		' Суммарное абсолютное смещение окна по вертикали
+		Dim nHegith		' Рассчетная высота
+	
+		Set oElement = oPopupOwner
+		nPosX = 0
+		nPosY = 0
+		' Перебираем все элементы в иерархии вложения, от заданного "родителя" до 
+		' самого вышестоящего элемента; по ходу перехода суммируем относиьтельые 
+		' смещения, получая т.о. требуемые абсолютные:
+		While hasValue(oElement.offsetParent)
+			nPosX = nPosX + oElement.offsetLeft
+			nPosY = nPosY + oElement.offsetTop
+			Set oElement = oElement.offsetParent
+		Wend
+		' Доводка смещения: по вертикали на высоту "родительского" элемента + 
+		' отступ, по горизонтали - в зависимости от заданного режима выравнивания:
+		' или выравнивание по правому краю - то корректируем на ширину 
+		' "родительского" элемента за минусом ширины самого окна:
+		nPosY = nPosY + oPopupOwner.offsetHeight + nSpacing
+		If Not bIsLeftAligning Then nPosX = nPosX + oPopupOwner.offsetWidth - nPopupFixedWidth
+		
+		' Временно покажем и тут же спрячем окно, но перед этим - считаем рассчетную 
+		' высоту, так как ее рассчитала сама IE для HTML-элемета BODY в окне:
+		oPopup.show nPosX, nPosY, nPopupFixedWidth, 1, document.body
+		nHegith = oPopup.document.body.scrollHeight + (2 * nSpacing)
+		oPopup.hide
+		
+		' Вот теперь покажем - но уже с рассчетной высотой:
+		oPopup.show nPosX, nPosY, nPopupFixedWidth, nHegith, document.body
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Внутренняя функция получения значения указанного атрибута заданного элемента
+	' Если у элемента такого атрибута нет, функция создает атрибут и устанавливает
+	' заданное значение по умолчанию
+	'	[in] oElement		- элемен, для которого проверяется атрибут
+	'	[in] sAttrName		- наименование атрибута
+	'	[in] oDefaultValue	- значение по умолчанию
+	Function getAttributeValue( oElement, sAttrName, oDefaultValue )
+		Dim oAttribute
+		
+		Set oAttribute = oElement.GetAttributeNode(sAttrName)
+		If oAttribute Is Nothing Then 
+			oElement.SetAttribute sAttrName, oDefaultValue, 0
+			getAttributeValue = oDefaultValue
+		Else
+			getAttributeValue = oAttribute.nodeValue
+		End If
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Возвращает строку с наименованием указанного элемента в виде 
+	' <ТЕГ ID="ИДЕНТИФИКАТОР"/>; используется при отображении ошибок
+	Function getElementFullName( oElement ) 
+		Dim sName 	' итоговое описание 
+		
+		sName = ""
+		If Not oElement Is Nothing Then
+			sName = "<" & oElement.tagName
+			If 0<>Len("" & oElement.ID) Then
+				sName = sName & " ID=""" & oElement.ID & """"
+			End If
+			sName = sName & "/>"
+		End If
+		getElementFullName = sName
+	End Function
+				
+	
+	'-------------------------------------------------------------------------------
+	' Определяет, является ли заданное значение определенным 
+	' Значение считается определенным, если это не Empty, не NULL, не Nothing (в 
+	' случае ссылок), строка ненулевой длинны или непустой массив.
+	' 	[in] vValue - переменная любого типа; м.б. ссылкой 
+	' Возвращает True, если переданное значение определено, False в противном случае
+	Function hasValue( vValue )
+		hasValue = True
+		If IsObject(vValue) Then
+			hasValue = Not(vValue Is Nothing)
+		ElseIf IsEmpty(vValue) Then
+			hasValue = False
+		ElseIf IsNull(vValue) Then
+			hasValue = False
+		ElseIf Not IsArray(vValue) Then
+			hasValue = CBool( Trim(vValue)<>"" )
+		ElseIf UBound(vValue)<LBound(vValue) Then 
+			hasValue = False
+		End If
+	End Function
+	
+	'***************************************************************************
+	</SCRIPT>
+</HEAD>
+
+<BODY 
+	SCROLL=NO
+	LANGUAGE="VBScript" 
+	ONSELECTSTART="window.event.returnValue=false : window.event.cancelBubble=true"
+>
+	<!--
+		ОСНОВНАЯ ТАБЛИЦА:
+		Представление данных об "остатках" несписанного времени
+	-->
+	<TABLE 
+		ID="tblExpenseLayoutTable" CLASS="tblMainPane" 
+		CELLSPACING="0" CELLPADDING="0" 
+		STYLE="cursor:hand; display:none;"
+		ONCLICK="processPanels"
+	>
+	<TR>
+		<TD STYLE="width: 60px; overflow: hidden;">
+			<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width:100%; height:100%;">
+				<TR><TD ID="tdExpenseZone1" PANELID="ALT_PERIOD_ONE" COLSPAN="2" CLASS="tdExpensesCompleteness"><!-- НАИМЕНОВАНИЕ ПЕРИОДА --></TD></TR>
+				<TR><TD ID="tdExpenseZone2" PANELID="ALT_PERIOD_TWO" COLSPAN="2" CLASS="tdExpensesCompleteness"><!-- НАИМЕНОВАНИЕ ПЕРИОДА --></TD></TR>
+				<TR>
+					<!-- "Плавающий" элемент - маркер выбранного периода -->
+					<TD ID="tdTheOnesRing">&nbsp;</TD>
+					<TD ID="tdExpenseZone3" PANELID="ALT_PERIOD_THREE" COLSPAN="1" CLASS="tdExpensesCompleteness"><!-- НАИМЕНОВАНИЕ ПЕРИОДА --></TD>
+				</TR>
+			</TABLE>
+		</TD>
+		
+		<TD STYLE="width: 130px; overflow: hidden;">
+			
+			<TABLE CELLSPACING="0" CELLPADDING="0" STYLE="width:100%; height:100%;" PANELID="MAIN">
+			<TR>
+				<TD ID="tdExpenseMainTitle" CLASS="tdExpensesCompleteness" STYLE="border-bottom-width:0px;">
+					<SPAN ID="spExpenseMonthName"><!-- НАИМЕНОВАНИЕ ПЕРИОДА --></SPAN></TD>
+			</TR>
+			<TR>
+				<TD ID="tdExpenseMainPane" CLASS="tdExpensesCompleteness" STYLE="width:100%; height:35px; padding:0px 5px 0px 5px; border-top-width:0px;">
+				
+					<TABLE ID="tblExpenseMainTable" CELLSPACING="0" CELLPADDING="0" STYLE="width:100%; height:100%; color:#fff;">
+					<TR>
+						<TD STYLE="width:50%;"></TD>
+						<TD ID="tdExpenseDays">
+							<DIV ID="tdExpenseDaysNum" CLASS="ExpenseDigit">00</DIV>
+							<DIV ID="tdExpenseDaysTtl" CLASS="ExpenseText">ДНЕЙ</DIV>
+						</TD>
+						<TD ID="tdExpenseHours">
+							<DIV ID="tdExpenseHoursNum" CLASS="ExpenseDigit">00</DIV>
+							<DIV ID="tdExpenseHoursTtl" CLASS="ExpenseText">ЧАСОВ</DIV>
+						</TD>
+						<TD ID="tdExpenseMinutes">
+							<DIV ID="tdExpenseMinutesNum" CLASS="ExpenseDigit">00</DIV>
+							<DIV ID="tdExpenseMinutesTtl" CLASS="ExpenseText">МИНУТ</DIV>
+						</TD>
+						<TD STYLE="width:50%;"></TD>
+					</TR>
+					</TABLE>
+					
+					<DIV ID="divNoExpenseTable" STYLE="display:none;">СПИСАНО ВСЕ</DIV>
+					
+				</TD>
+			</TR>
+			</TABLE>
+			
+		</TD>
+	</TR>
+	</TABLE>
+	
+	
+	<!-- 
+		ВСПОМОГАТЕЛЬНАЯ ТАБЛИЦА:
+		"Кулиска", отображаемая только во время первичной инициализации компоненты
+	-->
+	<TABLE 
+		ID="tblLoadingCurtain" CLASS="tblMainPane" 
+		CELLSPACING="0" CELLPADDING="0"
+		LANGUAGE="VBScript"
+		ONCLICK="If g_bIsErrOnLoad Then g_oLastErrorOnLoad.Show"
+	>
+	<TR>
+		<TD ID="tdLoadingCurtain">
+		&middot; &middot; &middot; Загрузка данных &middot; &middot; &middot;
+		</TD>
+	</TR>
+	</TABLE>
+	
+	
+	<!-- 
+		ВСПОМОГАТЕЛЬНАЯ ТАБЛИЦА:
+		Таблица, отображаемая во всплвающем окне с полными данными о списаниях
+		(непосредственно в компоненте не отображается, поэтому заключена в DIV 
+		со стилем disply:none)
+	-->
+	<DIV ID="divDetailedPopupContent" STYLE="display: none;">
+		
+		<DIV ID="divCustomTagIDsHiddenContainer" STYLE="display:none;"></DIV>
+		<TABLE 
+			CELLPADDING="0" CELLSPACING="0" LANGUAGE="VBScript" 
+			ONSELECTSTART="window.event.returnValue=false : window.event.cancelBubble=true"
+			STYLE="width:100%; height:100%; border:#fff outset 1px; cursor:default;"
+		>
+		<COL STYLE="padding:3px 2px 2px 5px;"/>
+		<COL STYLE="padding:3px 5px 2px 10px; width:100%;"/>
+		<TBODY>
+			<TR>
+				<TD COLSPAN="2"
+					STYLE="font-family:Arial Cyr; font:bold 12px; padding:2px 2px 2px 5px;"
+					STYLE="background-color:#9BE; border:#ACF inset 2px; border-width:0px 0px 2px 0px;" 
+				>ИНФОРМАЦИЯ О СПИСАНИЯХ</TD>
+			</TR>
+			
+			<TR ID="trDetailedInfoPrevMonth" 
+				LANGUAGE="VBScript" 
+				ONMOUSEOVER="tdDetailedInfoPrevMonth.className='tdBottomLineHover'"
+				ONMOUSELEAVE="tdDetailedInfoPrevMonth.className='tdBottomLine'"
+			>
+				<TD CLASS="tdBottomLine"><NOBR>За <B ID="placePrevMonth"></B>:</NOBR></TD>
+				<TD CLASS="tdBottomLine" ID="tdDetailedInfoPrevMonth">&nbsp;</TD>
+			</TR>
+			<SCRIPT LANGUAGE="VBScript" FOR="trDetailedInfoPrevMonth" EVENT="ONCLICK">
+				Dim oOwnControl
+				Set oOwnControl = window.parent.document.body.all.item( divCustomTagIDsHiddenContainer.innerText )
+				If Not(oOwnControl Is Nothing) Then
+					oOwnControl.DoExtOperation("PREVMONTH")
+				End If
+			</SCRIPT>
+			
+			<TR ID="trDetailedInfoCurrMonth" 
+				LANGUAGE="VBScript" 
+				ONMOUSEOVER="tdDetailedInfoCurrMonth.className='tdBottomLineHover'"
+				ONMOUSELEAVE="tdDetailedInfoCurrMonth.className='tdBottomLine'"
+			>
+				<TD CLASS="tdBottomLine"><NOBR>За <B ID="placeCurrMonth"></B>:</NOBR></TD>
+				<TD CLASS="tdBottomLine" ID="tdDetailedInfoCurrMonth">&nbsp;</TD>
+			</TR>
+			<SCRIPT LANGUAGE="VBScript" FOR="trDetailedInfoCurrMonth" EVENT="ONCLICK">
+				Dim oOwnControl
+				Set oOwnControl = window.parent.document.body.all.item( divCustomTagIDsHiddenContainer.innerText )
+				If Not(oOwnControl Is Nothing) Then
+					oOwnControl.DoExtOperation("CURRMONTH")
+				End If
+			</SCRIPT>
+			
+			<TR ID="trDetailedInfoToday"
+				LANGUAGE="VBScript" 
+				ONMOUSEOVER="tdDetailedInfoToday.className='tdBottomLineHover'"
+				ONMOUSELEAVE="tdDetailedInfoToday.className='tdBottomLine'"
+			>
+				<TD CLASS="tdBottomLine"><NOBR>На <B>СЕГОДНЯ</B>:</NOBR></TD>
+				<TD CLASS="tdBottomLine" ID="tdDetailedInfoToday">&nbsp;</TD>
+			</TR>
+			<SCRIPT LANGUAGE="VBScript" FOR="trDetailedInfoToday" EVENT="ONCLICK">
+				Dim oOwnControl
+				Set oOwnControl = window.parent.document.body.all.item( divCustomTagIDsHiddenContainer.innerText )
+				If Not(oOwnControl Is Nothing) Then
+					oOwnControl.DoExtOperation("TODAY")
+				End If
+			</SCRIPT>
+			
+			<TR ID="trDetailedInfoDirectReport"
+				LANGUAGE="VBScript" 
+				ONMOUSEOVER="tdDetailedInfoDirectReport.className='tdBottomLineHover'"
+				ONMOUSELEAVE="tdDetailedInfoDirectReport.className='tdBottomLineBlank'"
+			>
+				<TD CLASS="tdBottomLineBlank"><B>ОПЕРАЦИИ:</B></TD>
+				<TD CLASS="tdBottomLineBlank" ID="tdDetailedInfoDirectReport"><B>Вызвать отчет с параметрами...</B></TD>
+			</TR>
+			<SCRIPT LANGUAGE="VBScript" FOR="tdDetailedInfoDirectReport" EVENT="ONCLICK">
+				Dim oOwnControl
+				Set oOwnControl = window.parent.document.body.all.item( divCustomTagIDsHiddenContainer.innerText )
+				If Not(oOwnControl Is Nothing) Then
+					oOwnControl.DoExtOperation("BYDEMAND")
+				End If
+			</SCRIPT>
+			<TR ID="trDetailedInfoSpendTime"
+				LANGUAGE="VBScript" 
+				ONMOUSEOVER="tdDetailedInfoSpendTime.className='tdBottomLineHover'"
+				ONMOUSELEAVE="tdDetailedInfoSpendTime.className='tdBottomLine'"
+			>		
+				<TD CLASS="tdBottomLine">&nbsp;</TD>
+				<TD CLASS="tdBottomLine" ID="tdDetailedInfoSpendTime"><B>Списать время...</B></TD>
+			</TR>
+			<SCRIPT LANGUAGE="VBScript" FOR="tdDetailedInfoSpendTime" EVENT="ONCLICK">
+				Dim oOwnControl
+				Set oOwnControl = window.parent.document.body.all.item( divCustomTagIDsHiddenContainer.innerText )
+				If Not(oOwnControl Is Nothing) Then
+					oOwnControl.DoExtOperation("SPENDTIME")
+				End If
+			</SCRIPT>
+			
+			<TR ID="TST" LANGUAGE="VBScript" ONSCLICK="Alert document.documentElement.innerHtml">
+				<TD COLSPAN="2" 
+					STYLE="width:100%; text-align:right; vertical-align:bottom; padding: 5px;"
+					STYLE="color:#789; font: normal 10px; cursor: hand;"
+				>
+					<DIV ID="divAutoUpdateInfo"><!-- Информация об автобновлении --></DIV>
+					<DIV><B>Нажмите, чтобы обновить</B></DIV>
+				</TD>
+			</TR>
+			<SCRIPT LANGUAGE="VBScript" FOR="TST" EVENT="ONCLICK">
+				Dim oOwnControl
+				Set oOwnControl = window.parent.document.body.all.item( divCustomTagIDsHiddenContainer.innerText )
+				If Not(oOwnControl Is Nothing) Then
+					oOwnControl.Reload()
+				End If
+			</SCRIPT>
+		</TBODY>
+		</TABLE>
+	
+	</DIV>
+	
+</BODY>

@@ -1,0 +1,619 @@
+<!--
+********************************************************************************
+ CROC.Behaviors :: XToolTip
+ Стилевая компонента отображения "продвинутой" всплывающей подсказки (tooltip),
+ допускающей использование HTML для форматирования отображаемого текста
+ Реализация - Behaviors (см. MSDN, Web Development, Behaviors)
+********************************************************************************
+-->
+<PUBLIC:COMPONENT
+	ID="XToolTip"
+	NAME="XToolTip"
+	lightWeight="false"
+	literalContent="false"
+	supportsEditMode="false"
+	URN="http://www.croc.ru/Behaviors/XmlFramework/XToolTip"
+>
+	<!-- Обрабатываемые события "внешнего" документа / элемента -->
+	<PUBLIC:ATTACH EVENT="ondocumentready" FOR="element" ONEVENT="Initialize"/>
+	<PUBLIC:ATTACH EVENT="onmouseover" FOR="element" ONEVENT="StartToolTipWaiting"/>
+	<PUBLIC:ATTACH EVENT="onmouseleave" FOR="element" ONEVENT="BreakToolTipWaiting"/>
+	<PUBLIC:ATTACH EVENT="onmouseout" FOR="element" ONEVENT="BreakToolTipWaiting"/>
+	<PUBLIC:ATTACH EVENT="onblur" FOR="window" ONEVENT="BreakToolTipWaiting"/>
+	<PUBLIC:ATTACH EVENT="onmousedown" FOR="element" ONEVENT="BreakToolTipWaiting"/>
+	<PUBLIC:ATTACH EVENT="onmouseclick" FOR="element" ONEVENT="BreakToolTipWaiting"/>
+	
+	<!-- Свойства, определяемые для элемента стилевой компонентой -->
+	
+	<!-- HTML-текст, отображаемый во всплывающем окне подсказки -->
+	<PUBLIC:PROPERTY NAME="ToolTipHTML" ID="prop_ToolTipHTML" 
+		GET="get_ToolTipHTML" 
+		PUT="put_ToolTipHTML"
+	/>
+	<!-- 
+		Признак отображения текста подсказки в строке состояния текущего окна.
+		Подсказка отображается все время, пока курсор находится в границах 
+		элемента. По умолчанию признак задан в True (отображение в строке 
+		состояния).
+	-->
+	<PUBLIC:PROPERTY NAME="DoShowInStatus" ID="prop_DoShowInStatus" 
+		GET="get_DoShowInStatus" 
+		PUT="put_DoShowInStatus"
+	/>
+	<!-- 
+		Задержка времени, по проществию которого отображается всплывающее окно 
+		подсказки; время отсчитывается от момента "наведения" курсора мышки на 
+		элемент, для котрого назначена стилевая компонента; ожидаение прерывается
+			(а) вывода курсора за границы элемента (событие OnMouseLeave);
+			(б) при "нажатии" на элемент (событие OnClick)
+		Период ожидания задается в миллисекундах. 
+		Значение по умолчанию - 1000 мсек (1 сек).
+	-->
+	<PUBLIC:PROPERTY NAME="ToolTipDelay" ID="prop_ToolTipDelay"
+		GET="get_ToolTipDelay" 
+		PUT="put_ToolTipDelay"
+	/>
+	<!-- 
+		Ширина отображаемого всплывающего окна, в пикселях. Высота окна вычисляется
+		автоматически, исходя из требования отображения содержания. HTML-содержаение,
+		превышающее указанную ширину и не допускающее перенос (изображения, элементы
+		с явно заданной фиксированной шириной и пр.), обрезаются.
+		Значение по умолчанию - 250 пикселей
+	-->
+	<PUBLIC:PROPERTY NAME="ToolTipWidth" ID="prop_ToolTipWidth"
+		GET="get_ToolTipWidth" 
+		PUT="put_ToolTipWidth"
+	/>
+	<!-- 
+		Определение URL стилевой страницы CSS, применяемой к HTML-документу 
+		во всплывающем окне. Задание значания параметра не обязательно; 
+		в этом случае компонента копирует все стилевые правила, определенные
+		для документа, в котором размещается элемент, к которому применена
+		стилевая компонента.
+	-->
+	<PUBLIC:PROPERTY NAME="StyleSheet" ID="prop_StyleSheet"
+		GET="get_StyleSheet" 
+		PUT="put_StyleSheet"
+	/>
+
+	<!-- Метод принудительного отображения всплывающего окна -->
+	<PUBLIC:METHOD NAME="ShowToolTip"/>
+
+<!-- 
+********************************************************************************
+ Реализация логики стилевой компоненты
+********************************************************************************
+-->
+	<SCRIPT LANGUAGE="VBScript">
+	Option Explicit
+	
+	Dim g_oElement			' Элемент, к которому применена компонента; 
+	Dim g_nUnUniqueIDNum	' Порядковый номер элемента в коллекии элементов, 
+							' в случае если в документе представлено несколько 
+							' элементов с одинаковым идентификатором; т.о. 
+							' ссылка на элемент в документе осуществляется как
+							' document.all.item( g_oElement.ID, g_nUnUniqueIDNum )
+	
+	Dim g_sToolTipHTML		' Текст HTML-контента подсказки; значение свойства TOOLTIPHTML
+	Dim g_nToolTipDelay		' Время задержки отображения окна подсказки; значение свойста TOOLTIPDELAY
+	Dim g_nToolTipWidth		' Ширина окна подсказки; значение свойста TOOLTIPWIDTH
+	Dim g_sStyleSheetUrl	' URL стилевой страницы, применяемой в окне подсказки;
+							' значение свойства STYLESHEET
+							
+	Dim g_sStatusText		' Текст, отображаемый в StatusBar ДО отображения подсказки
+	Dim g_bDoShowInStatus	' Значение, соотв. свойству DOSHOWINSTATUS (включение
+							' отображения текста подсказки в StatusBar
+	
+	Dim g_idDelayTimer		' Идентификатор таймера, используемого для отслеживания задержки
+	Dim g_oTipPopup			' Объект всплывающего окна; объект HTML DOM для элемента popup
+	Dim g_oTipMainPane		' Панель во всплывающем окне, в котором отображется HTML-контент
+							' объект HTML DOM для элемента DIV, вложенного в BODY 
+							' документа окна подсказки
+	
+	' Пред-инициализация значений:
+	Set g_oElement = Nothing
+	Set g_oTipPopup = Nothing
+	Set g_oTipMainPane = Nothing
+	g_sToolTipHTML = ""
+	g_sStatusText = ""
+	g_bDoShowInStatus = True
+	g_nToolTipDelay = 1000
+	g_nToolTipWidth = 250
+	g_sStyleSheetUrl = ""
+	g_idDelayTimer = null
+		
+	'---------------------------------------------------------------------------
+	' Метод инициализации компоненты; вызывается при генерации события 
+	' "готовности" документа, содержащего элемент, для которого назначена 
+	' стилевая компонента
+	Sub Initialize()
+		Dim oElements	' элемент / коллекция элементов, полученные через 
+						' HTML DOM по идентификатору элемента
+
+		' У элемента, для котрого назначена стилевая компонента, 
+		' должен быть задан идентификатор:
+		If 0 = Len(GetAttributeValue(element,"ID","")) Then
+		    Err.Raise _
+				vbObjectError + 1, _
+				"XToolTip (для элемента " & getElementFullName(element) & ")", _
+		    	"Идентификатор элемента """ + getElementFullName(element) + """ не задан идентификатор!"		
+	    End If
+		
+		' Определения уникальности идентификатора; если ID элемента не уникален,
+		' вычисляем порядковый номер следования элемента в коллекции элементов 
+		' с подобным идентификатором: пройдемся по коллекции элементов с тем 
+		' идентификатором и через Is пробуем найти среди "наш":
+		g_nUnUniqueIDNum = 0
+		Set oElements = window.document.all.item(element.ID)
+		If InStr( TypeName(oElements),"HTMLElementCollection" ) > 0 Then
+			' Получена коллекция элементов - значит идентификатор не уникальный
+			' Вычисляем индекс следования в коллекции:
+			For g_nUnUniqueIDNum=0 To oElements.length-1
+				If (oElements.item(g_nUnUniqueIDNum) Is element) Then Exit For
+			Next
+			' Проверим, что по индексу объект все же находим: если не так,
+			' cбрасываем ссылку на элемент - ToolTip работать не будет
+			If Not IsObject( window.document.all.item(element.ID, g_nUnUniqueIDNum) ) Then
+			    Err.Raise _
+					vbObjectError + 1, _
+					"XToolTip (для элемента " & getElementFullName(element) & ")", _
+			    	"Идентификатор элемента """ + getElementFullName(element) + """ не уникален! " & vbCrLf & _
+			    	"Обслуживание подсказки для этого элемента выполняться не будет!"
+			End If
+		End If
+		
+		Set g_oElement = element
+		
+	    ' Зачитаем значения свойств (соотв. методы реализуют проверку значений)
+		put_ToolTipHTML( GetAttributeValue( g_oElement, "TOOLTIPHTML", g_sToolTipHTML ) )
+		put_DoShowInStatus( GetAttributeValue( g_oElement, "DOSHOWINSTATUS", g_bDoShowInStatus ) )
+	    put_ToolTipDelay( GetAttributeValue( g_oElement, "TOOLTIPDELAY", g_nToolTipDelay ) )
+	    put_ToolTipWidth( GetAttributeValue( g_oElement, "TOOLTIPWIDTH", g_nToolTipWidth ) )
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства TOOLTIPHTML
+	' ::Чтение значения свойства
+	Function get_ToolTipHTML()
+		get_ToolTipHTML = g_sToolTipHTML
+	End Function
+	
+	' ::Изменение значения свойства
+	Function put_ToolTipHTML( sValue ) 
+		' Проверяем заданное значение - одно не должно быть пустым (или null):
+		sValue = Trim( "" & sValue )
+		If 0 = Len(sValue) Then
+			Err.Raise _
+				vbObjectError + 1, _
+				"XToolTip (для элемента " & getElementFullName(element) & ")", _
+				"Значение атрибута TOOLTIPHTML для элемента " & getElementFullName(element) & " не задано!"
+		End If
+		g_sToolTipHTML = sValue
+		' Если высплывающее окно уже существует - переинициализируем его, т.к.
+		' из-за изменения контента может изметься высота (здесь используется
+		' метод createTipPopup которорый не только создает, но и инициализирует):
+		If isPopupExists() Then createTipPopup
+	End Function
+
+
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства DOSHOWINSTATUS
+	' ::Чтение значения свойства
+	Function get_DoShowInStatus()
+		get_DoShowInStatus = g_bDoShowInStatus
+	End Function
+	
+	' ::Изменение значения свойства
+	Function put_DoShowInStatus( bValue )
+		g_bDoShowInStatus = CBool(bValue)
+		g_sStatusText = ""
+	End Function
+	
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства TOOLTIPDELAY
+	' ::Чтение значения свойства
+	Function get_ToolTipDelay()
+		get_ToolTipDelay = g_nToolTipDelay
+	End Function
+	
+	' ::Изменение значения свойства
+	Function put_ToolTipDelay( nValue )
+		nValue = CLng(nValue)
+		' Проверяем заданное значение - одно не должно быть нулевым
+		If 0 = nValue Then
+			Err.Raise _
+				vbObjectError + 1, _
+				"XToolTip (для элемента " & getElementFullName(element) & ")", _
+				"Значение атрибута TOOLTIPDELAY для элемента " & getElementFullName(element) & " не можеть нулевым!"
+		End If
+		g_nToolTipDelay = nValue
+	End Function
+
+
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства TOOLTIPWIDTH
+	Function get_ToolTipWidth()
+		get_ToolTipWidth = g_nToolTipWidth
+	End Function
+	
+	Function put_ToolTipWidth( nValue )
+		nValue = CLng(nValue)
+		' Проверяем заданное значение - одно не должно быть нулевым
+		If 0 = nValue Then
+			Err.Raise _
+				vbObjectError + 1, _
+				"XToolTip (для элемента " & getElementFullName(element) & ")", _
+				"Значение атрибута TOOLTIPWIDTH для элемента " & getElementFullName(element) & " не можеть нулевым!"
+		End If
+		g_nToolTipWidth = nValue
+		' Если высплывающее окно уже существует - переинициализируем его, т.к.
+		' из-за изменения ширины может измениться и высота (здесь используется
+		' метод createTipPopup которорый не только создает, но и инициализирует):
+		If isPopupExists() Then createTipPopup
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Функции обслуживания чтения / установки значения свойства STYLESHEET
+	Function get_StyleSheet()
+		get_StyleSheet = g_sStyleSheetUrl
+	End Function
+	
+	Function put_StyleSheet( sValue )
+		sValue = Trim( "" & sValue )
+		' Если заданное значение ОТЛИЧАЕТСЯ от предыдущего и при этом окно 
+		' popup уже создано, то для применения нового значения окно надо 
+		' будет создать ЗАНОВО (т.к. значение определяет способ подключения
+		' стилей в документ окна подсказки, см. createTipPopup)
+		If (sValue<>g_sStyleSheetUrl And isPopupExists()) Then
+			' ..."убиваем" окно подсказки
+			HideToolTip
+			Set g_oTipPopup = Nothing
+			' запоминаем новое значение свойсвта:
+			g_sStyleSheetUrl = sValue
+			' ... и снова создаем окно подсказки
+			createTipPopup
+		Else
+		    g_sStyleSheetUrl = sValue
+		End If
+	End Function
+	
+	'---------------------------------------------------------------------------
+	' Запуск цикла ожидания отображения всплывающего окна; Вызывается при 
+	' "наведении" курсора на элемент, для которого назначена стилевая компонента 
+	' (событие OnMouseOver)
+	Sub StartToolTipWaiting()
+	    Dim sToolTipText	' Текст (не HTML) подсказки
+	
+		' Прервем все предыдущие циклы ожидания
+		BreakToolTipWaiting
+		' Элемент может быть НЕ задан из-за проблем в инициализации (см. Initialize)
+		If Not IsObject(g_oElement) Then Exit Sub
+		If g_oElement Is Nothing Then Exit Sub
+		
+		' Создаем таймер ожидания: через указанный промежуток для элемента 
+		' с идентификатором g_oElement.ID (если таких несколько, то для элемента,
+		' следущего по порядку g_nUnUniqueIDNum) вызывается метод ShowToolTip:
+		g_idDelayTimer = window.setTimeout( _
+			"document.all.item('" & g_oElement.ID & "'," & g_nUnUniqueIDNum & ").ShowToolTip", _
+			g_nToolTipDelay, "VBScript" )
+			
+		' Если включен режим отображения подсказки в статус-баре - 
+		If (g_bDoShowInStatus) Then
+			' Что бы сформировать ТЕКСТ, запишем заданный HTML в документ 
+			' всплывающего окна; потом зачитаем текст:
+		
+			' Если высплывающее окно еще не создано - создаем его; 
+			' после создания в глобальной g_oTipMainPane сохранена ссылка
+			' на HTML-элемент, в котором размещен заданный HTML:
+			If Not isPopupExists() Then createTipPopup
+			sToolTipText = Replace( g_oTipMainPane.innerText, vbLf, " - " )
+			g_sStatusText = window.status
+			window.status = sToolTipText
+		End If			
+		
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Прерываение цикла ожидания отображения всплывающего окна; Вызывается при 
+	'	(а) выводе курсора за границы элемента (событие OnMouseLeave);
+	'	(б) при потери фокуса у окна
+	'	(в) при "нажатии" на элемент (событие OnClick)
+	Sub BreakToolTipWaiting()
+		' Если таймер уже запущен (см. StartToolTipWaiting) - сбрасываем его:
+		If Not IsNull(g_idDelayTimer) Then
+			clearTimeout g_idDelayTimer
+			g_idDelayTimer = Null
+		End If
+		' Если был задан режим отображения подсказки в статус-баре - 
+		' восстановим текст статус-бара
+		If (g_bDoShowInStatus) Then window.status = g_sStatusText
+		' ...на всякий пожарный - принудительно прячем всплывающее окно:
+		HideToolTip
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Отображение всплывающего окна с подсказкой. Метод реализует рассчет 
+	' абсолютных координат элемента, для которого назначена стилевая компонента,
+	' и для котрой собственно и отображается подсказка: т.к. размеры окна могут
+	' меняться (а с ними - и положение элемента в раскладке) - такой рассчет 
+	' надо делать перед каждым отображением окна:
+	Function ShowToolTip()
+		' Элемент может быть НЕ задан из-за проблем в инициализации (см. Initialize)
+		If Not IsObject(g_oElement) Then Exit Function
+		If g_oElement Is Nothing Then Exit Function
+		
+		' Если высплывающее окно еще не создано - создаем его:
+		If Not isPopupExists() Then createTipPopup
+		' Вызываем внутренний метод отображения POPUP-окна
+		showAutoSizedPopup g_oTipPopup, g_oElement, g_nToolTipWidth, 5, true
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Метод принудительного сокрытия всплывающего окна
+	Function HideToolTip()
+		If isPopupExists() Then g_oTipPopup.hide
+	End Function
+
+	
+	
+	'***************************************************************************
+	' Внутренние методы / функции компоненты
+	
+	'---------------------------------------------------------------------------
+	' Возвращает True, если внутренний объект высплывающего окна (PopUp), 
+	' представленный глобальной переменной g_oTipPopup, уже создан; наче - False
+	Function isPopupExists()
+		If IsObject(g_oTipPopup) Then
+			isPopupExists = Not( g_oTipPopup Is Nothing )
+		Else
+			isPopupExists = False
+		End If
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Для документа в указанном окне создает LINK на стилевую страницу, заданную
+	' своим URL-адресом
+	'	[in] oDestWindow - целевое окно, в документе которого создается LINK
+	'	[in] sLinkUrl - строка с URL-адресом стилевой страницы
+	' Функция возвращает объект СТИЛЕВОЙ СТРАНИЦЫ (StyleSheet), соответствующей
+	' созданному объекту LINK (IHTMLStyleSheet)
+	Function createStyleSheetLink( oDestWindow, sLinkUrl )
+		Dim sLinkID		' Идентификатор создаваемого элемента LINK
+		Dim oLink		' HTML-DOM объект созданного элемента LINK
+		
+		Set createStyleSheetLink = Nothing
+		
+		If IsObject(oDestWindow) And Not(oDestWindow Is Nothing) Then
+		
+			' Сгенерируем новый идентификатор объекта
+			sLinkID = "STYLE-LINK-" & CStr(CDbl(Now))
+			sLinkID = Replace( Replace( sLinkID,".","-" ), ",","-" )
+			
+			' Создаем сам объект, используем сгененированный идентификатор:
+			Set oLink = oDestWindow.document.createElement("LINK") ' ID=""" & sLinkID & """
+			oLink.ID = sLinkID
+			oLink.Rel = "Stylesheet"
+			oLink.href = sLinkUrl
+			oLink.Type = "text/css"
+			
+			' Включаем элемент в документ:
+			oDestWindow.document.appendChild oLink
+			
+			' Получаем IHTMLStyleSheet по идентификатору: здесь 
+			' применение CStr ОБЯЗАТЕЛЬНО, т.к. метод не понимает 
+			' просто варианты из VBScript-а
+			Set createStyleSheetLink = oDestWindow.document.styleSheets.item( CStr(sLinkID) )
+		End If
+	End Function
+	
+	'---------------------------------------------------------------------------
+	' Функция выполняет "копирование" всех стилевых правил CSS, представленных 
+	' в документе заданного окна oSrcWindow, в документ целевого окна oDestWindow
+	'	[in] oSrcWindow - исходное окно, из документа которого стили копируются
+	'	[in] oDestWindow - целевое окно, в которое стили копируются из исходного
+	' Возвращает кол-во перенесенных правил.
+	Function copyStyles( oSrcWindow, oDestWindow )
+	    Dim oMenuStyleSheet
+	    Dim nStyleSheetsQnt
+	    Dim nStyleSheet
+	    Dim nRulesQnt
+	    Dim nRule
+	    Dim nSummaryRules
+	    
+	    nSummaryRules = 0
+	    
+	    ' Перенос выполняется только если исходный и целевой объекты заданы:
+	    If (IsObject(oSrcWindow) And Not(oSrcWindow Is Nothing) And _
+	    	IsObject(oDestWindow) And Not(oDestWindow Is Nothing)) _
+	    Then
+			' Если в целевом документе нет стилевых таблиц - создадим новую:
+			' в которую будем добавлять скопированные правила:
+			If 0 = oDestWindow.document.styleSheets.length Then
+				oDestWindow.document.appendChild oDestWindow.document.createElement("STYLE")
+			End If
+			' Выбираем стилевую таблицу, в которую будем добавлять правила:
+			' всегда берем самую последнюю, что бы перекрыть существущие
+			' правила (if any):
+			Set oMenuStyleSheet = oDestWindow.document.styleSheets(oDestWindow.document.styleSheets.length - 1)
+			
+			' Выполняем итерацию:
+			' ...по всем стилевым страницам исходного документа:
+			nStyleSheetsQnt = oSrcWindow.document.styleSheets.length
+			For nStyleSheet = 0 To nStyleSheetsQnt - 1
+				' ... и всем правилам в рассматриваемой стилевой странице:
+				nRulesQnt = oSrcWindow.document.styleSheets(nStyleSheet).rules.length
+				For nRule = 0 To nRulesQnt - 1
+				
+					' Копируем CSS-правило только в том случае, если его текст 
+					' непустой (в противном случае попытка переноса правила приводит 
+					' к вознокновению runtime-ошибки в реализации интерфейсов HTML DOM)
+					If 0<>Len(oSrcWindow.document.styleSheets(nStyleSheet).rules(nRule).style.cssText) Then
+						oMenuStyleSheet.addRule _
+							oSrcWindow.document.styleSheets(nStyleSheet).rules(nRule).selectorText, _
+							oSrcWindow.document.styleSheets(nStyleSheet).rules(nRule).style.cssText
+						nSummaryRules = nSummaryRules + 1	
+					End If
+					
+				Next
+			Next
+		End If
+		
+		copyStyles = nSummaryRules
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Внутренний метод - создает объект высплывающего окна и инициализирует его
+	' на основании значений параметров
+	Sub createTipPopup()
+		' Окно создаем только если оно еще не было создано:
+		If Not isPopupExists() Then
+		
+			Set g_oTipPopup = window.createPopup()
+			' Задана ссылка на конкретную стилевую страницу?
+	   	    If Len(g_sStyleSheetUrl & "") > 0 Then
+				' ... ДА - создаем ссылку на указанную стилевую страницу
+				createStyleSheetLink g_oTipPopup, g_sStyleSheetUrl
+			Else
+		   	    ' ... НЕТ - копируем все стили, доступные на родительской странице 
+				copyStyles window, g_oTipPopup
+			End If
+			
+			' Для BODY окна ВСЕГДА назначем стилевой класс x-tooltip-body
+			g_oTipPopup.document.body.className = "x-tooltip-body"
+			' ...и фиксированные определенния стилевых правил (только необходимое,
+			' все остальное - через класс в CSS):
+			With g_oTipPopup.document.body.style
+				.borderColor = "#FFFFFF"
+				.borderStyle = "outset"
+				.borderWidth = "1px"
+				.cursor = "normal"
+			End With
+			
+			' Во всплывающем окне создаем элемент DIV, в котором будет 
+			' отображаться HTML-контент текста подсказки:
+			Set g_oTipMainPane = g_oTipPopup.document.createElement("DIV")
+			g_oTipPopup.document.body.appendChild( g_oTipMainPane )
+			' задаем для него фиксированный стилевой класс (определение - в CSS) 
+			g_oTipMainPane.className = "x-tooltip-main-pane"
+			
+		End If
+		
+		' На данном этапе окно создано; задаем HTML-текст контента
+		g_oTipMainPane.innerHTML = g_sToolTipHTML
+	End Sub
+	
+	
+	'---------------------------------------------------------------------------
+	' Возвращает строку с наименованием указанного элемента в виде 
+	'	<ТЕГ ID="ИДЕНТИФИКАТОР"/>; используется при отображении ошибок
+	Function getElementFullName( oElement ) 
+		Dim sName 	' итоговое описание 
+		sName = ""
+		If Not oElement Is Nothing Then
+			sName = "<" & oElement.tagName
+			If 0<>Len("" & oElement.ID) Then
+				sName = sName & " ID=""" & oElement.ID & """"
+			End If
+			sName = sName & "/>"
+		End If
+		getElementFullName = sName
+	End Function
+	
+	
+	'-------------------------------------------------------------------------------
+	' Расчитывает позицию уже созданного всплывающего окна (popup), относительно 
+	' заданного "родительского" элемента - элемента, возле которого надо показать 
+	' окно; при этом для окна задается фиксированная ширина, а его высота 
+	' высчитывается динамически - так, что бы все содержимое поместилось
+	'	[in] oPopup - объект сплывающего окна 
+	'	[in] oPopupOwner - "HTML"-объект, ниже которого должно быть отображено окно
+	'	[in] nPopupFixedWidth - фиксированная ширина окна (выстоа считается автоматом)
+	'	[in] nSpacing - отступ от "рожителя" до элемента 
+	'	[in] bIsLeftAligning - признак выравнивания по левой границе "родительского"
+	'		элемента (иначе, при false) выравнивание будет по правой границе
+	Sub showAutoSizedPopup( oPopup, oPopupOwner, nPopupFixedWidth, nSpacing, bIsLeftAligning )
+	    Dim oElement	' HTML-элемент, итератор цикла
+		Dim nPosX		' Суммарное абсолютное смещение окна по горизонтали
+		Dim nPosY		' Суммарное абсолютное смещение окна по вертикали
+		Dim nHegith		' Рассчетная высота
+	
+		Set oElement = oPopupOwner
+		nPosX = 0
+		nPosY = 0
+		' Перебираем все элементы в иерархии вложения, от заданного "родителя" до 
+		' самого вышестоящего элемента; по ходу перехода суммируем относиьтельые 
+		' смещения, получая т.о. требуемые абсолютные:
+		While hasValue(oElement.offsetParent)
+			nPosX = nPosX + oElement.offsetLeft
+			nPosY = nPosY + oElement.offsetTop
+			Set oElement = oElement.offsetParent
+		Wend
+		' Доводка смещения: по вертикали на высоту "родительского" элемента + 
+		' отступ, по горизонтали - в зависимости от заданного режима выравнивания:
+		' или выравнивание по правому краю - то корректируем на ширину 
+		' "родительского" элемента за минусом ширины самого окна:
+		nPosY = nPosY + oPopupOwner.offsetHeight + nSpacing
+		If Not bIsLeftAligning Then nPosX = nPosX + oPopupOwner.offsetWidth - nPopupFixedWidth
+		
+		' Временно покажем и тут же спрячем окно, но перед этим - считаем рассчетную 
+		' высоту, так как ее рассчитала сама IE для HTML-элемета BODY в окне:
+		oPopup.show nPosX, nPosY, nPopupFixedWidth, 1, document.body
+		nHegith = oPopup.document.body.scrollHeight + (2 * nSpacing)
+		oPopup.hide
+		
+		' Вот теперь покажем - но уже с рассчетной высотой:
+		oPopup.show nPosX, nPosY, nPopupFixedWidth, nHegith, document.body
+	End Sub
+	
+	
+	'-------------------------------------------------------------------------------
+	' Определяет, является ли заданное значение определенным 
+	' Значение считается определенным, если это не Empty, не NULL, не Nothing (в 
+	' случае ссылок), строка ненулевой длинны или непустой массив.
+	' 	[in] vValue - переменная любого типа; м.б. ссылкой 
+	' Возвращает True, если переданное значение определено, False в противном случае
+	Function hasValue( vValue )
+		hasValue = True
+		If IsObject(vValue) Then
+			hasValue = Not(vValue Is Nothing)
+		ElseIf IsEmpty(vValue) Then
+			hasValue = False
+		ElseIf IsNull(vValue) Then
+			hasValue = False
+		ElseIf Not IsArray(vValue) Then
+			hasValue = CBool( Trim(vValue)<>"" )
+		ElseIf UBound(vValue)<LBound(vValue) Then 
+			hasValue = False
+		End If
+	End Function
+	
+	
+	'---------------------------------------------------------------------------
+	' Внутренняя функция получения значения указанного атрибута заданного элемента
+	' Если у элемента такого атрибута нет, функция создает атрибут и устанавливает
+	' заданное значение по умолчанию
+	'	[in] oElement		- элемен, для которого проверяется атрибут
+	'	[in] sAttrName		- наименование атрибута
+	'	[in] oDefaultValue	- значение по умолчанию
+	Function getAttributeValue( oElement, sAttrName, oDefaultValue )
+		Dim oAttribute
+		
+		Set oAttribute = oElement.GetAttributeNode(sAttrName)
+		If oAttribute Is Nothing Then 
+			oElement.SetAttribute sAttrName, oDefaultValue, 0
+			getAttributeValue = oDefaultValue
+		Else
+			getAttributeValue = oAttribute.nodeValue
+		End If
+	End Function
+	
+	</SCRIPT>
+	
+</PUBLIC:COMPONENT>

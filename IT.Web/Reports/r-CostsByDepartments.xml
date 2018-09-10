@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<r:report
+	r:t="Затраты в разрезе департаментов"
+	r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll"
+	r:class="Croc.IncidentTracker.ReportService.Reports.CostsByDepartments"
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:ds="http://www.croc.ru/Schemas/XmlFramework/Data/1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd http://www.croc.ru/Schemas/XmlFramework/Data/1.0 ../Metadata/x-net-data-schema.xsd"
+>
+  <r:common>
+    <r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+  </r:common>
+
+  <!-- 
+		ПАРАМЕТРЫ ОТЧЕТА 
+		Значения параметров задаются экземпляром ds-типа FilterReportDepartmentCost;
+		перечень и типы параметров, т.о., соответсвуют свойствам данного типа. Диалог задания 
+		параметров реализуется редактором типа - см. определение в it-metadata-reports.xml
+	-->
+  <r:params>
+    <r:param r:n="PeriodType" r:vt="i4" r:required="true" />
+    <r:param r:n="IntervalBegin" r:vt="date" r:required="false" />
+    <r:param r:n="IntervalEnd" r:vt="date" r:required="false" />
+    <r:param r:n="Quarter" r:vt="i4" r:required="false" />
+    <r:param r:n="Folder" r:vt="uuid" r:required="true" />
+    <r:param r:n="ShowDetalization" r:vt="boolean" r:required="true" />
+    <r:param r:n="TimeMeasureUnits" r:vt="i4" r:required="true" />
+    <r:param r:n="SortBy" r:vt="i4" r:required="true" />
+    <r:param r:n="ShowRestrictions" r:vt="boolean" r:required="true" />
+  </r:params>
+
+  <r:data-sources>
+    <r:storage-data-source r:n="Header">
+      <r:cmd>
+        <![CDATA[
+        SELECT TOP 1
+          Name
+        FROM
+          Folder
+        WHERE
+          ObjectID = @Folder
+        ]]>
+      </r:cmd>
+      <r:cmd-params>
+        <r:cmd-param r:n="@Folder" r:report-param="Folder"/>
+      </r:cmd-params>
+    </r:storage-data-source>
+    <r:storage-data-source r:n="Main">
+      <r:cmd>
+        <![CDATA[
+DECLARE 
+  @dtCurrent DATETIME,      -- текущая дата
+  @dtCurrentWeek DATETIME, -- понедельник текущей недели
+  @dtCurrentMonth DATETIME, -- 1 число текущего месяца
+  @dtCurrentYear DATETIME,  -- 1 января текущего года
+  @dtStart DATETIME,        -- дата начала периода
+  @dtEnd DATETIME           -- дата окончания периода
+  
+SET @dtCurrent = DATEADD(DAY, DATEDIFF(DAY, 0, GETDATE()), 0)
+
+SET @dtCurrentWeek = DATEADD(WEEK, DATEDIFF(WEEK, 0, @dtCurrent), 0)
+SET @dtCurrentMonth = DATEADD(MONTH, DATEDIFF(MONTH, 0, @dtCurrent), 0)
+SET @dtCurrentYear = DATEADD(YEAR, DATEDIFF(YEAR, 0, @dtCurrent), 0)
+  
+-- в зависимости от типа периода отпределим даты начала и окнончания
+-- дата начала и окончания указаны явно
+IF @PeriodType = 1
+  SELECT @dtStart = ISNULL(DATEADD(DAY, DATEDIFF(DAY, 0, @IntervalBegin), 0), '19000101'), @dtEnd = DATEADD(DAY, 1, ISNULL(DATEADD(DAY, DATEDIFF(DAY, 0, @IntervalEnd), 0), @dtCurrent))
+-- за текущую неделю
+ELSE IF @PeriodType = 2
+  SELECT @dtStart = @dtCurrentWeek, @dtEnd = DATEADD(WEEK, 1, @dtCurrentWeek)
+-- за текущий месяц
+ELSE IF @PeriodType = 3
+  SELECT @dtStart = @dtCurrentMonth, @dtEnd = DATEADD(MONTH, 1, @dtCurrentMonth)
+-- за указанный квартал
+ELSE IF @PeriodType = 4
+  SELECT @dtStart = DATEADD(QUARTER, @Quarter - 1, @dtCurrentYear), @dtEnd = DATEADD(QUARTER, @Quarter, @dtCurrentYear)
+-- за предыдущий месяц
+ELSE IF @PeriodType = 5
+  SELECT @dtStart = DATEADD(MONTH, -1, @dtCurrentMonth), @dtEnd = @dtCurrentMonth
+    
+-- соберем данные
+SELECT
+	dp.Code AS [Department],
+	[dbo].[GetFullNameDepartment](d.ObjectID, 2) AS [Name],
+	SUM(t.Costs) AS Costs
+INTO	
+	#t
+FROM
+	Folder f
+	JOIN Folder fc WITH(NOLOCK) ON
+    fc.Customer = f.Customer 
+		AND fc.LIndex >= f.LIndex
+		AND fc.RIndex <= f.RIndex
+	JOIN (
+    -- списания на инциденты
+		(
+			SELECT 
+				i.Folder,
+				e.Department,
+				SUM(ts.Spent) AS Costs
+			FROM
+				Incident i 
+				JOIN Task t WITH(NOLOCK) ON
+					i.ObjectID = t.Incident
+				JOIN TimeSpent ts WITH(NOLOCK) ON
+					ts.Task = t.ObjectID
+				LEFT JOIN Employee e WITH(NOLOCK) ON
+					t.Worker = e.ObjectID
+			WHERE
+        ts.RegDate >= @dtStart 
+        AND @dtEnd > ts.RegDate
+			GROUP BY
+				i.Folder,
+				e.Department
+		)
+		UNION ALL
+    -- списания на папки
+		(
+			SELECT
+				tl.Folder,
+				e.Department,
+				SUM(tl.LostTime) AS Costs
+			FROM
+				TimeLoss tl
+				LEFT JOIN Employee e WITH(NOLOCK) ON
+					tl.Worker = e.ObjectID
+			WHERE
+				tl.LossFixed >= @dtStart 
+        AND @dtEnd > tl.LossFixed
+			GROUP BY
+				tl.Folder,
+				e.Department	 
+		)
+	) t ON
+		t.Folder = fc.ObjectID
+	JOIN (
+    Department d
+	  JOIN Department dp ON
+		  dp.Organization = d.Organization 
+		  AND dp.LIndex <= d.LIndex 
+		  AND dp.RIndex >= d.RIndex
+		  AND dp.Parent IS NULL
+  ) ON
+		t.Department = d.ObjectID
+WHERE
+	f.ObjectID = @Folder
+GROUP BY
+	dp.Code,
+	[dbo].[GetFullNameDepartment](d.ObjectID, 2)
+	
+-- сортируем по департаментам
+IF @SortBy = 0
+	SELECT 
+		*
+	FROM
+		#t
+	ORDER BY
+		Name
+-- сортируем по затратам
+ELSE
+	SELECT 
+		t.*
+	FROM
+		#t t
+	ORDER BY
+		(SELECT SUM (x.Costs) FROM #t x WHERE x.Department = t.Department OR x.Department IS NULL AND t.Department IS NULL),
+		t.Costs 
+		
+DROP TABLE #t
+        ]]>
+      </r:cmd>
+      <r:cmd-params>
+        <r:cmd-param r:n="@PeriodType" r:report-param="PeriodType" r:may-be-null="false"/>
+        <r:cmd-param r:n="@IntervalBegin" r:report-param="IntervalBegin" r:may-be-null="true"/>
+        <r:cmd-param r:n="@IntervalEnd" r:report-param="IntervalEnd" r:may-be-null="true"/>
+        <r:cmd-param r:n="@Quarter" r:report-param="Quarter" r:may-be-null="true"/>
+        <r:cmd-param r:n="@Folder" r:report-param="Folder" r:may-be-null="false"/>
+        <r:cmd-param r:n="@SortBy" r:report-param="SortBy" r:may-be-null="false"/>
+      </r:cmd-params>
+    </r:storage-data-source>
+  </r:data-sources>
+
+</r:report>

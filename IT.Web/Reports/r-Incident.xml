@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="windows-1251" ?> 
+<r:report
+	r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll"
+	r:class="Croc.IncidentTracker.ReportService.Reports.r_Incident" 
+	r:t="Просмотр инцидента"
+	xmlns:r="http://www.croc.ru/Schemas/XmlFramework/ReportService"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.croc.ru/Schemas/XmlFramework/ReportService Croc.XmlFramework.ReportService.xsd"
+>
+
+	<!-- Стили -->
+	<r:common>
+		<r:style-class r:n="CENTERED">text-align="center" vertical-align="center" font-size="10pt" font-family="Verdana"</r:style-class>
+		<r:style-class r:n="BOLD">border="1pt solid" border-color="#50729C" font-weight="bold" font-size="10pt" font-family="Verdana"</r:style-class>
+		<r:style-class r:n="BOLD-RED">font-weight="bold" font-size="10pt" font-family="Verdana"</r:style-class>
+		<r:style-class r:n="CELL_CLASS">border="1pt solid" border-color="#50729C" font-size="10pt" font-family="Verdana" padding="2px"</r:style-class>
+		<r:style-class r:n="APPNAME">font-size="14pt" color="#FFFFFF" font-family="Verdana" padding-after="2px" padding-before="2px" background-color="#50729C" text-align="center"</r:style-class>
+		<r:script r:src="vbs/s-it-reports.vbs" r:language="vbscript" r:encoding="windows-1251"/>
+	</r:common>
+	
+	<!-- Параметры отчета -->
+	<r:params>
+		<r:param r:n="IncidentNumber" r:vt="i4" />
+		<r:param r:n="IncidentID" r:vt="uuid" />
+	</r:params>
+	<r:data-sources>
+
+		<!-- config-data-source выбран как наиболее простой тип, т.к. abstract не сериализует имена сборки и класса -->
+		<r:config-data-source r:n="dsMain" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.IncidentMainDS" r:section=""/>
+		<r:config-data-source r:n="dsAdditional" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.IncidentAdditionalProperties" r:section=""/>
+		<r:config-data-source r:n="dsLinked" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.LinkedIncidentData" r:section=""/>
+		<r:config-data-source r:n="dsHistory" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.IncidentHistoryData" r:section=""/>
+		<r:config-data-source r:n="dsTasks" r:assembly="Croc.IncidentTracker.ReportService.Layouts.dll" r:class="Croc.IncidentTracker.ReportService.Layouts.DataSources.IncidentTasksData" r:section=""/>
+	</r:data-sources>
+</r:report>

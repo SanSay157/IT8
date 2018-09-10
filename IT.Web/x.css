@@ -1,0 +1,546 @@
+/******************************************************************************
+    X.CSS - ОБЩАЯ СТИЛЕВАЯ СТРАНИЦА
+ ******************************************************************************/
+ 
+/************************************************/
+/*      ---==- БАЗОВЫЕ ОПРЕДЕЛЕНИЯ -==---       */
+/************************************************/
+/* Общие стилевые определения, заданные для указанных HTML-элементов всех страниц */
+
+body, td, input, select, button, textarea {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: normal;
+	font-size: 11px;
+}
+body
+{
+	margin: 0px;
+	padding: 0px;
+	background-color: silver;
+	background-image: none;
+	border: none;
+}
+object {
+	background-color: #fff;
+	color: #013;
+}
+td { padding:0px; }
+
+/************************************************/
+/*     ---==- ОБЩИЕ СТИЛЕВЫЕ КЛАССЫ -==---      */
+/************************************************/
+
+/* задается для таблицы раскладки (элемент TABLE) */
+.x-page-layoutgrid 
+{
+	width:100%; 
+	height:100%; 
+	padding:0;
+	border:none;
+}
+
+/* Панель заголовка (включая элементы навигации) */
+.x-pane-header {
+	width:100%; 
+	overflow:visible; 
+}
+/* Панель размещения фильтра */
+.x-pane-filter {
+	width: 100%; 
+	border: #F7AF00 groove 3px; 
+	border-width: 0px 0px 3px 0px;
+}
+/* Панель размещения кнопок управления */
+.x-pane-control {
+	width: 100%;
+	padding: 3px;
+	text-align: right;
+	background: url('Images/x-caption.jpg') repeat-x left middle;
+	background-color: #5a5a5a;
+	border: #F7AF00 outset 3px;
+	border-width: 3px 0px 0px 0px;
+}
+/* Основная панель: страницы редактора, сам список или иерархия */
+.x-pane-main {
+	width: 100%;
+	height: 100%;
+}
+/* Вспомогательная панель: текст, отображаемый вместо основной панели */
+.x-pane-main-message {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font: bold 12px;
+	letter-spacing: 2px;
+	color: #777;
+	padding: 5px;
+	
+	text-align: center;
+	vertical-align: middle;
+	
+	width: 100%; 
+	height:100%;
+}
+/*	Вспомогательная панель: предупреждение, отображаемое вместо основной панели */
+.x-pane-main-warning {
+	text-align: center; 
+	vertical-align: middle;
+	width:100%; 
+	height:100%;
+	color: Red;
+	font-weight: bold;
+	font-size: large;
+}
+
+/* Таблица раскладки в панели заголовка */
+.x-header 
+{
+	width: 100%;
+	overflow-x: hidden;
+	overflow-y: visible;
+	background: url('Images/x-caption.jpg') repeat-x left middle;
+	background-color: #5a5a5a;
+	border:#F7AF00 groove 3px; 
+	border-width:0px 0px 3px 0px; 
+} 
+
+/* Ячейка размещения элементов навигации в заголовке, элемент TD */
+.x-header-nav { 
+	border: none; 
+	text-align: center;
+	vertical-align: middle;
+	padding: 4px 0px 3px 4px; /* !!! */
+}
+
+/* Ячейка размещения представления/текста заголовка, элемент TD */
+.x-header-title {
+	width: 100%; 
+	overflow: visible;
+	font-family: Georgia, Times New Roman, Times;
+	font-weight: normal;
+	font-size: 25px;
+	color: #fff;
+	padding: 5px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#333333, direction=135, strength=3 );
+}	
+
+/* Ячейка размещения дополнительного заголовка (применимость фильтра), элемент TD */
+.x-header-special-title {
+	font-family: Verdana;
+	font-weight: bold;
+	font-size: 10px;
+	text-align: right;
+	color: #ddd;
+	padding: 3px 10px 3px 3px; 
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#333333, direction=135, strength=2 );
+}
+
+/* Ячейка размещения управляющих кнопок в заголовке, элемент TD */
+.x-header-control {
+	padding: 5px 0px 5px 5px; 
+}
+
+/* Таблица раскладки в панели управляющих элементов */
+.x-controlbar {
+	/*width: 100%;
+	text-align: right;
+	background: url('Images/x-caption.jpg') repeat-x left middle;
+	background-color: #5a5a5a;
+	border: #F7AF00 outset 3px;
+	border-width: 3px 0px 0px 0px; */
+} 
+/* Левая ячейка размещения управляющих элементов, элемент TD */
+.x-controlbar-left-zone { 
+	border: none; 
+	text-align: left;
+	vertical-align: middle;
+	padding: 4px 0px 3px 4px;
+}
+/* Правая ячейка размещения управляющих элементов, элемент TD */
+.x-controlbar-right-zone 
+{
+	border: none;
+	text-align: right;
+	vertical-align: middle;
+	padding: 5px 0px 5px 5px; 
+}
+
+/* КЛАССЫ КНОПОК */
+/*	...просто кнопки */
+.x-button {
+	overflow: visible;
+	font-weight: normal;
+	font-size: 11px;
+	padding: 1px 3px 2px 3px;
+	margin: 2px 2px 0px 2px;
+	border-width: 1px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=1 );
+}
+/*	...кнопки с заданной минимальной шириной */
+.x-button-wide 
+{
+	width: 80px;
+	padding: 1px 3px 2px 3px;
+	margin: 2px 2px 0px 2px;
+	overflow: visible;
+	font-weight: normal;
+	font-size: 11px;
+	border-width: 1px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=1 );
+}
+/*	...кнопки навигации (обычно - анкеры) */
+.x-button-nav {
+	overflow: visible;
+	font-weight: normal;
+	font-size: 11px;
+	width:auto; 
+	padding: 0px;
+	margin: 1px;
+	border-width: 1px;
+}
+/* ... кнопка-ссылка открытия справки */
+.x-open-help-control
+{
+	padding: 0px 3px 0px 3px;
+}
+/************************************************/
+/*          ---==- XFW-ИЕРАРХИЯ -==---          */
+/************************************************/
+/* Классы, используемые в интерфейсе ирерархии */
+
+/* Стиль TD-ячейки, в которой размещен XTreeView */
+#TreeHolder	{ 
+	padding: 2px 0px 0px 2px; 
+	background-color: #fff;
+}
+
+/************************************************/
+/*          ---==- XFW-РЕДАКТОР -==---          */
+/************************************************/
+/* Классы, используемые в интерфейсе редактора */
+
+/* Специальный класс "подложки" страницы редактора */
+.x-editor-body	
+{
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	padding: 5px 3px 5px 3px;
+	color: #013;
+	background-color: #d4d0c8;
+	text-align: left;
+	
+	/*position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	padding: 5px 3px 5px 3px;
+	color: #013;	
+	background-color: #d4d0c8;*/
+}
+
+/* Стилевые классы, назначаемые элементам управления на странице матсера-редактора */
+.x-editor-text {}
+/* Разделители вставляемый x-editor.xsl */
+.x-editor-hr {}
+.x-editor-hr-2 {}
+.x-editor-hr-3 {}
+
+.x-editor-propcaption { padding:0px 5px 0px 3px; }
+.x-editor-propcaption-multiline { padding-top: 2px; }
+.x-editor-propcaption-notnull {  }
+
+.x-editor-control { 
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: normal;
+	font-size: 11px;
+	background-color: #fff;
+	color: #013;
+	border: #036 solid 1;
+}
+.x-editor-control-notnull {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: normal;
+	font-size: 11px;
+	background-color: #e0efff;
+	color: #013;
+	border: #036 inset 1;
+}
+
+/* Кнопка меню редактора свойства */
+.x-editor-pe-menu-button {
+	overflow: visible;
+	font-weight: normal;
+	font-size: 11px;
+	padding: 1px 3px 2px 3px;
+	margin: 2px 2px 0px 2px;
+	border-width: 1px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=1 );
+}
+
+.x-editor-objects-list {}
+.x-editor-objects-buttons-pane { padding:3px 0px 0px 0px; }
+
+.x-editor-string-lookup-field {
+	border: #036 inset 1;
+}
+
+.x-editor-objectpresentation-text {}
+
+/* Кнопка меню редактора объекта, также используется для всех случаев кнопок перегрузки кэша */
+.x-editor-objectpresentation-button { 
+	position:relative; 
+	width:1px;  
+	overflow: visible;
+	padding:0px 2px 2px 2px; 
+	font-weight: normal;
+	font-size: 11px;
+	border-width: 1px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=1 );
+}
+
+.x-editor-dropdown { 
+	border: #036 inset 1;
+}
+.x-editor-dropdown-notnull { 	
+	border: #036 inset 1;
+	background-color: #e0efff;
+}
+
+.x-editor-const-selector {}
+.x-editor-numeric-field {}
+.x-editor-string-field {}
+.x-editor-text-field {}
+.x-editor-datetime-field {}
+.x-editor-filename-field {}
+.x-editor-filesize-field {}
+
+/* кнопка выдачи меню операций с файлами */
+.x-editor-file-button { 
+	position:relative; 
+	width:1px;  
+	overflow: visible;
+	padding:0px 2px 2px 2px; 
+	font-weight: normal;
+	font-size: 11px;
+	border-width: 1px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=1 );
+}
+
+/* кнопка выдачи меню операций с изображениями */
+.x-editor-image-button { 
+	position:relative; 
+	width:1px;  
+	overflow: visible;
+	padding:0px 2px 2px 2px; 
+	font-weight: normal;
+	font-size: 11px;
+	border-width: 1px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#001133, direction=135, strength=1 );
+}
+
+.x-editor-flags {}
+.x-editor-flags-disabled {
+	color: #777;
+}
+
+DIV.x-editor-flags LABEL {}
+
+
+/************************************************/
+/*          ---==- XFW-XTabStrip -==---         */
+/************************************************/
+/* ВНИМАНИЕ: 
+	HTC-компонент использует классы: xTab-base, xTab-back, xTab-tab, xTab-selected, xTab-pageborder;
+	"-in-editor" - это суфикс, который передается компоненте для формирования полных наименований классов, 
+	чтобы разводить применение компоненты в разных контекстах
+*/
+/* Базовый стилевой класс, назначается всем элементам TabStrip */
+.xTab-base-in-editor {
+    font-family: Verdana, Arial Cyr, Helvetica;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+/* Стилевой класс фонового задника TabStrip */
+.xTab-back-in-editor {
+	background-color: #808077;
+	border: none;
+	padding: 0px;
+	padding-top: 4px;
+	padding-left: 4px;
+	padding-bottom: 0px;		
+}
+
+/* Стилевой класс "закладки" TabStrip */
+.xTab-tab-in-editor {
+	font-family: Verdana;
+	font-size: 12px;
+	font-weight: normal;
+	color: #444;
+	background-color: #c4c0b8;
+	border-style: outset;
+	border-color: #eee;
+	border-width: 2px;
+	border-top-width: 2px;
+	border-bottom-width: 0px;
+	padding: 5px;
+	padding-top: 3px;
+	margin-right: 2px;
+	text-align: center;
+	width: 130px;
+	cursor: hand;
+}
+
+/* Стилевой класс, динамически назначаемый "активной" закладке */
+.xTab-selected-in-editor {
+	color: #036;
+	background-color: #d4d0c8;
+	border-color: #eee;
+	font-weight: bold;
+	cursor: default;
+}
+
+/* Стилевой класс бродюра между закладками и страницей */
+.xTab-pageborder-in-editor {
+	border-color: #eee;
+	border-style: outset;
+	border-width: 2px;
+}
+
+
+/************************************************************************
+ ************************************************************************
+	Стили, используемые progress bar'ом
+ ************************************************************************
+ ************************************************************************/
+
+
+/*	Стиль надписи для отображения кол-ва процентов в progress bar-е		*/
+.x-progress-percents
+{
+	FONT-WEIGHT: bold;
+	FONT-SIZE: 11px;
+	COLOR: #ffffff;
+	FONT-FAMILY: Verdana;
+	POSITION: absolute;
+	TEXT-ALIGN: center;
+}
+
+/*	Стиль ячейки отображения полосы готовности - ГОТОВО	*/
+.x-progress-active
+{
+	DISPLAY: block;
+	BACKGROUND-COLOR: ActiveCaption;
+}
+
+/*	Стиль ячейки отображения полосы готовности - НЕ ГОТОВО */
+.x-progress-inactive
+{
+	DISPLAY: block;
+}
+
+/*	Стиль отображения полосы готовности */
+.x-progress-table
+{
+	BORDER-RIGHT: 1px inset;
+	BORDER-TOP: 1px inset;
+	FONT-SIZE: 1px;
+	BORDER-LEFT: 1px inset;
+	BORDER-BOTTOM: 1px inset;
+}
+/************************************************/
+/*       ---==- XFW-СПИСОК ВЫБОРА -==---        */
+/************************************************/
+/* Классы, используемые в интерфейсе списка выбора */
+
+.x-list-sel-page-body {}
+.x-list-sel-page-layoutgrid {}
+
+.x-list-sel-pane {}
+.x-list-sel-pane-custom {}
+
+.x-list-sel-pane-header {}
+.x-list-sel-pane-filter {}
+.x-list-sel-pane-control {}
+.x-list-sel-pane-main {}
+.x-list-sel-pane-main-message {}
+.x-list-sel-pane-main-warning {}
+
+.x-list-sel-bar-caption {}
+
+.x-list-sel-bar-nav {}
+.x-list-sel-bar-nav-place {}
+.x-list-sel-bar-nav-text {}
+.x-list-sel-bar-nav-control {}
+
+.x-list-sel-bar-title { 
+	width: 100%; 
+	overflow-x: hidden;
+	overflow-y: visible;
+	font-family: Georgia, Times New Roman, Times;
+	font-weight: normal;
+	font-size: 23px;
+	color: #fff;
+	padding: 5px 5px 2px 5px;
+	filter: progid:DXImageTransform.Microsoft.Shadow( color=#333333, direction=135, strength=3 );
+}
+
+.x-list-sel-bar-control {}
+.x-list-sel-bar-control-place {}
+
+.x-list-sel-button {}
+.x-list-sel-button-nav {}
+.x-list-sel-button-control {}
+
+/* Специальная панель - размещение кнопок управления редактором */
+.x-editor-bar-control { text-align: right; }
+.x-editor-bar-control-place { padding: 5px 0px 5px 2px; }	
+/************************************************/
+/*          ---==- XFW-ФИЛЬТР -==---            */
+/************************************************/
+
+/* Стилевой класс "страницы" фильтра */
+.x-filter-page-body {
+	padding:0px; 
+	margin:2px;  
+	overflow:hidden; 
+	background-color: #d9ddda;
+}
+.x-filter-layoutgrid { width:100%; height:100%; }
+
+/* Стилевой класс элемента ввода текста */
+.x-filter-textfield {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: normal;
+	font-size: 11px;
+	background-color: #fff;
+	color: #013;
+	border: #fff inset 2px;
+}
+
+/* Стилевой класс элемента ввода даты/времени */
+.x-filter-datecontrol {
+	font-family: Verdana, Arial Cyr, Helvetica;
+	font-weight: normal;
+	font-size: 11px;
+	background-color: #fff;
+	color: #013;
+	border: #fff inset 2px;
+}
+/* поле размещения группы элементов навигации (в панели заголовка, элемент TD) */
+.x-bar-nav {
+	text-align: left;
+	vertical-align: middle;
+}
+.x-bar-nav#xNavigatonBar_Left { 
+	overflow: visible;
+	text-align: left;
+	vertical-align: middle;
+	padding: 5px;
+}
+.x-bar-nav#xNavigatonBar_Right { 
+	overflow: visible;
+	text-align: right;
+	vertical-align: middle;
+	padding: 5px; 
+}
